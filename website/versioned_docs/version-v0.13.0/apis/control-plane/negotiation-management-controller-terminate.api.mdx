@@ -1,0 +1,72 @@
+---
+id: negotiation-management-controller-terminate
+title: "Terminate a negotiation"
+description: "Terminate a negotiation"
+sidebar_label: "Terminate a negotiation"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVk1v2zgQ/SvEnHYL1Q5y1C2bpoWBbWI0afcQGMaYHFtsKJIlR3ENQf99QUq27MTZRU5xyPl4nHnzRi04TwFZOztTUMItbRzr/P9XtLihmixfO8vBGUNhyRRqbZEJCvAYsCamEKF8bMFiTVCCD05SjDMFBQT61ehACkoODRWgbTJArqAARVEG7VMmKGHee4nZJ+HWgisSdkQCBURZUY1QtsA7n9JEDtpuoOsWfRqK/JdTu2TxMutppofhBdpZoYhRmwgFSGeZLCd39N5omQ2mP2PyaY/S02+svaH0Uzp1hCTBwGw+Yuu6Lh1H72ykmHwuLy7Sn1NI78k/PN+tfpLk1ISQGsi6Dx8ZuYnnylQcI9+bnSDtCogkm6B5l/vpsOHqEsrHDC444w1aWqKqtR0QHw4VMuZfsEgNYdwkThyzKYqRT7B4qykk8EXja+LKJWZ6F/N7E3tKmKLX0/oQcXrkFKftgYPdlMd2JxpReO75uhhfe5+K29dv/+axzv1BAWvjttnEY4xbF1TfFud7xzMlKt9Vt/Kti74zK8JA4UCFZD8c7e8+u1AjQwk/5lDs4VfM/tWs/aCg1xpXhsQ8UCTL/TRYIkVKsBPS1XVjEwlJrIi3RFbw1gltI6OVFPdDOmAWGeok0yxR9ts4kDfvmJckEGuXq685+cDD/RcxqI+Y53K8Yk6lo7jzZK/mMxE9Sb0ehkfEym1jhklWeactH3CfxJyIry7y/mq0xUAikEHui5IuPyFj9ChT5Rw76UwhMO7zkhKrXba7kUb7SOIfF5603YgvwTV+9I4TcccVhRfJYuO9C6yfj1GwEzU+pctAOXaihpBoxYoEKjWCk8ho3KYQaNVLN2TxfSa0ZQoo+3lMITiZeIOSJkIslx9uHdOH5bIUJ2VVtNZW55rqKKzjHMgOqVcklA4k2eyE0faJlNhqrgSKqO3GvCj2gUMTAQWkYTzRQJRJA7sCjJZkY+bNsFiuPMqKxOXkAgpoghnoHcvpdLvdTjBfT1zYTAffOP17dn1ze3/z8XJyMam4NpmgSUhqtEeR31afE64dRIHpN0+9QW0TZzOUdhCmR0Cvk2yNYlfAsThBAeXxijzWp0UBVVK58hHadoWRvgfTden4V0Nh16vWM4Y8u1mjlY7pt4JyjSa+3HXtuFbgj2/DVvxT/N+uPfvK4RDtLrUNTUN9055od7L0u0VXQEWoklo9tsP9dY/j40OKMvq/WnVdsfe4kpI8/6ft4mg7zO/uH5IUDp8AdS81AbdJZ3DbY3W+b0H6RkhnLRi0mwY3ybaPmQiSJP/cCjgsxPZ8NV7LvXhD0/dly/sjP/pswP2qWcpAiixrzN8qve8moOVl9usWXdf9CzZ+cnk=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Terminate a negotiation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/negotiations/{processId}/termination"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Terminate a negotiation
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"processId","required":true,"in":"path","description":"Process ID of the negotiation","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"description":"Termination details","content":{"application/json":{"schema":{"example":{"code":"string","reason":"string"}}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"string"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: clients-controller-get-clients
+title: "Retrieve all clients"
+description: "Retrieve all clients"
+sidebar_label: "Retrieve all clients"
+hide_title: true
+hide_table_of_contents: true
+api: eJyllU1v2zAMhv+KwNMGuEnao29dGxQBim5YOuxQBIViM7ZQWXIpOk1g5L8PlL18NOuadTfbev0+FElRLfgaSbPxbpJDClfWoONw5R2TtxbpsUDuP0ICtSZdISMFSB9acLpCSMFTjgQJED43hjCHdKFtwASMgxSeG6Q1JBCyEisNaQs5LnRjGVK4Hk+vIAFe1+ITmIwrIAF0TQXpA1zG1SiabTbJIfBxvv4Qs/K5WRjMrzXjEXufUusC/4FQGWcqifs82dHOtwDXVHOkQwDS439AKr3qn0ejfaS8vYbOBBFq7wIG8bkYjbqshIxMLeWHFG5NYOUXKuvqrQi5IYe5Ck2WYQiLxtr1ABIoUeexB1pYncUdHHlNXI4rMeMSVdYQoWMlUvUpsCY2rlCa1fnng+31YRvHWHTJEgDh8hSK6Ixvgupz+rbtUb4jx+GKT+GI7qOMGukNxF0slTAMYxVUjfQ+JHqyZ22jazi2vZdF5bbmnew0z/fdYqjvuVnjno6tfuJc3Rr3JI3AXnku+w2HLs9G+i/4hrI/pmB7XjeCYF3IRPo9vmCWvKJ9RyaDS1Ta2t/9DQlUyKWXuVcgx/HGJaQw1LUZ7kQBadlNvJmcy4WPYRi2Esf99EZNp1/VFzJ5LNarhB0sq8tvE3Xts6ZCx3HoKkhAzDs1JJB5xzpjSNuYuQxdiM3Sj4zLWmclqovBCBJoyEIKJXMd0uHw5eVloOPywFMx7P8Nw9vJ1fhuOj67GIwGJVc21qT2gSvt9pzfyNDBdrbZZ1zxsLbaOGn0GEfbZ+8BdG1kI7tSlD6wLLTtXAf8QXazkc/ddJN7JDdBz+3e9HvC9d69stS2ESrI7PybtrsSTpH3J+sk6W5K7+QzeSEjeumLzV4r3YzvYbP5Bb8gfNY=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve all clients"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/clients"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieve all clients
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"order","required":false,"in":"query","schema":{"default":"DESC","type":"string","enum":["ASC","DESC"]}},{"name":"order_by","required":false,"in":"query","schema":{"default":"modifiedDate","type":"string"}},{"name":"page","required":false,"in":"query","schema":{"minimum":1,"default":1,"type":"number"}},{"name":"per_page","required":false,"in":"query","schema":{"minimum":1,"maximum":100,"default":100,"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"List of clients returned successfully.","headers":{"x-page":{"description":"Index of the current page (starting at 1)","schema":{"type":"integer"}},"x-prev-page":{"description":"Index of the previous page","schema":{"type":"integer"},"required":false},"x-next-page":{"description":"Index of the next page","schema":{"type":"integer"},"required":false},"x-per-page":{"description":"Number of items per page","schema":{"type":"integer"}},"x-total-pages":{"description":"Total number of pages","schema":{"type":"integer"}},"x-total":{"description":"Total number of items","schema":{"type":"integer"}},"link":{"description":"Web Linking to other pages of this resource","schema":{"type":"string"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

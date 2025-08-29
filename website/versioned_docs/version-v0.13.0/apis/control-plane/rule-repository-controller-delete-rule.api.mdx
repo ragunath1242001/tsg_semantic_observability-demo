@@ -1,0 +1,72 @@
+---
+id: rule-repository-controller-delete-rule
+title: "Delete rule"
+description: "Delete rule template"
+sidebar_label: "Delete rule"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVktv2zgQ/iuDOe0WWtvI5uRb0bhFgG4apGl7CAJjTI4tNhTJkqO4hqH/viAlP+I8znvYkwTO65vXR25Rc1LRBDHe4RQv2LIwxNYyCDfBkjBW6ANHyiqXGqd401q+4eCTER83H7yT6K3lONfFOouxwkCRGhaOCad3W3TUME7RaKww8q/WRNY4ldhyhSaHDiQ1VphUzQ3hdIuyCdnCtc2CI3bdfTZMwbvEKcvPJpP8eZoAdhWeT/5+Lvjo48JozQ4rVN4JO8lKFII1quQ2/pmy5vY5BL/4yUpyTjFXQkwPoE9pr5UkGrfCCvk3NcHmoxtOvo2Kr7x89K3TGV0Skja9bXc+OYcrL7A3Ul7z85ocmZxPzrsKG06JVvwS9IPz25ohd4CTsIY4QATtOYHzAvzbJBnlqByjj28jPULZHTf2rq/OPt0hhfsKxUixnGXnF+Kx67rStPPnTdvVr+BaljD/d++/171cF1ZtNLIpu+6plfosu1E9OQRLjuekG+PwPi+y0CrTAs4eybalf9l5w1L7zDA9kRQSkRqnOKZgxg05WnHDTsbBW6M240xT463RXUbK8bHnmvsDmq95Fvp27zAdatsfVLi0fl1UAqW09lH3U+RDb/hCCtOXDqunh5qEyt+p9kHQV27BFDnuJzfrD0c72UcfGxKc4vdrrHbwa5GA1cm+fOdoloYWluE6cmInpbbgmDVrEA/KN03r8s4wLFjWzA5k7cG4JOQUJ/BLkJphwAwF6qjMh3FLXwo4zMDt108wsD9cl4xO8dzWJsGXwO799SWkwMosh3WFVPt1KpHY6eCNk33oJz5H8I9PshMddCnmPcj3U8krCy9IKAVSOXkvXnlbAaVdXNaw2BS9mbImJIYfPj4Yt4JP0bfhYJ1G8EVqjifBUhuCj2Iej1GIh4YesjBy8Z27C4ocLBhI6wM4RULWryogp0/NSODbJRgnHEnl6qTiQrJKsKR4BDCfv7vywu/m8yk8KavmpXGm1NT0FJAduSH0gkGbyErsBqxxD6xhbaQGgmTcyp4Uez8GI8AK8z4Nt2o/3KQy63YVWqPYJT7QKL4PpGqGs9EEK2yjHSY0Tcfj9Xo9oiIe+bgaD7Zp/Pnyw+zq6+yvs9FkVEtjy4wFn6Qhd+T56ElyOl/bw13w2stl2Bbh3zIOlozLzFjwbQdyuUMKBis80EvmnUIw+anSh50anQmq9kmyxXa7oMTfou26fPyr5bjpmeeRYtm/woPapPyvcbokm/gN9H/cDNz7J7wGejgkl2Fl2uS+MQ+86d9V3X1XYc2kM5vcbQfBe6U4yJHJszuzO2bei9nn2e0MK8zs+BJb7rl9+zKi58wIr9DfDnqhWuyqVxzuWHmuImt2Ysimve0qkpN5sevuu677F9zlvgo=
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete rule"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/policy/rule/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete rule template
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

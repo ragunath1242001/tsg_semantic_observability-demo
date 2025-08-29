@@ -1,0 +1,33 @@
+---
+id: issueconfigurationdto
+title: "IssueConfigurationDto"
+description: ""
+sidebar_label: "IssueConfigurationDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"id":"http://example.com/context","credentialType":"VerifiableCredential","documentUrl":"http://example.com/document","document":{"@context":"http://schema.org"},"schema":{"type":"object","properties":{"name":{"type":"string"}}},"name":"Professional Certificate","description":"A professional certification credential","backgroundColor":"#3B82F6","backgroundImage":"https://example.com/background.jpg","textColor":"#FFFFFF","createdDate":"2023-10-01T12:00:00Z","modifiedDate":"2023-10-05T15:30:00Z","deletedDate":"2023-10-10T08:45:00Z"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"IssueConfigurationDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"id":{"type":"string","example":"http://example.com/context"},"credentialType":{"type":"string","example":"VerifiableCredential"},"documentUrl":{"type":"string","example":"http://example.com/document"},"document":{"type":"object","example":{"@context":"http://schema.org"}},"schema":{"type":"object","example":{"type":"object","properties":{"name":{"type":"string"}}}},"name":{"type":"string","example":"Professional Certificate"},"description":{"type":"string","example":"A professional certification credential"},"backgroundColor":{"type":"string","example":"#3B82F6"},"backgroundImage":{"type":"string","example":"https://example.com/background.jpg"},"textColor":{"type":"string","example":"#FFFFFF"},"createdDate":{"format":"date-time","type":"string","example":"2023-10-01T12:00:00Z"},"modifiedDate":{"format":"date-time","type":"string","example":"2023-10-05T15:30:00Z"},"deletedDate":{"format":"date-time","type":"string","example":"2023-10-10T08:45:00Z"}},"required":["id","credentialType","createdDate","modifiedDate"],"title":"IssueConfigurationDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

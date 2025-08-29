@@ -1,0 +1,72 @@
+---
+id: oid-4-vp-verifier-controller-status
+title: "Submit Authorization Response"
+description: "Submit an Authorization Response according to the OID4VP 1.0 specification using form-urlencoded format."
+sidebar_label: "Submit Authorization Response"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9Vt1v2zYQ/1cIPm2FYrtpXiYMA7KmLVwMSVCn2YMXGGfpbLGhSJY8RXEN/e/DUbItK3WLvezFlngf/N2H7ndbmWPIvHKkrJGpnFXLUpEAIy4rKqxX34Al4hMGZ01AAVlmfa7MWpAVVKC4mV5d3N+K16OJCA4ztVJZa1IF1lpZX55VXqPJbI55fAcayURahz5qTnOZytbNPXq1UujfWkPeao1+EQioCjKRDjyUSOiDTOcPifT4tcJAf9p8I9NtfFUec5mSrzAZxHUcjd9Fo8wJgAKCcOhPRscBZNYQGuLLwTndScbPZ3Vdnw3cslLICiyBn2jjUKbSLr9gRhya52SQwsDSJ7cg+4iGn/EZSqeRH1WOhhRtFpnH+AhapnOJm4/F8kOmbtTH95+/TV9fq4+/jUYj+dAMc3B/K+7Yr6gVFeLgRUyvuJjOY0BDMYggSnBOmbVMJGh9s5Lp/Cewm0SSIoYq7128RzaMgeuHvaAD+dbvPrRW5fX5GzlEPGOB2BderLwtY9PBoJyxE2TTJL02mB8SuUPxcMDYFvaoLXY9Lpum9dS+xpqcTyb8dwxPNom8mLx5KXhv/VLlebz5RJd8Cdb8l6YwUP4ki58w2MpneG3pva1MLrvkV+HHdheTC3FtSeyNuGF7JqYql+j7JheTiyaRJYYAa/we9IPzuwJ35cGcv7sIUeQWgzCWBD6rQCO+Fb23/sdIeygHlY7Z2YfbhdCr9jt2fkU2lpY7FdY8RbouYM0SqbA8iJwNMftAhUzlGJwaW5VfPLnxruniTeif9pMoYFZ5RZsZ17Itl2Xl835u2oNErrSto4qDEGrru9FgXWtYg9ZIiyeF9SJXDGh4kuxOSjCwxsUjbsJBrX+416zCUG1/khz5t7XpjZcwuH0oPbYFrX9gO5QOozh58wn50P7k7Sfke3sVQoXfN30pOo74aGIO4j2WcbdCbo3ecOa9TAfvXVsqs7KxZ7q2vZt9EH9Hpy9GI39YB7FQQYCYzaaixSCoABIZGBFjEGByEch6FE+RYWGpsccAISpkHuO4PeIBsmKJogqYR9pQRuRAIIKDDMPo96UX4z/a33+MEEIwrvqASZWYCyBRVprUGSn0Iken7aZEQyFpqcgaFL9YL0rr8dejCCCjwFRMvgq8lWSF9czQAnowInhlcvVUge7MQ9RCyAphV5EyHHhSmXJgKDDv89nBx0jc8JEKwsEaozBDQ37vsMUTsxmOMlcrrTlFGavl0fIKCFpkXXVAU2GrdSFUzAoPvt30av1SgR4F6Bo2gTXwGTLSm5iZeKfnMPrXKtPloIX/shCLxatrS/hqsUjFHQd249Bc3k5FjitlVCTODotihuLdpy12rjzG27Uyj13dBQhe5/Q+JGUCgeHEyUTyKOwosSU8yKhdCbTKkCl1z2Dy0kFWoDgfTWQiK69lKgsiF9LxuK7rEUTxyPr1uLMN47+mb99dz96dnY8mo4JKHcc/z+kSTM9zt7t+f3EdfkDbAzH/n0tvxwaEzzR2GpRh6otZ2HaUM5fgFK/HkXR4/9rTzkMiC2andC632yUE/Ox10/Dx1wr9piWjJ/Dx8+a3JpEFQs4DZ76Vj7iRqXzbhn12x0hYXVeM6OcbbJPsXFxmGTo6YRwXm6bPqLc3szuZyGW3qJdxvZA9z0n/hWE3zb+HPXbx
+sidebar_class_name: "post api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Submit Authorization Response"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/oid4vp/authorize"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Submit an Authorization Response according to the OID4VP 1.0 specification using form-urlencoded format.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"description":"Authorization response in form-urlencoded format as per OID4VP 1.0 specification.","content":{"application/x-www-form-urlencoded":{"schema":{"type":"object","properties":{"vp_token":{"example":{"identity_credential":["eyJhbGciOiJFUzI1NiJ9..."]},"description":"VP Token with credential ID to presentations mapping","allOf":[{"type":"object","properties":{},"title":"VpToken"}]},"state":{"type":"string","example":"state123","description":"State parameter from the authorization request"}},"required":["vp_token","state"],"title":"OID4VPAuthorizationResponse"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

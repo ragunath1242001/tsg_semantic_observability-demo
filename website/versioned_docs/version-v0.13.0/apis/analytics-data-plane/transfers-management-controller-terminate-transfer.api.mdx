@@ -1,0 +1,72 @@
+---
+id: transfers-management-controller-terminate-transfer
+title: "Terminate a transfer by ID"
+description: "Terminate a transfer by ID"
+sidebar_label: "Terminate a transfer by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1VU1v4zYQ/SvEnFpAtYw0J92CTVIEaLPBJt1LYARjcWxxK5FccrRew9B/L4b6ctZOUCzQXJKQmpk3M+89HsB5CsjG2TsNBTwFtHFDIf6FFrfUkOUPznJwdU3hhSk0xiLT+Blk4DFgQ0whQvF8AIsNQQFGQwaBvrYmkIaCQ0sZGAsFeOQKMtAUy2C8FD4qq4wmy2ZjUupYVtQgFAfgvZeskYOxW+i6bCpUOk1vlfraUtj/xzyBMDr785lWEhm9s5Gi3F8sL+TX6zahy+By+fvpxa0La6M1CYDSWSbL8hF6X5sybSf/IvCKwykEt/5CJcsmguySTQ+g7+tHoBnQd2x8LUefKLo2lHTv+Na1Vgu6yMhtfD/ucnmp7h2rKSjtYA6xbbNO+5tCLpeXXQYNxYhbOgd9Tv5UkZIVUGTSKgwQlXYUlXWs6LuJvJCqFIIL7yM9Qtkdb/a5n87U7tDCKgM2nCJvJPk1O+jkJ4NIZRsM7xPHHbZcXUiasteGr9HSi0bG9BeshA6MW5EEXCOjepBzNYtKav0ggVFbChWPcljv1d01yOi4cqJP72JatYiogBy9yZspaT7GxfxgdJePcjWJ2JHCt16lq7mfR2FTT5ixq3k7/UEGm9rt0iceY9y5oHseOt8HosV6z6aM0wBeUDdJN29eZeeu5gGejZyv+52sCQOFSRMSNRyNd7cuNMhQwOcHyMa2KmZ/YkCfKZiNwXVN6iFQJMtpbMoSadKKnSpd07RW1EhqTbwjsop3ThkbGW1JUbmN4orUwAmVoC4S84zduDTYgV1Pj3+oq7FBNRPk1BcrE9VHT/bq4U5FT6XZDH6gYuV2MRUkq70zlicE51IvIANZ/2BEvc1gKTbTZVCbkmyk2TfgymNZkbpYLCGDNtTD4GKR57vdboHpeuHCNh9iY/7n3Yeb+8eb3y4Wy0XFTZ1aF8I2aI8yv0v0V+1PTGT6zrmv0VgRfkJzGDTwDOiNKGSWVgaTDiCDIj1Fx1JYZVCJjIpnOBzWGOnvUHedHPc2LxLXJgoZNBQbrCOdAJtMGn75NNjKr2rm2GvA/9B+fqm+Yd1S/xb8L2Wmh2wutJJ/QmL3zzd3/ok+C2Q4RLs/hjECNBq6VZdBRahFvs+H4eKqLMnzUcjJ8yedTFb48PHxSXykFRqcmtZk0ofzeN6yJvWu84xNJPdLKzybfDTKlzJQGhfWcYrdBrT8kuK6Vdd1/wKxk0qP
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Terminate a transfer by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/transfers/{id}/termination"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Terminate a transfer by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}},{"name":"code","required":true,"in":"query","schema":{"type":"string"}},{"name":"reason","required":true,"in":"query","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

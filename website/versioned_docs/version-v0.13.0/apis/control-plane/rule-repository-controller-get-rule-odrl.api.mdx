@@ -1,0 +1,72 @@
+---
+id: rule-repository-controller-get-rule-odrl
+title: "Get rule ODRL"
+description: "Get rule ODRL based on its identifier"
+sidebar_label: "Get rule ODRL"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV0tvGzcQ/ivEnJJgKxmuT3tzbcUVYFuGLKcoDEOgyJGWMZdkyFkrgrD/vSB3tXpYcZOiCHroSSsOZ+bjx3lxDRKD8MqRsgZyuEJivtLIRpfjazbjASWzhikKTEk0pOYKPWRgHXoedYYSchhXGsfobFBk/erCGvJWa/TTBVKUjaTXkIHjnpdI6APkj2swvETIQUnIwOOXSnmUkJOvMAMVwThOBWQQRIElh3wNtHJRw1TlDD3UddYZiZgnUfqDpgJ5ZRZ7poj7BdI/NvQUFYOzJmCI8tOTk/izTzNkIKwhNBRl3DmtRKKz/znEDevXDuzsM4oIy/lIPqnGvJJHiMmAi8bTGvArL51GyB9hPDi/hAwe7gfwlG10uPd8BRkowjIcZQZ4CGphEA/MSSXz9m/ebfkhw8KaQJ4rQ7sbvqX4Yww0CzuA4XwyuhleQAZc69E8heA+pAzQVGU8Wrf1enQ1vDi/TsdSlMxcdKBTwNVPdSc7YrDzvlVjze462w+K71Te1YkcbqP0sTGwQXMU8o2VqJOerDYEHqcdhPKi0ty/ixn8fpfSv+fvbjC+Gd7fD0e3kMHdePT78LfhpPl3+TD5cxfbeJO5DZFN8h2Nlt2TtvG9H0LdoQ7MQ11H/bOTX19n4kfrZ0pKNP9eSjZ15K3rHGOwlRd4a+mjrYyM5AbiVB3Jk129s5MzdmuJdUrCSnwd/TsqZydndQYlhsAXeAz61vikQBYpxkAomW8hMmkxMGOJ4VcVqBe9ovfWv410B+XBzSV2uuO2R9i5sEE0fkm2u7Sz15e24S/hmic3/9/ef+/2Ii8oKq9olaqF5RUVp9GMaEYEp7nBKZelMvAUOyfxRZwNYPDCdZXuLxovkQob54ymL6cWnEOfO9UvueELLNFQ31mtxKofJ4H+Wsm6b5upI6B/aUaOpy2e+xgNzYVvUG3ZbRYymGu7TFscD2FpvWziyLpG8cgh8mOL2f6i5MTT1+HuraDhbobco+9iN+5vlzayj9aXnCCHT3fQ9d2CyMFBb4FP6NVc8ZlGducxoKHELjOIEiUjy4Qty8rErEE2Q1oiGkZLy5QJxI3AwOycUYGsxcwS1F6KEGXmNhHYRsHk/oq1UyC7Syc6xDMpVGAjh+b8bsiCQ6HmbcKyUNhlSJ7QSGdjZd+43rPZYzc20Ea03ct9zATNqTlXFF5y4sFxEQ9vyQqrM8bDxi9KNlulfQOhlQvI/rD+WZkFu/K2clvt0GMjKtAfOAuVc9aTetlFQZaV/DkKPSbb8XaZ4IbNkHEpt+AEJ67tImPcyEM1TuxhyJQh9E3HC8kExS1Oc4E9xqbTD7eW8MN0mrM9WiXOlVGJU9UUgWjItK5nyKTyKEivmFbmGSVbKioYZ0GZhT4guwuDHoMMYj7tDbJcxLpbZ6CVQBNwW0jh3HFRIDvtnUAGlddthIa8318ulz2exD3rF/1WN/SvhxeD2/vBL6e9k15BZTOvOBuo5GbH8t5b5TDC1tt+8N2PmjaBCL9S32muTCyXCfK6LTqPwJ2CDLZlJ9ajVHjigyHOGhnk6UWTqs9TBoUNFBXX6+j4weu6jstfKvSrpia9cJ8yM9VIqUL8lpDPuQ74xqnejdu6/J59C/tmsjMRXSyp2FzZM66ah1d89vxEj90r7Sf7bafKNGEWyGWsqo/rVnguBDraUXs1PdS7PehqMIlPiCqGw+uW0bW49XFIr9sD+0YP2GBP/SYRdtTgpjVNhccUy1yHTnfhuaEptdN1Xf8FvXB1PA==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get rule ODRL"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/policy/rule/{id}/odrl"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get rule ODRL based on its identifier
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"number"}},{"name":"ruleType","required":true,"in":"path","schema":{"type":"string"}},{"name":"target","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"number"},"action":{"example":["READ","USE"],"type":"array","items":{"type":"string"}},"assignee":{"example":["did:example:assignee"],"type":"array","items":{"type":"string"}},"constraints":{"type":"array","items":{"type":"object","properties":{"id":{"type":"number"},"type":{"example":"ATOMIC","allOf":[{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"}]},"title":{"type":"string","example":"Constraint title"},"description":{"type":"string","example":"Constraint description"}},"required":["type","title"],"title":"ConstraintModel"}},"duties":{"type":"array","items":"circular(Rule)"},"type":{"allOf":[{"type":"string","enum":["PERMISSION","PROHIBITION","DUTY"],"title":"RuleType"}]},"target":{"type":"string"}},"required":["action","constraints","duties"],"title":"Rule"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: oid-4-vp-verifier-controller-status
+title: "Get the Authorization Request Status"
+description: "Get the Authorization Request Status."
+sidebar_label: "Get the Authorization Request Status"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNVFFP2zAQ/ivWPW2S10SsT3nroKBKEyDK9lJVkxsfjVliG/sCdJH/+3RJBAE2RF9S3fm7++6+z+5AYyyD8WSchQLOkARVKBYtVS6YP4rj4grvWowk1qSojTOQ4DyGPrfSUMDF6mT+8/InBnNjMBw7S8HVNYZfsQeABK+CapAwRCg2HVjVIBRgNEgIeNeagBoKCi1KMMzDK6pAQiwrbBQUHdDBMyJSMHYPKW0ZGL2zESPnj/KcPy+ngSRhnn99mzh1YWe0RgsSSmcJLfEh5X1tyn6u7Dbyye4tBbe7xZJ4psBbIDMQGEZ6TVQCPqrG1xy6wujaUOK5o1PXWs3sxgW9i5vnc3HuSDyBSqenrWzb7DBMIfN8niQ0GKPa47+oPxe/rlCEQV7UIowUhXYYhXUk8NFEmnFXDMGF95lOWKapsJthO0/jjiNsJZChHrnk4ifkIPFPAqk9O2V0Fp9skCrHZttjv3w2SAGZ8iZzRs/vfTYUzzqjE7fCcD/YbcueunE99bHd9fpMrNcX4lswes/EXtrjZVosLlfixJVtg5aGCwESuPjossFDqmQPJQm1KdFGfDYFLLwqKxRHsxwktKGGAioiH4sse3h4mKk+PXNhn43YmH1fHS/P18svR7N8VlFT9xv1LlKj7KTyR+7r6/G6Z8t/+L6PmhM+UuZrZSw7op+kG6XYgPKGX4ZejKnWhdEsYOUi8bGu26mIP0KdEofvWgyHQaV7FYzasUCbDrSJ/F9DcaPqiO/M8OlqNNpn8T+mY1DZAyun6hYH3X7jYXiG0jZJqFBpDH33IbEoS/Q0gbx5INLUmWfLa0jpL/6Oy/Y=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get the Authorization Request Status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/oid4vp/status/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get the Authorization Request Status.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

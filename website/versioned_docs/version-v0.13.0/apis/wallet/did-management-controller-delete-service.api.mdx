@@ -1,0 +1,72 @@
+---
+id: did-management-controller-delete-service
+title: "Delete DID service"
+description: "Deletes an existing DID service for this wallet"
+sidebar_label: "Delete DID service"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVk2PGzcM/SuETkkwsY3tngZFgSDeFAukmyK7RQ/bhUGPaI8SjTQROes1jPnvgTTjr/Hah5566MUfIh/1SEp82ihNXARTi/FO5WpKloQY0AG9GBbjljC9nQJTeDYFwcIHkNIwrNBaEpUpX1PAiL7VEX87/QMdLqkiJx+9k+CtpTDTKe59F0VlqsaAFQkFVvnjRjmsSOXKaJWpQD8aE0irXEJDmTKRV41SqkxxUVKFKt8oWdcRwRKMW6q2fYpArr1j4mi/mkzi13F2qs3U9eSXU8MnH+ZGa3IqU4V3Qk6iE9a1NUXKbvyNo+fmlIKff6MiVqIOsRZiOgJdSkOimaIXrGobl74S+yYUdOflk2+cjuxYUBq+jLueXMOdF9iBCq8Pt3JNNadwCLmeXLeZqogZl/Qa9X3wh5IgdoBYSEPoKYL2xOC8dKdiFHelEHy4zPSAZXvY2MeuOrt0+xSeMiVGEvImBp+KV23bpqZdnzZtW7/Ea5G2+b97/73uxbpQ0QQj63TXPTZSXsUw3QyZPRtazXR/91F7Z9ezhimop3irBZdxRqj9WIkDKe5WkZQ+Dp1uuKSpIqXK1RhrM652/mNt9LgfYDzeGN1G7hSeu+nztOd3H09HdwC2LPfV7hYytbB+lVxqZF75oLtz5esOOEwqfyXNfqWjOPtOa967HS7uPBseuu1WsqP4fuVmRSBNTgxaHuw+tB5j0doL2KF1mMXZnc/Yh/izu5+x7/CGuaHXoaem44zrQExO0ogY5ntsGx7NfPC/P+jGLXw6M/1FeLj/Hf7eKuXx9IpXdW8Gw4Bwf3/bCytIiQIFOkg5ADoNLD4QPFMwC4NzS3CQWHIoAqEQHDEH8TAnaJg0rIyUxoFGQeAaC+LRr/MA49+6z38cAEDktdpzMhVpQIGqsWLei6EAmmrr1/FmcZZigncEb3yAygd6e5QBFsKADBIaFkBXlD6kRwQe0EjkjdPmuUHbwzl5ERYl+AVISVBjEFOYGp0wGJfW9jFG8MV1L5Mal5SMBTkJu4Adn1RNPqrcylgbS1REN52QUxTsmPXdQSulb5YlmFSVOEq387CLKyUFArQrXHP0oBcsxK5TZdKeIaZxuK1xfQ06+qeNmM3e3Xmhd7NZDg8xsS81uQ9/3oKmhXEmdnfLxUTN05FLarY2gdLu1rjvfd8BgY1b2l1KxrGgi4VTmYqjsH8idRKKRZTQNlPWFOSY9pqoPtRYlARXo4nKVBOsylUpUnM+Hq9WqxEm88iH5bjH8vjz7cebu/ub91ejyaiUyiZBqT1Lhe4gcvf4PHxvDm/NZq/v/+Kp2k9yoRcZ1xaNi0KYMtj00vGosDYqU3vxiAzSzN4KiMpUbnTUn9KzRMhmM0emv4Jt27j8o6Gw7nTlGUO6qUn3tOH4W6t8gZbpQmZvvvZn6y2cY90volvH7qFtqOvdd1p37+j2qc1USajjsHrc9IYPRUG1HEBO3kjtobBObz7fPNyoTEXte00Ld1q+eZ3RQPrgVONgoGdwQa/ggh7BRbWBi1oC5+QCzgoCHI//beHTM0C12ZlybF8MA0nqsMuATmYJ1z61bfsT747Ong==
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete DID service"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/did/services/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Deletes an existing DID service for this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

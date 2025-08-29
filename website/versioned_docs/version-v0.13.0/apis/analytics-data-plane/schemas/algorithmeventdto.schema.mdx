@@ -1,0 +1,33 @@
+---
+id: algorithmeventdto
+title: "AlgorithmEventDto"
+description: ""
+sidebar_label: "AlgorithmEventDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"id":"string","eventId":"string","algorithmInstanceId":"string","name":"string","number":0,"timestamp":"2024-07-29T15:51:28.071Z","createdBy":"string","transferIds":["string"],"recipients":["string"]}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"AlgorithmEventDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"id":{"type":"string"},"eventId":{"type":"string"},"algorithmInstanceId":{"type":"string"},"name":{"type":"string"},"number":{"type":"number"},"timestamp":{"format":"date-time","type":"string"},"createdBy":{"type":"string"},"transferIds":{"type":"array","items":{"type":"string"}},"recipients":{"type":"array","items":{"type":"string"}}},"required":["id","eventId","algorithmInstanceId","name","number","timestamp","createdBy"],"title":"AlgorithmEventDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

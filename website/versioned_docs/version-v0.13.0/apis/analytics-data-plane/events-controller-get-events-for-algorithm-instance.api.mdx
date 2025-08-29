@@ -1,0 +1,72 @@
+---
+id: events-controller-get-events-for-algorithm-instance
+title: "Get all events for an algorithm instance"
+description: "Retrieves all algorithm and internal events for the specified algorithm instance."
+sidebar_label: "Get all events for an algorithm instance"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1VU1v2zgQ/SvEnHYBrm1kfdLNaJ3AQJENmmwvgVGMxbHFliJZcmTHEPTfF6RkR3Wc3NYXS5wPzbx5b9iColgG7Vk7CwV8JQ6a9hQFGiPQ7FzQXNUCrRLaMgWLRtCeLEexdUFwRSJ6KvVWkxr5axsZbUkTkOA8BUz5VwoKWObgT85ycMZQ+L4j7s9uXVicEqyGeJDgMWBNTCFC8dyCxZqgALz0XCmQEOhXowMpKDg0JEGnnjxyBRJiWVGNULTAR59SRA7a7qDr1ikwemcjxWS/mc3S3+/IPFV0arzCPYkNkRWxKUuKcdsYcxRhwE5NoJMwn/39NsmtCxutFFmQUDrLZDk5ofdGlxmj6Y+YPNu35brNDyo5ARISoqz7Yns8LpuSQC9Ye0N5ptE1oaR7x7eusSpVFxm5iR/HzWdzce9YnINKp8afsk29oTAOmc/mnYSaYsQdXSv9NXmCM02LIpMSYShRKEdRWMeCXnTkDCSF4MLHlY6q7MYkeO7RObc7tLCWwJpz5DIl/8wOuvSTwLhLNBtYmjxr4sol4u4og5/IVMAUvZ72dJi2V7jYpY9S2PesXaeXsgmaj49prP3kHDZc3Yxh6g8kbI07ZBePMR5cUD0hnO8D0aI5si6jQkZv0NJ3VHXm+rsmec10froe+WruwdkQBgpncqao4ehku3WhRoYCvj2APLVVMXuQF0r4RkFvNW4MiYdAkSxn+gtLpEgJdqJ0dd3YJIskNj4kvfHBnVdLFG6b90/Z7xKRS51kCmi7dRnYYcxPj3dicWpQfEZG8ZAbuyzrqdJR/OPJLh5Wp8XWC1PEyh1i/iBZ5Z1Om2Co4FrqtPnS+Pu8g96xTHrvJBhdko30KmBYeCwrEjeTGUhoghmAi8V0ejgcJpjNExd20yE2Tr+sPi3vH5d/3Uxmk4prk1v3LnKNdpT5jjhv89HaRntlV1+C0b6uqP/lXhjowfTCU29Q26T23Hk7yOwZ0Ouk9F6NEopra38toXKRk3vbbjDSv8F0XTr+1VA49vrbY8hsy3eI0jE9Kyi2aCJ90PcfX4dl8qd4r+LhEO0xTRxNQ/28f9LxnXuqW3cSKkKVxPTcDp6LsiTPoxxvboVuvI7ulk/Qdf8BTZu2FQ==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get all events for an algorithm instance"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/events/{algorithmInstanceId}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves all algorithm and internal events for the specified algorithm instance.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"algorithmInstanceId","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"The events have been successfully retrieved."},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
