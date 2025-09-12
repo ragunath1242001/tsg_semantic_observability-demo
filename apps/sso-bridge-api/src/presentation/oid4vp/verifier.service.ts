@@ -310,7 +310,7 @@ export class OID4VPVerifierService {
   ): Promise<OauthUser> {
     const roles = isAdmin
       ? await this.rolesService.getAdminUserRoles()
-      : await this.rolesService.getBaseUserRoles();
+      : await this.rolesService.getReadOnlyUserRole();
 
     return this.usersService.createUser({
       username: email,
