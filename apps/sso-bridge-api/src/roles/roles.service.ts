@@ -40,13 +40,14 @@ export class RolesService {
     );
   }
 
-  async getBaseUserRoles(): Promise<string[]> {
-    return this.roleRepository
+  async getReadOnlyUserRole(): Promise<string[]> {
+    const roles = await this.roleRepository
       .find({
-        where: { isAdminRole: false },
+        where: { name: "readonly_user" },
         select: ["name"]
       })
       .then((roles) => roles.map((role) => role.name));
+    return roles;
   }
 
   async getAdminUserRoles(): Promise<string[]> {

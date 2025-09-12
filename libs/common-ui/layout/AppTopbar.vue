@@ -40,7 +40,7 @@ const onTopBarMenuButton = () => {
 
 const topbarMenuClasses = computed(() => {
   return {
-    hidden: !topbarMenuActive.value
+    "max-lg:hidden": !topbarMenuActive.value // Only hide on screens smaller than lg when menu is inactive
   };
 });
 
