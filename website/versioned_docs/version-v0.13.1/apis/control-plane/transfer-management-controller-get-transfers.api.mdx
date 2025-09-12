@@ -1,0 +1,72 @@
+---
+id: transfer-management-controller-get-transfers
+title: "Get all transfers"
+description: "Get all transfers"
+sidebar_label: "Get all transfers"
+hide_title: true
+hide_table_of_contents: true
+api: eJylV21v2zgM/iuCPt0Nzuu2budvRZsrCqxdbkk34IogYGwm0WpLmkQ3LYL89wNlx85Lu3a7b7ZE8iFp8iG9lsaiA1JGX6YylmMH2s/RXYGGBeao6cxocibL0E0XSNt7LyNpwUGOxC/x7VpqyFHG0rgUnYykwx+FcpjKeA6Zx0gqLWP5o0D3KCPpkyXmIOO1THEORUYylueD0ZmMJD1atuPJKb2QkURd5DK+lafhNghNNptoH3A6e/wtzNykaq4wPQfCI+xdFAsL/AWEXGmVs9+9qEHr1QC6yGfo9gHQTf8HSA4P1XO3uwvJb4egE4bw1miPnu30u90yKz5xynItyFjKSC4R0vB11/KhFXw7krrUKT4IMxe0RJEUzqEmwaLiD0/gSOmFABK9P/ccrxxSmnBRpoEBHN6/BoXllCm8qLL1vNmjTAYcjQ/0GhyW+10Mi+4ZiOvwERhDEeZeWHQvgwSbZAiyYNUfmx3zpdC18VLsdTZfthZcfclapvTdsalvOBOflL7jQiAjDC2rgH2ZZ+WFQ28KlzyZgroTN5FMjCbUxLdgbaaSQFud756B1se64Bxww5TeN+dm9h0TYgJzTH6kyoRmJoGMSfAQPJL4ALnN+CgItXr9t+/el98+N4QvKZVSrb8+fjgptUyGP9ewztyrdFtfrH2apg69/7naksjGnU510E5M3mksDMHR4wuwLNJSKWpiVnStbrfHBjwxPT6lWnHzl8E/N4PReHAuIzkan34pn8aDL1eX16fly9nnq+GnQSVyMxoOrs8H53KyC99Y2UQSFg7DAHopu7Vg6937kw8fWXduXA70gtphCW2i/WkQr2s7MgXCFqn8eEbsmux3+29bvW6r2xv3+vHbd/H7k39DazQUcVuXWVUGh993/2ttU7+fjgNHJ5EkRcGD7XgeEVDhz8lw54Tm8ZgUTnEB3K6lgYKWffYmKae7zUDjFNJcaRntH6ZAEJ7khAcHwYLHfY3kRbMqsCf73X+BJCDLBO2sDTnS0vCuscDQhEBLGcsOWNXJa1OdXQ2P7r7cMiZNICNu97Jzt+E0HV4eRHKemVUQseD9yri0JApjS8Unoo9/KSXxcxdl0mcIDl1NTixfHW3v/t5W2NdhU1rcxvIwlV/RqbmCWYZi6NCjplC7QiOmmDK3JibPC801jWKGtELUglZGKO0JdLJlXBSVzyK42g4VqvTchARuC2l0IarNTwxDRIf+jJm6P1vUp8NL4S0mal61k/BLs/IBCXVqjdJUQ+/ZbIsr42l71ciCQ+EwAyrj4stzIPAWEg7ekElMFgnwW1xMxewxyA2STFmP4ptxYeRcOFPYRtu3xecwgfbBfGGtcaTud70gI3K440uHwTZ/XZGAFjMUkKaNcwkQZGYRCdDpoRqQuLkUPCcdJJwdH0wQi9gMEmwLMZ2+uTaEb6bTWOylNcW50irkVHmhDQVDuoKeoUiVw4SyR8HDF1OxUrQUILzSi+wg2XUZtIWMJPdTvedxPUDCfBnGeILaB/qrNtNTC8kSRb/dlZEsXFZVqI87ndVq1YZw3TZu0al0fefT5dngejRo9dvd9pLyLNSYNZ5y0DuWn6KHvSqrO5rwgTo2AxV4OjixrqjjVoJVzCsND0WysTiJ5NJ4Yrn1egYeb1y22fBxuVAzH6bKc2M1C/cdPu78ytxDVrATktf1n8mWfyGvEa9WvleJNj8GjfiEX1ygA6bFzXZZD+GUeqdJgpZ2tI4n3mSHjS8GYx4zBaf0mEjridFsV3o31mPSFM8w4zaswMIh7icNbgl7mjgM+whkvtZdONA0DXqbyWaz+Q8zQhCZ
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get all transfers"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/transfers"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get all transfers
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"order","required":false,"in":"query","schema":{"default":"DESC","type":"string","enum":["ASC","DESC"]}},{"name":"order_by","required":false,"in":"query","schema":{"default":"modifiedDate","type":"string"}},{"name":"page","required":false,"in":"query","schema":{"minimum":1,"default":1,"type":"number"}},{"name":"per_page","required":false,"in":"query","schema":{"minimum":1,"maximum":100,"default":100,"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","headers":{"x-page":{"description":"Index of the current page (starting at 1)","schema":{"type":"integer"}},"x-prev-page":{"description":"Index of the previous page","schema":{"type":"integer"},"required":false},"x-next-page":{"description":"Index of the next page","schema":{"type":"integer"},"required":false},"x-per-page":{"description":"Number of items per page","schema":{"type":"integer"}},"x-total-pages":{"description":"Total number of pages","schema":{"type":"integer"}},"x-total":{"description":"Total number of items","schema":{"type":"integer"}},"link":{"description":"Web Linking to other pages of this resource","schema":{"type":"string"}}},"content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"localId":{"type":"string","example":"local-12345"},"remoteId":{"type":"string","example":"remote-98765"},"role":{"type":"string","example":"provider"},"remoteAddress":{"type":"string","example":"http://example.com/"},"remoteParty":{"type":"string","example":"party-identifier-001"},"state":{"type":"string","enum":["REQUESTED","STARTED","TERMINATED","COMPLETED","SUSPENDED"],"example":"REQUESTED"},"agreementId":{"type":"string","example":"agreement-45678"},"format":{"type":"string","example":"application/json"},"modifiedDate":{"format":"date-time","type":"string","example":"2023-10-01T12:34:56Z"}},"required":["localId","role","remoteAddress","remoteParty","state","agreementId","modifiedDate"],"title":"TransferStatusDto"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

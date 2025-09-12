@@ -1,0 +1,72 @@
+---
+id: transfer-controller-complete-transfer
+title: "Complete transfer process"
+description: "Complete transfer process"
+sidebar_label: "Complete transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNVU1v4zYQ/SvEnFpAsVL30FanbrNpG6DtGht3L4ZhTMSxxa1EckkqXkPQf18MKcnxR4KeJMxwhvPx3mMHxpLDoIx+kFDA0qH2W3J3Rgdn6prcpjSNrSnQ6IIMLDpsKJDzUKw60NgQFKAkZODoS6scSSiCaykDpaEAi6GCDCT50inLl724Sjy8hwx8WVGDUHQQDpaz+eCU3kHfr1NS8uE3Iw984vyO0uhAOrALra1VGfvJP3u+p7tMbZ4+Uxm4D8fdB0Wevb8m93kFGdBX5BGcjCfORBn9N3mPO4I+ZntWktxCybezjAdvrJI3P/38CweXRvu2+R/B48EY/MP8R+j7l1NfDW2clnOaf51BUOHthh7T0Po+pffWaJ/GNL+d8+eVZY5okcK3ZUneb9u6PsQiPZWtU+EQMWOwDdWc6y0T1GyNmjYSA8Y/WPPiA+4YYvAeA4pFsp/jaCidRBhrsM7wzZBBQ6EyjGtrfFw4A7GAHK3Kx+M+75Ts83KaAKOR3HNC9/pYdxxJmsFY/RFSyZDBtjb7eMSi93vjZEKgsSmwCsFOPW5QNpEf16zZmfU4mfPzR0/a1hOhIzchnwMG0+j73bgGAxTwaQHZ2AInvSDpJ3Jqq/CpJrFw5EmHyC2hiSRJEQwvvGk1c47EE4U9kRZhb4TSPqAuyQuzFaEiMexZxFJnERHM0I9Hbt+PIJ+4+Abhzvh2SaozTl0hDqvT1sQtjnR4/EP8uVwuxAvAXehWpbz4YEm/WzwIb6lU20FxhK/M3sdmSUtrlA5T92dZZ5ABIyylTLUGLFnD+gxqVZL2cRCDtr6zWFYk5rNbyKB19bAvX+T5fr+fYXTPjNvlQ6zP/3q4u//n8f5mPrudVaGp48SZBw3qF5nfos9J4xPWA30Nua1RaR5hLKYbmLUCtIohNXILMigG/Znotc6gYjoWK+i6J/T0r6v7ns1fWnKHRLpndBF2USyk8vwvodhi7emisOkBgO8+Dkr4vTh9X67WPhhRH3gdWLeUlvEfHdJ71q/7DCpCyXxadYPjLl13s0xCOwZevD2sYJMCLT48LpmAwxvWGMkxDvf8aOI+XWxiS1Epoq2DGvWuZbwXkHLyFllsronPJKrd9dau6Ix4TUvGKUTtgj57JeUoc5vSkSQdFNZ+it051GET4/p13/ffADlU8JI=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Complete transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/{id}/completion"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Complete transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"TransferCompletionMessage"},"providerPid":{"type":"string","example":"provider-pid-789"},"consumerPid":{"type":"string","example":"consumer-pid-123"}},"required":["@type","providerPid","consumerPid"],"title":"TransferCompletionMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":"Transfer completed successfully"}}}
+>
+  
+</StatusCodes>
+
+
+      

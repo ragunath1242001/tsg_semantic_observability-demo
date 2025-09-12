@@ -1,0 +1,72 @@
+---
+id: transfer-controller-request
+title: "Request a transfer"
+description: "Request a transfer"
+sidebar_label: "Request a transfer"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVV9tuGzcQ/RWCj8FaStxbqqe6iRoYSGIhdtIHwzBG5EjLmEsy5MiKIOy/F+RexJXkC9ACQZ92l3PhcHjmzOyWW4ceSFlzLvmEX3kwYYH+jTXkrdbobz1+W2EgXnAHHiok9IFPrm8K3kr+tHLDJ9v0qTxKPiG/woILawgNRRE4p5VI24y/BmviWhAlVhDfaOOQT7idf0WR9vExKFIYovSPRtyrBfLKLHnB8TtUTmMW9acmoA8YAiyR1ymGsKrQz5R83EWneOKUPHl1+lM0hqVHrNDQ+RPGveKJkic///JrNF5YXwE9YbeflrrgEgjOpPQY0ul75T4R/G2mUXA00lll6KoRlkQuW21XwmQ8BqdGrbeRsFWmNMvyfb3bZzoUb3jBDVRRkh4Fvwe9ip/Ns76JKdP6YpG8/OtLzY9Z75/zMcOUgjrPwVPax9JTH89PdiPPSlXn4+MwZd3ylzZ1RRcheA/RXBFW4T8pjoPY6i64x6wGcdd94M8xac9UFxkjXLeRFkPsxHMrOhrmZUMP9UN+BnjILjtzmSGo8xYxKkDrOYi7rMqehkdnNMTIA7HlrDOkkZ4XDsPIAj/OZ7uMpG2DsyY0KDh9+So+JAbhlYt0wiec/wgGnnkr2oJ13t4r+Qzq7RQT9f72+vcfy9uBgJ447JuLD7P306vp2wcBkJ/9cTg02x25+zaT2aXH4FCsvKJNIp85gkcfW3HiD1hG+u7tE6CGiGjhxIBRq8QLXiGVNrZ+Z9smTyWf8MiH404tjHdDQEB/308AXTwpygYsFlZUnuagahYKvtB2nVQchLC2XjYYtK4xFM3I4TQYvAVZKdNc7/5iMVyM/TK97WvvBE3uunS1uI/67VIn+6tt2fzLjPeE3DbUYSa/oFcLBXONbOYxoKFUWcwgSpSMLBO2qlYmVhyyOdIa0TBaW6ZMIDACA7MLRiWyNmaWQh0lRMX6/LSbraaHI8ADA89e3RwWx15tHBbAbm45ZIyD2eT/MJAckP0TjF5wZRY2wbcryMt3rB2H2SzhaR8NV6UK7MKhOZuds+BQqEWbOBZKuw7pnruz9Rc/8DliH2ygTrTTBY/MowZqUBWFMdvBgYjQs2SF1QWD0O2Lks03SW8qtHIB2d/W3ymzZO+8XbmddRixCyrR720WVs5ZT+o+j4Isq+AuCj0m3xEITIBhc2Qg5S44AQTaLgsGRu6bAbHP50wZQg8iZickFxRVnAaBI8Zub198tIQvbm8nbJBWiQtlVMqpCsxYSo5Mu/UcmVQeBekN08rcoWRrRSUDFpRZ6r1k90U4YhE06MOgY4KIHbMuuFYCTUiF1+LszIEokZ2OXvKCr7zO4LRer0eQxCPrl+PWNozfn7+ZfrycnpyOXo5KqnSq8Mi1FZjM81FuHsCsJ1TC7zR2GlT6X0hRbFvavubgVOSuvgn0f2mxHZSR4ifXfLudQ8DPXtd1XP62Qr9pCP0efKK11FUKXiLI1GK2/A43sfU1E8VJO3V1BXfkR6azOBMCHT2qe5N1odnF5VUk5PafsrIy2nhYx5PAurklm1KSOCitbbkGs1xFCpzwxmfMcmw8Wd722D7/SwGzySLcbhuNK3uHpq550R6F4neklbr+B7BgTso=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request a transfer"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/request"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Request a transfer
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"TransferRequestMessage"},"consumerPid":{"type":"string","example":"consumer-pid-123"},"agreementId":{"type":"string","example":"agreement-id-456"},"format":{"type":"string","example":"application/json"},"dataAddress":{"example":{"@type":"DataAddress","endpointType":"http","endpoint":"https://api.example.com","endpointProperties":[{"@type":"EndpointProperty","name":"name","value":"value"}]},"allOf":[{"type":"object","properties":{"@type":{"type":"string","example":"DataAddress"},"endpointType":{"type":"string","example":"http"},"endpoint":{"type":"string","example":"https://api.example.com"},"endpointProperties":{"example":[{"@type":"EndpointProperty","name":"endpointName","value":"endpointValue"}],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"EndpointProperty"},"name":{"type":"string","example":"endpointName"},"value":{"type":"string","example":"endpointValue"}},"required":["@type","name","value"],"title":"EndpointPropertySchema"}}},"required":["@type","endpointType","endpoint"],"title":"DataAddressSchema"}]},"callbackAddress":{"type":"string","example":"https://callback.example.com"}},"required":["@type","consumerPid","agreementId","format","callbackAddress"],"title":"TransferRequestMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"TransferProcess"},"providerPid":{"type":"string","example":"provider-pid-789"},"consumerPid":{"type":"string","example":"consumer-pid-123"},"agreementId":{"type":"string","example":"agreement-id-456"},"state":{"type":"string","example":"COMPLETED"}},"required":["@type","providerPid","consumerPid","agreementId","state"],"title":"TransferProcessSchema"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,6 +1,6 @@
 {
   "name": "@apps/control-plane-ui",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host",

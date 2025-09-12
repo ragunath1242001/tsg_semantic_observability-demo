@@ -1,0 +1,72 @@
+---
+id: negotiation-controller-negotiation-termination
+title: "Terminate negotiation"
+description: "Terminate negotiation"
+sidebar_label: "Terminate negotiation"
+hide_title: true
+hide_table_of_contents: true
+api: eJzFVk1v2zgQ/SvEnHYLrR3kqFOzabYI0KZBk3YPQRCMxbHFhiJZchTXMPTfF0PJluykHwsssCfLnA8OH9+84RZ8oIhsvLvUUMIVrTyb/P/cO47eWooPbly9pdgYlz+hgIARG2KKCcq7LThsCEowGgqI9LU1kTSUHFsqwDgoISDXUECqamoQyi3wJkhE4mjcCrruvg+kxH96vRGP4zyVd0yOxYQhWFPlWuZfkney9iy1X3yhiqXWKEdlQ0msr3vzcQUF0DdsgpWlDABWfPXi6d9TSrgi6HJJqW0oXhv944xtdOXwr5wGdbm6J6P/ZY5pUK5D/+RIn24uPj6cn12dX7x7d/FGYiLhgNze624LFt2qldOVQHLPTN9YwhNFVaGryFrSakKLGXTFQZizY9hbWsTWPFJUNdGSlSblnaZYo9NkjVupFaFzrSWKegZCguEIGCNuoADD1KRfuNQntO1PILitTVImKVSJhEkVSe3weqz9R9HkoOum5L7bbTpNIQcwnAPet5bNznDTk7N7liJveEikQ0rsL2qS+pf4OW6Z90zBu9SDdXpyIj+aUhVNyA1dAvxnDZYYuU0v9fgEz9FtNPelJqraaHiT6bggjBShvLvP3MCVyM1Uq5LgcniSHRQ0pSkU0BDXXqQu+JSrFkkqYY7BzCeeab41upvzgdwlik+91t2PFWaE+zN7bLk+nWLTLxSwtH6dXQKmtPZR91D60AdWvdYGi44eUDdZLF9YLA4XNTLmr2Pv0dCjuQNwuD7xH5Z2tr98bFCa9fM17NuvZg5wDOxnimZpcGFJXUeSJsrwKEekSSv2qvJN0zohDqkF8ZrIKV57ZVxiEY+k/FJxTWqoWeVSZ5kaQrOP4wS4GJkyKPYvyvKRKn9Xeo+U97vyulPXYwkdFfT/l81OpuzSZ/4NGnF781YNg1xdZ0I86xPRww+B3Nn1pUqBKrMcWl6l2q9TvihyOnjjeH9zBzln6r1PvDONvhhJRbLIPS3E+AYZU8BKuOPZV94WCtNuX9Jqscl+F5U1IZH628dHOenb6NswRqeZ+sA1xaPNUhuCj2yeplWwVw0+ijFSzi3NIdehFqRQ67G4ChmtXxUKnT4OQ1afLpVxTMI9EYicgsUlWKxoptTDw6srz/Tq4aFUB7BqWhpnMqYmKec5J3LD1gtS2kSq2G6UNe6RtFobrmVCGbeyR2Dvu2imoACRowPlxkqUuyvAmopcyp0zPMvOAlY1qdPZCRTQRjs0eCrn8/V6PcNsnvm4mg+xaf7u8vzi6ubij9PZyazmxuYWFeFs0E0yf09rD5i2F0Wh9zxYNE4Gby5kO8jwHWAwUMBUiKGAMjfgVIvvC6hFv8s72G4XmOhTtF0ny19bipteoZ8wZp3KvalNkm8N5RJtomfF7cce/PZxGM2/q1EKD4vePU+cPE6GR4fcwCNt+vdvbsaaUOextR0M5/0ef9z2434X+GzMiij0EWdVRYF/6Hs/mWnXH25uRdKHt3PTS1bEtegUrvsifehxlce1rB0IUJ9TrllG1+TWjuZFPtWLMGy3vcetfyTXdXtUWP4LMF33DyqTXcs=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Terminate negotiation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/negotiations/{id}/termination"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Terminate negotiation
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"ContractNegotiationTerminationMessage"},"consumerPid":{"type":"string","example":"urn:example:consumerPid"},"providerPid":{"type":"string","example":"urn:example:providerPid"},"code":{"type":"string","example":"USER_CANCELLED"},"reason":{"example":[{"language":"en","text":"User cancelled negotiation."},{"language":"nl","text":"Gebruiker heeft de onderhandeling geannuleerd."}],"type":"array","items":{"type":"object","properties":{"@value":{"type":"string","example":"This is a sentence."},"@language":{"type":"string","example":"en"}},"required":["@value","@language"],"title":"MultilanguageSchema"}}},"required":["@type","consumerPid","providerPid","reason"],"title":"ContractNegotiationTerminationMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"string"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: transfer-controller-terminate-transfer
+title: "Terminate transfer process"
+description: "Terminate transfer process"
+sidebar_label: "Terminate transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNVU1v4zYQ/SvEnFpAsVP30FanpknaBujuGom7F8MIxuLY4lYiuSQVryHovy+GlGTH9mZ7ksDhfL/32IKx5DAoox8k5LBwqP2G3K3RwZmqIvccyNVKY6DBBhlYdFhTIOchX7agsSbIQUnIwNHnRjmSkAfXUAZKQw4WQwkZSPKFU5azHeUSD3eQgS9KqhHyFsLecjQfnNJb6LpVCko+/GHknm+c5iiMDqQDm9DaShWxoeknz3na89Bm/YmKwH04bj8o8mz9PZlPK8iAvmBtKzqqedEPRRn9jrzHLUEXw70oSW6u5NthhotXVsmrX379jZ0Lo31T/w/n4WJ0/mn2c3KW36v8/vHdw/ubxf0d33eE/XDGG0uIS8ciiLUjLEpYZUM8dA73kIEKVPtLO+qOF7/sJ/l6IK877EvmFCp8Z7RPaX9dn8Zbo33a2Ox6xp9v4GpErhS+KQryftNU1R44jKeicSrsI34NNqGcceFFwr2tUNOzxIDxD1YMwoBbhjvcYUAxT+dnmB5SijBUYZ3h1JBBTaE0zDJrfEQfsyKHKVo1Ha77aatkNw2HITA3yL0krq0OlceppDEM9R8Ang4y2FRmF69Y9H5nnEx8MDY5liHYsctnlHVk66XT7OT0MJvT+wdLWtia0JEbecgO/dFg+9O4GgPk8HEOI+Q46JlkfCSnNgrXFYm5I086xBEJTSRJimBEYeq60awAJNYUdkRahJ0RSvuAuiAvzEaEkkS/aRFLnURMsF48HpTmfmDGqAxv0f+E/ecUP2H4OY0HFh9T9cDUC/TsWF03Ju59INHTX+LvxWIujkB6htFSefHBkr6ZPwhvqVCbXjGFL83Ox/GQltYoHcZ5nUSdQAaMyRQyNRewYA3uMqhUQdrH0fVvw43FoiQxm1xDBo2r+g37fDrd7XYTjOaJcdtp7+un/zzc3r9/ur+aTa4nZairuCOmTo36KPKblHvV+UiPQF/C1FaoNGthrKbt2bgEtIpROPARMsijXh1TcpVByRzOl9C2a/T0r6u6jo8/N+T2iagv6CJUo8RI5flfQr7BytNZZeMTBj889kL6o3j9Ql4sfhBozfL8glVDaR3/0T69yB3DpCSUzMFl2xtuU7qrRdLpwfHs9WTdG2Vr/uFpwaTtX+E6odXhjmGKu5TYxJaiusSzFirU24YpkkOKyXtkgbokWKMUt5dbu6BN4lv6M0wh6h102TdCDtL4XDiSpIPCyo++W4c6PEe/btV13Ve+JTEj
+sidebar_class_name: "post api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Terminate transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/{id}/termination"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Terminate transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"TransferTerminationMessage"},"providerPid":{"type":"string","example":"provider-pid-789"},"consumerPid":{"type":"string","example":"consumer-pid-123"},"code":{"type":"string","example":"TERMINATED"},"reason":{"example":["Contract breach"],"type":"array","items":{"type":"string"}}},"required":["@type","providerPid","consumerPid","code"],"title":"TransferTerminationMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":"Transfer terminated successfully"}}}
+>
+  
+</StatusCodes>
+
+
+      

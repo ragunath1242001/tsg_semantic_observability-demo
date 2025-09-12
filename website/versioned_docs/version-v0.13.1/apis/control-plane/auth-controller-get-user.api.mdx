@@ -1,0 +1,72 @@
+---
+id: auth-controller-get-user
+title: "Retrieve current user status"
+description: "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown."
+sidebar_label: "Retrieve current user status"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVVktvGzcQ/ivEHIO15Ch97qlG4gYu2sRI7PRgGMaIHGkZc0mGnLUiCPvfi+GuZEk2jB56qS5act4fh99wA4ayTjayDR5q+EScLD1QVrpLiTyrLlNSmZGpUquGuJFlaCl4UjYrF5ZLMsp6FZLygRWq2empSpQ7x6IQU3iwhsxEXTU2y06XBwNuSC1S8EzeKA7KEFNqraddHE2J0XqFOZLmrHITOmfUnORr5SdQQYiUUJK/MFDDWcfN2+A5Beco3S2JrzMlqCBiwlb8Z6hvbitIlGPwmTLUG5idnsrfIRJQgS65scgwRmd1CTT9mkVhA1k31KJ8BU8fF1DfbIDXkaCGMP9KmiVukgTZDoEKjPJxrEbfsY1OtrDjhjxLLDLQVyD4i8lOZQO5m0NdBCfWnLyevYEKPLZi/kdovHoXSHy2aB3U8DU0fmIC/TZ6mOjQQgUpOEnqBtC01sMY6LYCY03B0lhTjyb169mbH3786edffhVDWiTKzVW4J8FpXJ6wrE9wriWfvgJ07t9hIsXslDIn65cHiOzX2W8Lfclgh0G/A+El9Wfx6Xc4vGT6PET9Dty9U3uK8+gWU8I1VGCZ2vw0XN8fI/5SQs8fRnHxrbOJjCQiiI84bgHaZixpWS6u3jpLni/8IkB/+8RFaeS9Wkajs/3uLVevr/6DS9H5o2vxbDp7eVwfGgyZ3Pbyq4BxWRp/L1m58rcVtMRNkN5fUskTuYEaphjtVPxNu4FMMqWHHZNk0l2yvP4sbDBUFER5tl/SsFHBwoVVUYmY8yokM/BIiIOhHqgrOvR0N/RL/dxmdbhpkLF8HWs/CobK54RpYJPCXaI/bm1lv4fUIkMNXy5h16INc4TqiB+/ULILi3NH6jJRJs8FRuWJDBU+16FtO19OQM2JV0Re8Soo6zOj15RVWJQhMOasSqqTcrpW+k4AHA/06vN7NRK7uiwVHedTpsvHSP7s8kLJvLCL8WTLsMglEnkTg/W8C33gc6L+Cpm3okddTKQSOekkqUuE75AxR9RSfOCgg6sU5m1cMmq+Lnrn2tmYSf0d0r31S/U+hS4+WueJ+lgm3WGw3MUYEtuH/Sw4qBbvRZio+JbTVRq9zEM05jE5jYwuLCuFw2DdN0NW1xfKeqaEWtDJxQWLSnSoaaLU3d2rD4Hp1d1drQ5gNbSw3hZMbS7T3pbpPYSekzI2kWa3Vs76ezJqZblRqLL1S3cE9q4NJgoqkPt0MHdRy9ztK3BWk8+FIMYZdxZRN6Rmk1NhoOTGDs31dLparSZYxJOQltPRNk//vHh7/uHz+clscjppuHWlx2LI3KLf87x9/Tx9/HT5uOE2j8+D/9+rabzYTN95Gh1aX14ayQ3UJKx3AxgtVOU9skf0Tcgsws1mjpmuk+t72f7WUVoPfPiAqbCCrPoKGkIjlHOzgXtay+lpTVHY9QFdVwbg8dOq32fi9+dX0Pf/AGwKsnk=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve current user status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/auth/user"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"oneOf":[{"type":"object","properties":{"state":{"type":"object","example":"authenticated"},"user":{"example":{"sub":"user-id-123","name":"John Doe","email":"john.doe@example.com","roles":["admin","user"],"didId":"did:example:123456789","refreshToken":"refresh-token-abc123"},"allOf":[{"type":"object","properties":{"sub":{"type":"string","example":"user-id-123"},"name":{"type":"string","example":"John Doe"},"email":{"type":"string","example":"john.doe@example.com"},"didId":{"type":"string","example":"did:example:123456789"},"roles":{"example":["admin","user"],"type":"array","items":{"type":"string"}},"refreshToken":{"type":"string","example":"refresh-token-abc123"}},"required":["sub","name","email","roles"],"title":"ClientInfo"}]}},"required":["state","user"],"title":"AuthenticatedUser"},{"type":"object","properties":{"state":{"type":"object","example":"unauthenticated"}},"required":["state"],"title":"UnauthenticatedUser"}]}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: negotiation-controller-callback-termination
+title: "Handle negotiation callback termination"
+description: "Handle negotiation callback termination"
+sidebar_label: "Handle negotiation callback termination"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVktvGzcQ/ivEnNpgIxk+7qmuo7oCGtuIlfRgCMKIHGkZcUmGnLUiCPvfA3JX1kp2HgV6knZenPlm5iP34DwFZO3sVEEJt7R2rPP3tbMcnDEUFhKNWaLczCjU2mYtFOAxYE1MIUL5uAeLNUEJWkEBgb40OpCCkkNDBWgLJXjkCgqIsqIaodwD73zyiBy0XUPbzjtHivynU7tkcR5HOstkOanQe6NlzmX8OTqbZC9Cu+VnkpxyDalO1hST9o9OfZ5BAfQVa2+SKFePkgeATJ7I8nuKEdcEbU4mNjWFe61+HKsJtuy/yqFTm/N60uo/xhg6tQVQymv204puJzd3s+nVbHp3u3iYXX2YTd5B2w579dgDc1raaZLD4+YFsOZfgeuha0zbdgdG72zsWnF5cZF+FEUZtM+TVQL8b52OjNzE14ZtAM3R7KjuUo0km6B5lwd8SRgoQPk4T5PKuE5zP9yYmBA5reRvtMqQsEcjcVgmwSfbVBNXLq2gdzHXkbalhDF6PT64xPEgUBzvtWrHp1EihaduIefH7DP6HR4OG64uh7h1ggJWxm2ziccYty6oDmbnO0fZsYE3aGmBqs4b/YqwOBUqZMz/zq2Pig7pA7h9a5N9Lzro/nKhRoYSPt1DcUi/YvZwDvonCnqlcWlI3AeKZLlD3hIpUoKdkK6uG5uGisSSeEtkBW+d0DYyWklRuJXgikSfs8ipjvLYpBH8cKSpyXGKelr5KXecUcd3+eGMHr7LAScU8PqeJwpeudz3fmNnDzeip3hxnxtxDuOs0lHcebJX91MRPUm96tdQxMptYwaIrPJOW35G7CTmSLx3kQ+qoy0GEoEMcteOpHyHjNGjTD1z7KQzhcB4OJeUWO6y3UQa7SOJf13YaLsWN8E1/ugdR+KOKwpnh8XGexdYPw2zYCdq3CRloBw7DaWQaMWSBCp1TE4io3HrQqBV527I4uNUaMuUep4WM4fgZOINShoJsVi8uXVMbxaLUpzAqmilrc6Y6iis4xzI9kcvSSgdSLLZCaPthpTYaq4Eiqjt2pyB/Ty9IwEFJBo4YVOUiU3bAoyWZGOe2P7OvvIoKxKXowsooAmmX6xYjsfb7XaEWT1yYT3ufeP4n+n15PZh8vZydDGquDZ5NRJ11WgHkX+d/05m75memL7y2BvUNs1wTm3fU+MjoNeptgM5QgFDeoQCyrwcw3PmBVSJX8tH2O+XGOljMG2bxF8aCruON58wZPbIrK90TP8VlCs0kV4k+nxRwW8f+pv0d3EkqNMCeiHaXeoQmoa6/mxo1z2d2nlbQEWo8kWz7xXX3RlvZ93tfHB8cTG2xcHjSkry/EPb+eDOub97mCWi7Z9dtVPJJ+A2veVw2yXpfIdrepcl2R4M2nWTGK2ELmYagnShDDp4xuK5qldh2O87i5nbkG3bZ1Q4fSdg2vYbphnAvg==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Handle negotiation callback termination"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/callbacks/negotiations/{id}/termination"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Handle negotiation callback termination
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"ContractNegotiationEventMessage"},"consumerPid":{"type":"string","example":"urn:example:consumerPid"},"providerPid":{"type":"string","example":"urn:example:providerPid"},"eventType":{"type":"string","example":"NEGOTIATION_STARTED"}},"required":["@type","consumerPid","providerPid","eventType"],"title":"ContractNegotiationEventMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"string"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

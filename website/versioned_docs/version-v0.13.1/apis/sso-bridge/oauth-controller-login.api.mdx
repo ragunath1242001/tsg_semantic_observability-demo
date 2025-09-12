@@ -1,0 +1,72 @@
+---
+id: oauth-controller-login
+title: "Login"
+description: "Login a user and redirect to the client's redirect_uri."
+sidebar_label: "Login"
+hide_title: true
+hide_table_of_contents: true
+api: eJytll1v2yAUhv8KOjfbJBZ3kbYL33VdNUWqmqppr6ooovZJjIaBAu7HLP/3CeykzpfnJrnKB3Deh8PhvJSQok0M144rCTFcqQWXhJHCoiFMpsRgyg0mjjhFXIYkERyl+2RXA7PC8AFQUBoN81FGKcQwZoXLLpR0RgmBZiZ8XKCgmWE5OjQW4ocSJMsRYjBotZIWZ+5NI1Aw+FRwgynEzhRIgXu0pwLNG9AN4LsMyXI58cuJmgdQD6AM/xuYgIJNMswZxCXgK8u18LqJSr1cUI3BOsPlAqqKboPl9cxDwfzyj4AtQ66TUUBZ5BA/rMbnhi1ylA6mber6jGY8/ThxvZTwFKXjc46GcGsLLhfb6MSHRuv25TZE+hoguhL8XkUfp72/Hfm6bNcomztfuT1ynDmnbRxFzT+DROXRMlIns03URpXOmbDdtOPwhQmyXLyLSGmUPCXaqDkXSDBnXHSTOOYOJ/GLyepC7mEyTKYqnzRC+1GkksnBKGFxT5TrRmg/ir/VsyRjQqBcHMy0CtCT66Il2JdtlqPLVHo84irOLr7J8PuPjl6iBQutOUyb7rqc/7uY76KNxqNSApmEqprSVQ+1fsLw7Jv/WN+QzxA4tvCeUDsHTCk0e4pBq9BkNHMZxBAxzSPlJ0VLU7FonmtHmXqyuQoo3IXd301+k8lkTH4anobD2Wgja8Pk/GZEfqmk8E217nJAwQdvSCkkSjqWOIjLioLgCUqLXq/J2blmSYZkODgDCoURrUbz8vIyYGF4oMwiatba6Gp0cXk9ufw6HJwNMpeLkA6/6ZzJVuSrZrdr/GXg8Q5wjHc3x+bw1UV1OVQNfNmk/QGY9g06JB4o1KmfUsj84cQPUJaPzOK9EVXl/65Lw1t8yi17FK3K3sv/+bYpsi+kt6vvJP+DbzseFc9MFBiqjZ6CqsvS+1A1L4rTUB1m2x2Y7SfEaRB7e3Vn8tZeCweCbXlxh+JyytFSW2bbJdq47bGi27baIbo08GNFd/tmV6lt2vXpCFa22Fv+3ZGPr/p+tbwmNfU/DPda3s2qlgvejCd3UFX/APEquv0=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Login"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/oauth/login"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Login a user and redirect to the client's redirect_uri.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"response_type","required":true,"in":"query","description":"The response type of the authorization","schema":{"example":"code","type":"string"}},{"name":"response_mode","required":true,"in":"query","description":"The response mode of the authorization","schema":{"example":"query","type":"string","enum":["query","fragment"]}},{"name":"client_id","required":true,"in":"query","description":"The client identifier issuing the authorization request","schema":{"example":"client-id","type":"string"}},{"name":"redirect_uri","required":true,"in":"query","description":"The URI to redirect to after authorization","schema":{"example":"https://example.com/redirect","type":"string"}},{"name":"scope","required":false,"in":"query","description":"Optional scope","schema":{"example":"openid profile email","type":"string"}},{"name":"state","required":false,"in":"query","description":"Optional state parameter","schema":{"example":"randomState","type":"string"}},{"name":"nonce","required":false,"in":"query","description":"Optional nonce parameter","schema":{"example":"randomNonce","type":"string"}},{"name":"code_challenge","required":false,"in":"query","description":"Optional challenge parameter","schema":{"example":"randomChallenge","type":"string"}},{"name":"code_challenge_method","required":false,"in":"query","description":"Optional challenge method","schema":{"example":"S256","type":"string","enum":["plain","S256"]}},{"name":"redirect","required":true,"in":"query","schema":{"type":"boolean"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: oid-4-vp-verifier-controller-get-authorization-request
+title: "Get the Authorization Request"
+description: "Get the Authorization Request according to the OID4VP specification."
+sidebar_label: "Get the Authorization Request"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVktvGzkM/iuETm0xtY2sT8ZigaBNiwCLpGiy3UM2MGiJ9rDRSKrEieM15r8vpJn6lSan9cH28CF+H8khtVWGko4chL1TM/WZBKQmOG+l9pH/xSyHr/SjpSSAWvto2K1AfDG7vvw4/fYFUiDNS9bFeqQq5QPF8nBp1Ez1Vt8o8pIpfvBOoreW4nxFchRoiKMqFTBiQ0IxqdndVjlsSM0UG1WpSD9ajmTUTGJLleKMO6DUqlJJ19Sgmm2VbEL2SBLZrVTX3WfHFLxLlLL+bDLJP8fsVVep6eS354pPPi7YGHKqUto7ISfZCEOwA+vx95Qtt88h+MV30oVTzGkR7gH0lE6BVoqesAk2i75S8m3UdOXlk2+dyeiSoLTpdb/pZApXXmDnpL05DOXaZkHx0GU6mXaVaiglXNGvoO8Pv60JYl8mMhAHiGA8JXBegJ44yShHpRh9fB3pAcrusLB3fXZ2dAcK95USluJ5kQ//KF51+VMpwVXulKHVsmVDUvvcfSvqG0pqNVNjDDz2bKaPYYxxvGXT5TAUH/tWu88Puo0sm5tcyL5WHlupzw4T0wsqtbR+XUwCprT20fQt4EPvuEZrSeaPTOu54YzmVFL9lDTocEXzB9qkvdmhcGfZplOznaQ6Ot+v3VxHMuSE0aaT6KfaY1+09hXfU+0pixcjv6A/9X8x+gv6nT+n1NKvXZ+rjhmHSImclLf5lO+xLrcqGu/sJmc+qtnJ89CT7Ja+9MzQs7c3n+HvcqiqTuZLfqv2auAECDc3l9BjAKlRQKODwgHQGUjiI8Fjmam4sAQHxIqBjoRCcIQ8j+0FQZvIwJqlZgcGBSEF1JRGvy8ijP/ov/9xAAAZ13qPiRsygAJNa4XfC1MEQ8H6TUNOUlXOBO8I3vgIjY/09ogBakmACSS2eZk4XfsISx8BD2AU8OwMP7ZoB/dUrAh1DX5ZFk/AKKw5oJME7Ipsf8YIrrOIEwRcUVFqchJ3B/Z4SjbTUebWbG1Okc5mpnh+RMEe2VAdtFL7dlUDl6zkqfdzdPXnSk2RAO0aNylb0BNqsZuSmRIzZhqHYdkNOejhPy/EfP7uygu9m89ncJuJXQdy518uwdCSHZctPWDhvJ5MxlKKbThSiW7ZPQx1B4TEbmV3lNglQZcTpyqVR+GwD/tthzpvu65SljW5RPv1pc4D6prgbDRRlWqjVTNVi4Q0G4/X6/UIi3rk42o8+Kbxn5cfLq5uLt6fjSajWhpbZn/wSRp0Bye/ehM5fYG2+638f11hhkkv9CTjYJFd3mmF4XZYJncKA+fLTlknqlKYl+qMTV4/tU+STbbbBSb6K9quy+IfLcVNv2ceMZY3t1xwDKf836jZEm2iV+i9+Tr02lt4CeUgRLfJ1UTbUl/LB9r0l6juvqtUTWjy8LrbDopzrSnIgcuz6013uFc/X9yqrvsPGpmcXA==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get the Authorization Request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/oid4vp/ar/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get the Authorization Request according to the OID4VP specification.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

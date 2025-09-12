@@ -1,6 +1,6 @@
 {
   "name": "@tsg-dsp/cli",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "Configuration Bootstrap CLI tool",
   "engines": {
     "node": ">= 22"

@@ -1,0 +1,33 @@
+---
+id: transfereventdto
+title: "TransferEventDto"
+description: ""
+sidebar_label: "TransferEventDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"time":"2023-10-01T12:00:00Z","state":"COMPLETED","localMessage":"The transfer completed successfully.","code":"ERR_NONE","reason":[{"language":"en","value":"Operation successful"}],"type":"local"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"TransferEventDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"time":{"format":"date-time","type":"string","example":"2023-10-01T12:00:00Z"},"state":{"type":"string","enum":["REQUESTED","STARTED","TERMINATED","COMPLETED","SUSPENDED"],"example":"COMPLETED"},"localMessage":{"type":"string","example":"The transfer completed successfully."},"code":{"type":"string","example":"ERR_NONE"},"reason":{"example":[{"language":"en","value":"Operation successful"}],"allOf":[{"type":"object","properties":{"@value":{"type":"string","example":"This is a sentence."},"@language":{"type":"string","example":"en"}},"required":["@value","@language"],"title":"MultilanguageSchema"}]},"type":{"type":"string","enum":["local","remote"],"example":"local"}},"required":["time","state","type"],"title":"TransferEventDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

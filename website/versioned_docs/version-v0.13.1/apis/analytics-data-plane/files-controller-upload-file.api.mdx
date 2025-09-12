@@ -1,0 +1,72 @@
+---
+id: files-controller-upload-file
+title: "Upload files"
+description: "Upload files and create metadata."
+sidebar_label: "Upload files"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNVE1vGzkM/SsCz1rbSH2aW9AmiwBFamzSXgwjoCXao+6MpEicOIYx/31Bzfhjs0mwvtgWvx7J93gAS9kkF9kFDxX8jE1AqzauoazQW2USIZNqidEi4wQ0hEgJxf/OQgW34vo1eE6haSg9dSWDvIKGiAlbYkoZquVKQ6Icg8+UoTrAfPZFvv4N4DaktbOWPGgwwTN5FieMsXGmVJ3+zuJ5gGxqalF+8T4SVBDWv8mwlE2Ckd1Qx2NLF16Zk/Nb0ECv2MZGnv6iHLpk6D7wbei8hV5DZuQufx43n83VfWB1CjLBXpbyXbumdBkyn817DS3ljFt6D/o5+WNNKtFzR5nJqjRCVDZQVj6woleXeSJVKaWQPkd6gbKXNTx3LpGFajlM59Tu2MJKAzsukTeS/BsH6OWjIZPpkuM9VMsDBOy4vpI0ZmBAbNDTkzCl/IJVL6lwK/sfqCK5W+I6CHliyGVfyDVUMMXopoV604FFgovSy4k+x9oPsvlhuUcE50kODxo2TdgVl4g570KyA2dCHALRY7NnZ/IJ7BPa1gkHPzTp90znZt+NPJuH+a0JE6UTfyVqfDrabkNqkaGCXwvQx7Zq5gj6jVh+UXIbh+uG1CJRJs9FIcoTWbKKgzKhbTsvyiG1Jt4RecW7oJzPjN5QVmGjuCY17k8VqJPCEuc3oQx2ZMLjw5/q+tig+oaMalEaewvrsXZZ/Yjkrxd3KkcybjNqV+U67HIpSN7G4DyfELyXWs6NrH/IO54ENHISeg2NM+QznTUO1xFNTepqMgMNXWrGweVqOt3tdhMs5klI2+kYm6ff777e3D/c/HE1mU1qbpvSuvCyRX+R+fIwvm34cL5U/+uAjitleuVpbNB5EXFBexilsASMTjg8lhvlsNJQi2KqJRwOa8z0MzV9L8/PHaX9IJIXTIUS8q/XUBNa4dvyAH/TXmZkDEVR3Qs2XSHt29vaX0p08ePhUYjfCa7/qux0AU4m9PvL5B9oSX0qFT1iLXKFXn+Q/KjsJ5PIkmeHTT7FbhN6fipx/arv+38ANwNnog==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Upload files"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/files/upload"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Upload files and create metadata.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
