@@ -277,9 +277,9 @@ onMounted(async () => {
     </Dialog>
     <Card class="mt-5">
       <template #title>Jobs</template>
-      <template #subtitle
-        >Jobs associated with this algorithm instance</template
-      >
+      <template #subtitle>
+        Jobs associated with this algorithm instance
+      </template>
       <template #content>
         <Button
           icon="pi pi-plus"
@@ -317,8 +317,8 @@ onMounted(async () => {
                   props.data.metadata?.creationTimestamp
                 ).toLocaleString()
               }}</span>
-            </template></Column
-          >
+            </template>
+          </Column>
           <Column field="conditions" header="Conditions">
             <template #body="props">
               <Tag

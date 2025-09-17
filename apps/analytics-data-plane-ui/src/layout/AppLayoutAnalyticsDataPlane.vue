@@ -77,16 +77,6 @@ const menuList: Menu[] = [
         to: "/algorithms/instances"
       }
     ]
-  },
-  {
-    label: "Debug",
-    items: [
-      {
-        label: "Jobs",
-        icon: "pi pi-fw pi-wrench",
-        to: "/jobdebug"
-      }
-    ]
   }
 ];
 
