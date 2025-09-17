@@ -10,6 +10,7 @@ import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 
+import { triggerBlobDownload } from "../utils/downloadBlob";
 import FileDetailModal from "./files/FileDetailModal.vue";
 import FileEditModal from "./files/FileEditModal.vue";
 import FileReUploadModal from "./files/FileReUploadModal.vue";
@@ -286,15 +287,7 @@ const downloadFile = async (fileId: string, filename: string) => {
     const response = await http.get<Blob>(`files/${fileId}/preview`, {
       responseType: "blob"
     });
-
-    const url = URL.createObjectURL(response.data);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    URL.revokeObjectURL(url);
-    document.body.removeChild(link);
+    triggerBlobDownload(response.data, filename);
   } catch (error) {
     toast.add(
       toastError({

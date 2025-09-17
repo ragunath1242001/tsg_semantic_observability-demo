@@ -5,6 +5,7 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { useAlgorithmInstancesStore } from "../../stores/algorithm-instances";
+import { getStatusSeverity } from "../../utils/algorithm-instance-status";
 
 const algorithmStore = useAlgorithmInstancesStore();
 const toast = useToast();
@@ -69,28 +70,6 @@ const viewAlgorithmInstanceDetails = (algorithmInstanceId: string) => {
   });
 };
 
-const viewAlgorithmInstanceJobs = (algorithmInstanceId: string) => {
-  // Navigate to a job view for this algorithm instance - we'll use JobDebug for now
-  router.push({ name: "JobDebug", query: { algorithmInstanceId } });
-};
-
-const getStatusSeverity = (
-  status: string
-): "warn" | "success" | "danger" | "secondary" => {
-  switch (status) {
-    case "pending":
-      return "secondary";
-    case "running":
-      return "warn";
-    case "completed":
-      return "success";
-    case "failed":
-      return "danger";
-    default:
-      return "secondary";
-  }
-};
-
 onMounted(async () => {
   await initializeData();
 });
@@ -114,7 +93,7 @@ onMounted(async () => {
           v-model:selection="selectedAlgorithmInstance"
           :value="algorithmStore.algorithmInstances"
           selection-mode="single"
-          sort-field="startedAt"
+          sort-field="createdDate"
           :sort-order="-1"
           :loading="algorithmStore.loading"
           paginator
@@ -171,12 +150,6 @@ onMounted(async () => {
           <Column header="Actions">
             <template #body="props">
               <div class="flex gap-2">
-                <Button
-                  v-tooltip="'View Jobs'"
-                  icon="pi pi-cog"
-                  size="small"
-                  severity="secondary"
-                  @click="viewAlgorithmInstanceJobs(props.data.id)" />
                 <Button
                   v-tooltip="'Delete Algorithm Instance'"
                   icon="pi pi-trash"

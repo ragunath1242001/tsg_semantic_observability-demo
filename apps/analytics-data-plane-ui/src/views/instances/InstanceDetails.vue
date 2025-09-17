@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { AlgorithmInstanceDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { formatDate, formatRelative } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import JobComponent from "../../components/JobComponent.vue";
 import { useAlgorithmInstancesStore } from "../../stores/algorithm-instances";
+import { getStatusSeverity } from "../../utils/algorithm-instance-status";
+import { triggerBlobDownload } from "../../utils/downloadBlob";
 
 const route = useRoute();
 const router = useRouter();
@@ -51,10 +56,6 @@ const getEventTypeLabel = (type: string) => {
 
 const getEventTypeSeverity = (type: string) => {
   return type === "algorithm" ? "info" : "success";
-};
-
-const isOwnEventSeverity = (isOwnEvent: boolean) => {
-  return isOwnEvent ? "success" : "secondary";
 };
 
 const loadAlgorithmInstance = async () => {
@@ -145,8 +146,86 @@ const goBack = () => {
   router.push({ name: "algorithm-instances" });
 };
 
-const viewJobs = () => {
-  router.push({ name: "job-debug", query: { algorithmInstanceId } });
+const fetchAlgorithmEventData = async (
+  algorithmInstanceId: string,
+  eventId: string
+): Promise<Blob | null> => {
+  try {
+    const response = await http.get(
+      `management/algorithm-instances/${algorithmInstanceId}/events/${eventId}/data`,
+      {
+        responseType: "blob"
+      }
+    );
+
+    if (response.status === 204) return null;
+
+    return response.data as Blob;
+  } catch (error) {
+    console.error(
+      `Error downloading event data for ${algorithmInstanceId}/${eventId}:`,
+      error
+    );
+    throw error;
+  }
+};
+
+// Track which event is being downloaded
+const downloadingEventIds = ref<Set<string>>(new Set());
+
+const downloadEvent = async (event: any) => {
+  if (event.type !== "algorithm" || !event.eventId) {
+    toast.add({
+      severity: "warn",
+      summary: "Download unavailable",
+      detail: "Only algorithm events with an eventId have downloadable data",
+      life: 2500
+    });
+    return;
+  }
+  if (downloadingEventIds.value.has(event.eventId)) return;
+  downloadingEventIds.value.add(event.eventId);
+  try {
+    const blob = await fetchAlgorithmEventData(
+      algorithmInstanceId,
+      event.eventId
+    );
+    if (!blob) {
+      toast.add({
+        severity: "info",
+        summary: "No Data",
+        detail: "This event has no associated data",
+        life: 2500
+      });
+      return;
+    }
+
+    let extension = "bin";
+    try {
+      const headChar = await blob.slice(0, 1).text();
+      if (headChar === "{" || headChar === "[") {
+        extension = "json";
+      }
+    } catch {
+      // ignore and keep default extension
+    }
+    const safeNamePart = (event.name || "event").replace(
+      /[^a-zA-Z0-9-_]+/g,
+      "-"
+    );
+    const filename = `${event.eventId}-${safeNamePart}.${extension}`;
+    triggerBlobDownload(blob, filename);
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Download failed",
+        defaultMessage: "Could not download event data"
+      })
+    );
+  } finally {
+    downloadingEventIds.value.delete(event.eventId);
+  }
 };
 
 onMounted(async () => {
@@ -186,12 +265,6 @@ onUnmounted(() => {
             label="Refresh Now"
             :loading="refreshing"
             @click="refreshData" />
-
-          <Button
-            icon="pi pi-cog"
-            label="View Jobs"
-            outlined
-            @click="viewJobs" />
         </div>
       </div>
 
@@ -202,15 +275,7 @@ onUnmounted(() => {
             <span>{{ algorithmInstance?.algorithmDefinition.title }}</span>
             <Tag
               v-if="algorithmInstance?.status"
-              :severity="
-                algorithmInstance.status === 'completed'
-                  ? 'success'
-                  : algorithmInstance.status === 'running'
-                    ? 'info'
-                    : algorithmInstance.status === 'failed'
-                      ? 'danger'
-                      : 'warning'
-              "
+              :severity="getStatusSeverity(algorithmInstance.status)"
               :value="algorithmInstance.status" />
           </div>
         </template>
@@ -218,63 +283,59 @@ onUnmounted(() => {
         <template #content>
           <div class="grid">
             <div class="col-span-12 md:col-span-6">
-              <h3 class="text-xl font-medium mb-3">Instance Details</h3>
-              <div class="grid">
-                <div class="col-span-12">
-                  <label class="block font-medium mb-2">ID</label>
-                  <code class="text-sm">{{ algorithmInstance?.id }}</code>
-                </div>
-                <div v-if="algorithmInstance?.createdDate" class="col-span-12">
-                  <label class="block font-medium mb-2">Created At</label>
-                  <span
-                    >{{ formatRelative(algorithmInstance.createdDate) }}
-                    <small class="ml-3">{{
-                      formatDate(algorithmInstance.createdDate)
-                    }}</small>
-                  </span>
-                </div>
-                <div v-if="algorithmInstance?.startedAt" class="col-span-12">
-                  <label class="block font-medium mb-2">Started At</label>
-
-                  <span
-                    >{{ formatRelative(algorithmInstance.startedAt) }}
-                    <small class="ml-3">{{
-                      formatDate(algorithmInstance.startedAt)
-                    }}</small>
-                  </span>
-                </div>
-                <div v-if="algorithmInstance?.finishedAt" class="col-span-12">
-                  <label class="block font-medium mb-2">Finished At</label>
-                  <span
-                    >{{ formatRelative(algorithmInstance.finishedAt) }}
-                    <small class="ml-3">{{
-                      formatDate(algorithmInstance.finishedAt)
-                    }}</small>
-                  </span>
-                </div>
-              </div>
+              <FormField label="ID">
+                <code class="text-xs">{{ algorithmInstance?.id }}</code>
+              </FormField>
+              <FormField v-if="algorithmInstance?.createdDate" label="Created">
+                <span>
+                  {{ formatRelative(algorithmInstance.createdDate) }}
+                  <small class="ml-3 text-500">{{
+                    formatDate(algorithmInstance.createdDate)
+                  }}</small>
+                </span>
+              </FormField>
+              <FormField v-if="algorithmInstance?.startedAt" label="Started">
+                <span>
+                  {{ formatRelative(algorithmInstance.startedAt) }}
+                  <small class="ml-3 text-500">{{
+                    formatDate(algorithmInstance.startedAt)
+                  }}</small>
+                </span>
+              </FormField>
+              <FormField v-if="algorithmInstance?.finishedAt" label="Finished">
+                <span>
+                  {{ formatRelative(algorithmInstance.finishedAt) }}
+                  <small class="ml-3 text-500">{{
+                    formatDate(algorithmInstance.finishedAt)
+                  }}</small>
+                </span>
+              </FormField>
             </div>
 
             <div class="col-span-12 md:col-span-6">
-              <h6 class="text-xl font-medium mb-3">Participants</h6>
-              <div class="flex flex-wrap gap-2">
-                <Tag
-                  v-for="participant in algorithmInstance?.participants || []"
-                  :key="participant.didId"
-                  :value="`${participant.didId} (${participant.role})`"
-                  severity="info" />
-              </div>
+              <FormField label="Participants">
+                <div class="flex flex-wrap gap-2">
+                  <Tag
+                    v-for="participant in algorithmInstance?.participants || []"
+                    :key="participant.didId"
+                    :value="`${participant.didId} (${participant.role})`"
+                    severity="info" />
+                </div>
+              </FormField>
             </div>
           </div>
         </template>
       </Card>
+
+      <!-- Jobs Card -->
+      <JobComponent class="my-4" :algorithm-instance-id="algorithmInstanceId" />
 
       <!-- Events Card -->
       <Card>
         <template #title>
           <div class="flex justify-between items-center">
             <span>Events</span>
-            <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
               <Tag
                 :value="`${events.filter((e) => e.type === 'algorithm').length} Algorithm`"
                 severity="info" />
@@ -346,19 +407,6 @@ onUnmounted(() => {
             </Column>
 
             <Column
-              v-if="events.some((e) => e.type === 'algorithm')"
-              field="isOwnEvent"
-              header="Own Event">
-              <template #body="props">
-                <Tag
-                  v-if="props.data.type === 'algorithm'"
-                  :value="props.data.isOwnEvent ? 'Yes' : 'No'"
-                  :severity="isOwnEventSeverity(props.data.isOwnEvent)" />
-                <span v-else class="text-400">-</span>
-              </template>
-            </Column>
-
-            <Column
               v-if="
                 events.some(
                   (e) => e.type === 'algorithm' && e.recipients?.length
@@ -390,6 +438,33 @@ onUnmounted(() => {
                   props.data.createdBy
                 }}</code>
                 <span v-else class="text-400">-</span>
+              </template>
+            </Column>
+
+            <Column header="">
+              <template #body="props">
+                <div class="flex items-center justify-end">
+                  <Button
+                    v-tooltip.bottom="
+                      props.data.type === 'algorithm' && props.data.eventId
+                        ? 'Download event data'
+                        : 'No downloadable data'
+                    "
+                    icon="pi pi-download"
+                    size="small"
+                    text
+                    rounded
+                    :disabled="
+                      props.data.type !== 'algorithm' ||
+                      !props.data.eventId ||
+                      downloadingEventIds.has(props.data.eventId)
+                    "
+                    :loading="
+                      props.data.eventId &&
+                      downloadingEventIds.has(props.data.eventId)
+                    "
+                    @click="downloadEvent(props.data)" />
+                </div>
               </template>
             </Column>
           </DataTable>

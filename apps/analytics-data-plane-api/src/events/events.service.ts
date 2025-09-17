@@ -399,6 +399,20 @@ export class EventsService {
     return event;
   }
 
+  async getEventDataForManagement(
+    algorithmInstanceId: string,
+    eventId: string
+  ): Promise<Buffer | null> {
+    const event = await this.algorithmEventsRepository.findOne({
+      where: { eventId, algorithmInstance: { id: algorithmInstanceId } },
+      select: ["id", "data"]
+    });
+    if (!event || !event.data) {
+      return null;
+    }
+    return event.data;
+  }
+
   async getEventsForAlgorithmInstance(algorithmInstanceId: string): Promise<{
     algorithmEvents: AlgorithmEventDto[];
     internalEvents: InternalEventDto[];

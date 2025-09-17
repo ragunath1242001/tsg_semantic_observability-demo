@@ -16,10 +16,12 @@ import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import schema from "../assets/algorithm-definition.schema.json";
+import { useAlgorithmInstancesStore } from "../stores/algorithm-instances";
 import { RegistryParticipant, useRegistryStore } from "../stores/registry";
 
 const router = useRouter();
 const registryStore = useRegistryStore();
+const algorithmStore = useAlgorithmInstancesStore();
 
 const algorithmId = crypto.randomUUID();
 
@@ -149,7 +151,10 @@ const validateAlgortithmDefinition = (
   if (valid) {
     activateCallback("2");
     algorithmDefinition.value.roleDefinitions.forEach((role) => {
-      if (role.cardinality.min > 0) {
+      const alreadyPresent = participants.value.some(
+        (p) => p.role === role.name
+      );
+      if (role.cardinality.min > 0 && !alreadyPresent) {
         Array.from({ length: role.cardinality.min }).forEach(() => {
           addParticipant("", role.name, "");
         });
@@ -213,6 +218,18 @@ const getParticipantCatalog = async (didId: string) => {
     );
     return [];
   }
+};
+
+// Auto-fetch datasets when a participant DID changes
+const onDidIdChange = async (index: number, didId: string) => {
+  // Reset selected dataset for the row when DID changes
+  if (participants.value[index]) {
+    participants.value[index].dataset = "";
+  }
+  // Guard against empty DID values
+  if (!didId) return;
+  // Fetch datasets for the selected participant
+  await getParticipantCatalog(didId);
 };
 
 const addParticipant = (
@@ -297,14 +314,12 @@ const submitAlgorithmInstance = async () => {
   const createInstanceDto = generateInstanceDto();
   try {
     isSubmitting.value = true;
-    const response = await http.post(
-      "management/algorithm-instances",
-      createInstanceDto
-    );
+    const created =
+      await algorithmStore.createAlgorithmInstance(createInstanceDto);
     toast.add({
       severity: "success",
       summary: "Instance Created",
-      detail: `Algorithm instance created with ID: ${response.data.id}`,
+      detail: `Algorithm instance created with ID: ${created.id}`,
       life: 5000
     });
     router.push("/algorithms/instances");
@@ -397,7 +412,8 @@ onMounted(async () => {
                     option-value="value"
                     placeholder="Select DID ID"
                     class="w-full"
-                    editable />
+                    editable
+                    @change="(e) => onDidIdChange(index, e.value)" />
                 </div>
                 <div class="flex-1">
                   <Select

@@ -8,7 +8,6 @@ import Files from "../views/Files.vue";
 import AlgorithmInstances from "../views/instances/AlgorithmInstances.vue";
 import CreateAlgorithmInstance from "../views/instances/CreateAlgorithmInstance.vue";
 import InstanceDetails from "../views/instances/InstanceDetails.vue";
-import JobDebug from "../views/JobDebug.vue";
 import LoginVue from "../views/Login.vue";
 import Metadata from "../views/Metadata.vue";
 import ConsumerView from "../views/transfers/ConsumerView.vue";
@@ -49,11 +48,6 @@ const router = createRouter({
           name: "algorithm-instance-details",
           component: InstanceDetails,
           props: true
-        },
-        {
-          path: "/jobdebug",
-          name: "job-debug",
-          component: JobDebug
         },
         {
           path: "/provider/:id",

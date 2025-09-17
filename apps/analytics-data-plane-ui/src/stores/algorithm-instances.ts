@@ -100,7 +100,15 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
           "management/algorithm-instances",
           createAlgorithmInstance
         );
-        this.algorithmInstances.push(response.data);
+
+        // Ensure the newly created instance is at the top
+        const existingIndex = this.algorithmInstances.findIndex(
+          (i) => i.id === response.data.id
+        );
+        if (existingIndex >= 0) {
+          this.algorithmInstances.splice(existingIndex, 1);
+        }
+        this.algorithmInstances.unshift(response.data);
         return response.data;
       } catch (error) {
         this.error = "Failed to create algorithm instance";

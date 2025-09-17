@@ -491,4 +491,41 @@ describe("EventsService", () => {
     expect(polledEvent2).toBeDefined();
     expect(polledEvent2.eventId).toBe(ALGORITHM_EVENT_ID_2);
   });
+
+  it("should return event data for management when data exists", async () => {
+    const buffer = await eventsService.getEventDataForManagement(
+      algorithmInstanceId,
+      JOB_ALGORITHM_EVENT_ID
+    );
+    expect(buffer).toBeInstanceOf(Buffer);
+    expect(buffer?.toString()).toBe("Test Event Data");
+  });
+
+  it("should return null event data for management when no data exists", async () => {
+    jest.restoreAllMocks();
+    const NEW_EVENT_ID = "urn:uuid:new-event-no-data";
+    const EVENT_TIMESTAMP = new Date().toISOString();
+    const EVENT_NAME = "New Event No Data";
+    const EVENT_NUMBER = 3;
+    // Use remote party token so event is created as forwarded (isOwnEvent=false) and no recipients/forwarding takes place
+    const authorizationHeader = `Bearer FAKE_TOKEN`;
+    await eventsService.createAlgorithmEvent({
+      algorithmInstanceId: algorithmInstanceId,
+      authorizationHeader,
+      createEvent: {
+        eventId: NEW_EVENT_ID,
+        name: EVENT_NAME,
+        number: EVENT_NUMBER,
+        timestamp: EVENT_TIMESTAMP
+        // recipients intentionally omitted
+      }
+    });
+
+    const buffer = await eventsService.getEventDataForManagement(
+      algorithmInstanceId,
+      NEW_EVENT_ID
+    );
+
+    expect(buffer).toBeNull();
+  });
 });
