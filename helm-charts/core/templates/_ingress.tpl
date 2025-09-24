@@ -1,10 +1,11 @@
+{{- define "tsg-core.ingress" -}}
 {{- if .Values.ingress.enabled }}
 {{- with .Values.ingress }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ template "tsg.fullname" $ }}-ingress
-  labels: {{ include "tsg.labels" $ | nindent 4 }}
+  name: {{ template "tsg-core.fullname" $ }}-ingress
+  labels: {{ include "tsg-core.labels" $ | nindent 4 }}
   annotations:
     {{- if .clusterIssuer }}
     cert-manager.io/cluster-issuer: {{ .clusterIssuer }}
@@ -25,11 +26,12 @@ spec:
       {{- range .paths }}
       - backend:
           service:
-            name: {{ template "tsg.fullname" $ }}
+            name: {{ template "tsg-core.fullname" $ }}
             port: 
               number: {{ $.Values.config.server.port | default 3000 }}
         path: {{ tpl .path $ }}
         pathType: {{ .type }}
       {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}

@@ -1,0 +1,14 @@
+{{ include "tsg-core.cm" . }}
+---
+{{ include "tsg-core.deployment" . }}
+---
+{{ include "tsg-core.ingress" . }}
+---
+{{ include "tsg-core.role" . }}
+---
+{{ include "tsg-core.rolebinding" . }}
+---
+{{ include "tsg-core.service" . }}
+---
+{{ include "tsg-core.serviceaccount" . }}
+---

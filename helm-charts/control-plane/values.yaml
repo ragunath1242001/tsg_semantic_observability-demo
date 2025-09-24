@@ -20,7 +20,7 @@ ingress:
   enabled: true
   clusterIssuer: letsencrypt
   paths:
-    - path: '{{ template "tsg.subPath" $ }}/'
+    - path: '{{ template "tsg-core.subPath" $ }}/'
       type: Prefix
     - path: /.well-known/dspace-version
       type: ImplementationSpecific
@@ -46,6 +46,6 @@ config:
     username: postgres
   auth:
     openIdConfigurationURL: "https://{{ .Values.host }}/.well-known/openid-configuration"
-    callbackURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/api/auth/callback
-    redirectURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/
+    callbackURL: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}/api/auth/callback
+    redirectURL: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}/
     rolePath: "$.roles[*]"

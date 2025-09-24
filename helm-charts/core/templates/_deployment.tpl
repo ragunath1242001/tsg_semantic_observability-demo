@@ -1,24 +1,26 @@
+{{/* Library template: Deployment */}}
+{{- define "tsg-core.deployment" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "tsg.fullname" . }}
-  labels: {{ include "tsg.labels" $ | nindent 4 }}
+  name: {{ template "tsg-core.fullname" . }}
+  labels: {{ include "tsg-core.labels" $ | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ template "tsg.fullname" . }}
+      app.kubernetes.io/name: {{ template "tsg-core.fullname" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ template "tsg.fullname" . }}
+        app.kubernetes.io/name: {{ template "tsg-core.fullname" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
       annotations:
         checksum/config: {{ tpl (toYaml .Values.config) . | sha256sum }}
     spec:
       {{- if .Values.serviceAccount.create }}
-      serviceAccountName: {{ include "tsg.serviceAccountName" . }}
+      serviceAccountName: {{ include "tsg-core.serviceAccountName" . }}
       {{- end }}
       securityContext:
         runAsNonRoot: true
@@ -26,17 +28,17 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-        - name: {{ template "tsg.name" . }}
+        - name: {{ template "tsg-core.name" . }}
           image: "{{ .Values.image.repository }}:{{ tpl .Values.image.tag . }}"
           imagePullPolicy: Always
           env:
             - name: SUBPATH
-              value: {{ template "tsg.subPath" . }}
-            {{- if contains "Mi" .Values.resources.limits.memory}}
+              value: {{ template "tsg-core.subPath" . }}
+            {{- if .Values.resources.limits.memory }}
             - name: NODE_OPTIONS
-              value: --max-old-space-size={{trimSuffix "Mi" .Values.resources.limits.memory | mulf 0.9 | floor}}
+              value: {{ include "tsg-core.limitToOldSpace" .Values.resources.limits.memory }}
             {{- end }}
-            {{- with concat .Values.env (fromYamlArray (list .Values.configFromSecrets "" | include "tsg.recurseSecretConfig"))}}
+            {{- with concat .Values.env (fromYamlArray (list .Values.configFromSecrets "" | include "tsg-core.recurseSecretConfig"))}}
               {{- toYaml . | nindent 12 }}
             {{- end }}
           resources: {{ .Values.resources | toYaml | nindent 12 }}
@@ -60,21 +62,22 @@ spec:
             periodSeconds: 2
             failureThreshold: 60
           volumeMounts:
-          - name: {{ template "tsg.name" . }}-config
+          - name: {{ template "tsg-core.name" . }}-config
             mountPath: "/app/config.yaml"
             subPath: "config.yaml"
           {{- if .Values.persistentVolume}}
-          - name: {{ template "tsg.name" . }}-pvc
+          - name: {{ template "tsg-core.name" . }}-pvc
           {{- with .Values.persistentVolume }}
             mountPath: {{ .mountPath }}
             {{- end }}
           {{- end }}
       volumes:
-      - name: {{ template "tsg.name" . }}-config
+      - name: {{ template "tsg-core.name" . }}-config
         configMap:
-          name: {{ template "tsg.fullname" . }}-config
+          name: {{ template "tsg-core.fullname" . }}-config
       {{- if .Values.persistentVolume }}
-      - name: {{ template "tsg.name" . }}-pvc
+      - name: {{ template "tsg-core.name" . }}-pvc
         persistentVolumeClaim:
-          claimName: {{ template "tsg.fullname" . }}-pvc
+          claimName: {{ template "tsg-core.fullname" . }}-pvc
       {{- end }}
+{{- end }}
