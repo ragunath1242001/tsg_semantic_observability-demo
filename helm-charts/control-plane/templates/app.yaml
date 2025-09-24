@@ -1,0 +1,8 @@
+{{ include "tsg-core.cm" . }}
+---
+{{ include "tsg-core.deployment" . }}
+---
+{{ include "tsg-core.ingress" . }}
+---
+{{ include "tsg-core.service" . }}
+---

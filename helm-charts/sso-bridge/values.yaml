@@ -26,7 +26,7 @@ ingress:
   enabled: true
   clusterIssuer: letsencrypt
   paths:
-    - path: '{{ template "tsg.subPath" $ }}/'
+    - path: '{{ template "tsg-core.subPath" $ }}/'
       type: Prefix
     - path: /.well-known/openid-configuration
       type: ImplementationSpecific

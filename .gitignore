@@ -56,3 +56,7 @@ dev.sessions.json
 website/docs/apis/*/**
 
 *.jar
+
+# Helm chart dependencies
+helm-charts/**/charts/
+helm-charts/**/Chart.lock

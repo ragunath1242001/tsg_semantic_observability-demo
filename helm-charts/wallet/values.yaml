@@ -20,7 +20,7 @@ ingress:
   enabled: true
   clusterIssuer: letsencrypt
   paths:
-    - path: '{{ template "tsg.subPath" $ }}/'
+    - path: '{{ template "tsg-core.subPath" $ }}/'
       type: Prefix
     - path: /.well-known/did.json
       type: ImplementationSpecific
@@ -39,7 +39,7 @@ config:
     port: 3000
     listen: "0.0.0.0"
     publicDomain: "{{ .Values.host }}"
-    publicAddress: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}
+    publicAddress: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}
   db:
     type: postgres
     database: wallet
@@ -48,6 +48,6 @@ config:
     username: postgres
   auth:
     openIdConfigurationURL: "https://{{ .Values.host }}/.well-known/openid-configuration"
-    callbackURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/api/auth/callback
-    redirectURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/
+    callbackURL: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}/api/auth/callback
+    redirectURL: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}/
     rolePath: "$.roles[*]"

@@ -43,8 +43,9 @@ async function readChartAndWriteVersion(path, newVersion) {
     console.log(`DEBUG: Not updating ${path} with version`);
   } else {
     const chart = chartFile.toString();
+    // Replace version: x.x.x, appVersion: x.x.x and tsg-core dependency version
     const replacedVersion = chart.replace(
-      /^(appV|v)?ersion: .*/gm,
+      /^(appV|v|\s+-\sname:\stsg-core\r?\n\s+v)?ersion: .*/gm,
       `$1ersion: ${newVersion}`
     );
     fs.writeFileSync(path, replacedVersion);
