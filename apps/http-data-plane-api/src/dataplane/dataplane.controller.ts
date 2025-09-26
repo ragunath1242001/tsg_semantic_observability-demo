@@ -31,7 +31,6 @@ export class DataPlaneController {
   })
   @ApiNotImplementedResponse()
   @ApiForbiddenResponseDefault()
-  @Roles("wallet_manage_clients")
   @HttpCode(HttpStatus.NOT_IMPLEMENTED)
   async getCatalog() {
     return;
