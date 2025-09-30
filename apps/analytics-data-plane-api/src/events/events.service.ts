@@ -451,7 +451,8 @@ export class EventsService {
         algorithmInstanceId: algorithmInstanceId,
         name: event.name,
         number: event.number,
-        timestamp: event.timestamp
+        timestamp: event.timestamp,
+        data: event.data ?? undefined
       }))
     };
   }
