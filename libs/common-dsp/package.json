@@ -64,6 +64,6 @@
   "dependencies": {
     "flat-cache": "^6.1.12",
     "jsonld": "^8.3.2",
-    "uuid": "^11.1.0"
+    "uuid": "^13.0.0"
   }
 }
