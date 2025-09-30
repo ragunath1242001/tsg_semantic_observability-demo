@@ -52,7 +52,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.13.1",
+  "packageManager": "pnpm@10.17.1",
   "pnpm": {
     "overrides": {
       "prebuild-install": "7.1.3",
