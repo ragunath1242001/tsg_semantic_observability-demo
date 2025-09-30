@@ -46,8 +46,7 @@ const router = createRouter({
         {
           path: "/algorithms/instances/:id",
           name: "algorithm-instance-details",
-          component: InstanceDetails,
-          props: true
+          component: InstanceDetails
         },
         {
           path: "/provider/:id",

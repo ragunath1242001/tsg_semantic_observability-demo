@@ -7,8 +7,8 @@ auth:
   enabled: false
 
 controlPlane:
-  dataPlaneEndpoint: http://localhost:3000/api/data-plane
-  managementEndpoint: http://localhost:3000/api/management
+  dataPlaneEndpoint: http://localhost:3000/data-plane
+  managementEndpoint: http://localhost:3000/management
   controlEndpoint: http://localhost:3000
 
 server:

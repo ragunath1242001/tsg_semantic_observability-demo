@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { AlgorithmInstanceDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import {
+  AlgorithmInstanceDto,
+  InternalEventDto,
+  UITemplate
+} from "@tsg-dsp/analytics-data-plane-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { formatDate, formatRelative } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
@@ -8,6 +12,7 @@ import { useToast } from "primevue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import AlgorithmUIComponent from "../../components/event-ui/AlgorithmUIComponent.vue";
 import JobComponent from "../../components/JobComponent.vue";
 import { useAlgorithmInstancesStore } from "../../stores/algorithm-instances";
 import { getStatusSeverity } from "../../utils/algorithm-instance-status";
@@ -17,6 +22,9 @@ const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 const algorithmInstancesStore = useAlgorithmInstancesStore();
+
+const showAlgorithmEvents = ref(true);
+const showInternalEvents = ref(false);
 
 const algorithmInstanceId = route.params.id as string;
 const algorithmInstance = ref<AlgorithmInstanceDto>();
@@ -31,19 +39,55 @@ const events = computed(() => {
 
   // Combine algorithm and internal events and sort by timestamp
   const allEvents = [
-    ...instanceEvents.algorithmEvents.map((event) => ({
-      ...event,
-      type: "algorithm" as const
-    })),
-    ...instanceEvents.internalEvents.map((event) => ({
-      ...event,
-      type: "internal" as const
-    }))
+    ...(showAlgorithmEvents.value
+      ? instanceEvents.algorithmEvents.map((event) => ({
+          ...event,
+          type: "algorithm" as const
+        }))
+      : []),
+    ...(showInternalEvents.value
+      ? instanceEvents.internalEvents.map((event) => ({
+          ...event,
+          type: "internal" as const
+        }))
+      : [])
   ].sort(
     (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
   );
 
   return allEvents;
+});
+
+const internalEventsFormatted = computed(() => {
+  const mappedEvents = algorithmInstancesStore
+    .getEventsForAlgorithmInstance(algorithmInstanceId)
+    .internalEvents.reduce(
+      (acc, event) => {
+        if (!acc[event.name]) {
+          acc[event.name] = [];
+        }
+        acc[event.name].push(event);
+        return acc;
+      },
+      {} as Record<string, Array<InternalEventDto>>
+    );
+  return (
+    (algorithmInstance.value?.algorithmDefinition.uiTemplate
+      .map((uiElement) => {
+        if (mappedEvents[uiElement.metric]) {
+          return {
+            uiTemplate: uiElement,
+            eventName: uiElement.metric,
+            data: mappedEvents[uiElement.metric]
+          };
+        }
+      })
+      .filter((e) => e !== undefined) as Array<{
+      uiTemplate: UITemplate;
+      eventName: string;
+      data: Array<InternalEventDto>;
+    }>) || []
+  );
 });
 
 const formatTimestamp = (timestamp: string | Date) => {
@@ -243,234 +287,240 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="grid">
-    <div class="col-span-12">
-      <div class="flex justify-between items-center mb-4">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 flex justify-between items-center">
+      <Button
+        icon="pi pi-arrow-left"
+        label="Back to Instances"
+        outlined
+        @click="goBack" />
+
+      <div class="flex gap-2">
         <Button
-          icon="pi pi-arrow-left"
-          label="Back to Instances"
+          :icon="autoRefresh ? 'pi pi-pause' : 'pi pi-play'"
+          :label="autoRefresh ? 'Stop Auto-refresh' : 'Start Auto-refresh'"
+          :severity="autoRefresh ? 'secondary' : 'success'"
           outlined
-          @click="goBack" />
+          @click="toggleAutoRefresh" />
 
-        <div class="flex gap-2">
-          <Button
-            :icon="autoRefresh ? 'pi pi-pause' : 'pi pi-play'"
-            :label="autoRefresh ? 'Stop Auto-refresh' : 'Start Auto-refresh'"
-            :severity="autoRefresh ? 'secondary' : 'success'"
-            outlined
-            @click="toggleAutoRefresh" />
-
-          <Button
-            icon="pi pi-refresh"
-            label="Refresh Now"
-            :loading="refreshing"
-            @click="refreshData" />
-        </div>
+        <Button
+          icon="pi pi-refresh"
+          label="Refresh Now"
+          :loading="refreshing"
+          @click="refreshData" />
       </div>
+    </div>
+    <Card class="col-span-12">
+      <template #title>
+        <div class="flex justify-between items-center">
+          <span>{{ algorithmInstance?.algorithmDefinition.title }}</span>
+          <Tag
+            v-if="algorithmInstance?.status"
+            :severity="getStatusSeverity(algorithmInstance.status)"
+            :value="algorithmInstance.status" />
+        </div>
+      </template>
 
-      <!-- Algorithm Instance Overview Card -->
-      <Card class="mb-4">
-        <template #title>
-          <div class="flex justify-between items-center">
-            <span>{{ algorithmInstance?.algorithmDefinition.title }}</span>
-            <Tag
-              v-if="algorithmInstance?.status"
-              :severity="getStatusSeverity(algorithmInstance.status)"
-              :value="algorithmInstance.status" />
+      <template #content>
+        <div class="grid grid-cols-12">
+          <div class="col-span-12 xl:col-span-6">
+            <FormField label="ID">
+              <code class="text-xs">{{ algorithmInstance?.id }}</code>
+            </FormField>
+            <FormField v-if="algorithmInstance?.createdDate" label="Created">
+              <span>
+                {{ formatRelative(algorithmInstance.createdDate) }}
+                <small class="ml-3 text-500">{{
+                  formatDate(algorithmInstance.createdDate)
+                }}</small>
+              </span>
+            </FormField>
+            <FormField v-if="algorithmInstance?.startedAt" label="Started">
+              <span>
+                {{ formatRelative(algorithmInstance.startedAt) }}
+                <small class="ml-3 text-500">{{
+                  formatDate(algorithmInstance.startedAt)
+                }}</small>
+              </span>
+            </FormField>
+            <FormField v-if="algorithmInstance?.finishedAt" label="Finished">
+              <span>
+                {{ formatRelative(algorithmInstance.finishedAt) }}
+                <small class="ml-3 text-500">{{
+                  formatDate(algorithmInstance.finishedAt)
+                }}</small>
+              </span>
+            </FormField>
           </div>
-        </template>
 
-        <template #content>
-          <div class="grid">
-            <div class="col-span-12 md:col-span-6">
-              <FormField label="ID">
-                <code class="text-xs">{{ algorithmInstance?.id }}</code>
-              </FormField>
-              <FormField v-if="algorithmInstance?.createdDate" label="Created">
-                <span>
-                  {{ formatRelative(algorithmInstance.createdDate) }}
-                  <small class="ml-3 text-500">{{
-                    formatDate(algorithmInstance.createdDate)
-                  }}</small>
-                </span>
-              </FormField>
-              <FormField v-if="algorithmInstance?.startedAt" label="Started">
-                <span>
-                  {{ formatRelative(algorithmInstance.startedAt) }}
-                  <small class="ml-3 text-500">{{
-                    formatDate(algorithmInstance.startedAt)
-                  }}</small>
-                </span>
-              </FormField>
-              <FormField v-if="algorithmInstance?.finishedAt" label="Finished">
-                <span>
-                  {{ formatRelative(algorithmInstance.finishedAt) }}
-                  <small class="ml-3 text-500">{{
-                    formatDate(algorithmInstance.finishedAt)
-                  }}</small>
-                </span>
-              </FormField>
-            </div>
-
-            <div class="col-span-12 md:col-span-6">
-              <FormField label="Participants">
-                <div class="flex flex-wrap gap-2">
-                  <Tag
-                    v-for="participant in algorithmInstance?.participants || []"
-                    :key="participant.didId"
-                    :value="`${participant.didId} (${participant.role})`"
-                    severity="info" />
-                </div>
-              </FormField>
-            </div>
-          </div>
-        </template>
-      </Card>
-
-      <!-- Jobs Card -->
-      <JobComponent class="my-4" :algorithm-instance-id="algorithmInstanceId" />
-
-      <!-- Events Card -->
-      <Card>
-        <template #title>
-          <div class="flex justify-between items-center">
-            <span>Events</span>
-            <div class="flex gap-2 items-center">
-              <Tag
-                :value="`${events.filter((e) => e.type === 'algorithm').length} Algorithm`"
-                severity="info" />
-              <Tag
-                :value="`${events.filter((e) => e.type === 'internal').length} Internal`"
-                severity="success" />
-            </div>
-          </div>
-        </template>
-
-        <template #content>
-          <DataTable
-            :value="events"
-            :loading="algorithmInstancesStore.eventsLoading"
-            paginator
-            :rows="20"
-            :rows-per-page-options="[10, 20, 50]"
-            table-style="min-width: 50rem"
-            sort-field="timestamp"
-            :sort-order="1"
-            class="p-datatable-sm">
-            <template #empty>
-              <div class="text-center py-4">
-                <i class="pi pi-info-circle text-3xl text-400 mb-3"></i>
-                <p class="text-500">
-                  No events found for this algorithm instance.
-                </p>
+          <div class="col-span-12 xl:col-span-6">
+            <FormField label="Participants">
+              <div class="flex flex-wrap gap-2">
+                <Tag
+                  v-for="participant in algorithmInstance?.participants || []"
+                  :key="participant.didId"
+                  :value="`${participant.didId} (${participant.role})`"
+                  severity="info" />
               </div>
+            </FormField>
+          </div>
+        </div>
+      </template>
+    </Card>
+    <JobComponent
+      class="col-span-12"
+      :algorithm-instance-id="algorithmInstanceId" />
+
+    <div class="col-span-12 columns-1 xl:columns-2 gap-4">
+      <AlgorithmUIComponent
+        v-for="element in internalEventsFormatted"
+        :key="element.eventName"
+        class="mb-4 break-inside-avoid"
+        :event-name="element.eventName"
+        :ui-template="element.uiTemplate"
+        :data="element.data" />
+    </div>
+    <Card class="col-span-12">
+      <template #title>
+        <div class="flex justify-between items-center">
+          <span>Events</span>
+          <div class="flex gap-2 items-center">
+            <Tag
+              :value="`${showAlgorithmEvents ? events.filter((e) => e.type === 'algorithm').length : 'Show'} Algorithm`"
+              :severity="showAlgorithmEvents ? 'info' : 'secondary'"
+              class="cursor-pointer"
+              @click="showAlgorithmEvents = !showAlgorithmEvents" />
+            <Tag
+              :value="`${showInternalEvents ? events.filter((e) => e.type === 'internal').length : 'Show'} Internal`"
+              :severity="showInternalEvents ? 'success' : 'secondary'"
+              class="cursor-pointer"
+              @click="showInternalEvents = !showInternalEvents" />
+          </div>
+        </div>
+      </template>
+
+      <template #content>
+        <DataTable
+          :value="events"
+          :loading="algorithmInstancesStore.eventsLoading"
+          paginator
+          :rows="20"
+          :rows-per-page-options="[10, 20, 50]"
+          table-style="min-width: 50rem"
+          sort-field="timestamp"
+          :sort-order="-1"
+          class="p-datatable-sm">
+          <template #empty>
+            <div class="text-center py-4">
+              <i class="pi pi-info-circle text-3xl text-400 mb-3"></i>
+              <p class="text-500">
+                No events found for this algorithm instance.
+              </p>
+            </div>
+          </template>
+
+          <Column field="timestamp" header="Timestamp" sortable>
+            <template #body="props">
+              <span class="text-sm">{{
+                formatTimestamp(props.data.timestamp)
+              }}</span>
             </template>
+          </Column>
 
-            <Column field="timestamp" header="Timestamp" sortable>
-              <template #body="props">
-                <span class="text-sm">{{
-                  formatTimestamp(props.data.timestamp)
-                }}</span>
-              </template>
-            </Column>
-
-            <Column field="type" header="Type" sortable>
-              <template #body="props">
+          <Column field="type" header="Type" sortable>
+            <template #body="props">
+              <div class="flex items-center gap-2">
                 <Tag
                   :value="getEventTypeLabel(props.data.type)"
                   :severity="getEventTypeSeverity(props.data.type)" />
-              </template>
-            </Column>
-
-            <Column field="name" header="Event Name" sortable>
-              <template #body="props">
-                <span class="font-medium">{{ props.data.name }}</span>
-              </template>
-            </Column>
-
-            <Column field="number" header="Number" sortable>
-              <template #body="props">
-                <Badge :value="props.data.number" />
-              </template>
-            </Column>
-
-            <Column
-              v-if="events.some((e) => e.type === 'algorithm')"
-              field="eventId"
-              header="Event ID">
-              <template #body="props">
-                <code v-if="props.data.eventId" class="text-xs">{{
-                  props.data.eventId
-                }}</code>
-                <span v-else class="text-400">-</span>
-              </template>
-            </Column>
-
-            <Column
-              v-if="
-                events.some(
-                  (e) => e.type === 'algorithm' && e.recipients?.length
-                )
-              "
-              field="recipients"
-              header="Recipients">
-              <template #body="props">
-                <div
-                  v-if="props.data.recipients?.length"
-                  class="flex flex-wrap gap-1">
+                <template v-if="props.data.type === 'algorithm'">
                   <Tag
-                    v-for="recipient in props.data.recipients"
-                    :key="recipient"
-                    :value="recipient"
-                    severity="secondary"
-                    class="text-xs" />
-                </div>
-                <span v-else class="text-400">-</span>
-              </template>
-            </Column>
+                    v-if="props.data.recipients?.length"
+                    value="Sent"
+                    severity="warn" />
+                  <Tag v-else value="Received" severity="success" />
+                </template>
+              </div>
+            </template>
+          </Column>
 
-            <Column
-              v-if="events.some((e) => e.type === 'algorithm')"
-              field="createdBy"
-              header="Created By">
-              <template #body="props">
-                <code v-if="props.data.createdBy" class="text-xs">{{
-                  props.data.createdBy
-                }}</code>
-                <span v-else class="text-400">-</span>
-              </template>
-            </Column>
+          <Column field="name" header="Event Name" sortable>
+            <template #body="props">
+              <span class="font-medium">{{ props.data.name }}</span>
+            </template>
+          </Column>
 
-            <Column header="">
-              <template #body="props">
-                <div class="flex items-center justify-end">
-                  <Button
+          <Column field="number" header="Number" sortable>
+            <template #body="props">
+              <Badge :value="props.data.number" />
+            </template>
+          </Column>
+
+          <Column header="Details">
+            <template #body="props">
+              <template v-if="props.data.type === 'algorithm'">
+                <template v-if="props.data.recipients?.length">
+                  <div
+                    v-if="props.data.recipients?.length"
+                    class="flex flex-wrap gap-1">
+                    <Tag
+                      v-for="recipient in props.data.recipients"
+                      :key="recipient"
+                      v-tooltip.bottom="'Sent event to ' + recipient"
+                      :value="recipient"
+                      severity="secondary"
+                      icon="pi pi-cloud-upload"
+                      class="text-xs" />
+                  </div>
+                </template>
+                <template v-else>
+                  <Tag
                     v-tooltip.bottom="
-                      props.data.type === 'algorithm' && props.data.eventId
-                        ? 'Download event data'
-                        : 'No downloadable data'
+                      'Received event from ' + props.data.createdBy
                     "
-                    icon="pi pi-download"
-                    size="small"
-                    text
-                    rounded
-                    :disabled="
-                      props.data.type !== 'algorithm' ||
-                      !props.data.eventId ||
-                      downloadingEventIds.has(props.data.eventId)
-                    "
-                    :loading="
-                      props.data.eventId &&
-                      downloadingEventIds.has(props.data.eventId)
-                    "
-                    @click="downloadEvent(props.data)" />
-                </div>
+                    :value="props.data.createdBy"
+                    class="text-xs"
+                    icon="pi pi-cloud-download"
+                    severity="info" />
+                </template>
               </template>
-            </Column>
-          </DataTable>
-        </template>
-      </Card>
-    </div>
+              <template v-else>
+                <code class="text-sm">{{
+                  props.data.data?.value ?? "No description"
+                }}</code>
+              </template>
+            </template>
+          </Column>
+
+          <Column header="">
+            <template #body="props">
+              <div class="flex items-center justify-end">
+                <Button
+                  v-tooltip.bottom="
+                    props.data.type === 'algorithm' && props.data.eventId
+                      ? 'Download event data'
+                      : 'No downloadable data'
+                  "
+                  icon="pi pi-download"
+                  size="small"
+                  text
+                  rounded
+                  :disabled="
+                    props.data.type !== 'algorithm' ||
+                    !props.data.eventId ||
+                    downloadingEventIds.has(props.data.eventId)
+                  "
+                  :loading="
+                    props.data.eventId &&
+                    downloadingEventIds.has(props.data.eventId)
+                  "
+                  @click="downloadEvent(props.data)" />
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </template>
+    </Card>
   </div>
 </template>
 
