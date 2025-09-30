@@ -76,7 +76,7 @@
     "commander": "^14.0.0",
     "deep-equal": "^2.2.2",
     "did-resolver": "^4.1.0",
-    "eta": "^3.5.0",
+    "eta": "^4.0.0",
     "express": "^5.0.1",
     "express-session": "^1.18.2",
     "inquirer": "^12.9.1",

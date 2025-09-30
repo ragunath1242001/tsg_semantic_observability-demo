@@ -35,7 +35,7 @@
     "class-validator": "^0.14.0",
     "commander": "^14.0.0",
     "diff": "^8.0.0",
-    "eta": "^3.5.0",
+    "eta": "^4.0.0",
     "inquirer": "^12.9.1",
     "postgres": "^3.4.5",
     "reflect-metadata": "^0.2.2",
