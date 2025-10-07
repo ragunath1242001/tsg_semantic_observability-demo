@@ -77,7 +77,7 @@ export async function replaceVersion(oldVersion, newVersion, debug = false) {
 
   if (!debug) {
     await execPromise(
-      `git clone https://semantic-release:${process.env.DEPLOYMENTS_TOKEN}@${process.env.CI_SERVER_HOST}/deployments.git`
+      `git clone https://semantic-release:${process.env.DEPLOYMENTS_TOKEN}@${process.env.CI_SERVER_HOST}/tno-tsg/deployments.git`
     );
     // replace version in argocd repo
     await execPromise(

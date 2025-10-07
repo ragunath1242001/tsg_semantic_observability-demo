@@ -6,11 +6,19 @@ import Lara from "@primevue/themes/lara";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { createPinia } from "pinia";
-import { ColorPicker, Message, Skeleton } from "primevue";
+import {
+  Chip,
+  ColorPicker,
+  DatePicker,
+  DynamicDialog,
+  Message,
+  Skeleton
+} from "primevue";
 import AutoComplete from "primevue/autocomplete";
 import Badge from "primevue/badge";
 import Button from "primevue/button";
 import Card from "primevue/card";
+import Checkbox from "primevue/checkbox";
 import Column from "primevue/column";
 import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
@@ -20,7 +28,6 @@ import DataView from "primevue/dataview";
 import Dialog from "primevue/dialog";
 import DialogService from "primevue/dialogservice";
 import Drawer from "primevue/drawer";
-import DynamicDialog from "primevue/dynamicdialog";
 import FileUpload from "primevue/fileupload";
 import IconField from "primevue/iconfield";
 import Inplace from "primevue/inplace";
@@ -87,6 +94,7 @@ app.directive("tooltip", Tooltip);
 app.component("AutoComplete", AutoComplete);
 app.component("Badge", Badge);
 app.component("Button", Button);
+app.component("Chip", Chip);
 app.component("ColorPicker", ColorPicker);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Dialog", Dialog);
@@ -94,9 +102,11 @@ app.component("Drawer", Drawer);
 app.component("Select", Select);
 app.component("DynamicDialog", DynamicDialog);
 app.component("Card", Card);
+app.component("Checkbox", Checkbox);
 app.component("Column", Column);
 app.component("DataTable", DataTable);
 app.component("DataView", DataView);
+app.component("DatePicker", DatePicker);
 app.component("FileUpload", FileUpload);
 app.component("IconField", IconField);
 app.component("InputIcon", InputIcon);
@@ -111,6 +121,7 @@ app.component("Password", Password);
 app.component("ProgressBar", ProgressBar);
 app.component("Skeleton", Skeleton);
 app.component("Step", Step);
+app.component("Stepper", Stepper);
 app.component("StepList", StepList);
 app.component("StepPanel", StepPanel);
 app.component("StepPanels", StepPanels);
