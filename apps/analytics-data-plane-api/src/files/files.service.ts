@@ -3,6 +3,7 @@ import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CSVW, FileUpdateDto } from "@tsg-dsp/analytics-data-plane-dtos";
 import {
+  DataService,
   Dataset,
   DatasetDto,
   Distribution,
@@ -197,8 +198,7 @@ export class FilesService {
           }
         }
         const catalog = await this.dataplaneService.getControlPlaneCatalog();
-        const datasetId =
-          dbentry.datasetId ?? `urn:uuid:${crypto.randomUUID()}`;
+        const datasetId = dbentry.datasetId ?? `urn:uuid:${dbentry.identifier}`;
         const datasetDto = new Dataset({
           id: datasetId,
           distribution: [
@@ -207,13 +207,16 @@ export class FilesService {
               conformsTo: conformsTo,
               title: file.originalname,
               issued: new Date().toISOString(),
+              accessService: new DataService({
+                endpointDescription: "Dataspace Protocol API",
+                endpointURL: `${this.rootConfig.controlPlane?.controlEndpoint}`
+              }),
               format: "tsg:analytics",
               mediaType: file.mimetype,
               description: [`Data file ${file.originalname}`]
             })
           ],
           title: file.originalname,
-          identifier: dbentry.identifier,
           hasPolicy: [
             new Offer({
               assigner: catalog.publisher as string,
