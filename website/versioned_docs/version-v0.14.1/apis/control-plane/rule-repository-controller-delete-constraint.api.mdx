@@ -1,0 +1,72 @@
+---
+id: rule-repository-controller-delete-constraint
+title: "Delete constraint"
+description: "Delete constraint template"
+sidebar_label: "Delete constraint"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVktv2zgQ/ivEnHYLrW1kc9KtSJwiQDcNkrQ9BIYxJscWG4pkyVEcw9B/X5CSLcdOct7DnmzM85vXR21BUZRBe9bOQgmXZIhJSGcjB9SWBVPtDTJBAc5TwGR4raCEu8bQHXkXNbuwuXCWgzOGwlzlGBf7EFCAx4A1MYUI5eMWLNYEJWgFBQT63ehACkoODRWgEwyPXEEBUVZUI5Rb4I1PHrapFxSgbWfJMXpnI8WkP5tM0s/rYqAt4Hzy96niyoWFVoosFCCdZbKcjNB7o2WucPwrJsvtKQS3+EUy1xRSP1h3ALqS9laRg7YrKIBesPYmie4ouiZIunF85RqrErrIyE382O98ci5uHIu9k3SKTnty4HI+OW8LqClGXNFb0IfgDxWJNAGKTEqEHqJQjqKwjgW96MijlJVCcOFjpAco28PBPnbd2ZfblzArgDVnz2kKfskO2rbNQzs/HdqufxnXMqf5f3r/vemlvpBsguZNvnWHDVdnKYzsKMIbtDRHVWsLs3TIjKtECzB9RtPk+aXgNXHlEs90dJJJhCsoYYxej2u0uKKaLI+9M1puxgNljbdatQkvheeOcWYDpvu0Ed3Qd8iGDneCApbGrbOJxxjXLqhul5zvHN8opHxLWLwWKmTM/46tB0XXvwVhoLDf32Tfi3a6KxdqZCjhxy0UO/gVs4fi6Gp+UNBLjQtD4jZQJMu5w8ISKVKCnZCurhubLofEgnhNZAWvndA2MlpJUbil4Co/CgmzyFBHeUu0XbrcwH4THu6/iP4lELe5omM8D5WO4psn+/n2WkRPUi/7oxWxcuuYM5FV3mnL+9SvYo7EPy7yTjXYYkjXkN6qXFdSXiJj9ChT8Y6ddKYQGHd5SYnFJttNpdE+kvjpwpO2K/EluMYP3nEkvnFF4ShZbLx3gfXzIQp2osanpAyUY6fpColWLEigUgM4iYzGrQqBVh27IYvv10JbpoAydSfmEJxMvEFJIyHm8083junTfF6KV21VtNRW557qjghSINunXpBQOpBksxFG2ydSYq25Eiiititz1Oz9GowEFJDuqX9bu+VGmbi3LcBoSTbSQKbw2aOsSJyNJlBAE0y/obEcj9fr9QizeuTCatz7xvHX64vpzf30r7PRZFRxbfKOeRe5RnsQ+eQj5XjLtsO78PEXTX85TC889ga1TVyZsW57unkE9BoKGAgnMVGmnK4FA4RSq0RclYuc/LbbBUb6HkzbJvHvhsKm46JnDPkiMz8qHdN/BeUSTaQPKvnjrufkP8V70Hsh2gQu0Sl1o3qiTfe91c7aAipClfjlcdsrPktJng9cTt7S9pCRL6dfpw9TKCDx5Vv8uef87duITrlSvEOIO+iZfKEt3gm44+m5DKTIskYT976rgJbn2a+dtW37L6NozVg=
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete constraint"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/policy/constraint/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete constraint template
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

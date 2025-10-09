@@ -1,0 +1,72 @@
+---
+id: transfers-management-controller-suspend-transfer
+title: "Suspend a transfer by ID"
+description: "Suspend a transfer by ID"
+sidebar_label: "Suspend a transfer by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVcFu4zYQ/RViTi2gWkbqk27BJikCbLPGJt1LYARjcWxxVyK55Ggdw9C/F0PJklM7OdQX2yRn5s3wvccDOE8B2Th7r6GAp4A2bijEv9Hilhqy/MlZDq6uKbzENnqy+ngIMvAYsCGmEKF4PoDFhqAAoyGDQD9bE0hDwaGlDIyFAjxyBRloimUwXsqeFFVGk2WzMSl1LCtqEIoD8N5L1sjB2C10XTYWKp2m90r9bCnsP8yzksjonY0UZf9qfiVfb8FBl8Fi/uf5xp0La6M1WcigdJbJshxC72tTponm36OcPJxDcOvvVLLML8j82fQA+q7+CzQDesXG17L0laJrQ0kPju9ca7Wgi4zcxo/jFvOFenCsxqA0uSnEts06TX0MWcwXXQYNxYhbugR9Sv5UkZIroMikVRggKu0oKutY0auJPJOqFIILHyM9Qdmd3uxzP52x3aGFVQZsOEXeSvIbdtDJJ4NIZRsM7xMzHbZcXUmasuezr9HSi0bG9AtWQgfGrRAZbpBRLWVdTUKQWm8p8NjrQaHiI4XXe3V/AzI4rpwoyruYLlqIX0CO3uTNmDI/xsX8YHSX9wKLkl3wh1+9sFZTM49CpZ4tx5amq+kXMtjUbpeOeIxx54LuSeh8H4gW6z2bMo7dv6Bukmje3coubU3Tuxg5bfcXsiYMFEZBSNSwdNy7c6FBhgK+LSE7tlUx+zPP+EbBbAyua1LLQJEsJ8kpS6RJK3aqdE3TWpEiqTXxjsgq3jllbGS0JUXlNoorUgMhVII6S7QzduPSYAdqPT3+pa6PDaqJHedWVpmovniy18t7FT2VZjOYgYqV28VUkKz2zlgeEVxKPYMM5PoHF+o9BkvxmC6D2pRkI02mAdcey4rU1WwOGbShHgYXizzf7XYzTNszF7b5EBvzz/efbh8eb/+4ms1nFTd1al342qA9yfwBy980P/KQ6ZVzX6OxovmE5TAI4BnQG5HHpKoMRhFABkV6O050sMqgEgkVz3A4rDHSP6HuOlnuDV7ErU0UJmgoNlhHOsM12jP89nUwlN/VRLC3eH/QfnpZfmHdUnoFVvInJMb9/5qXX7qLMIZFtPtTGEd4RkO36jKoCLVI6vkwbFyXJXk+CTl7j6ST0Z2WXx6fRNutXM65kYyuebiM5z27UB+6wbGJ5Eggz/nF5EfzeikDpXFhHcfYbUDLLymuW3Vd9y+/jAt1
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Suspend a transfer by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/transfers/{id}/suspension"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Suspend a transfer by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}},{"name":"code","required":true,"in":"query","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

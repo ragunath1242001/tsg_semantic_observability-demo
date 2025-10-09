@@ -1,0 +1,72 @@
+---
+id: orchestration-management-controller-get-job-logs
+title: "Get job logs"
+description: "Get job logs"
+sidebar_label: "Get job logs"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVU1v2zgQ/SvEnHYBxXJd726gW9AmQYpuGjTZXgLDGItji4lEsuSojiHovxekZMuOnRz2JIKjN5/vDRswlhyyMvpGQgbfXF6Q5+7mX9S4ooo0fzKanSlLcvMV8Rez+GpWHhKw6LAiJuche2xAY0WQgTXyNpwScPSzVo4kZOxqSkDpYEYuIAFJPnfKhkCQwUNBwhopdAf0eUEVQtYAvWBly+D2w+Tj9K+//zk/C4ezw9PWBgnwxoa/PTulV9C2s5CGt0Z78sHhZDwOn8PwkEBuNJPmYENrS5XHHqRPPvzQ7GX0OkDbJjAdfzx2emXcQklJ+n94N4snyjm02IUJseqS7zr8Oodkr0vfyZva5XRr+MrUWkKbgGfk2r+Pm46n4taw2IFyI/dD6bpakNuHTMfTNoGKvMcVnUp9cB6mG7hAnkkK16copCEvtGFBL8rzKEQl54x7P9O9LNt9ij3CljxduX0JswRYcUReBuef2cShhb5QXjvFm0hegzUXk+Am79huS9Q0l8gYTzALVGJcBa7DZ2QUd+FeDDIJsQ4pcE0snsxClJ1eKuLCBJ2tKM42KCGDFK1Kq52X9Pncp9ZInza9ktq0x3tyvzqxzYbs7wN3Onpsaxhm0V0ksCzNOv5i0fu1cbJjnbEdEDWWG1a535U7R1lFub5pSk6ZhnadRA7mbgILQkdup4CA6q+2tivjKmTI4MfdIO6C2R6tkB/k1FLhoiRx58iT5qgxoYkkScFG5Kaqah20R2JBvCbSgtdGKO0ZdU5emKXggkTPABFTHUWeKb00sbE9lx7ur8XFtkAx0OHEZlNefLOkL+5uhLeUq2WvfuELs/YxIGlpjdK8y+CU6xEkEMZ/sLIwD0ulTaBUOWlPw5aAC4t5QWIyGkMCtSv7xvksTdfr9QijeWTcKu2xPv168+ny9v7ybDIajwquyli6NZ4r1HueX9H6oOAd95heOLUlKh2EHeM3PeUfAa0Kehikk8DzeXxSjAyfbHhEYpBZAoXxHKBNs0BP/7mybcP1z5rcplPEL3Rx/lHPUvlwlpAtsfR0lOVuI8Mf3/sd8qd49QydrKS/RL0J88Cypm4az7TZe/zaWZtAQSgDvR+b3nqR52R5D3f0GIQls1sT15cPQWZ16Nmxpncbqzmd01vKFe8Kc1tIXA7QJm843+6Ree5IkmaFpd9hVw41zyOunbVt+xsQfOJ+
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get job logs"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/k8s/pods/{podName}/logs"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get job logs
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"podName","required":true,"in":"path","description":"The pod name","schema":{"example":"12345678-1234-5678-1234-567812345678","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"string"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

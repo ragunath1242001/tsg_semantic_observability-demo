@@ -1,0 +1,72 @@
+---
+id: clients-controller-create-user
+title: "Create a new client"
+description: "Create a new client"
+sidebar_label: "Create a new client"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVctu2zoQ/RVh1rKVpDvt0iQoAly0RZ2sjKAYUxOLLUWyQ6qur6B/vxhSdm0laG+8sR7zODxzzmgA54kxamfvG6jhxmiyMdw4G9kZQ/xVMWGkx0AMJXhk7CgSB6jXTyUw/egpxPeu2UM9pFvN1EAduacSGgqKtZfqUMMtRiyeHRexpcLSrlCpGZSgnI1yVQ+A3hutEqDqW5C8AYJqqUO5intPUIPbfCMliZ4FftQU5K1uTmJs320SZvqFnTcE9eVYgsWOToJCZG23p0Fwl6+KzASMJQRSTPHjXzNXKW7Kl8Sz4/8p87oIuWlmpOgDNYmphjpnQ8wDKnzP3gUKSymeQ++bP1fOUQvdLC6v3v1Oy1D/V2o+/QI3StLZmcz1MW4N2HTaQgm9aOSpPJREZtxDCTpSF162GscStow2vijXx9ax/jed+atyDcEBtoixIRs1mvC2TkyNZlLxkfW8XxujD3VVTY+WynWVQmM2qL6/pclYnuh/nZV2Jp5zQZxMcDaVA8tHfmbwBZOOaUZZpLfRSf8EIHhnQx7R1cWl/J2bMGcU2dVNEXqlKITn3pj9MjEVcSvmPmwC6TarkFILPLdwR7F1skG8C8mZGFuooUKvqxwUqtw0kcI/jztEXP7l9x45+Gfy8+XBs3NjnvtyZr455jcb7NRfMxPNPfSKUY4+eWmOg+TfpPNz9f5NsmMJ2j67pNFJJw+rD8Vq9al4z7rZvqTn/HVx/fm+uHWq78jGTAyUIAPL0dPCRiULZCzBaEU2pIlNo7r2qFoqrpYXcnI2UB8h73a7JabXS8fbasoN1T/3N3cfV3eLq+XFso2dSVoULXVoTyq/Lr7XF22kX7HyBrWVzZVgDJMu14BeH+kWh03afCqhFQHXaxiGDQZ6ZDOO8vhHT7zPiv2JrHGTtoeQ3RI2xFCvB/hOewGZP2eLB8Eh4aZPG2T+aRufTnzz+dPqAUrYTJ/STvRQA+NO1IS7zLtLZ0zuTs8GMGi3PW4lNteU33+6W7IT
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Create a new client"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/clients/create"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Create a new client
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"description":"Data for the new client","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"number","example":1},"name":{"type":"string","example":"Example Client"},"secretName":{"type":"string","example":"SecretExample"},"description":{"type":"string","example":"A sample client used for demonstration purposes."},"clientId":{"type":"string","example":"client-id-123"},"clientSecret":{"type":"string","example":"client-secret-abc"},"roles":{"example":["admin","user"],"type":"array","items":{"type":"string"}},"grants":{"example":["authorization_code","client_credentials"],"type":"array","items":{"type":"string"}},"redirectUris":{"example":["https://example.com/callback"],"type":"array","items":{"type":"string"}}},"required":["name","secretName","description","clientId","clientSecret","roles","grants","redirectUris"],"title":"ClientDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"description":"Client created successfully."}}}
+>
+  
+</StatusCodes>
+
+
+      

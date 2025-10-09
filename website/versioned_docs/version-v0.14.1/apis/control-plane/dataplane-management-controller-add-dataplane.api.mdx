@@ -1,0 +1,72 @@
+---
+id: dataplane-management-controller-add-dataplane
+title: "Add a dataplane"
+description: "Adds a new dataplane."
+sidebar_label: "Add a dataplane"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV01vGzcQ/SsEj8FGkh33sjc3cQIDjWPESnowDGFEjrSMuSRDzkpWhf3vBblfkiXZaNHecluRM8PHmTfzqC2XGIRXjpQ1POeXUgYGzOCaSSBwGgyOeMatQw/R5lrynH/otj6DgSWWaOi9NeSt1uhnIGVvwDPuwEOJhD7w/P4h4x5/Vhjodys3PN+mn8qj5Dn5CjMurCE0FLfAOa1EOnb8I0R8Wx5EgSXEL9o45Dm38x8oKJ7jI0hSGOJuj36azHrzQF6ZJc84PkHpdFxqv5JhnXFSpF/x6K/HpopQRy800lll6NbjQj297D4Gp8ars3GPMQYQoPUcxOOllB5DeDlCQeTy8VhbAbqwgcadd4xU9kX5d7Ea//1IU/uI5uU4FE3Ozt81lyHQdnm3MaLw1qi/oOHXEX9TlTy/564KRSxipTV/2A2bNuqMe3uiKm0AYU2oSvQNE1ZKps+5pWI/Xm9XZ1xJNKQWCv3LV5Pu7dn5u4vfeF1nO4S9f8ayjjsHbDis7rEqHeb7ZCLbdOzd4KGnbuLnbYT1AQmUDh/I8rpuwAdnTWh65HxyllplbwLwXy34qwV/teD/14IXk8lh112bFWglB9FNXzyZvzs0/2j9XEnZ4PtvutVA+UrLfcVgKy/wxtJHWxkZ0QUCql5h98Xkgt1YYr2TsHL3KFOV88SU3uVichGpjyHELjgCfQg+LZC1LwqUzLcQmbQYmLHE8EkFGqXx4L19hWQ7KJ+xLGWnv257hZ1yX8XgXY1jXlBUXtGG5/dbbqGi4rztkPhKShWegSxVV8B+cRhID3WMD8v4bEp0YolPbHhzRQAlUmHjm8zZkIoKVHTzbeDyMOci+IB+1T/HOqR3kScNFTq8Q96bhYwvtF0nEwchrK2XDcOsaxyPXC//R3fOT200WZ0j+GZQJFZH+3ap2/tofQnEc/79Ns6CBn4crzx71kLf0auFgrlGdusxoKHUN8wgSpSMLBO2LCsT+wnZHGmNaBitLVMmEBiBgdkFowJZi5m1r+WINHbf1+Ghe9VR7EAV96Rvf3zsytuhuh2RsCMK9oJMHVWpk1J0RIkGuTmtNp2oNNKxqxC7g39numdcmYVN3GtTMb37xNp/F00HHJRyWqjAvjg0l7fXLDgUatFOQRYKuw6pSF3++qrtxRyxzzZQtzXYgo/jRQM1lIibsTTBgYi8sWSF1RmD0J2Lks03ye5KaOUCsj+tf1RmyT55W7nBO4zYFyrQPzssVM5ZT2q1i4IsK+ExbnpMsWPNmQDD5shAygFcW4eMgZHP3YDYt2umDKEHEbMTUgiKJk6DwBFjs9mbG0v4ZjbL2V5aJS6UUSmnqpmsMZBpj54jk8qjIL1hWplHlGytqGDAgjJL/SzZfQeNGM94HEV7T08QUczqjGsl0AQc1IlfOhAFsvPRhGe88rolbMjH4/V6PYK0PbJ+OW59w/iP6/dXN3dXb89Hk1FBpU7tGYdlCWY3spQM2G4v7XFsO8jsyf/I7bQhfKKx06BMZHMCuW3H8j0Hp/ZaKZ4zjOaHjMeei4bb7RwCfvO6ruPyzwr9phnYK/BpbMVfdcYLhPjOijrziBue8/cN0LftRFmBriKsg7dBnXUel0Kgoxdtd5Xm9svdNL3rmj/wZVJz7mEd+xzWTSFtSlxShbS25RrMskp6zpuYsRBRWI4JTS+Z/RaYzQ7CQ1FhJ5Qjay+ZVCpd+mjATtBmwmOaTKBD77v0YGiW/OqHuq7/BsA9/50=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Add a dataplane"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/dataplanes"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Adds a new dataplane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"dataplaneType":{"type":"string","example":"exampleType"},"title":{"type":"string","example":"Dataplane Titel"},"endpointPrefix":{"type":"string","example":"/api/v1/dataplane"},"callbackAddress":{"type":"string","example":"http://localhost/callback"},"managementAddress":{"type":"string","example":"http://localhost/manage"},"managementToken":{"type":"string","example":"token123"},"catalogSynchronization":{"type":"string","enum":["push","pull"],"example":"push"},"role":{"type":"string","enum":["consumer","provider","both"],"example":"consumer"},"identifier":{"type":"string","example":"dp-12345"}},"required":["dataplaneType","title","endpointPrefix","callbackAddress","managementAddress","managementToken","catalogSynchronization","role","identifier"],"title":"DataPlaneDetailsDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"dataplaneType":{"type":"string","example":"exampleType"},"title":{"type":"string","example":"Dataplane Titel"},"endpointPrefix":{"type":"string","example":"/api/v1/dataplane"},"callbackAddress":{"type":"string","example":"http://localhost/callback"},"managementAddress":{"type":"string","example":"http://localhost/manage"},"managementToken":{"type":"string","example":"token123"},"catalogSynchronization":{"type":"string","enum":["push","pull"],"example":"push"},"role":{"type":"string","enum":["consumer","provider","both"],"example":"consumer"},"identifier":{"type":"string","example":"dp-12345"}},"required":["dataplaneType","title","endpointPrefix","callbackAddress","managementAddress","managementToken","catalogSynchronization","role","identifier"],"title":"DataPlaneDetailsDto"}}}},"400":{"description":"Invalid dataplane data"},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

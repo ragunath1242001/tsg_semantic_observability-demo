@@ -1,0 +1,33 @@
+---
+id: negotiationstatusdto
+title: "NegotiationStatusDto"
+description: ""
+sidebar_label: "NegotiationStatusDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"localId":"3fa85f64-5717-4562-b3fc-2c963f66afa6","remoteId":"3fa85f64-5717-4562-b3fc-2c963f66afa7","remoteParty":"Remote Party Name","role":"provider","remoteAddress":"192.168.1.100","state":"REQUESTED","dataSet":"defaultDataSet","modifiedDate":"2023-10-11T00:00:00.000Z"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"NegotiationStatusDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"localId":{"type":"string","example":"3fa85f64-5717-4562-b3fc-2c963f66afa6"},"remoteId":{"type":"string","example":"3fa85f64-5717-4562-b3fc-2c963f66afa7"},"remoteParty":{"type":"string","example":"Remote Party Name"},"role":{"type":"string","enum":["provider","consumer"],"example":"provider"},"remoteAddress":{"type":"string","example":"192.168.1.100"},"state":{"type":"string","enum":["REQUESTED","OFFERED","ACCEPTED","AGREED","VERIFIED","FINALIZED","TERMINATED"],"example":"REQUESTED"},"dataSet":{"type":"string","example":"defaultDataSet"},"modifiedDate":{"format":"date-time","type":"string","example":"2023-10-11T00:00:00.000Z"}},"required":["localId","remoteId","remoteParty","role","remoteAddress","state","dataSet","modifiedDate"],"title":"NegotiationStatusDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

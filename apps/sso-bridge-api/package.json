@@ -1,6 +1,6 @@
 {
   "name": "@apps/sso-bridge-api",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "Oauth Service for TSG components.",
   "type": "module",
   "license": "Apache-2.0",
