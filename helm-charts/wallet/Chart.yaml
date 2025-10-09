@@ -24,7 +24,7 @@ annotations:
   tsg.dataspac.es/component: wallet
 
 dependencies:
+  # Automatically updated via the release script
   - name: tsg-core
-    # Automatically updated via the release script
-    version: 0.13.1
+    version: 0.14.0
     repository: "file://../core"
