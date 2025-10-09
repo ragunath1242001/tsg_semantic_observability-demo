@@ -29,11 +29,27 @@ image:
 ingress:
   enabled: true
 
+<%
+const postgresMode = it.general.postgresDeploymentMode ?? "per-participant";
+const isShared = postgresMode === "per-namespace" && it.scope === "ecosystem";
+let secretName, dbHost, dbName;
+
+if (isShared) {
+  secretName = "postgresql-cluster-app";
+  dbHost = "postgresql-cluster-rw";
+  dbName = `${it.participant.id}-${it.id}`;
+} else {
+  secretName = `${it.participant.id}-postgresql-app`;
+  dbHost = `${it.participant.id}-postgresql-rw`;
+  dbName = it.id;
+}
+%>
+
 configFromSecrets:
   db:
     password:
-      name: "<%= it.participant.id %>-postgresql"
-      key: postgres-password
+      name: "<%= secretName %>"
+      key: password
   auth:
     clientID:
       name: sso-<%= it.participant.id %>-<%= it.id %>-secret
@@ -46,9 +62,9 @@ config:
   db:
     type: postgres
     port: 5432
-    username: postgres
-    database: <%= it.id %>
-    host: "<%= it.participant.id %>-postgresql"
+    username: app
+    database: <%= dbName %>
+    host: "<%= dbHost %>"
 
   server:
     publicAddress: "{{ .Values.endpoint }}/api"

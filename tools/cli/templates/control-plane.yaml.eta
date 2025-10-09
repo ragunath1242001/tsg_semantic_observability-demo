@@ -27,11 +27,27 @@ image:
 ingress:
   enabled: true
 
+<%
+const postgresMode = it.general.postgresDeploymentMode ?? "per-participant";
+const isShared = postgresMode === "per-namespace" && it.scope === "ecosystem";
+let secretName, dbHost, dbName;
+
+if (isShared) {
+  secretName = "postgresql-cluster-app";
+  dbHost = "postgresql-cluster-rw";
+  dbName = `${it.participant.id}-control-plane`; // Prefixed for shared cluster
+} else {
+  secretName = `${it.participant.id}-postgresql-app`;
+  dbHost = `${it.participant.id}-postgresql-rw`;
+  dbName = "control-plane"; // No prefix for dedicated cluster
+}
+%>
+
 configFromSecrets:
   db:
     password:
-      name: "<%= it.participant.id %>-postgresql"
-      key: postgres-password
+      name: "<%= secretName %>"
+      key: password
   auth:
     clientID:
       name: sso-<%= it.participant.id %>-control-plane-secret
@@ -42,8 +58,9 @@ configFromSecrets:
 
 config:
   db:
-    database: control-plane
-    host: "<%= it.participant.id %>-postgresql"
+    database: <%= dbName %>
+    host: "<%= dbHost %>"
+    username: app
   
   server:
     publicAddress: "{{ .Values.endpoint }}/api"

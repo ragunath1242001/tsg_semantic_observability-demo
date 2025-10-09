@@ -53,6 +53,7 @@ export class Deploy {
   cwd?: string;
   latestVersion!: string;
   currentCliVersion!: string;
+  scope!: "ecosystem" | "participant";
 
   private getStatePath(configFile: string | undefined, defaultFile: string) {
     const file = configFile ?? defaultFile;
@@ -101,7 +102,6 @@ export class Deploy {
 
   private participantReleases(p: Participant): string[] {
     const releases: string[] = [];
-    releases.push(`${p.id}-postgresql`);
     releases.push(`${p.id}-tsg-sso-bridge`);
     releases.push(`${p.id}-tsg-wallet`);
     if (p.hasControlPlane) releases.push(`${p.id}-tsg-control-plane`);
@@ -185,6 +185,7 @@ export class Deploy {
     this.general = general;
     this.applications = applications;
     this.cwd = options.cwd;
+    this.scope = "ecosystem";
 
     await this.confirmOptions(options);
 
@@ -253,6 +254,35 @@ export class Deploy {
         options.dryRun,
         this.cwd
       );
+
+      if (
+        options.cleanDatabase &&
+        this.general.postgresDeploymentMode === "per-namespace" &&
+        !options.dryRun
+      ) {
+        const shouldDeleteCluster =
+          options.yes ||
+          (await confirm({
+            message:
+              "Would you like to delete the shared PostgreSQL cluster? This will remove the cluster and all data for ALL participants. And increases the deployment time when redeploying.",
+            default: false
+          }));
+
+        if (shouldDeleteCluster) {
+          log("log", "Deleting shared PostgreSQL cluster...");
+          await execPromise(
+            `kubectl delete cluster postgresql-cluster -n ${this.general.namespace} --ignore-not-found=true`,
+            options.dryRun,
+            this.cwd,
+            false
+          );
+        } else {
+          log(
+            "log",
+            "Shared PostgreSQL cluster preserved (only databases were deleted)"
+          );
+        }
+      }
     }
 
     // Prune removed participants/services before installing
@@ -261,6 +291,19 @@ export class Deploy {
       currentMap[p.id] = this.participantReleases(p);
     }
     await this.pruneStale(state, currentMap, options.dryRun);
+
+    // Ensure CloudNativePG operator is installed
+    await this.ensureCloudNativePGOperator(options.dryRun, options.yes);
+
+    // Deploy shared postgres cluster for per-namespace mode
+    if (this.general.postgresDeploymentMode === "per-namespace") {
+      await this.installSharedPostgres(
+        options.config,
+        options.dryRun,
+        options.yes,
+        options.diff
+      );
+    }
 
     if (options.diff) {
       log("log", `Determining differences for ecosystem`);
@@ -332,6 +375,7 @@ export class Deploy {
     this.general = general;
     this.applications = applications;
     this.cwd = options.cwd;
+    this.scope = "participant";
 
     await this.confirmOptions(options);
 
@@ -398,6 +442,9 @@ export class Deploy {
       { [participant.id]: this.participantReleases(participant) },
       options.dryRun
     );
+
+    // Ensure CloudNativePG operator is installed
+    await this.ensureCloudNativePGOperator(options.dryRun, options.yes);
 
     if (options.diff) {
       log("log", `Determining differences for participant`);
@@ -537,14 +584,7 @@ export class Deploy {
     cleanDatabase: boolean
   ) => {
     try {
-      if (cleanDatabase) {
-        await execPromise(
-          `helm delete -n ${this.general.namespace} ${participant.id}-postgresql`,
-          dryRun,
-          this.cwd,
-          false
-        );
-      }
+      // Delete Helm releases for applications
       await execPromise(
         `helm delete -n ${this.general.namespace} ${participant.id}-tsg-sso-bridge`,
         dryRun,
@@ -577,13 +617,81 @@ export class Deploy {
         );
       }
       await Promise.all(promises);
+
+      // Delete PostgreSQL CRDs (Cluster and Databases) if cleanDatabase is true
+      if (cleanDatabase) {
+        if (this.general.postgresDeploymentMode === "per-participant") {
+          // Delete participant's databases first
+          log(
+            "log",
+            `Deleting PostgreSQL databases for participant ${participant.id}`
+          );
+          await execPromise(
+            `kubectl delete database -l cnpg.io/cluster=${participant.id}-postgresql -n ${this.general.namespace} --ignore-not-found=true`,
+            dryRun,
+            this.cwd,
+            false
+          );
+
+          // Then delete the cluster
+          log(
+            "log",
+            `Deleting PostgreSQL cluster for participant ${participant.id}`
+          );
+          await execPromise(
+            `kubectl delete cluster ${participant.id}-postgresql -n ${this.general.namespace} --ignore-not-found=true`,
+            dryRun,
+            this.cwd,
+            false
+          );
+        } else {
+          // For per-namespace mode, only delete databases for this participant
+          // (Cluster is shared and should not be deleted)
+          log(
+            "log",
+            `Deleting PostgreSQL databases for participant ${participant.id} (shared cluster)`
+          );
+          const databases = [
+            `${participant.id}-sso-bridge-db`,
+            `${participant.id}-wallet-db`
+          ];
+          if (participant.hasControlPlane) {
+            databases.push(`${participant.id}-control-plane-db`);
+          }
+          for (const [id] of participant.dataPlanes) {
+            databases.push(`${participant.id}-${id}-db`);
+          }
+          await execPromise(
+            `kubectl delete database ${databases.join(" ")} -n ${this.general.namespace} --ignore-not-found=true`,
+            dryRun,
+            this.cwd,
+            false
+          );
+          const databaseNames = [
+            `${participant.id}-sso-bridge-db`,
+            `${participant.id}-wallet-db`
+          ];
+          if (participant.hasControlPlane) {
+            databaseNames.push(`${participant.id}-control-plane-db`);
+          }
+          for (const [id] of participant.dataPlanes) {
+            databaseNames.push(`${participant.id}-${id}-db`);
+          }
+          await execPromise(
+            `kubectl delete database ${databaseNames.join(" ")} -n ${this.general.namespace} --ignore-not-found=true`,
+            dryRun,
+            this.cwd,
+            false
+          );
+        }
+      }
     } catch (e) {
       console.log(e);
     }
   };
 
   private helmRepository = (
-    type: "tsg" | "bitnami",
+    type: "tsg" | "cloudnativepg",
     development: boolean = false
   ) => {
     if (type === "tsg") {
@@ -593,9 +701,155 @@ export class Deploy {
         return "https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable";
       }
     } else {
-      return "https://charts.bitnami.com/bitnami";
+      return "https://cloudnative-pg.github.io/charts";
     }
   };
+
+  private async checkCloudNativePGOperator(): Promise<boolean> {
+    try {
+      const result = await execPromise(
+        "kubectl get pods -n cnpg-system -l app.kubernetes.io/name=cloudnative-pg -o jsonpath='{.items[*].status.phase}'",
+        false,
+        this.cwd,
+        false,
+        undefined,
+        false
+      );
+
+      return result.includes("Running");
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  private async installCloudNativePGOperator(
+    dryRun: boolean
+  ): Promise<boolean> {
+    try {
+      log("log", "Installing CloudNativePG operator...");
+
+      // Install the operator
+      await execPromise(
+        "helm upgrade --create-namespace --install  --namespace cnpg-system --repo https://cloudnative-pg.io/charts/ --version 0.26.0 cnpg cloudnative-pg",
+        dryRun,
+        this.cwd,
+        false
+      );
+
+      if (!dryRun) {
+        log("log", "Waiting for CloudNativePG operator to be ready...");
+        await execPromise(
+          "kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=cloudnative-pg -n cnpg-system --timeout=120s",
+          false,
+          this.cwd,
+          false
+        );
+        log("log", "CloudNativePG operator installed successfully");
+      }
+
+      return true;
+    } catch (error) {
+      log("error", `Failed to install CloudNativePG operator: ${error}`);
+      return false;
+    }
+  }
+
+  private async ensureCloudNativePGOperator(
+    dryRun: boolean,
+    yes: boolean
+  ): Promise<void> {
+    const isInstalled = await this.checkCloudNativePGOperator();
+
+    if (!isInstalled) {
+      log("warn", "CloudNativePG operator is not installed in this cluster");
+
+      const shouldInstall =
+        yes ||
+        (await confirm({
+          message:
+            "Would you like to install the CloudNativePG operator now? This will install the operator in the 'cnpg-system' namespace. This CLI will not delete the operator once installed.",
+          default: true
+        }));
+
+      if (shouldInstall) {
+        const success = await this.installCloudNativePGOperator(dryRun);
+        if (!success) {
+          log(
+            "error",
+            "Failed to install CloudNativePG operator. Please install it manually:"
+          );
+          log(
+            "log",
+            "  helm upgrade --create-namespace --install  --namespace cnpg-system --repo https://cloudnative-pg.io/charts/ --version 0.26.0 cnpg cloudnative-pg"
+          );
+          process.exit(1);
+        }
+      } else {
+        log("error", "CloudNativePG operator is required for deployment");
+        log("log", "Please install it manually:");
+        log(
+          "log",
+          "  helm upgrade --create-namespace --install  --namespace cnpg-system --repo https://cloudnative-pg.io/charts/ --version 0.26.0 cnpg cloudnative-pg"
+        );
+        process.exit(1);
+      }
+    } else {
+      log("log", "CloudNativePG operator is installed and running");
+    }
+  }
+
+  private async installSharedPostgres(
+    config: string,
+    dryRun: boolean,
+    yes: boolean,
+    diff: boolean
+  ): Promise<void> {
+    log("log", "Deploying shared PostgreSQL cluster for namespace");
+
+    // Apply PostgreSQL Cluster and Database CRDs for shared cluster (per-namespace mode)
+    const postgresFile = `${config}/postgres.yaml`;
+    if (fs.existsSync(postgresFile)) {
+      if (diff) {
+        await execPromise(
+          [`kubectl diff -f ${postgresFile} -n ${this.general.namespace}`],
+          dryRun,
+          this.cwd,
+          !yes
+        );
+      } else {
+        await execPromise(
+          [`kubectl apply -f ${postgresFile} -n ${this.general.namespace}`],
+          dryRun,
+          this.cwd,
+          !yes
+        );
+      }
+
+      if (!dryRun && !diff) {
+        // Wait for cluster to be ready
+        log("log", "Waiting for shared PostgreSQL cluster to be ready...");
+        await execPromise(
+          [
+            `kubectl wait --for=condition=Ready cluster postgresql-cluster -n ${this.general.namespace} --timeout=300s || true`
+          ],
+          dryRun,
+          this.cwd,
+          !yes
+        );
+
+        // Wait for all databases to be ready
+        log("log", "Waiting for all databases to be created...");
+        await execPromise(
+          [
+            `kubectl wait --for=jsonpath='{.status.applied}'=true database --all -n ${this.general.namespace} --timeout=120s || true`
+          ],
+          dryRun,
+          this.cwd,
+          !yes
+        );
+      }
+    }
+  }
 
   /**
    * Checks if Helm deployments have succeeded by verifying pod status
@@ -731,14 +985,57 @@ export class Deploy {
         chalk.green("No changes")
       );
 
-    await helmCommand(
-      `-f ${config}/${participant.id}/values.postgres.yaml`,
-      `-n ${this.general.namespace}`,
-      `--repo ${this.helmRepository("bitnami")}`,
-      `--version ${this.applications?.postgres?.chartVersion ?? "13.4.0"}`,
-      `${participant.id}-postgresql`,
-      this.applications?.postgres?.chartName ?? `postgresql`
-    );
+    // Apply PostgreSQL Cluster and Database CRDs (per-participant mode)
+    const shouldDeployDatabase =
+      this.general.postgresDeploymentMode === "per-participant" ||
+      this.scope === "participant";
+    if (shouldDeployDatabase && !diff) {
+      const postgresFile = `${config}/${participant.id}/postgres.yaml`;
+      if (fs.existsSync(postgresFile)) {
+        log(
+          "log",
+          `Applying PostgreSQL Cluster and Database CRDs for participant ${participant.id}`
+        );
+        if (diff) {
+          await execPromise(
+            [`kubectl diff -f ${postgresFile} -n ${this.general.namespace}`],
+            dryRun,
+            this.cwd,
+            !yes
+          );
+        } else {
+          await execPromise(
+            [`kubectl apply -f ${postgresFile} -n ${this.general.namespace}`],
+            dryRun,
+            this.cwd,
+            !yes
+          );
+        }
+        if (!dryRun) {
+          // Wait for cluster to be ready
+          log("log", `Waiting for PostgreSQL cluster to be ready...`);
+          await execPromise(
+            [
+              `kubectl wait --for=condition=Ready cluster ${participant.id}-postgresql -n ${this.general.namespace} --timeout=300s || true`
+            ],
+            dryRun,
+            this.cwd,
+            !yes
+          );
+
+          // Wait for databases to be ready
+          log("log", "Waiting for databases to be created...");
+          await execPromise(
+            [
+              `kubectl wait --for=jsonpath='{.status.applied}'=true database -l cnpg.io/cluster=${participant.id}-postgresql -n ${this.general.namespace} --timeout=120s || true`
+            ],
+            dryRun,
+            this.cwd,
+            !yes
+          );
+        }
+      }
+    }
 
     await helmCommand(
       `-f ${config}/${participant.id}/values.sso-bridge.yaml`,

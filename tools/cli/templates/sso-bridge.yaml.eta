@@ -17,16 +17,33 @@ image:
 ingress:
   enabled: true
 
+<%
+const postgresMode = it.general.postgresDeploymentMode ?? "per-participant";
+const isShared = postgresMode === "per-namespace" && it.scope === "ecosystem";
+let secretName, dbHost, dbName;
+
+if (isShared) {
+  secretName = "postgresql-cluster-app";
+  dbHost = "postgresql-cluster-rw";
+  dbName = `${it.participant.id}-sso-bridge`; // Prefixed for shared cluster
+} else {
+  secretName = `${it.participant.id}-postgresql-app`;
+  dbHost = `${it.participant.id}-postgresql-rw`;
+  dbName = "sso-bridge"; // No prefix for dedicated cluster
+}
+%>
+
 configFromSecrets:
   db:
     password:
-      name: "<%= it.participant.id %>-postgresql"
-      key: postgres-password
+      name: "<%= secretName %>"
+      key: password
 
 config:
   db:
-    database: sso-bridge
-    host: "<%= it.participant.id %>-postgresql"
+    database: <%= dbName %>
+    host: "<%= dbHost %>"
+    username: app
   kubernetesNamespace: <%= it.general.namespace %>
   initRoles:
     - name: "ssobridge_admin"

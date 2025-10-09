@@ -1,25 +1,187 @@
-auth:
-  username: postgres
-  password: password
+# CloudNativePG Cluster and Database CRDs
+# This file contains both the PostgreSQL cluster definition and all database resources
+<%-
+const postgresMode = it.general.postgresDeploymentMode ?? "per-participant";
+const isShared = postgresMode === "per-namespace" && it.scope === "ecosystem";
+const clusterName = isShared ? "postgresql-cluster" : `${it.participant.id}-postgresql`;
 
-primary:
-  persistence:
-    size: 1Gi
-  # For test deployments, delete the PVC when the helm release is removed
-  persistentVolumeClaimRetentionPolicy:
-    enabled: true
-    whenScaled: Delete
-    whenDeleted: Delete
-  initdb:
-    scripts:
-      create-dbs.sql: |-
-        CREATE DATABASE "sso-bridge";
-        GRANT ALL PRIVILEGES ON DATABASE "sso-bridge" TO postgres;
-        CREATE DATABASE wallet;
-        GRANT ALL PRIVILEGES ON DATABASE wallet TO postgres;
-        CREATE DATABASE "control-plane";
-        GRANT ALL PRIVILEGES ON DATABASE "control-plane" TO postgres;
-<%- it.participant.dataPlanes.forEach((value, id) => { %>
-        CREATE DATABASE "<%= id %>";
-        GRANT ALL PRIVILEGES ON DATABASE "<%= id %>" TO postgres;
+// Helper function to get database name with proper prefixing for shared mode
+function getDatabaseName(participantId, baseName) {
+  return isShared ? `${participantId}-${baseName}` : baseName;
+}
+
+// Configuration for shared cluster (per-namespace mode)
+
+// Configuration for per-participant cluster
+const participantConfig = it.participant?.overrides?.postgres ?? {};
+const participantInstances = participantConfig.instances;
+const participantStorageSize = participantConfig.storageSize;
+-%>
+<%- if (isShared) { %>
+# Single cluster for all participants in the namespace
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: <%= clusterName %>
+spec:
+  instances: <%= it.general.postgresInstances %>
+  
+  storage:
+    size: <%= it.general.postgresStorageSize %>
+  
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: "256MB"
+  
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+
+  monitoring:
+    enablePodMonitor: false
+<%- it.participants.forEach((participant) => { %>
+
+# --- Participant: <%= participant.id %> (<%= participant.name %>) ---
+
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: <%= participant.id %>-sso-bridge-db
+spec:
+  databaseReclaimPolicy: delete
+  cluster:
+    name: <%= clusterName %>
+  name: <%= getDatabaseName(participant.id, 'sso-bridge') %>
+  owner: app
+  ensure: present
+
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: <%= participant.id %>-wallet-db
+spec:
+  databaseReclaimPolicy: delete
+  cluster:
+    name: <%= clusterName %>
+  name: <%= getDatabaseName(participant.id, 'wallet') %>
+  owner: app
+  ensure: present
+
+<%- if (participant.hasControlPlane) { %>
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: <%= participant.id %>-control-plane-db
+spec:
+  databaseReclaimPolicy: delete
+  cluster:
+    name: <%= clusterName %>
+  name: <%= getDatabaseName(participant.id, 'control-plane') %>
+  owner: app
+  ensure: present
+<% } %>
+
+<%- participant.dataPlanes.forEach((value, id) => { %>
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: <%= participant.id %>-<%= id %>-db
+spec:
+  databaseReclaimPolicy: delete
+  cluster:
+    name: <%= clusterName %>
+  name: <%= getDatabaseName(participant.id, id) %>
+  owner: app
+  ensure: present
 <%- }); %>
+<%- }); %>
+
+<%- } else { %>
+# Dedicated cluster for participant: <%= it.participant.id %>
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: <%= clusterName %>
+spec:
+  instances: <%= it.general.postgresInstances %>
+  
+  storage:
+    size: <%= it.general.postgresStorageSize %>
+  
+  postgresql:
+    parameters:
+      max_connections: "100"
+      shared_buffers: "128MB"
+  
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+
+  monitoring:
+    enablePodMonitor: false
+
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: <%= it.participant.id %>-sso-bridge-db
+spec:
+  databaseReclaimPolicy: delete
+  cluster:
+    name: <%= clusterName %>
+  name: <%= getDatabaseName(it.participant.id, 'sso-bridge') %>
+  owner: app
+  ensure: present
+
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: <%= it.participant.id %>-wallet-db
+spec:
+  databaseReclaimPolicy: delete
+  cluster:
+    name: <%= clusterName %>
+  name: <%= getDatabaseName(it.participant.id, 'wallet') %>
+  owner: app
+  ensure: present
+
+<%- if (it.participant.hasControlPlane) { %>
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: <%= it.participant.id %>-control-plane-db
+spec:
+  databaseReclaimPolicy: delete
+  cluster:
+    name: <%= clusterName %>
+  name: <%= getDatabaseName(it.participant.id, 'control-plane') %>
+  owner: app
+  ensure: present
+<% } %>
+
+<%- it.participant.dataPlanes.forEach((value, id) => { %>
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: <%= it.participant.id %>-<%= id %>-db
+spec:
+  databaseReclaimPolicy: delete
+  cluster:
+    name: <%= clusterName %>
+  name: <%= getDatabaseName(it.participant.id, id) %>
+  owner: app
+  ensure: present
+<%-
+});
+}
+%>
