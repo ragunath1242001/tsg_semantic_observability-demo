@@ -1,0 +1,33 @@
+---
+id: dataplanestatedto
+title: "DataPlaneStateDto"
+description: ""
+sidebar_label: "DataPlaneStateDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"identifier":"44d1f3d6-f65d-4a7c-84db-f92ba826305e","details":{"dataplaneType":"exampleType","title":"Dataplane Titel","endpointPrefix":"/api/v1/dataplane","callbackAddress":"http://localhost/callback","managementAddress":"http://localhost/manage","managementToken":"token123","catalogSynchronization":"push","role":"consumer","identifier":"dp-12345"}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"DataPlaneStateDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"identifier":{"type":"string","example":"44d1f3d6-f65d-4a7c-84db-f92ba826305e"},"details":{"type":"object","properties":{"dataplaneType":{"type":"string","example":"exampleType"},"title":{"type":"string","example":"Dataplane Titel"},"endpointPrefix":{"type":"string","example":"/api/v1/dataplane"},"callbackAddress":{"type":"string","example":"http://localhost/callback"},"managementAddress":{"type":"string","example":"http://localhost/manage"},"managementToken":{"type":"string","example":"token123"},"catalogSynchronization":{"type":"string","enum":["push","pull"],"example":"push"},"role":{"type":"string","enum":["consumer","provider","both"],"example":"consumer"},"identifier":{"type":"string","example":"dp-12345"}},"required":["dataplaneType","title","endpointPrefix","callbackAddress","managementAddress","managementToken","catalogSynchronization","role","identifier"],"title":"DataPlaneDetailsDto"}},"required":["identifier","details"],"title":"DataPlaneStateDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

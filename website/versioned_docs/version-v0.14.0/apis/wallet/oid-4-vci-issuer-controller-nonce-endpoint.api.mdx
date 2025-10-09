@@ -1,0 +1,72 @@
+---
+id: oid-4-vci-issuer-controller-nonce-endpoint
+title: "Request OID4VCI nonce"
+description: "Requests a nonce for the OID4VCI flow. This is used to prevent replay attacks."
+sidebar_label: "Request OID4VCI nonce"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVdtuGzcQ/ZXBPLXBRnIMF00WRYHANgqhgR1EbvLgBsKIO9Iy5pI0Oau1IOjfC3LXurnuU/VgWXM9MyTP2WDFUQXtRTuLJX7hx5ajRCCwziqGhQsgNcPt5Ori6+UEFsZ1I7irdQQdoY1cgTjwgVdsBQJ7Q2sgEVIPcYQFOs+BUvFJhSUOVSYxthwunZXgjOEwy72ubeWdtoIFegrUsHCIWN5/LzBw9M5Gjlhu8PzsLH0dA8cClbPCVpKPvDda5b7jHzEFbDCqmhtK/8naM5bo5j9Y5W4hoRTdl1c9moPAKEHbJRbIT9R4k0zdn5OLT3fvfiX17pfr6Yd5957UBW63CepjqwNXWN7vSn0vULTkxJtk+DKMg9v0KVBomQbFW892cgUX8JWDXmiaG4bLwBVb0WQgrY2Geg1L7dJKvYv9xqTGEsfk9djp6mKl9LhvXmDksNqtMrJqg5b1NK2jn9hRK/X54WZ6Q4HptHOIpxg7F6p+kc73iR0ZwzJbae5mlU5oTi3Fs6UhS0uePfA67sMOjbvINp6G7SzFUX3X2ZnabSeedD/1HueSMf+Re+o9neLVzq/4T/Nf7f6Kf5ev08P599SXruOJfeDIVvKbOJ332JfuMFXOmnXafMDy5PdwabVduHxnhpt9N/0DvuWiWJw8zruaYe9OxEEwnU6gxwBSk4AiC3kGIFtBFBcYVvtncDBYDlCBSRiOkCcmmnNPSp2WWluoSAiiJ8Vx9Ns8wPj3/u/fFgAg4er2mHTDFZBA0xrRb0VzgIq9ceuGrcQi1wRnGX5yARoX+OejCUgl3owgoY0CZFXtQuZPOoCRwWtb6VVLZkiPOYpJ1eAWmW09BdFKe7ISQdts29cYwW0y6Qielpydiq2EXcEeT95mPNpcp41JK1IprMqZVyTUIxtOh4zUrl3WoPNWrEu03nNaX1dqDgxkOlpnEeAnUmLWeTO5Z0hjHLbVdthBD//lQcxmb26c8JvZrOy1JTHhx88TqHihrU6n+4xFJ5KvetmZM1Q6cO5utH0Yzh0IorZLsxtJ2yiJOEeABSYqPNIMUkkztgUarTixcrlBS0260x89qZrhfHSGBbbBYIm1iI/leNx13Yiye+TCcjzkxvGnyeX1zfT67fnobFRLY7IoJJJuyB5UHoR2p6vPXH30cDZ7Tfv/lXngeuEnGXtD2uJ2mHEzqMk9ktdJw3s9wQJ3clYn1SnvcbOZU+S/gtluk/mx5bDudWZFIb/c9GtbYM1UJS653+ADr9NqlWKfqGJFpk1AXmj29lDmPt9O73C7/QeOSRTh
+sidebar_class_name: "post api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request OID4VCI nonce"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/oid4vci/nonce"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Requests a nonce for the OID4VCI flow. This is used to prevent replay attacks.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"c_nonce":{"type":"string","example":"wKI4LT17ac15ES9bw8ac4"}},"required":["c_nonce"],"title":"NonceResponse"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

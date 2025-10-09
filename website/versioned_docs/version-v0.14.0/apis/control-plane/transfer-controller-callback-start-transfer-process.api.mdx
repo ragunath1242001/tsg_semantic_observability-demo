@@ -1,0 +1,72 @@
+---
+id: transfer-controller-callback-start-transfer-process
+title: "Callback to start transfer process"
+description: "Callback to start transfer process"
+sidebar_label: "Callback to start transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJzNV01v4zYQ/SsET+1CsdP00Fanptl0EaCbGJtsegiMYEyOLW4okktS8RqC/nsxlGRLtpMG6B56ks354Mzj8D2p5tahh6isuZI853ceTFiiv7Ameqs1+kcBWi9APN1G8LG3z7wVGALPuAMPJUb0gecPNTdQIs+5kjzjHr9WyqPkefQVZlwZnnMHseAZlxiEV442HmzLrt7zjAdRYAk8r3ncOMoWoldmxZtm3ibFEP+wckMe+3sIayKaSCZwTiuRept+CbRPfZjaLr6giNSHJySiwkDW31vzfgUZx29QOo2DmhMuHzEEWCFvUqJnJdHPlHw9Qe944pQ8+eXX3yhYWBOq8g3BvWMK/unsZwqWEOFcSk8Hk9c75207/P3AI+NopLPKxLvWWMToBqvdSsinU3Bq0mWbCFsOnGYD1B52+1yOzRue9YORHhl/Bl3R3/bZzJuMg9Y3y5TlPx/NsM1mv8/XAhMEzRCDf/M+Bk9zHJ/BibwJqj7H9Riyfvm+gy7rKwTvgcJVxDJ8lxE/qK3pi3stalR3sy38LSFdT82QOx66SrPx7FDfKh4t87a95M1LeUbzMDjsQcrBBPXZ5i+lG1748Q0eJDzGFrs6U+bgrAnt2ZydntJjTJIXHRGzQDlQstizZqgEsfGy0nrDvxsHhgixCsdoOBtyS+/GuypSP+QTUFRexU0a9wWCR8/zh3maWFgRYWxRCQTVC91G2za8a9dtxafEWFjSLWdDaoDEJed0I6e9boVpHximtZLNNGUjmUH/3MrWfFdsOpO2fwtVLM6GOLULGV9qu04uDkJYWy9bWK1rA0Urnk6DwUeQZdK9I4vZeJHoO/3a994ZWmB7LLujJP9uqbf9aX0JxOD3M77lh47fxzDfo1dLBQuNbOYxoIlpWJhBlDRilglblpWhIUK2wLhGNCyuLVMmRDACA7NLFgtkXc0slTpJY0Ij92kn2JeHinRURfdE9FAp94TyUA0PxPD/r4ANvSAtbZq3njRuP7DuTYzN0gAcvDgVKrAbh+Z8dsWCQ6GW3XVnobDrkA6mL3V7UqOcE/bRhtibdr7gkXnUENsxICOBFxwImhUbrbA6YxD6fVGyxSb5XQqtXED2t/VPyqzYB28rt4sOE3YTC/R7m4XKOeujeh5WES0r4YmMHlNuOlcmwLAFMpByV5yACNquMgZG7odBZJ+vmDIRPQhCJ6QUkVycBoETxh4f313biO8eH3M2glXiUhmVMFWBGRtTItNtvUAmlUcR9YZpZZ5QsrWKBQMWlFnpPbC3t2bCaAbQh/YcOy4AQazdZFwrgSakm9KNzbkDUSA7m5zyjFdeD4ZzvV5PIJkn1q+mXWyY/nV1cXl9e3lyNjmdFLHU6UoSU5ZgBpnfxLSjsdsyYsRvceo0KENCn6qqOxJ+4OAUtdXTMBHRlu4znie1bLl4nvGCCDx/4HW9gICfvW4aWv5aod+0DP0MPvFUumZSBfoteb4EHfCgvq0E8h8+dZL9Ixt/ZRxtoX+VMpvBFeUZf8JN+1WTXlULBJnErO4MF+12J90bRR94oL5N1kecC4Euvuo7H+jb7Ob2jti9++opraQYD2v6zIJ1W6RN7Se6S2s112BWFTFqztucNAGkYoMz3JOO4Rv4GIa6bj3u7BOaptmiEul/YrDmH1JxADI=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Callback to start transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/callbacks/transfers/{id}/start"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Callback to start transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"TransferStartMessage"},"providerPid":{"type":"string","example":"provider-pid-789"},"consumerPid":{"type":"string","example":"consumer-pid-123"},"dataAddress":{"example":{"@type":"DataAddress","endpointType":"http","endpoint":"https://api.example.com","endpointProperties":[{"@type":"EndpointProperty","name":"name","value":"value"}]},"allOf":[{"type":"object","properties":{"@type":{"type":"string","example":"DataAddress"},"endpointType":{"type":"string","example":"http"},"endpoint":{"type":"string","example":"https://api.example.com"},"endpointProperties":{"example":[{"@type":"EndpointProperty","name":"endpointName","value":"endpointValue"}],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"EndpointProperty"},"name":{"type":"string","example":"endpointName"},"value":{"type":"string","example":"endpointValue"}},"required":["@type","name","value"],"title":"EndpointPropertySchema"}}},"required":["@type","endpointType","endpoint"],"title":"DataAddressSchema"}]}},"required":["@type","providerPid","consumerPid"],"title":"TransferStartMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Callback started transfer successfully","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"success"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

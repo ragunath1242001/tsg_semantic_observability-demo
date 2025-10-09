@@ -1,0 +1,33 @@
+---
+id: contractnegotiationschema
+title: "ContractNegotiationSchema"
+description: ""
+sidebar_label: "ContractNegotiationSchema"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@id":"3f2592da-ffc9-40cb-a336-a9daa9343ce8","@type":"ContractNegotiation","consumerPid":"urn:example:consumerPid","providerPid":"urn:example:providerPid","state":"REQUESTED"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ContractNegotiationSchema"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@id":{"type":"string","example":"3f2592da-ffc9-40cb-a336-a9daa9343ce8"},"@type":{"type":"string","example":"ContractNegotiation"},"consumerPid":{"type":"string","example":"urn:example:consumerPid"},"providerPid":{"type":"string","example":"urn:example:providerPid"},"state":{"type":"string","example":"REQUESTED"}},"required":["@id","@type","consumerPid","providerPid","state"],"title":"ContractNegotiationSchema"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

@@ -1,0 +1,72 @@
+---
+id: files-controller-sync-files
+title: "Sync files"
+description: "Sync files and their metadata."
+sidebar_label: "Sync files"
+hide_title: true
+hide_table_of_contents: true
+api: eJyFVE1vIjkQ/StWnT2AMpz6Fs0kq0irDFqyc0EIFe6C9my37djVIQj1f1+Vu2mYbJLlAri+XlW9VycoKZloA1vvoIDl0Rm1szUlha5UXJGNqiHGEhknoMEHiijODyUUcC+e37zj6Oua4iYdnclvoCFgxIaYYoJitdYQKQXvEiUoTjCffZWv34vf+7i1ZUkONBjvmByLE4ZQW5OLTn8l8TxBMhU1KL/4GAgK8NtfZFjKRoHItq/jsKErr8TRuj1ooFdsQi1Pf1HybTT06Pnet66ETkNi5DZ9HjefzdWjZzUGGV9el3Jts6V4HTKfzTsNDaWEe3oP+iX5U0Uq0nNLialUcYCoSk9JOc+KXm3iiVSlGH38HOkVyk7W8NzaSCUUq346Y7tDC2sNbDlH3kny7+yhk4+GRKaNlo9QrE7gseXqRtKYngChRkcbIUr+BetOUuFe9t8zRXI3xJUX7gSf8r6QKyhgisFOM/GmQiJBRfFlJM+58lL23q/2XP8yx/5Bw672h+wSMKWDj2XPGB/6QHRYH9maNELdYNlYYeCHJv2e6dLqu5EXcz+9LWGkOLJXooans+3exwYZCvi5AH1uq2IOoN9I5SdFu7O4rUktIiVynPWhHFFJpWKvjG+a1oluSG2JD0RO8cEr6xKjM5SU34m+1bA9laFOMkes2/k82IEHT8s/1O25QfUdGdUiN/YW1lNlk/oRyN0uHlQKZOxuUK5KlT+kXJBcGbx1PCJ4L7XcGll/n3c4CGjkIHQaamvIJbooHG4DmorUzWQGGtpYD4NLxXR6OBwmmM0TH/fTITZN/3z4dve4vPtyM5lNKm7q3LqwskF3lflyEt+2e7pcqf8/nMM2mV55Gmq0TtSbgZ4GDawAgxX6DrWyDtYaKhFKsYLTaYuJ/o5118nzc0vx2KvjBWPmgvzrNFSEpRBtdYJ/6CjDMYaCiO0F6zaz9e1J7a6VufixfBLGt4Lqv/IahT+a0B2vk38gIvWpRvSANesUOv1B8rOkNyZSSY4t1mmM3Ud0vMlx3brrun8B0CJitQ==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Sync files"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/files/sync"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Sync files and their metadata.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

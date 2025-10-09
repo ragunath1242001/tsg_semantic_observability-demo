@@ -1,6 +1,6 @@
 {
   "name": "@tsg-dsp/documentation-generator",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "description": "Documentation generator tool",
   "engines": {
     "node": ">= 16.14"

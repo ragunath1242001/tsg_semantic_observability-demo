@@ -1,0 +1,33 @@
+---
+id: createalgorithminstancedto
+title: "CreateAlgorithmInstanceDto"
+description: ""
+sidebar_label: "CreateAlgorithmInstanceDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"id":"123e4567-e89b-12d3-a456-426614174000","algorithmDefinition":{"title":"string","description":"string","keywords":["string"],"image":"string","algorithmEvents":["string"],"roleDefinitions":["string"],"internalEvents":["string"],"uiTemplate":["string"]},"participants":["string"]}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"CreateAlgorithmInstanceDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"id":{"type":"string","example":"123e4567-e89b-12d3-a456-426614174000"},"algorithmDefinition":{"description":"The definition for the algorithm","allOf":[{"type":"object","properties":{"title":{"type":"string","description":"Title of the algorithm"},"description":{"type":"string","description":"Description of the algorithm"},"keywords":{"description":"Keywords associated with the algorithm","type":"array","items":{"type":"string"}},"image":{"type":"string","description":"Public image URL of the algorithm"},"algorithmEvents":{"description":"Algorithm event structure of the algorithm","type":"array","items":{"type":"string"}},"roleDefinitions":{"description":"Role definitions for the algorithm","type":"array","items":{"type":"string"}},"internalEvents":{"description":"Internal event structure of the algorithm","type":"array","items":{"type":"string"}},"uiTemplate":{"description":"UI template for visualizing internal events","type":"array","items":{"type":"string"}}},"required":["title","description","keywords","image","algorithmEvents","roleDefinitions","internalEvents","uiTemplate"],"title":"AlgorithmDefinitionDto"}]},"participants":{"description":"Participants for this algorithm","type":"array","items":{"type":"string"}}},"required":["id","algorithmDefinition","participants"],"title":"CreateAlgorithmInstanceDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            
