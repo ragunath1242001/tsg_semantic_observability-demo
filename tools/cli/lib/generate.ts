@@ -93,10 +93,24 @@ export class Generate {
     this.pendingWrites = new Map();
     this.scope = "ecosystem";
     this.statePath = this.getStatePath(options.file, "ecosystem.yaml");
+    if (general.postgresDeploymentMode === "per-namespace") {
+      await this.writeConfig(
+        "postgres",
+        `${options.output}/postgres.yaml`,
+        { participants: this.participants },
+        !options.stdout
+      );
+    }
     // Process participants sequentially without awaiting inside the loop
     await participants.reduce(
       (p, participant) =>
-        p.then(() => this.writeParticipant(participant, options)),
+        p.then(() =>
+          this.writeParticipant(
+            participant,
+            options,
+            general.postgresDeploymentMode === "per-participant"
+          )
+        ),
       Promise.resolve()
     );
     await this.finalizeWrites(options);
@@ -118,13 +132,14 @@ export class Generate {
     this.pendingWrites = new Map();
     this.scope = "participant";
     this.statePath = this.getStatePath(options.file, "participant.yaml");
-    await this.writeParticipant(participant, options);
+    await this.writeParticipant(participant, options, true);
     await this.finalizeWrites(options);
   };
 
   private writeParticipant = async (
     participant: Participant,
-    options: Options
+    options: Options,
+    database: boolean
   ) => {
     log("log", `Creating configuration for participant ${participant.name}`);
     await this.writeConfig(
@@ -133,12 +148,16 @@ export class Generate {
       { participant },
       !options.stdout
     );
-    await this.writeConfig(
-      "postgres",
-      `${options.output}/${participant.id}/values.postgres.yaml`,
-      { participant },
-      !options.stdout
-    );
+
+    if (database) {
+      await this.writeConfig(
+        "postgres",
+        `${options.output}/${participant.id}/postgres.yaml`,
+        { participant, participants: [participant] },
+        !options.stdout
+      );
+    }
+
     await this.writeConfig(
       "wallet",
       `${options.output}/${participant.id}/values.wallet.yaml`,
@@ -198,8 +217,20 @@ export class Generate {
       ...config,
       // participant: participant,
       participants: this.participants,
-      applications: this.applications
+      applications: this.applications,
+      scope: this.scope
     });
+
+    // Special handling for templates that contain multiple YAML documents (CRDs)
+    // These should be written as-is without parsing/merging
+    if (templateFile === "postgres") {
+      if (writeFile) {
+        this.pendingWrites.set(outfile, rendered);
+      } else {
+        process.stdout.write(`### ${outfile}\n\n${rendered}\n\n`);
+      }
+      return;
+    }
 
     // parse template and optionally merge overrides
     let obj = parse(rendered);

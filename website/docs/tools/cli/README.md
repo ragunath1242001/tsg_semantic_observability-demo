@@ -194,8 +194,29 @@ Before using the CLI, ensure you have:
 - **Kubernetes cluster** (version 1.24 or higher)
 - **Ingress Controller** with public routes (e.g., [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/))
 - **TLS Certificate Management** (e.g., [cert-manager](https://cert-manager.io/)) for HTTPS endpoints
+- **CloudNativePG Operator** (recommended) - PostgreSQL operator for database management
 
 > **Important**: Public HTTPS endpoints are required for DID document resolution and interactions between connectors.
+
+### Installing CloudNativePG Operator
+
+The CLI uses CloudNativePG for PostgreSQL management. The operator will be automatically checked during deployment, and you'll be prompted to install it if not found.
+
+You can also install it manually before deploying:
+
+```bash
+# Add the CloudNativePG Helm repository
+helm repo add cnpg https://cloudnative-pg.github.io/charts
+
+# Install the operator in the cnpg-system namespace
+helm upgrade --install cnpg \
+  --namespace cnpg-system \
+  --create-namespace \
+  cnpg/cloudnative-pg
+
+# Verify the operator is running
+kubectl get pods -n cnpg-system
+```
 
 ## Workflow
 
@@ -269,9 +290,9 @@ Before using the CLI, ensure you have:
 After running `tsg bootstrap`, the output directory contains (by default `output/` and for ecosystem bootstraps it contains a folder for each participant):
 
 ```
+├── postgres.yaml
 ├── values.control-plane.yaml
 ├── values.http-data-plane.yaml
-├── values.postgres.yaml
 ├── values.sso-bridge.yaml
 └── values.wallet.yaml
 ```

@@ -7,6 +7,7 @@ import {
   IsDefined,
   IsIn,
   IsInstance,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -188,6 +189,20 @@ export class General {
 
   @IsString()
   public readonly credentialType!: string;
+
+  @IsString()
+  @IsIn(["per-participant", "per-namespace"])
+  @IsOptional()
+  public readonly postgresDeploymentMode: "per-participant" | "per-namespace" =
+    "per-namespace";
+
+  @IsNumber()
+  @IsOptional()
+  public readonly postgresInstances: number = 1;
+
+  @IsString()
+  @IsOptional()
+  public readonly postgresStorageSize: string = "1Gi";
 }
 
 export class Application {

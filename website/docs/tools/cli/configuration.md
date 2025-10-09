@@ -35,19 +35,22 @@ Configuration for the CLI tool starts either at [Ecosystem](#ecosystem-ecosystem
 
 ### General
 
-| Name              | Data Type | Required | Explanation                                                                                             | Default |
-| ----------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------- | ------- |
-| `namespace`       | String    | Yes      | Kubernetes namespace used for deployments. Must match pattern `[a-zA-Z-]+` (alphanumeric with hyphens)  |         |
-| `username`        | String    | Yes      | Default admin username                                                                                  |         |
-| `password`        | String    | Yes      | Default admin password                                                                                  |         |
-| `authorityDomain` | String    | Yes      | Domain name of the authority, either the one deployed as participant or an external dataspace authority |         |
-| `credentialType`  | String    | Yes      | Credential type name                                                                                    |         |
+| Name                      | Data Type                                | Required | Explanation                                                                                                                                             | Default              |
+| ------------------------- | ---------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| `namespace`               | String                                   | Yes      | Kubernetes namespace used for deployments. Must match pattern `[a-zA-Z-]+` (alphanumeric with hyphens)                                                  |                      |
+| `username`                | String                                   | Yes      | Default admin username                                                                                                                                  |                      |
+| `password`                | String                                   | Yes      | Default admin password                                                                                                                                  |                      |
+| `authorityDomain`         | String                                   | Yes      | Domain name of the authority, either the one deployed as participant or an external dataspace authority                                                 |                      |
+| `credentialType`          | String                                   | Yes      | Credential type name                                                                                                                                    |                      |
+| `postgresDeploymentMode`  | `"per-participant"` \| `"per-namespace"` |          | PostgreSQL deployment strategy. `per-participant` deploys a database per participant, `per-namespace` deploys a single shared cluster for the namespace | `"per-namespace"`    |
+| `postgresInstances`       | Number                                   |          | Number of PostgreSQL instances for shared cluster (per-namespace mode only). Higher values provide better high availability                             | `1`                  |
+| `postgresStorageSize`     | String                                   |          | Storage size for shared PostgreSQL cluster (per-namespace mode only). Examples: `"1Gi"`, `"5Gi"`, `"10Gi"`                                            | `"1Gi"`              |
 
 ### Applications
 
 | Name           | Data Type                                  | Required | Explanation                                                        | Default |
 | -------------- | ------------------------------------------ | -------- | ------------------------------------------------------------------ | ------- |
-| `postgres`     | [Application](#application)                |          | Postgres [application](#application), defaults to Bitnami Postgres |         |
+| `postgres`     | [Application](#application)                |          | PostgreSQL [application](#application) using CloudNativePG         |         |
 | `ssoBridge`    | [Application](#application)                |          | SSO Bridge [application](#application)                             |         |
 | `wallet`       | [Application](#application)                |          | TSG Wallet                                                         |         |
 | `controlPlane` | [Application](#application)                |          | TSG Control Plane                                                  |         |
@@ -55,13 +58,13 @@ Configuration for the CLI tool starts either at [Ecosystem](#ecosystem-ecosystem
 
 ### Application
 
-| Name               | Data Type | Required | Explanation                         | Default                    |
-| ------------------ | --------- | -------- | ----------------------------------- | -------------------------- |
-| `chartVersion`     | String    |          | Helm chart version                  |                            |
-| `chartName`        | String    |          | Helm chart name                     |                            |
-| `developmentChart` | Boolean   |          | Use TSG development Helm repository | `false`                    |
-| `imageTag`         | String    |          | Docker image tag                    |                            |
-| `imageRepository`  | String    |          | Docker image repository             |                            |
+| Name               | Data Type                      | Required | Explanation                         | Default          |
+| ------------------ | ------------------------------ | -------- | ----------------------------------- | ---------------- |
+| `chartVersion`     | String                         |          | Helm chart version                  |                  |
+| `chartName`        | String                         |          | Helm chart name                     |                  |
+| `developmentChart` | Boolean                        |          | Use TSG development Helm repository | `false`          |
+| `imageTag`         | String                         |          | Docker image tag                    |                  |
+| `imageRepository`  | String                         |          | Docker image repository             |                  |
 
 ### Participant
 
@@ -92,6 +95,101 @@ Configuration for the CLI tool starts either at [Ecosystem](#ecosystem-ecosystem
 | `dnsPrefix`    | String    |          | DNS prefix to use for this data plane if different from key and if participant routing is `"subdomain"`                          |         |
 | `config`       | Object    |          | Specific data plane config for TSG-based data planes. See also [Providing Custom Configuration](#providing-custom-configuration) |         |
 | `overrides`    | Object    |          | Configuration overrides for the Helm chart values. See also [Providing Custom Configuration](#providing-custom-configuration)    |         |
+
+## PostgreSQL Deployment Options
+
+The CLI uses CloudNativePG for PostgreSQL management with declarative database creation, providing high availability, automated backups, and advanced management features.
+
+### Database Management
+
+Databases are created declaratively using CloudNativePG's Database CRD:
+- Each application (SSO Bridge, Wallet, Control Plane, Data Planes) gets its own database
+- Databases are created as separate Kubernetes resources after the cluster is deployed
+- In per-namespace mode, databases are prefixed with participant ID to avoid collisions
+- Database lifecycle can be managed independently from the cluster
+
+### Deployment Modes
+
+**Per-Namespace Mode** (_default_):
+- Single shared PostgreSQL cluster for the entire namespace
+- All participants share the same cluster with separate databases
+- More resource efficient for many participants
+- Simplified cluster management with high availability (1 instance by default)
+- Configure instances and storage globally in `general` section
+
+```yaml
+general:
+  postgresDeploymentMode: per-namespace
+  postgresInstances: 1        # Number of instances for high availability
+  postgresStorageSize: "1Gi"  # Storage size for the shared cluster
+```
+**Per-Participant Mode**:
+- Each participant gets its own PostgreSQL cluster
+- Isolated database resources per application per participant
+- Better security isolation
+- Easier to manage individual participant resources
+- Configure instances and storage per participant using `overrides.postgres`
+
+```yaml
+general:
+  postgresDeploymentMode: per-participant
+participants:
+  - id: alfa
+    name: Alfa
+    # ... other participant config
+    overrides:
+      postgres:
+        instances: 2        # Number of PostgreSQL instances for this participant
+        storageSize: "5Gi"  # Storage size for this participant's cluster
+```
+
+
+### PostgreSQL Configuration Options
+
+**Shared Cluster Configuration (per-namespace mode)**:
+- `general.postgresInstances`: Number of PostgreSQL instances (default: 1)
+- `general.postgresStorageSize`: Storage size per instance (default: "1Gi")
+
+**Per-Participant Cluster Configuration (per-participant mode)**:
+- `participant.overrides.postgres.instances`: Number of instances for this participant's cluster (default: 1)
+- `participant.overrides.postgres.storageSize`: Storage size for this participant's cluster (default: "1Gi")
+
+**Example with mixed configurations**:
+```yaml
+general:
+  namespace: tsg-ecosystem
+  postgresDeploymentMode: per-participant
+  # ... other general config
+
+participants:
+  - id: alfa
+    name: Alfa
+    # Uses default: 1 instance, 1Gi storage
+  
+  - id: bravo
+    name: Bravo
+    overrides:
+      postgres:
+        instances: 1
+        storageSize: "10Gi"  # Larger storage for this participant
+  
+  - id: charlie
+    name: Charlie
+    overrides:
+      postgres:
+        instances: 3        # High availability setup
+        storageSize: "5Gi"
+```
+
+### CloudNativePG Operator
+
+The CloudNativePG operator must be installed in your cluster. The CLI will automatically check for it and offer to install it if not found:
+
+```bash
+# The CLI will prompt to install if not found, or install manually:
+helm repo add cnpg https://cloudnative-pg.github.io/charts
+helm upgrade --install cnpg cnpg/cloudnative-pg --namespace cnpg-system --create-namespace
+```
 
 ## Providing Custom Configuration
 

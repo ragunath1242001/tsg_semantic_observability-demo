@@ -143,26 +143,26 @@ This will create a folder structure like this:
 ├── ecosystem.yaml
 └── output
     ├── alfa
+    │   ├── postgres.yaml
     │   ├── values.sso-bridge.yaml
     │   ├── values.control-plane.yaml
     │   ├── values.http-data-plane.yaml
-    │   ├── values.postgres.yaml
     │   └── values.wallet.yaml
     ├── authority
+    │   ├── postgres.yaml
     │   ├── values.sso-bridge.yaml
-    │   ├── values.postgres.yaml
     │   └── values.wallet.yaml
     ├── bravo
+    │   ├── postgres.yaml
     │   ├── values.sso-bridge.yaml
     │   ├── values.control-plane.yaml
     │   ├── values.http-data-plane.yaml
-    │   ├── values.postgres.yaml
     │   └── values.wallet.yaml
     └── charlie
+        ├── postgres.yaml
         ├── values.sso-bridge.yaml
         ├── values.control-plane.yaml
         ├── values.http-data-plane.yaml
-        ├── values.postgres.yaml
         └── values.wallet.yaml
 ```
 
@@ -178,25 +178,20 @@ This will result in a list of commands the command will execute:
 
 ```
 ✔ Confirm or update configuration use Kubernetes context TSG-Playground (will abort if not selected), dry run commands
+[TSG-CLI] LOG   - CloudNativePG operator is installed and running
+[TSG-CLI] LOG   - Deploying shared PostgreSQL cluster for namespace
+[TSG-CLI] LOG   - Dry-run: kubectl apply -f output/authority/postgres.yaml -n handson
 [TSG-CLI] LOG   - Deploying ecosystem
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/authority/values.postgres.yaml -n tsg-ecosystem --repo https://charts.bitnami.com/bitnami --version 13.4.0 authority-postgresql postgresql
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/authority/values.sso-bridge.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 authority-sso-bridge tsg-sso-bridge
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/authority/values.wallet.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 authority-tsg-wallet tsg-wallet
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/alfa/values.postgres.yaml -n tsg-ecosystem --repo https://charts.bitnami.com/bitnami --version 13.4.0 alfa-postgresql postgresql
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/alfa/values.sso-bridge.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 alfa-sso-bridge tsg-sso-bridge
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/alfa/values.wallet.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 alfa-tsg-wallet tsg-wallet
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/alfa/values.control-plane.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 alfa-tsg-control-plane tsg-control-plane
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/alfa/values.http-data-plane.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 alfa-tsg-http-data-plane tsg-http-data-plane
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/bravo/values.postgres.yaml -n tsg-ecosystem --repo https://charts.bitnami.com/bitnami --version 13.4.0 bravo-postgresql postgresql
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/bravo/values.sso-bridge.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 bravo-sso-bridge tsg-sso-bridge
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/bravo/values.wallet.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 bravo-tsg-wallet tsg-wallet
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/bravo/values.control-plane.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 bravo-tsg-control-plane tsg-control-plane
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/bravo/values.http-data-plane.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 bravo-tsg-http-data-plane tsg-http-data-plane
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/charlie/values.postgres.yaml -n tsg-ecosystem --repo https://charts.bitnami.com/bitnami --version 13.4.0 charlie-postgresql postgresql
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/charlie/values.sso-bridge.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 charlie-sso-bridge tsg-sso-bridge
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/charlie/values.wallet.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 charlie-tsg-wallet tsg-wallet
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/charlie/values.control-plane.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 charlie-tsg-control-plane tsg-control-plane
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/charlie/values.http-data-plane.yaml -n tsg-ecosystem --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.3.0 charlie-tsg-http-data-plane tsg-http-data-plane
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install -f output/authority/values.sso-bridge.yaml -n handson --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.13.1 authority-tsg-sso-bridge tsg-sso-bridge
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install -f output/authority/values.wallet.yaml -n handson --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.13.1 authority-tsg-wallet tsg-wallet
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install -f output/alfa/values.sso-bridge.yaml -n handson --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.13.1 alfa-tsg-sso-bridge tsg-sso-bridge
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install -f output/alfa/values.wallet.yaml -n handson --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.13.1 alfa-tsg-wallet tsg-wallet
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install -f output/alfa/values.control-plane.yaml -n handson --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.13.1 alfa-tsg-control-plane tsg-control-plane
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install -f output/alfa/values.http-data-plane.yaml -n handson --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.13.1 alfa-tsg-http-data-plane tsg-http-data-plane
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install -f output/bravo/values.sso-bridge.yaml -n handson --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.13.1 bravo-tsg-sso-bridge tsg-sso-bridge
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install -f output/bravo/values.wallet.yaml -n handson --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.13.1 bravo-tsg-wallet tsg-wallet
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install -f output/bravo/values.control-plane.yaml -n handson --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.13.1 bravo-tsg-control-plane tsg-control-plane
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install -f output/bravo/values.http-data-plane.yaml -n handson --repo https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable --version 0.13.1 bravo-tsg-http-data-plane tsg-http-data-plane
 ```
 
 ### 4. First deployment
@@ -277,10 +272,10 @@ This will create a folder structure like this:
 ├── participant.yaml
 └── output
     └── zulu
+        ├── postgres.yaml
         ├── values.sso-bridge.yaml
         ├── values.control-plane.yaml
         ├── values.http-data-plane.yaml
-        ├── values.postgres.yaml
         └── values.wallet.yaml
 ```
 

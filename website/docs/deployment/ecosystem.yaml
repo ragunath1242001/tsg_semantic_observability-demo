@@ -4,6 +4,9 @@ general:
   password: changeme
   authorityDomain: authority.example.com
   credentialType: ExampleCredential
+  postgresDeploymentMode: per-namespace
+  postgresInstances: 1
+  postgresStorageSize: "1Gi"
 participants:
   - host: authority.example.com
     id: authority
