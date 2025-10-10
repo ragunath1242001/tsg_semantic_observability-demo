@@ -66,7 +66,13 @@ export class RegistryService implements OnApplicationBootstrap {
       this.logger.debug("No credentials found. Registry will not work.");
       return [];
     }
-    const uniqueDids = [...new Set(credentials.map((c) => c.targetDid))];
+    const uniqueDids = [
+      ...new Set(
+        credentials
+          .map((c) => c.targetDid)
+          .filter((targetDid) => targetDid.startsWith("did:"))
+      )
+    ];
     const didDocuments = await Promise.all(
       uniqueDids.map(async (did) => {
         try {
