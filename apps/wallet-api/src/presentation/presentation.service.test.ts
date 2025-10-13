@@ -19,6 +19,7 @@ import {
   StatusListCredentialDao
 } from "../model/credentials.dao.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
+import { ScopeDao } from "../model/scopes.dao.js";
 import { PresentationService } from "./presentation.service.js";
 
 describe("Presentation Service", () => {
@@ -60,7 +61,8 @@ describe("Presentation Service", () => {
           DIDDocuments,
           DIDService,
           KeyMaterialDao,
-          DIDLogs
+          DIDLogs,
+          ScopeDao
         ]),
         TypeOrmModule.forFeature([
           CredentialDao,
@@ -68,7 +70,8 @@ describe("Presentation Service", () => {
           DIDDocuments,
           DIDService,
           KeyMaterialDao,
-          DIDLogs
+          DIDLogs,
+          ScopeDao
         ])
       ],
       providers: [
@@ -88,6 +91,7 @@ describe("Presentation Service", () => {
     const didService = moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
+    await presentationService.initialized;
     server = setupServer(
       http.get("http://localhost/.well-known/did.json", async () => {
         return HttpResponse.json(await didService.getDid());
@@ -154,6 +158,48 @@ describe("Presentation Service", () => {
       );
       expect(validationResult.validStatus).toEqual([false]);
       expect(validationResult.valid).toBe(false);
+    });
+  });
+  describe("Scopes", () => {
+    it("Default Scope interpolation", async () => {
+      const scope = "org.eclipse.dspace.dcp.vc.type:VerifiableCredential";
+      const presentationDefinition =
+        await presentationService.interpretScope(scope);
+
+      expect(
+        presentationDefinition.input_descriptors[0].constraints.fields?.[0]
+          .filter?.pattern
+      ).toBe("VerifiableCredential");
+
+      const scope2 = `org.eclipse.dspace.dcp.vc.id:${encodeURIComponent("did:web:localhost#test-init-credential")}`;
+      const presentationDefinition2 =
+        await presentationService.interpretScope(scope2);
+
+      expect(
+        presentationDefinition2.input_descriptors[0].constraints.fields?.[0]
+          .filter?.pattern
+      ).toBe("did:web:localhost#test-init-credential");
+
+      const scope3 = `nl.tsg.adp.project:${encodeURIComponent("did:web:localhost")}:HASH`;
+      const presentationDefinition3 =
+        await presentationService.interpretScope(scope3);
+
+      expect(
+        presentationDefinition3.input_descriptors[0].constraints.fields?.[1]
+          .filter?.pattern
+      ).toBe("did:web:localhost");
+      expect(
+        presentationDefinition3.input_descriptors[0].constraints.fields?.[2]
+          .filter?.pattern
+      ).toBe("HASH");
+    });
+    it("Scope errors", async () => {
+      await expect(
+        presentationService.interpretScope("org.eclipse.dspace.dcp.vc.type")
+      ).rejects.toThrow("Scope discriminator mismatch");
+      await expect(
+        presentationService.interpretScope("org.example.missing")
+      ).rejects.toThrow("not found");
     });
   });
 });

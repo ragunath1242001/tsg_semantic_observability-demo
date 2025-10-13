@@ -1,30 +1,119 @@
 <script setup lang="ts">
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import {
+  Credential,
+  DataIntegrityProof,
+  toArray,
+  VerifiablePresentation
+} from "@tsg-dsp/common-dsp";
+import { VerificationRequest } from "@tsg-dsp/common-dtos";
 import schema from "@tsg-dsp/common-ui/assets/presentation-definition.schema.json";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
+import { ScopeDto } from "@tsg-dsp/wallet-dtos";
+import dayjs from "dayjs";
+import { InputGroup, InputGroupAddon } from "primevue";
 import { useToast } from "primevue/usetoast";
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const toast = useToast();
 const userStore = useUserStore();
 
+const selectedCredentials = ref<string[]>([]);
+const credentials = ref<CredentialOverviewDto[]>([]);
+const scopes = ref<ScopeDto[]>([]);
+const scopeString = computed(() =>
+  selectedCredentials.value
+    .map((s) => `org.eclipse.dspace.dcp.vc.id:${encodeURIComponent(s)}`)
+    .join(" ")
+);
+const scopePlaceholder = ref();
+
+interface CredentialDto {
+  id: string;
+  targetDid: string;
+  credential: Credential;
+  proof?: DataIntegrityProof;
+  jwt?: string;
+  selfIssued: boolean;
+}
+
+interface CredentialOverviewDto {
+  id: string;
+  type: string;
+  issuer: string;
+  validUntil: string;
+  label: string;
+}
+
+const loadCredentials = async () => {
+  try {
+    const response = await http<CredentialDto[]>("management/credentials", {
+      params: {
+        page: 1,
+        per_page: 100,
+        order_by: "createdDate",
+        order: "DESC"
+      }
+    });
+    credentials.value = response.data.map((item) => {
+      const subjectTypes = toArray(item.credential.credentialSubject).flatMap(
+        (s) => [...toArray(s.type), ...toArray(s["@type"])]
+      );
+      const credentialTypes = new Set([
+        ...toArray(item.credential.type),
+        ...subjectTypes
+      ]);
+      const simpleTypes = [...credentialTypes]
+        .map((type) => type.split(/[/#]/g).slice(-1)[0])
+        .filter((type) => type !== "VerifiableCredential");
+      if (simpleTypes.length === 0) {
+        simpleTypes.push("VerifiableCredential");
+      }
+      return {
+        id: item.id,
+        type: simpleTypes.join(", "),
+        issuer: item.selfIssued ? "self" : item.credential.issuer,
+        validUntil: dayjs(
+          item.credential.validUntil ?? item.credential.expirationDate
+        ).fromNow(),
+        label: `${simpleTypes.join(", ")} (${item.selfIssued ? "self issued" : item.credential.issuer}) expires ${dayjs(
+          item.credential.validUntil ?? item.credential.expirationDate
+        ).fromNow()}`
+      };
+    });
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load credentials",
+        defaultMessage: `Error in fetching credentials`
+      })
+    );
+  }
+};
+
 const holderForm = ref<{
   audience: string;
-  scope: string;
 }>({
-  audience: userStore.user?.didId || "",
-  scope: ""
+  audience: userStore.user?.didId || ""
 });
 const holderIdToken = ref<string>();
 
 const verifierForm = ref<{
+  type: "scope" | "presentationDefinition";
   holderIDToken: string;
   presentationDefinition: string;
+  scope: {
+    alias: string;
+    discriminator: string[];
+    discriminatorValues: string[];
+  }[];
 }>({
+  type: "scope",
   holderIDToken: "",
+  scope: [],
   presentationDefinition: JSON.stringify(
     {
       id: crypto.randomUUID(),
@@ -64,9 +153,9 @@ const requestHolderIDToken = async () => {
         params: {
           audience: holderForm.value.audience,
           scope:
-            holderForm.value.scope.trim() === ""
+            scopeString.value.trim() === ""
               ? undefined
-              : holderForm.value.scope
+              : scopeString.value.trim()
         }
       }
     );
@@ -88,14 +177,24 @@ const requestHolderIDToken = async () => {
 const requestVerification = async () => {
   verifierResponse.value = undefined;
   try {
+    const request: VerificationRequest = {
+      holderIdToken: verifierForm.value.holderIDToken
+    };
+    if (verifierForm.value.type === "scope") {
+      request.scope = verifierForm.value.scope
+        .filter((s) => s.alias.trim() !== "")
+        .map(
+          (s) =>
+            `${s.alias}:${s.discriminatorValues.map((d) => encodeURIComponent(d)).join(":")}`
+        );
+    } else {
+      request.presentationDefinition = JSON.parse(
+        verifierForm.value.presentationDefinition
+      );
+    }
     const response = await http.post<VerifiablePresentation>(
       "management/dcp/verifier/verify",
-      {
-        holderIdToken: verifierForm.value.holderIDToken,
-        presentationDefinition: JSON.parse(
-          verifierForm.value.presentationDefinition
-        )
-      }
+      request
     );
     verifierResponse.value = {
       success: true,
@@ -129,6 +228,33 @@ const copyToken = (token: string) => {
     life: 3000
   });
 };
+
+const loadScopes = async () => {
+  try {
+    const response = await http<ScopeDto[]>("management/presentation/scopes", {
+      params: {
+        page: 1,
+        per_page: 100,
+        order_by: "alias",
+        order: "ASC"
+      }
+    });
+    scopes.value = response.data.sort((a, b) => a.alias.localeCompare(b.alias));
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load scopes",
+        defaultMessage: `Error in fetching scopes`
+      })
+    );
+  }
+};
+
+onMounted(async () => {
+  await loadCredentials();
+  await loadScopes();
+});
 </script>
 
 <template>
@@ -171,11 +297,6 @@ const copyToken = (token: string) => {
           shares the token with the remote party. For this manual presentation
           request, you should share the ID token out-of-band with the verifier.
         </p>
-        <Message :closable="false"
-          >Scope restriction is currently not supported by the TSG Wallet, each
-          ID token provides viewing access to all credentials in the
-          Wallet.</Message
-        >
       </template>
       <template #content>
         <form
@@ -188,16 +309,21 @@ const copyToken = (token: string) => {
               class="w-full" />
           </FormField>
           <FormField v-slot="props" label="Bearer scope">
-            <InputText
+            <MultiSelect
               :id="props.id"
-              v-model="holderForm.scope"
+              v-model="selectedCredentials"
+              :options="credentials"
+              filter
+              option-label="label"
+              option-value="id"
+              placeholder="Select credentials to include in scope, if no selection all credentials are allowed"
               class="w-full" />
           </FormField>
           <FormField no-label>
             <Button label="Request ID token" type="submit" />
           </FormField>
         </form>
-        <Panel v-if="holderIdToken" header="ID Token">
+        <Panel v-if="holderIdToken" header="ID Token" class="mt-4">
           <pre style="white-space: pre-wrap; overflow-wrap: anywhere">{{
             holderIdToken
           }}</pre>
@@ -243,7 +369,65 @@ const copyToken = (token: string) => {
               class="w-full"
               placeholder="eyJhb..." />
           </FormField>
-          <FormField label="Presentation Definition">
+          <FormField label="Request type">
+            <SelectButton
+              v-model="verifierForm.type"
+              :allow-empty="false"
+              option-label="label"
+              option-value="value"
+              :options="[
+                { label: 'Scope', value: 'scope' },
+                {
+                  label: 'Presentation Definition',
+                  value: 'presentationDefinition'
+                }
+              ]" />
+          </FormField>
+          <template v-if="verifierForm.type === 'scope'">
+            <FormField v-slot="props" label="Scope">
+              <Select
+                v-model="scopePlaceholder"
+                :options="scopes"
+                filter
+                option-label="alias"
+                placeholder="Select scope template to add"
+                class="w-full"
+                @change="
+                  (event) => {
+                    verifierForm.scope.push({
+                      alias: event.value.alias,
+                      discriminator: event.value.discriminator.split(':'),
+                      discriminatorValues: event.value.discriminator
+                        .split(':')
+                        .map((v) => '')
+                    });
+                    scopePlaceholder = null;
+                  }
+                " />
+              <InputGroup
+                v-for="(scope, index) in verifierForm.scope"
+                :id="props.id + index"
+                :key="index"
+                class="mt-3">
+                <InputGroupAddon>{{ scope.alias }}</InputGroupAddon>
+                <InputText
+                  v-for="(discriminator, dIndex) in scope.discriminator"
+                  :key="index + '-' + dIndex"
+                  v-model="
+                    verifierForm.scope[index].discriminatorValues[dIndex]
+                  "
+                  :placeholder="discriminator"
+                  class="w-full mt-3" />
+                <InputGroupAddon>
+                  <Button
+                    icon="pi pi-times"
+                    severity="secondary"
+                    @click="verifierForm.scope.splice(index, 1)" />
+                </InputGroupAddon>
+              </InputGroup>
+            </FormField>
+          </template>
+          <FormField v-else label="Presentation Definition">
             <MonacoEditorVue
               v-model="verifierForm.presentationDefinition"
               :schema="schema"
@@ -254,7 +438,7 @@ const copyToken = (token: string) => {
             <Button label="Request presentation" type="submit" />
           </FormField>
         </form>
-        <Panel v-if="verifierResponse" header="Verifier response">
+        <Panel v-if="verifierResponse" header="Verifier response" class="mt-4">
           <FormField label="Status">{{
             verifierResponse.success ? "Success" : "Error"
           }}</FormField>

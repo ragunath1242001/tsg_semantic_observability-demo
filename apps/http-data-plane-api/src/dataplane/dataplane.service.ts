@@ -554,7 +554,10 @@ export class DataPlaneService {
                 conformsTo: defArray(d.schemaRef, d.openApiSpecRef)
               })
           ),
-          hasPolicy: await this.constructOffer(id, datasetConfig.policy)
+          hasPolicy: await this.constructOffer(
+            `${id}:${v.version}`,
+            datasetConfig.policy
+          )
         }).serialize()
       );
     }
@@ -573,6 +576,14 @@ export class DataPlaneService {
   ): Promise<Policy[] | undefined> {
     if (!policyConfig) return;
     if (policyConfig.type === "default") return;
+    let catalog: CatalogDto | undefined = undefined;
+    try {
+      catalog = await this.getControlPlaneCatalog();
+    } catch (_) {
+      this.logger.warn(
+        "Catalog could not be fetched from control plane, therefore, assigner fields in ODRL offers will be empty."
+      );
+    }
     if (policyConfig.type === "manual") {
       if (!policyConfig.raw) {
         throw new DataPlaneError(
@@ -582,6 +593,12 @@ export class DataPlaneService {
       } else {
         try {
           const deserialized = await deserialize<Offer>(policyConfig.raw);
+          if (!deserialized.target) {
+            deserialized.target = datasetId;
+          }
+          if (!deserialized.assigner) {
+            deserialized.assigner = catalog?.participantId || "";
+          }
           return [deserialized];
         } catch (err) {
           throw new DataPlaneError(
@@ -593,22 +610,13 @@ export class DataPlaneService {
       }
     }
 
-    let catalog: CatalogDto | undefined = undefined;
-    try {
-      catalog = await this.getControlPlaneCatalog();
-    } catch (_) {
-      this.logger.warn(
-        "Catalog could not be fetched from control plane, therefore, assigner fields in ODRL offers will be empty."
-      );
-    }
-
     return [
       new Offer({
         assigner: catalog?.participantId || "",
+        target: datasetId,
         permission: policyConfig.permissions?.map((permission) => {
           return new Permission({
             action: permission.action,
-            target: datasetId,
             constraint: permission.constraints?.map((constraint) =>
               this.constructConstraint(constraint)
             )
@@ -617,7 +625,6 @@ export class DataPlaneService {
         prohibition: policyConfig.prohibitions?.map((prohibition) => {
           return new Prohibition({
             action: prohibition.action,
-            target: datasetId,
             constraint: prohibition.constraints?.map((constraint) =>
               this.constructConstraint(constraint)
             )

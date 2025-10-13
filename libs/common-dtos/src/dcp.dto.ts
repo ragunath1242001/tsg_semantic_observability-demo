@@ -24,9 +24,14 @@ import {
 
 export class VerificationRequest {
   @ApiProperty({ type: () => PresentationDefinition })
+  @IsOptional()
   @ValidateNested()
   @Type(() => PresentationDefinition)
-  presentationDefinition!: PresentationDefinition;
+  presentationDefinition?: PresentationDefinition;
+  @ApiProperty({ type: "string" })
+  @IsOptional()
+  @IsString({ each: true })
+  scope?: string[];
   @ApiProperty()
   @IsString()
   holderIdToken!: string;

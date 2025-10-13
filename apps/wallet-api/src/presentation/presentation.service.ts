@@ -1,4 +1,6 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AppError, Paginated, PaginationOptionsDto } from "@tsg-dsp/common-api";
 import {
   EnvelopedVerifiableCredential,
   EnvelopedVerifiablePresentation,
@@ -8,21 +10,29 @@ import {
   VerifiablePresentationJsonLd,
   VerifiablePresentationJwt
 } from "@tsg-dsp/common-dsp";
-import { DcqlQuery, OID4VPAuthorizationResponse } from "@tsg-dsp/common-dtos";
+import {
+  DcqlQuery,
+  OID4VPAuthorizationResponse,
+  PresentationDefinition
+} from "@tsg-dsp/common-dtos";
 import {
   evaluatePresentationResponseValidity,
   verifyCredentialStatusValidity,
   verifyCredentialValidity,
   verifyPresentationValidity
 } from "@tsg-dsp/common-signing-and-validation";
+import { AddScope, ScopeDto } from "@tsg-dsp/wallet-dtos";
 import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
+import { Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
 import { CredentialsService } from "../credentials/credentials.service.js";
 import { DidService } from "../did/did.service.js";
 import { SignatureService } from "../keys/signature.service.js";
 import { CredentialDao } from "../model/credentials.dao.js";
+import { ScopeDao } from "../model/scopes.dao.js";
+import { DEFAULT_SCOPES } from "./default-scopes.js";
 
 @Injectable()
 export class PresentationService {
@@ -30,9 +40,150 @@ export class PresentationService {
     private readonly config: RootConfig,
     private readonly credentialsService: CredentialsService,
     private readonly signatureService: SignatureService,
-    private readonly didService: DidService
-  ) {}
+    private readonly didService: DidService,
+    @InjectRepository(ScopeDao)
+    private readonly scopeRepository: Repository<ScopeDao>
+  ) {
+    this.initialized = this.init();
+  }
   private readonly logger = new Logger(this.constructor.name);
+  readonly initialized: Promise<void>;
+
+  async init() {
+    try {
+      const count = await this.scopeRepository.count();
+      if (count === 0) {
+        this.logger.log("No scopes found, creating initial scopes");
+        const scopes = DEFAULT_SCOPES;
+        for (const scope of this.config.initScopes) {
+          const index = scopes.findIndex(
+            (defaultScope) => defaultScope.alias === scope.alias
+          );
+          if (index >= 0) {
+            scopes[index] = scope;
+          } else {
+            scopes.push(scope);
+          }
+        }
+        this.logger.log(`Adding ${scopes.length} scopes`);
+        await Promise.allSettled(
+          scopes.map(async (scope) => {
+            await this.addScope(scope);
+          })
+        );
+      }
+    } catch (error) {
+      this.logger.warn(`Error initializing scopes: ${error}`);
+      this.logger.debug(error);
+    }
+  }
+
+  async getScopes(
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<ScopeDto[]>> {
+    const [scopes, total] = await this.scopeRepository.findAndCount(
+      paginationOptions.typeOrm
+    );
+    return {
+      data: scopes.map((scope) => plainToInstance(ScopeDto, scope)),
+      total
+    };
+  }
+
+  async getScope(alias: string): Promise<ScopeDao> {
+    const scope = await this.scopeRepository.findOneBy({ alias });
+    if (!scope) {
+      throw new AppError(
+        `Scope with alias ${alias} not found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger);
+    }
+    return scope;
+  }
+
+  async interpretScope(scopeString: string): Promise<PresentationDefinition> {
+    const [alias, ...discriminators] = scopeString.split(":");
+    const scope = await this.getScope(alias);
+
+    let template = JSON.stringify(scope.presentationDefinition);
+    const discriminatorVars = scope.discriminator.split(":");
+
+    if (discriminatorVars.length !== discriminators.length) {
+      throw new AppError(
+        `Scope discriminator mismatch: expected ${discriminatorVars.length} values, got ${discriminators.length}`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+
+    for (const [i, discriminatorVar] of discriminatorVars.entries()) {
+      template = template.replace(
+        discriminatorVar,
+        decodeURIComponent(discriminators[i])
+      );
+    }
+    const presentationDefinition = plainToInstance(
+      PresentationDefinition,
+      JSON.parse(template)
+    );
+    presentationDefinition.id = scopeString;
+    return presentationDefinition;
+  }
+
+  async addScope(scope: AddScope): Promise<ScopeDto> {
+    this.logger.debug(`Adding scope ${scope.alias}`);
+    const existing = await this.scopeRepository.findOneBy({
+      alias: scope.alias
+    });
+    if (existing) {
+      throw new AppError(
+        `Scope with alias ${scope.alias} already exists`,
+        HttpStatus.CONFLICT
+      ).andLog(this.logger);
+    }
+    const scopeDao = await this.scopeRepository.save(scope);
+    return plainToInstance(ScopeDto, scopeDao);
+  }
+
+  async updateScope(id: string, scope: AddScope): Promise<ScopeDto> {
+    this.logger.debug(`Updating scope with id ${id} and alias ${scope.alias}`);
+    const existing = await this.scopeRepository.findOneBy({ id });
+    if (!existing) {
+      throw new AppError(
+        `Scope with id ${id} not found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger);
+    }
+    if (scope.alias && scope.alias !== existing.alias) {
+      const aliasExists = await this.scopeRepository.findOneBy({
+        alias: scope.alias
+      });
+      if (aliasExists) {
+        throw new AppError(
+          `Scope with alias ${scope.alias} already exists`,
+          HttpStatus.CONFLICT
+        ).andLog(this.logger);
+      }
+    }
+    const updated = this.scopeRepository.save({
+      id: existing.id,
+      ...scope
+    });
+    return plainToInstance(ScopeDto, updated);
+  }
+
+  async deleteScope(id: string): Promise<void> {
+    const existing = await this.scopeRepository.findOneBy({ id });
+    if (!existing) {
+      throw new AppError(
+        `Scope with id ${id} not found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger);
+    }
+    this.logger.debug(
+      `Deleting scope with id ${id} and alias ${existing.alias}`
+    );
+    await this.scopeRepository.remove(existing);
+  }
 
   async createVerifiablePresentationJsonLd(
     credentials: string | CredentialDao[],

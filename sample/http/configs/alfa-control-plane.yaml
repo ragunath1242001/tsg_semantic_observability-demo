@@ -1,0 +1,36 @@
+server:
+  publicAddress: http://localhost:3501
+  publicDomain: localhost:3501
+  port: 3501
+  listen: "0.0.0.0"
+
+db:
+  type: sqlite
+  database: "alfa.db"
+
+auth:
+  enabled: false
+
+runtime:
+  controlPlaneInteractions: automatic
+  color: "#3B8BF6"
+
+registry:
+  useRegistry: true
+  registryIntervalInMilliseconds: 30000
+
+iam:
+  type: tsg
+  didId: did:web:localhost%3A3500
+  issuerFilter: did:web:localhost%3A3400
+  typeFilter: ExampleCredential
+  walletUrl: http://localhost:3500
+  siopUrl: http://localhost:3500/management/dcp/holder/token
+  verifyUrl: http://localhost:3500/management/dcp/verifier/verify
+
+initCatalog:
+  participantId: did:web:localhost%3A3500
+  creator: did:web:localhost%3A3500
+  publisher: did:web:localhost%3A3500
+  title: Alfa
+  description: Alfa connector

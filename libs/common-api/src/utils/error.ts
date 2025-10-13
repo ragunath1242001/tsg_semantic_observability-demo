@@ -54,7 +54,8 @@ export class AppError extends HttpException {
 export function parseNetworkError(
   err: unknown,
   task: string,
-  status: number = HttpStatus.BAD_REQUEST
+  status: number = HttpStatus.BAD_REQUEST,
+  inheritStatus: boolean = false
 ): AppError {
   if (err instanceof AppError) {
     return err;
@@ -67,7 +68,7 @@ export function parseNetworkError(
           code: err.response.status,
           body: err.response.data
         },
-        status
+        inheritStatus ? err.response.status : status
       ).andLog(new Logger("Axios"));
     } else {
       return new AppError(`Error in ${task}: ${err}`, status).andLog(

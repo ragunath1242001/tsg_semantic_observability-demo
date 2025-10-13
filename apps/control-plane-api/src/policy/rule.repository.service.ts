@@ -42,18 +42,18 @@ export class RuleRepositoryService implements OnModuleInit {
         {
           id: 0,
           type: ConstraintType.ATOMIC,
-          title: "Verifiable Presentation Input Descriptor",
+          title: "Presentation scope",
           description:
-            "Matches an input descriptor following the DIF Presentation Definition to a presented Verifiable Presentation",
-          leftOperand: "tsg:vpInputDescriptor",
-          operator: ODRLOperator.IS_ANY_OF,
-          contextPath: "$.verifiableCredentials[:].credential",
+            "Matches a presentation scope to a presented Verifiable Presentation",
+          leftOperand: "tsg:presentationScope",
+          operator: ODRLOperator.EQ,
+          contextPath: "$.verifiableCredentials[:].scope",
           evaluable: [
             EvaluationTrigger.PROVIDER_ON_REQUEST,
             EvaluationTrigger.PROVIDER_CONTINUOUS,
             EvaluationTrigger.PROVIDER_ON_EXECUTION
           ],
-          dataType: DataType.DIF_INPUT_DESCRIPTOR
+          dataType: DataType.STRING
         },
         {
           id: 1,

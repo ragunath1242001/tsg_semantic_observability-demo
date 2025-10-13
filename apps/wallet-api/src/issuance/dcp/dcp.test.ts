@@ -42,6 +42,7 @@ import { SIToken } from "../../model/dcp.dao.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
 import { CIAccessToken, CredentialIssuance } from "../../model/issuance.dao.js";
 import { IssueConfiguration } from "../../model/issue-configuration.dao.js";
+import { ScopeDao } from "../../model/scopes.dao.js";
 import { PresentationService } from "../../presentation/presentation.service.js";
 import { IssuanceService } from "../issuance.service.js";
 import { OID4VCIHolderService } from "../oid4vci/holder.service.js";
@@ -93,7 +94,8 @@ describe("DCP Issuance", () => {
           CIAccessToken,
           IssueConfiguration,
           DIDLogs,
-          SIToken
+          SIToken,
+          ScopeDao
         ]),
         TypeOrmModule.forFeature([
           CredentialDao,
@@ -105,7 +107,8 @@ describe("DCP Issuance", () => {
           CIAccessToken,
           IssueConfiguration,
           DIDLogs,
-          SIToken
+          SIToken,
+          ScopeDao
         ])
       ],
       providers: [

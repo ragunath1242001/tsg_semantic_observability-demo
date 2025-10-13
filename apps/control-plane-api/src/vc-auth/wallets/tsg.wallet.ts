@@ -5,7 +5,7 @@ import {
   formatPresentation,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
-import { InputDescriptor } from "@tsg-dsp/common-dtos";
+import { InputDescriptor, PresentationDefinition } from "@tsg-dsp/common-dtos";
 import crypto from "crypto";
 
 import { TsgWalletConfig } from "../../config.js";
@@ -73,10 +73,11 @@ export class TsgWalletClient extends WalletClient {
   async requestValidation(
     token: string,
     audience: string,
-    inputDescriptors?: InputDescriptor[]
+    inputDescriptors?: InputDescriptor[],
+    scope?: string[]
   ): Promise<CredentialContainer[] | undefined> {
     try {
-      if (!inputDescriptors) {
+      if (!inputDescriptors && !scope) {
         inputDescriptors = [
           {
             id: crypto.randomUUID(),
@@ -111,6 +112,15 @@ export class TsgWalletClient extends WalletClient {
           }
         ];
       }
+      let presentationDefinition: PresentationDefinition | undefined =
+        undefined;
+      if (inputDescriptors) {
+        presentationDefinition = {
+          id: crypto.randomUUID(),
+          name: "DSP Presentation definition",
+          input_descriptors: inputDescriptors
+        };
+      }
 
       const response = await this.authClientService
         .axiosInstance()
@@ -118,11 +128,8 @@ export class TsgWalletClient extends WalletClient {
           this.iamConfig.verifyUrl,
           {
             holderIdToken: token,
-            presentationDefinition: {
-              id: crypto.randomUUID(),
-              name: "DSP Presentation definition",
-              input_descriptors: inputDescriptors
-            }
+            presentationDefinition: presentationDefinition,
+            scope: scope
           },
           {
             params: {

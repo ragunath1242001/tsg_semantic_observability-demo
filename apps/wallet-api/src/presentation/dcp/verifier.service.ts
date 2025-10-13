@@ -8,7 +8,8 @@ import {
 import {
   PresentationDefinition,
   PresentationQueryMessage,
-  PresentationResponseMessage
+  PresentationResponseMessage,
+  VerificationRequest
 } from "@tsg-dsp/common-dtos";
 import {
   resolveDid,
@@ -30,17 +31,35 @@ export class DCPVerifierService {
   private readonly logger = new Logger(this.constructor.name);
 
   async verify(
-    holderIdToken: string,
-    presentationDefinition: PresentationDefinition
+    verificationRequest: VerificationRequest
   ): Promise<VerifiablePresentation[]> {
-    const verifiedHolderIdToken =
-      await this.siopService.validateIDToken(holderIdToken);
+    const verifiedHolderIdToken = await this.siopService.validateIDToken(
+      verificationRequest.holderIdToken
+    );
     this.logger.log(
       `Requesting and verifying presentation for holder ${verifiedHolderIdToken.iss}`
     );
-    this.logger.debug(
-      `With presentation definition: ${JSON.stringify(presentationDefinition)}`
-    );
+    const presentationDefinitions: PresentationDefinition[] = [];
+    if (verificationRequest.presentationDefinition) {
+      this.logger.debug(
+        `With presentation definition: ${JSON.stringify(verificationRequest.presentationDefinition)}`
+      );
+      presentationDefinitions.push(verificationRequest.presentationDefinition);
+    } else if (verificationRequest.scope) {
+      this.logger.debug(`With scope: ${verificationRequest.scope.join(", ")}`);
+      presentationDefinitions.push(
+        ...(await Promise.all(
+          verificationRequest.scope.map((scope) =>
+            this.presentationService.interpretScope(scope)
+          )
+        ))
+      );
+    } else {
+      throw new AppError(
+        `Either a presentationDefinition or scope needs to be provided`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
 
     if (!verifiedHolderIdToken.token) {
       throw new AppError(
@@ -85,7 +104,8 @@ export class DCPVerifierService {
         plainToInstance(PresentationQueryMessage, {
           "@context": ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"],
           type: "PresentationQueryMessage",
-          presentationDefinition: presentationDefinition
+          presentationDefinition: verificationRequest.presentationDefinition,
+          scope: verificationRequest.scope
         });
       const response = await axios.post<PresentationResponseMessage>(
         `${serviceEndpoint}/presentations/query`,
@@ -98,16 +118,21 @@ export class DCPVerifierService {
       );
       presentationResponseMessage = response.data;
     } catch (err) {
-      throw parseNetworkError(err, "presentation response from holder");
+      throw parseNetworkError(
+        err,
+        "presentation response from holder",
+        HttpStatus.BAD_REQUEST,
+        true
+      );
     }
     return await this.evaluatePresentationResponseMessage(
-      presentationDefinition,
+      presentationDefinitions,
       presentationResponseMessage
     );
   }
 
   private async evaluatePresentationResponseMessage(
-    definition: PresentationDefinition,
+    presentationDefinitions: PresentationDefinition[],
     response: PresentationResponseMessage
   ): Promise<VerifiablePresentation[]> {
     const presentations: VerifiablePresentation[] = [];
@@ -138,7 +163,10 @@ export class DCPVerifierService {
     const credentials = presentations.flatMap((vp) =>
       formatCredentials(toArray(vp.verifiableCredential))
     );
-    for (const inputDescriptor of definition.input_descriptors) {
+    const inputDescriptors = presentationDefinitions.flatMap(
+      (presentationDefinition) => presentationDefinition.input_descriptors
+    );
+    for (const inputDescriptor of inputDescriptors) {
       for (const fieldDescriptor of inputDescriptor.constraints.fields ?? []) {
         const result = credentials.map((vc) =>
           validateField(fieldDescriptor, vc.credential, false)

@@ -149,8 +149,8 @@ export class Participant {
                   version: "0.9.2",
                   distributions: [
                     {
-                      backendUrl: "https://httpbin.org/",
-                      openApiSpecRef: "https://httpbin.org/spec.json"
+                      backendUrl: "https://mockhttp.org/",
+                      openApiSpecRef: "https://mockhttp.org/docs/json"
                     }
                   ]
                 }

@@ -1,17 +1,19 @@
+import { Menu } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { RouteRecordRaw } from "vue-router";
 
 import CredentialGaiaX from "@/views/credentials/GaiaX.vue";
 import CredentialImport from "@/views/credentials/Import.vue";
 import CredentialOverview from "@/views/credentials/Overview.vue";
 import DashboardVue from "@/views/Dashboard.vue";
-import DCP from "@/views/DCP.vue";
 import DIDServiceView from "@/views/DIDServices.vue";
 import Manual from "@/views/issuance/Manual.vue";
 import Offers from "@/views/issuance/Offers.vue";
 import Requests from "@/views/issuance/Requests.vue";
 import IssueConfigurationView from "@/views/IssueConfiguration.vue";
 import KeysVue from "@/views/Keys.vue";
-import OID4VP from "@/views/OID4VP.vue";
+import DCP from "@/views/presentations/DCP.vue";
+import OID4VP from "@/views/presentations/OID4VP.vue";
+import Scopes from "@/views/presentations/Scopes.vue";
 import SignatureVue from "@/views/Signature.vue";
 
 export interface RouteConfig {
@@ -148,6 +150,18 @@ export const routeConfigs: RouteConfig[] = [
     }
   },
   {
+    path: "presentations/scopes",
+    name: "scopes",
+    component: Scopes,
+    requiresWrite: true,
+    meta: {
+      title: "Scopes",
+      icon: "pi pi-fw pi-globe",
+      group: "presentations",
+      menuLabel: "Scopes"
+    }
+  },
+  {
     path: "presentations/dcp",
     name: "dcp",
     component: DCP,
@@ -208,8 +222,6 @@ export function requiresWritePermission(routeName: string): boolean {
 export function getNavigationRoutes(isReadOnly: boolean): RouteConfig[] {
   return routeConfigs.filter((config) => !isReadOnly || !config.requiresWrite);
 }
-
-import { Menu } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 
 interface RuntimeStore {
   gaiaXSupport?: boolean;

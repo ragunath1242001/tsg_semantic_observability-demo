@@ -17,10 +17,10 @@ export const VP = createParamDecorator(
         Logger.warn("No VP found in request", "VP-Decorator");
         return undefined;
       }
-      if (request.user[0] instanceof CredentialContainer) {
+      if ("credential" in request.user[0]) {
         return request.user;
       }
-      Logger.warn("No VP found in request user", "VP-Decorator");
+      Logger.warn("No credential found in request user", "VP-Decorator");
       Logger.debug(request.user, "VP-Decorator");
       return undefined;
     } catch (err) {
@@ -29,7 +29,7 @@ export const VP = createParamDecorator(
         `Error in retrieving VP`,
         HttpStatus.UNAUTHORIZED,
         err
-      ).andLog(new Logger("VP Decorator"));
+      ).andLog(new Logger("VP-Decorator"));
     }
   }
 );
@@ -43,10 +43,10 @@ export const VPId = createParamDecorator(
         Logger.warn("No VP found in request", "VPId-Decorator");
         return undefined;
       }
-      if (request.user[0] instanceof CredentialContainer) {
+      if ("credential" in request.user[0]) {
         return toArray(request.user[0].credential.credentialSubject)[0]?.id;
       }
-      Logger.warn("No VP found in request user", "VPId-Decorator");
+      Logger.warn("No credential found in request user", "VPId-Decorator");
       Logger.debug(request.user, "VPId-Decorator");
       return undefined;
     } catch (err) {

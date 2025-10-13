@@ -8,6 +8,7 @@ import { KeysModule } from "../keys/keys.module.js";
 import { SecureTokenService } from "../keys/token.service.js";
 import { SIToken } from "../model/dcp.dao.js";
 import { AuthorizationRequestDao } from "../model/presentation.dao.js";
+import { ScopeDao } from "../model/scopes.dao.js";
 import { DCPHolderController } from "./dcp/holder.controller.js";
 import { DCPHolderManagementController } from "./dcp/holder.management.controller.js";
 import { DCPHolderService } from "./dcp/holder.service.js";
@@ -25,7 +26,7 @@ import { PresentationService } from "./presentation.service.js";
     CredentialsModule,
     KeysModule,
     DidModule,
-    TypeOrmModule.forFeature([SIToken, AuthorizationRequestDao])
+    TypeOrmModule.forFeature([SIToken, AuthorizationRequestDao, ScopeDao])
   ],
   controllers: [
     PresentationManagementController,

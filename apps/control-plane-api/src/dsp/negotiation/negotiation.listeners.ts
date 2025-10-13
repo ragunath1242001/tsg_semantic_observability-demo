@@ -86,7 +86,16 @@ export class NegotiationListener {
     if (offerIncludedInPolicy) {
       await this.negotiationService.agree(event.localId);
     } else {
-      this.terminate(event);
+      this.logger.warn(
+        `Offered contract in negotiation ${event.localId} does not match the policy of the dataset ${event.datasetId}. Terminating negotiation.`
+      );
+      this.logger.debug(
+        `Offered contract: ${JSON.stringify(event.offer, null, 2)}`
+      );
+      this.logger.debug(
+        `Dataset policy: ${JSON.stringify(datasetPolicy, null, 2)}`
+      );
+      await this.terminate(event);
     }
   }
 

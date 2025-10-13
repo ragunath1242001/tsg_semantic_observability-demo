@@ -43,17 +43,26 @@ export class DCPHolderService {
     this.logger.log(
       `Received presentation request from ${validatedIdToken.tokenPayload.iss}`
     );
+    let allowedCredentials: CredentialDao[] | undefined = undefined;
+    if (validatedIdToken.originalIdToken.scope) {
+      allowedCredentials = await this.getCredentialsByScope(
+        validatedIdToken.originalIdToken.scope.split(" ")
+      );
+    }
+
     let matchedCredentials: CredentialDao[] = [];
     if (presentationQueryMessage.presentationDefinition) {
       matchedCredentials = await this.evaluatePresentationDefinition(
-        presentationQueryMessage.presentationDefinition
+        presentationQueryMessage.presentationDefinition,
+        allowedCredentials
       );
     } else if (
       presentationQueryMessage.scope &&
       presentationQueryMessage.scope.length > 0
     ) {
       matchedCredentials = await this.getCredentialsByScope(
-        presentationQueryMessage.scope
+        presentationQueryMessage.scope,
+        allowedCredentials
       );
     }
     let vpJwt: VerifiablePresentationJwt | undefined = undefined;
@@ -83,7 +92,7 @@ export class DCPHolderService {
       );
       let vcIndex = 0;
       matchedCredentials.forEach((c, index) => {
-        if (c.jwt) {
+        if (c.jwt && presentationQueryMessage.presentationDefinition) {
           presentation_submission.descriptor_map[index].format = "vp+jwt";
           presentation_submission.descriptor_map[index].path =
             `$.presentation[0]`;
@@ -103,7 +112,7 @@ export class DCPHolderService {
       );
       let vcIndex = 0;
       matchedCredentials.forEach((c, index) => {
-        if (c.proof) {
+        if (c.proof && presentationQueryMessage.presentationDefinition) {
           presentation_submission.descriptor_map[index].format = "ldp_vp";
           presentation_submission.descriptor_map[index].path =
             `$.presentation[${hasJwtCredentials ? 1 : 0}].verifiableCredential[${vcIndex}]`;
@@ -120,67 +129,32 @@ export class DCPHolderService {
     };
   }
 
-  async getCredentialsByScope(scope: string[]): Promise<CredentialDao[]> {
-    const desctructuredScopes = scope.map((scope) => {
-      const [alias, ...discriminator] = scope.split(":");
-      return {
-        alias,
-        discriminator: discriminator.join(":")
-      };
-    });
-    const presentationDefinition: PresentationDefinition = {
-      id: crypto.randomUUID(),
-      name: "DCP Scoped Presentation definition",
-      input_descriptors: []
-    };
-    for (const scope of desctructuredScopes) {
-      if (scope.alias === "org.eclipse.dspace.dcp.vc.type") {
-        presentationDefinition.input_descriptors.push({
-          id: crypto.randomUUID(),
-          name: "DCP VC Type Scope",
-          constraints: {
-            fields: [
-              {
-                path: ["$.type"],
-                filter: {
-                  type: "string",
-                  pattern: scope.discriminator
-                }
-              }
-            ]
-          }
-        });
-      } else if (scope.alias === "org.eclipse.dspace.dcp.vc.id") {
-        presentationDefinition.input_descriptors.push({
-          id: crypto.randomUUID(),
-          name: "DCP VC ID Scope",
-          constraints: {
-            fields: [
-              {
-                path: ["$.id"],
-                filter: {
-                  type: "string",
-                  pattern: scope.discriminator
-                }
-              }
-            ]
-          }
-        });
-      } else {
-        throw new AppError(
-          `Scope alias ${scope.alias} not supported`,
-          HttpStatus.NOT_IMPLEMENTED
-        ).andLog(this.logger, "error");
-      }
-    }
+  async getCredentialsByScope(
+    scope: string[],
+    allowedCredentials?: CredentialDao[]
+  ): Promise<CredentialDao[]> {
+    const presentationDefinitions = await Promise.all(
+      scope.map((s) => this.presentationService.interpretScope(s))
+    );
 
-    return this.evaluatePresentationDefinition(presentationDefinition);
+    const credentials = await Promise.all(
+      presentationDefinitions.map((presentationDefinition) =>
+        this.evaluatePresentationDefinition(
+          presentationDefinition,
+          allowedCredentials
+        )
+      )
+    );
+
+    return credentials.flat();
   }
 
   async evaluatePresentationDefinition(
-    presentationDefinition: PresentationDefinition
+    presentationDefinition: PresentationDefinition,
+    allowedCredentials?: CredentialDao[]
   ): Promise<CredentialDao[]> {
-    const credentials = await this.credentialService.getCredentials();
+    const credentials =
+      allowedCredentials ?? (await this.credentialService.getCredentials());
     const matchedCredentials: CredentialDao[] = [];
 
     for (const inputDescriptor of presentationDefinition.input_descriptors) {

@@ -2004,6 +2004,9 @@ importers:
       '@tsg-dsp/common-dsp':
         specifier: workspace:*
         version: link:../common-dsp
+      '@tsg-dsp/common-dtos':
+        specifier: workspace:*
+        version: link:../common-dtos
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2)

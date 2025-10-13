@@ -21,3 +21,4 @@ The table below contains an overview with descriptions of the sample deployments
 | Sample      | Description                                                                                                       |
 | ----------- | ----------------------------------------------------------------------------------------------------------------- |
 | `analytics` | One authority wallet and two participants (alfa and bravo) with a control plane, analytics data plane and wallet. |
+| `http`      | One authority wallet and two participants (alfa and bravo) with a control plane, http data plane and wallet.      |

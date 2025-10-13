@@ -18,10 +18,16 @@ export interface PaginationSetup<T> {
   load: (event?: DataTableSortEvent | DataTablePageEvent) => Promise<void>;
 }
 
+export interface SortOptions {
+  sortField?: string;
+  sortOrder?: 1 | -1 | 0;
+}
+
 export interface FetchConfig<T> {
   fetch: (params: Record<string, string>) => Promise<AxiosResponse<T[]>>;
   errorContext: Omit<ErrorContext, "error">;
   toast: ToastServiceMethods;
+  initialSort?: SortOptions;
 }
 
 export function setupPagination<T>(config: FetchConfig<T>): PaginationSetup<T> {
@@ -31,6 +37,7 @@ export function setupPagination<T>(config: FetchConfig<T>): PaginationSetup<T> {
   const page = ref(0);
   const perPage = ref(10);
   const totalPages = ref(0);
+  const sortOptions = ref<SortOptions>(config.initialSort || {});
 
   const load = async (event?: DataTableSortEvent | DataTablePageEvent) => {
     loading.value = true;
@@ -49,13 +56,19 @@ export function setupPagination<T>(config: FetchConfig<T>): PaginationSetup<T> {
       per_page: `${perPage.value}`
     };
     if (event?.sortField && typeof event.sortField === "string") {
-      params.order_by = event.sortField;
+      sortOptions.value.sortField = event.sortField;
     }
-    if (event?.sortOrder !== undefined && event.sortOrder !== null) {
-      if (event.sortOrder === 1) {
+    if (event?.sortOrder !== undefined) {
+      sortOptions.value.sortOrder = event.sortOrder as 1 | -1 | 0;
+    }
+    if (sortOptions.value.sortField) {
+      params.order_by = sortOptions.value.sortField;
+    }
+    if (sortOptions.value.sortOrder) {
+      if (sortOptions.value.sortOrder === 1) {
         params.order = "ASC";
       }
-      if (event.sortOrder === -1) {
+      if (sortOptions.value.sortOrder === -1) {
         params.order = "DESC";
       }
     }

@@ -22,6 +22,7 @@ import {
 } from "../../model/credentials.dao.js";
 import { SIToken } from "../../model/dcp.dao.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
+import { ScopeDao } from "../../model/scopes.dao.js";
 import { PresentationService } from "../presentation.service.js";
 import { DCPHolderService } from "./holder.service.js";
 import { DCPVerifierService } from "./verifier.service.js";
@@ -78,7 +79,8 @@ describe("Presentation Service", () => {
           DIDService,
           KeyMaterialDao,
           SIToken,
-          DIDLogs
+          DIDLogs,
+          ScopeDao
         ]),
         TypeOrmModule.forFeature([
           CredentialDao,
@@ -87,7 +89,8 @@ describe("Presentation Service", () => {
           DIDService,
           KeyMaterialDao,
           SIToken,
-          DIDLogs
+          DIDLogs,
+          ScopeDao
         ])
       ],
       providers: [
@@ -111,6 +114,7 @@ describe("Presentation Service", () => {
     const didService = moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
+    await moduleRef.get(PresentationService).initialized;
     server = setupServer(
       http.get("http://localhost/.well-known/did.json", async () => {
         const didDocument = await didService.getDid();
@@ -197,27 +201,9 @@ describe("Presentation Service", () => {
           createAccessToken: true
         });
       const token = await holderToken();
-      await dcpVerifierService.verify(token, {
-        id: crypto.randomUUID(),
-        input_descriptors: [
-          {
-            id: crypto.randomUUID(),
-            constraints: {
-              fields: [
-                {
-                  path: ["$.type"],
-                  filter: {
-                    type: "string",
-                    pattern: "VerifiableCredential"
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      });
-      await expect(
-        dcpVerifierService.verify(token, {
+      await dcpVerifierService.verify({
+        holderIdToken: token,
+        presentationDefinition: {
           id: crypto.randomUUID(),
           input_descriptors: [
             {
@@ -235,71 +221,130 @@ describe("Presentation Service", () => {
               }
             }
           ]
+        }
+      });
+      await expect(
+        dcpVerifierService.verify({
+          holderIdToken: token,
+          presentationDefinition: {
+            id: crypto.randomUUID(),
+            input_descriptors: [
+              {
+                id: crypto.randomUUID(),
+                constraints: {
+                  fields: [
+                    {
+                      path: ["$.type"],
+                      filter: {
+                        type: "string",
+                        pattern: "VerifiableCredential"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
         })
       ).rejects.toThrow("Could not validate JWT");
-      const vp2 = await dcpVerifierService.verify(await holderToken(), {
-        id: crypto.randomUUID(),
-        input_descriptors: [
-          {
-            id: crypto.randomUUID(),
-            constraints: {
-              fields: [
-                {
-                  path: ["$.type"],
-                  filter: {
-                    type: "string",
-                    pattern: "VerifiableCredential"
+      const vp2 = await dcpVerifierService.verify({
+        holderIdToken: await holderToken(),
+        presentationDefinition: {
+          id: crypto.randomUUID(),
+          input_descriptors: [
+            {
+              id: crypto.randomUUID(),
+              constraints: {
+                fields: [
+                  {
+                    path: ["$.type"],
+                    filter: {
+                      type: "string",
+                      pattern: "VerifiableCredential"
+                    }
+                  },
+                  {
+                    path: ["$.issuer"],
+                    filter: {
+                      type: "string",
+                      pattern: "did:web:localhost|did:web:trustedIssuer.com"
+                    }
+                  },
+                  {
+                    path: ["$.credentialSubject['urn:tsg:subjectProp']"],
+                    filter: {
+                      type: "string",
+                      const: "test"
+                    }
                   }
-                },
-                {
-                  path: ["$.issuer"],
-                  filter: {
-                    type: "string",
-                    pattern: "did:web:localhost|did:web:trustedIssuer.com"
-                  }
-                },
-                {
-                  path: ["$.credentialSubject['urn:tsg:subjectProp']"],
-                  filter: {
-                    type: "string",
-                    const: "test"
-                  }
-                }
-              ]
+                ]
+              }
             }
-          }
+          ]
+        }
+      });
+      const vp3 = await dcpVerifierService.verify({
+        holderIdToken: await holderToken(),
+        presentationDefinition: {
+          id: crypto.randomUUID(),
+          input_descriptors: [
+            {
+              id: crypto.randomUUID(),
+              constraints: {
+                fields: [
+                  {
+                    path: ["$.type"],
+                    filter: {
+                      type: "string",
+                      pattern: "VerifiableCredential"
+                    }
+                  },
+                  {
+                    path: ["$.credentialSubject['urn:tsg:subjectProp']"],
+                    filter: {
+                      type: "string",
+                      const: "test2"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      });
+      const vp4 = await dcpVerifierService.verify({
+        holderIdToken: await holderToken(),
+        scope: ["org.eclipse.dspace.dcp.vc.type:VerifiableCredential"]
+      });
+      const vp5 = await dcpVerifierService.verify({
+        holderIdToken: await holderToken(),
+        scope: [
+          `org.eclipse.dspace.dcp.vc.id:${encodeURIComponent("did:web:localhost#test-init-credential-2")}`
         ]
       });
-      const vp3 = await dcpVerifierService.verify(await holderToken(), {
-        id: crypto.randomUUID(),
-        input_descriptors: [
-          {
-            id: crypto.randomUUID(),
-            constraints: {
-              fields: [
-                {
-                  path: ["$.type"],
-                  filter: {
-                    type: "string",
-                    pattern: "VerifiableCredential"
-                  }
-                },
-                {
-                  path: ["$.credentialSubject['urn:tsg:subjectProp']"],
-                  filter: {
-                    type: "string",
-                    const: "test2"
-                  }
-                }
-              ]
-            }
-          }
+      const vp6 = await dcpVerifierService.verify({
+        holderIdToken: await holderToken(),
+        scope: [
+          `org.eclipse.dspace.dcp.vc.id:${encodeURIComponent("did:web:localhost#test-init-credential")}`,
+          `org.eclipse.dspace.dcp.vc.id:${encodeURIComponent("did:web:localhost#test-init-credential-2")}`
         ]
       });
       expect(toArray(vp2[0].verifiableCredential)[0].id).toBe(
         "did:web:localhost#test-init-credential"
       );
       expect(toArray(vp3[0].verifiableCredential)[0].id).toBe(
+        "did:web:localhost#test-init-credential-2"
+      );
+      expect(toArray(vp4[0].verifiableCredential)[0].id).toBe(
+        "http://localhost:3000/credentials/status-0"
+      );
+      expect(toArray(vp5[0].verifiableCredential)[0].id).toBe(
+        "did:web:localhost#test-init-credential-2"
+      );
+      expect(toArray(vp6[0].verifiableCredential)[0].id).toBe(
+        "did:web:localhost#test-init-credential"
+      );
+      expect(toArray(vp6[0].verifiableCredential)[1].id).toBe(
         "did:web:localhost#test-init-credential-2"
       );
     });

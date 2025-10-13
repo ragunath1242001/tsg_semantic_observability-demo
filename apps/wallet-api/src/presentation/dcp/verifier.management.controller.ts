@@ -6,7 +6,7 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { Roles } from "@tsg-dsp/common-api";
+import { Roles, validationPipe } from "@tsg-dsp/common-api";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { VerificationRequest } from "@tsg-dsp/common-dtos";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
@@ -29,12 +29,9 @@ export class DCPVerifierManagementController {
   @ApiBody({ type: VerificationRequest })
   @ApiOkResponse({ type: [VerifiablePresentation] })
   async verify(
-    @Body()
+    @Body(validationPipe)
     verificationRequest: VerificationRequest
   ): Promise<VerifiablePresentation[]> {
-    return this.dcpVerifierService.verify(
-      verificationRequest.holderIdToken,
-      verificationRequest.presentationDefinition
-    );
+    return this.dcpVerifierService.verify(verificationRequest);
   }
 }

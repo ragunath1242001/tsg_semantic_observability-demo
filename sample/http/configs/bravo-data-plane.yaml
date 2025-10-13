@@ -1,0 +1,30 @@
+server:
+  publicAddress: http://localhost:3602
+  publicDomain: localhost:3602
+  port: 3602
+  listen: "0.0.0.0"
+
+db:
+  type: "sqlite"
+  database: "bravo.db"
+
+auth:
+  enabled: false
+
+controlPlane:
+  dataPlaneEndpoint: http://localhost:3601/data-plane
+  managementEndpoint: http://localhost:3601/management
+  controlEndpoint: http://localhost:3601
+
+runtime:
+  color: "#3B8BF6"
+
+dataset:
+  type: versioned
+  title: HTTPBin Alfa
+  currentVersion: 0.9.2
+  versions:
+    - version: 0.9.2
+      distributions:
+        - backendUrl: https://mockhttp.org/
+          openApiSpecRef: https://mockhttp.org/docs/json

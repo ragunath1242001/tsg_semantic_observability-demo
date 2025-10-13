@@ -2,7 +2,6 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AuthClientService } from "@tsg-dsp/common-api";
 import { CredentialContainer } from "@tsg-dsp/common-dsp";
-import { InputDescriptor } from "@tsg-dsp/common-dtos";
 import { Request } from "express";
 import { decode, JwtPayload } from "jsonwebtoken";
 import { Repository } from "typeorm";
@@ -47,12 +46,13 @@ export class VCAuthService {
   async validateToken(
     token: string,
     audience?: string,
-    inputDescriptors?: InputDescriptor[]
+    scope?: string[]
   ): Promise<CredentialContainer[] | undefined> {
     return await this.walletClient.requestValidation(
       token,
       audience || this.config.iam.didId,
-      inputDescriptors
+      undefined,
+      scope
     );
   }
 
@@ -133,54 +133,48 @@ export class VCAuthService {
 
     if (agreementDao) {
       this.logger.debug(`Found agreement ${agreementDao.id}`);
-      const vpConstraints =
+      const scopeConstraints =
         agreementDao.agreement.permission?.flatMap(
           (p) =>
             p.constraint?.filter(
-              (c) => c.leftOperand === "tsg:vpInputDescriptor"
+              (c) => c.leftOperand === "tsg:presentationScope"
             ) ?? []
         ) ?? [];
-      if (vpConstraints.length > 0) {
-        this.logger.debug(`Found VP constraint(s)`);
-        for (const vpConstraint of vpConstraints) {
-          const rightOperand = RuleRepositoryService.parseRightOperand(
-            vpConstraint.rightOperand
+      if (scopeConstraints.length > 0) {
+        this.logger.debug(`Found scope constraint(s)`);
+        if (scopeConstraints.length > 1) {
+          // Protocol changes needed to support multiple permissions/constraints
+          this.logger.warn(
+            `Multiple scope constraints found, only the first will be used for validation`
           );
-          let inputDescriptor: InputDescriptor[] | undefined = undefined;
-          if (rightOperand) {
-            try {
-              const parsedOperand = JSON.parse(rightOperand);
-              if (Array.isArray(parsedOperand)) {
-                inputDescriptor = parsedOperand;
-              } else {
-                inputDescriptor = [parsedOperand];
-              }
-            } catch (e) {
-              this.logger.warn(
-                `Could not parse right operand as JSON: ${rightOperand}`
-              );
-              this.logger.debug(e);
-            }
-          }
-          this.logger.debug(
-            `Validating token with inputdescriptor: ${JSON.stringify(
-              inputDescriptor
-            )}`
-          );
-          const valid = await this.validateToken(
-            token,
-            this.config.iam.didId,
-            inputDescriptor
-          );
-          if (valid && valid.length > 0) {
-            return valid;
-          }
         }
-
-        throw new DSPError(
-          "Verifiable Presentation token not valid",
-          HttpStatus.UNAUTHORIZED
-        ).andLog(this.logger, "warn");
+        const scope = [
+          RuleRepositoryService.parseRightOperand(
+            scopeConstraints[0].rightOperand
+          )
+        ].filter((s): s is string => !!s);
+        if (!scope || scope.length === 0) {
+          this.logger.warn(
+            `No scopes found in constraint ${JSON.stringify(
+              scopeConstraints[0]
+            )}, skipping scope validation`
+          );
+          throw new DSPError(
+            "No valid scopes found in agreement",
+            HttpStatus.UNAUTHORIZED
+          ).andLog(this.logger, "warn");
+        }
+        this.logger.debug(`Found scope(s): ${scope.join(", ")}`);
+        const valid = await this.validateToken(
+          token,
+          this.config.iam.didId,
+          scope
+        );
+        if (valid && valid.length > 0) {
+          return valid.map(
+            (c) => ({ ...c, scope: scope[0] }) as CredentialContainer
+          );
+        }
       }
     }
     const valid = await this.validateToken(token);
