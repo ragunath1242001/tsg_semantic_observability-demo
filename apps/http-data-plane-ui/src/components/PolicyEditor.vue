@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ODRLAction } from "@tsg-dsp/common-dsp";
+import { defaultContext, ODRLAction } from "@tsg-dsp/common-dsp";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { PolicyConfig } from "@tsg-dsp/http-data-plane-dtos";
 import { onMounted, ref, watch } from "vue";
@@ -15,11 +15,12 @@ const odrlOfferSchema = {
 };
 const odrlActions = Object.values(ODRLAction);
 const rawTemplate = () => ({
+  "@context": defaultContext(),
   "@type": "Offer",
   "@id": `urn:uuid:${crypto.randomUUID()}`,
-  assigner: "did:web:...",
   permission: [
     {
+      "@type": "Permission",
       action: "use"
     }
   ]
@@ -80,7 +81,9 @@ onMounted(() => {
       Dataspace Protocol, which does not cover all possibilities present in the
       JSON-LD structure.<br />So warnings might be presented regardless of
       whether the input is actually correct. And vice-versa, even when no
-      warnings are presented the request might be rejected.</small
+      warnings are presented the request might be rejected.<br />If no
+      <code>target</code> and/or <code>assigner</code> are provided, the values
+      will be added by the dataplane.</small
     >
   </FormField>
   <FormField v-if="policy.type === 'rules'" label="Permissions">

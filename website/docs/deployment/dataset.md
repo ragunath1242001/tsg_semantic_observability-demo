@@ -12,8 +12,8 @@ dataset:
     versions:
       - version: 0.9.2
         distributions:
-          - backendUrl: https://httpbin.org/
-            openApiSpecRef: https://httpbin.org/spec.json
+          - backendUrl: https://mockhttp.org/
+            openApiSpecRef: https://mockhttp.org/docs/json
 ```
 
 The properties in this yaml file are translated to [DCAT](https://www.w3.org/TR/vocab-dcat-3/) Datasets. The properties that are configurable can be found in [HTTP Data Plane Configuration](../apps/http-data-plane/configuration.md). 
@@ -35,8 +35,8 @@ dataset:
       - version: 0.9.2
         semanticModelRef: https://vocabulary-hub.eu/ontology/ontology-123/version/0.9.2
         distributions:
-          - backendUrl: https://httpbin.org/
-            openApiSpecRef: https://httpbin.org/spec.json
+          - backendUrl: https://mockhttp.org/
+            openApiSpecRef: https://mockhttp.org/docs/json
 ```
 
 Note the `baseSemanticModelRef` and `semanticModelRef` properties are added. These properties are used to indicate to what semantic model representation your specific version adheres to. 

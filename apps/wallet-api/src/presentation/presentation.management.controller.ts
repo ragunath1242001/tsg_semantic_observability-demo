@@ -1,4 +1,13 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Put
+} from "@nestjs/common";
 import {
   ApiBody,
   ApiOAuth2,
@@ -6,13 +15,21 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { Roles } from "@tsg-dsp/common-api";
+import {
+  Paginated,
+  PaginationOptionsDto,
+  PaginationQuery,
+  Roles,
+  UsePagination,
+  validationPipe
+} from "@tsg-dsp/common-api";
 import {
   ApiForbiddenResponseDefault,
   CredentialStatusRequest,
   VerifiedCredentialStatus
 } from "@tsg-dsp/common-dtos";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
+import { AddScope, AppRole, ScopeDto } from "@tsg-dsp/wallet-dtos";
+import { plainToInstance } from "class-transformer";
 
 import { PresentationService } from "./presentation.service.js";
 
@@ -40,5 +57,62 @@ export class PresentationManagementController {
       credentialStatusRequest.statusListIndex,
       true
     );
+  }
+
+  @Get("scopes")
+  @UsePagination()
+  @ApiOperation({
+    summary: "Get all defined scopes",
+    description: "Get all defined scopes"
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: [ScopeDto] })
+  @ApiForbiddenResponseDefault()
+  async getScopes(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<ScopeDto[]>> {
+    return this.presentationService.getScopes(paginationOptions);
+  }
+
+  @Post("scopes")
+  @ApiOperation({
+    summary: "Add new scope",
+    description: "Add a new scope definition to the wallet"
+  })
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBody({ type: AddScope })
+  @ApiOkResponse({ type: ScopeDto })
+  @ApiForbiddenResponseDefault()
+  async addScope(@Body(validationPipe) scope: AddScope): Promise<ScopeDto> {
+    const createdScope = await this.presentationService.addScope(scope);
+    return plainToInstance(ScopeDto, createdScope);
+  }
+
+  @Put("scopes/:id")
+  @ApiOperation({
+    summary: "Update scope",
+    description: "Update an existing scope definition in the wallet"
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: AddScope })
+  @ApiOkResponse({ type: ScopeDto })
+  @ApiForbiddenResponseDefault()
+  async updateScope(
+    @Body(validationPipe) scope: AddScope,
+    id: string
+  ): Promise<ScopeDto> {
+    const updatedScope = await this.presentationService.updateScope(id, scope);
+    return plainToInstance(ScopeDto, updatedScope);
+  }
+
+  @Delete("scopes/:id")
+  @ApiOperation({
+    summary: "Delete scope",
+    description: "Delete an existing scope definition from the wallet"
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiForbiddenResponseDefault()
+  async deleteScope(id: string): Promise<void> {
+    await this.presentationService.deleteScope(id);
   }
 }

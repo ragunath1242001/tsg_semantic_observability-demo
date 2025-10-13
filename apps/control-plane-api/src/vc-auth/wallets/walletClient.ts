@@ -17,7 +17,8 @@ export abstract class WalletClient {
   abstract requestValidation(
     token: string,
     audience: string,
-    inputDescriptors?: InputDescriptor[]
+    inputDescriptors?: InputDescriptor[],
+    scope?: string[]
   ): Promise<CredentialContainer[] | undefined>;
   abstract getCredentials(): Promise<Credential[]>;
   abstract requestSignature(document: Record<string, any>): Promise<any>;

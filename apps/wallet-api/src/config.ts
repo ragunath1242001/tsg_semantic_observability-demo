@@ -15,6 +15,7 @@ import {
   DIDMethodList,
   DIDMethodTypes
 } from "@tsg-dsp/common-signing-and-validation";
+import { AddScope } from "@tsg-dsp/wallet-dtos";
 import { Transform, Type } from "class-transformer";
 import {
   Allow,
@@ -367,6 +368,12 @@ export class RootConfig {
   @Type(() => InitKeyConfig)
   @IsOptional()
   public readonly initKeys: InitKeyConfig[] = [];
+
+  @Description("Initial scope configurations")
+  @ValidateNested({ each: true })
+  @Type(() => AddScope)
+  @IsOptional()
+  public readonly initScopes: AddScope[] = [];
 
   @Description("Initial credential configurations")
   @ValidateNested({ each: true })

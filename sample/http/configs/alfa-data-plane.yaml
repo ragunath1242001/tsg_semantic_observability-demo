@@ -1,0 +1,47 @@
+server:
+  publicAddress: http://localhost:3502
+  publicDomain: localhost:3502
+  port: 3502
+  listen: "0.0.0.0"
+
+db:
+  type: "sqlite"
+  database: "alfa.db"
+
+auth:
+  enabled: false
+
+controlPlane:
+  dataPlaneEndpoint: http://localhost:3501/data-plane
+  managementEndpoint: http://localhost:3501/management
+  controlEndpoint: http://localhost:3501
+
+runtime:
+  color: "#3B8BF6"
+
+dataset:
+  type: versioned
+  title: HTTPBin Alfa
+  currentVersion: 0.9.2
+  policy:
+    type: "manual"
+    raw:
+      "@context":
+        - "https://w3id.org/dspace/2025/1/context.jsonld"
+        - "https://tsg.dataspac.es/contexts/next/tsg.json"
+        - "https://tsg.dataspac.es/contexts/next/health.json"
+      "@type": Offer
+      "@id": "urn:uuid:f5fd69bd-b534-45eb-8dc7-7fe808058d0d"
+      permission:
+        - "@type": Permission
+          action: use
+          constraint:
+            - "@type": Constraint
+              leftOperand: "tsg:presentationScope"
+              operator: eq
+              rightOperand: "org.eclipse.dspace.dcp.vc.type:ExampleCredential"
+  versions:
+    - version: 0.9.2
+      distributions:
+        - backendUrl: https://mockhttp.org/
+          openApiSpecRef: https://mockhttp.org/docs/json

@@ -6,6 +6,8 @@ import { useLayout } from "../layout/composables/layout";
 
 const { layoutConfig } = useLayout();
 
+const uuid = crypto.randomUUID();
+
 const model = defineModel({ type: String, required: false });
 const props = defineProps({
   schema: {
@@ -59,13 +61,15 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
       "editor.background": layoutConfig.darkTheme ? "#1f2937" : "#ffffff"
     }
   });
+  const jsonDefaults = monaco.languages.json.jsonDefaults;
   if (props.schema) {
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+    jsonDefaults.setDiagnosticsOptions({
       validate: true,
       schemas: [
+        ...(jsonDefaults.diagnosticsOptions.schemas ?? []),
         {
-          uri: "http://example/schema.json",
-          fileMatch: ["**"],
+          uri: `http://example/${uuid}.json`,
+          fileMatch: [`${uuid}.json`],
           schema: JSON.parse(JSON.stringify(props.schema))
         }
       ],
@@ -76,7 +80,10 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
   } else {
     monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       validate: true,
-      schemaValidation: "ignore"
+      schemas: jsonDefaults.diagnosticsOptions.schemas,
+      enableSchemaRequest: false,
+      schemaRequest: "ignore",
+      schemaValidation: "error"
     });
   }
 };
@@ -87,6 +94,7 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
     v-model:value="model"
     theme="transparant"
     class="surface-border border-1"
+    :path="`/models/${uuid}.json`"
     :options="{
       automaticLayout: true,
       formatOnType: true,

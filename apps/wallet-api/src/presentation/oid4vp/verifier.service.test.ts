@@ -18,6 +18,7 @@ import { CredentialDao, KeyMaterialDao } from "../../model/credentials.dao.js";
 import { StatusListCredentialDao } from "../../model/credentials.dao.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
 import { AuthorizationRequestDao } from "../../model/presentation.dao.js";
+import { ScopeDao } from "../../model/scopes.dao.js";
 import { PresentationService } from "../presentation.service.js";
 import { OID4VPVerifierService } from "./verifier.service.js";
 
@@ -62,7 +63,8 @@ describe("OID4VPVerifierService", () => {
           DIDDocuments,
           DIDService,
           KeyMaterialDao,
-          DIDLogs
+          DIDLogs,
+          ScopeDao
         ]),
         TypeOrmModule.forFeature([
           AuthorizationRequestDao,
@@ -71,7 +73,8 @@ describe("OID4VPVerifierService", () => {
           DIDDocuments,
           DIDService,
           KeyMaterialDao,
-          DIDLogs
+          DIDLogs,
+          ScopeDao
         ])
       ],
       providers: [

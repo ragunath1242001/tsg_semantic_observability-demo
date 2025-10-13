@@ -32,6 +32,7 @@ import {
 import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
 import { CIAccessToken, CredentialIssuance } from "../../model/issuance.dao.js";
 import { IssueConfiguration } from "../../model/issue-configuration.dao.js";
+import { ScopeDao } from "../../model/scopes.dao.js";
 import { PresentationService } from "../../presentation/presentation.service.js";
 import { DCPHolderService } from "../dcp/holder.service.js";
 import { IssuanceService } from "../issuance.service.js";
@@ -82,7 +83,8 @@ describe("Holder service", () => {
           CredentialIssuance,
           CIAccessToken,
           IssueConfiguration,
-          DIDLogs
+          DIDLogs,
+          ScopeDao
         ]),
         TypeOrmModule.forFeature([
           CredentialDao,
@@ -93,7 +95,8 @@ describe("Holder service", () => {
           CredentialIssuance,
           CIAccessToken,
           IssueConfiguration,
-          DIDLogs
+          DIDLogs,
+          ScopeDao
         ])
       ],
       providers: [

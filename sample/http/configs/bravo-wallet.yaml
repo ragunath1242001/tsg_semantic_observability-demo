@@ -1,0 +1,46 @@
+server:
+  publicAddress: http://localhost:3600
+  publicDomain: localhost:3600
+  port: 3600
+  listen: "0.0.0.0"
+
+db:
+  type: "sqlite"
+  database: "bravo.db"
+
+auth:
+  enabled: false
+
+initKeys:
+  - id: key-0
+    type: EdDSA
+    default: true
+
+runtime:
+  title: Bravo
+  color: "#3B8BF6"
+  acceptUnauthenticatedCredentialRequests: true
+  issueMobileCredentials: true
+  issueDebugCredentials: true
+
+issuance:
+  dcp:
+    - credentialType:
+        - ExampleCredential
+      issuerId: did:web:localhost%3A3400
+      preAuthorizedCode: 84f3eb915ac95caf5ab5edf03359d0424e3c546a51ed0a4f96691c63f24b92cd3f58c97aa35e52bc7f6429157b5d4c7b
+
+trustAnchors:
+  - identifier: did:web:localhost%3A3400
+    credentialTypes:
+      - ExampleCredential
+      - bravo:ExampleCredential
+      - http://localhost:3400/credentials/ExampleCredential
+
+didServices:
+  - id: did:web:localhost%3A3600#control-plane
+    type: connector
+    serviceEndpoint: http://localhost:3601/
+
+did:
+  method: "did:web:"
