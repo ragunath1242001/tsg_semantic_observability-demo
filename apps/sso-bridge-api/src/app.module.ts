@@ -47,8 +47,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     RolesModule,
     PresentationModule,
     ClientsModule,
-    ...embeddedFrontend,
-    UsersModule
+    ...embeddedFrontend
   ],
   controllers: [HealthController]
 })
