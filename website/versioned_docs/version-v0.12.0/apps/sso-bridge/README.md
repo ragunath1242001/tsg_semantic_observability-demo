@@ -26,7 +26,7 @@ The SSO Bridge provides unified authentication and authorization services across
 
 ### For System Architects
 - **[System Architecture](../../architecture/README.md)** - Overall TSG architecture and design principles
-- **[Authentication Patterns](./modules.md#sso-bridge-architecture-patterns)** - Multi-protocol authentication design
+- **[Authentication Patterns](./modules.md)** - Multi-protocol authentication design
 
 ### For Operators
 - **[Deployment Guide](../../tools/cli/README.md)** - Using the TSG CLI for deployment and management
