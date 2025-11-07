@@ -250,6 +250,12 @@ const config: Config = {
           ]
         },
         {
+          type: "docSidebar",
+          sidebarId: "playgroundSidebar",
+          position: "left",
+          label: "Playground"
+        },
+        {
           href: "/contact",
           label: "Contact"
         },

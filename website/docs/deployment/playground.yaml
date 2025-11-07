@@ -1,0 +1,13 @@
+general:
+  namespace: tsg-participant
+  username: tsg
+  password: changeme
+  authorityDomain: playground.dataspac.es
+  credentialType: PlaygroundCredential
+participant:
+  host: dave.example.com
+  id: dave
+  name: Dave
+  hasTestService: true
+  hasControlPlane: true
+  issuer: false
