@@ -103,7 +103,6 @@ describe("DataPlaneController", () => {
         endpointPrefix: "/api",
         callbackAddress: "http://localhost/api/callback",
         managementAddress: "http://localhost/api/management",
-        managementToken: "",
         catalogSynchronization: "pull",
         role: "consumer"
       });

@@ -21,7 +21,6 @@ const dataPlaneFormDefault: DataPlaneDetailsDto = {
   endpointPrefix: undefined,
   callbackAddress: undefined,
   managementAddress: undefined,
-  managementToken: undefined,
   catalogSynchronization: undefined,
   role: undefined
 };
@@ -241,13 +240,6 @@ onMounted(async () => {
             v-model="dataPlaneForm.managementAddress"
             class="w-full"
             placeholder="Management Address"></InputText>
-        </FormField>
-        <FormField v-slot="props" label="Management Token">
-          <InputText
-            :id="props.id"
-            v-model="dataPlaneForm.managementToken"
-            class="w-full"
-            placeholder="Management Token"></InputText>
         </FormField>
         <FormField label="Catalog Synchronization">
           <SelectButton

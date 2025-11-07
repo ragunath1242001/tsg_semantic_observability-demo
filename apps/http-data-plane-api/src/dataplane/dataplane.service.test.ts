@@ -9,18 +9,21 @@ import {
   validateOrRejectSync
 } from "@tsg-dsp/common-api";
 import {
-  AgreementDto,
-  DataPlaneCreation,
-  DatasetDto,
-  defaultContext,
-  OfferDto
-} from "@tsg-dsp/common-dsp";
+  CatalogClientService,
+  ControlPlaneConfig,
+  createDataPlaneHttpMocks,
+  createDataPlaneManagementHttpMocks,
+  createDidConnectorHttpMocks,
+  DataPlaneRegistrationService,
+  DataPlaneStateDao
+} from "@tsg-dsp/common-data-plane-api";
+import { defaultContext, OfferDto } from "@tsg-dsp/common-dsp";
 import {
   DatasetConfig,
   VersionedDatasetConfig
 } from "@tsg-dsp/http-data-plane-dtos";
 import { plainToClass } from "class-transformer";
-import { http, HttpResponse, PathParams } from "msw";
+import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
 import { LoggingConfig, RootConfig } from "../config.js";
@@ -29,8 +32,8 @@ import { LoggingService } from "../logging/logging.service.js";
 import { TransferDao } from "../transfer/transfer.dao.js";
 import { DataPlaneController } from "./dataplane.controller.js";
 import {
-  DataPlaneStateDao,
   DatasetItemDao,
+  HttpDatasetConfigDao,
   VersionedDatasetDao
 } from "./dataplane.dao.js";
 import { DataPlaneService } from "./dataplane.service.js";
@@ -73,62 +76,11 @@ describe("Dataplane Service", () => {
     });
 
     server = setupServer(
-      http.post<PathParams, DataPlaneCreation>(
-        `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request }) => {
-          const requestBody = await request.json();
-          return HttpResponse.json({
-            ...requestBody,
-            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
-          });
-        }
+      ...createDataPlaneHttpMocks(config.controlPlane.dataPlaneEndpoint),
+      ...createDataPlaneManagementHttpMocks(
+        config.controlPlane.managementEndpoint
       ),
-      http.post(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        ({ request }) => {
-          return HttpResponse.json(request.json());
-        }
-      ),
-      http.post(
-        `${config.controlPlane.managementEndpoint}/transfers/:processId/:action`,
-        () => {
-          return HttpResponse.json({ status: "OK" });
-        }
-      ),
-      http.get(
-        `${config.controlPlane.managementEndpoint}/agreements/:agreementId`,
-        () => {
-          return HttpResponse.json<AgreementDto>({
-            "@context": defaultContext(),
-            "@type": "Agreement",
-            "@id": "urn:uuid:test",
-            assigner: "did:web:localhost",
-            assignee: "did:web:localhost",
-            timestamp: new Date().toISOString(),
-            target: "urn:uuid:dataset"
-          });
-        }
-      ),
-      http.get("http://localhost/.well-known/did.json", () => {
-        return HttpResponse.json({
-          service: [
-            {
-              type: "connector",
-              serviceEndpoint: "http://remotecontrolplane/"
-            }
-          ]
-        });
-      }),
-      http.get(
-        `${config.controlPlane.managementEndpoint}/catalog/dataset`,
-        () => {
-          return HttpResponse.json<DatasetDto>({
-            "@context": defaultContext(),
-            "@type": "Dataset",
-            "@id": "urn:uuid:test"
-          });
-        }
-      ),
+      ...createDidConnectorHttpMocks(),
       http.post("https://httpbin.org/anything/0.9.2/anything/test", () => {
         return HttpResponse.json({
           args: {
@@ -160,53 +112,30 @@ describe("Dataplane Service", () => {
         } else {
           return HttpResponse.json(HttpStatus.NOT_FOUND); // simulate failure for invalid datasets
         }
-      }),
-      http.get("https://testaudience/.well-known/did.json", () => {
-        return HttpResponse.json({
-          service: [
-            {
-              type: "connector",
-              serviceEndpoint: "http://remotecontrolplane/"
-            }
-          ]
-        });
-      }),
-      http.post("http://localhost:3000/management/negotiations/request", () => {
-        return HttpResponse.json({
-          "@type": "ContractNegotiation",
-          "@id": "urn:uuid:1234",
-          providerPid: "providerPid",
-          consumerPid: "consumerPid",
-          state: "REQUESTED"
-        });
-      }),
-      http.get("http://localhost:3000/management/request", () => {
-        return HttpResponse.json({});
-      }),
-      http.get("http://localhost:3000/management/catalog/request", () => {
-        return HttpResponse.text("", { status: 400 });
       })
     );
 
-    server.listen({ onUnhandledRequest: "warn" });
+    server.listen({ onUnhandledRequest: "error" });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([
           TransferDao,
-          DataPlaneStateDao,
+          HttpDatasetConfigDao,
           VersionedDatasetDao,
           DatasetItemDao,
           IngressLogDao,
-          EgressLogDao
+          EgressLogDao,
+          DataPlaneStateDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
-          DataPlaneStateDao,
+          HttpDatasetConfigDao,
           VersionedDatasetDao,
           DatasetItemDao,
           IngressLogDao,
-          EgressLogDao
+          EgressLogDao,
+          DataPlaneStateDao
         ])
       ],
       controllers: [DataPlaneController],
@@ -214,6 +143,8 @@ describe("Dataplane Service", () => {
         DataPlaneService,
         LoggingService,
         AuthClientService,
+        DataPlaneRegistrationService,
+        CatalogClientService,
         {
           provide: AuthConfig,
           useValue: { enabled: false }
@@ -225,16 +156,19 @@ describe("Dataplane Service", () => {
         {
           provide: RootConfig,
           useValue: config
+        },
+        {
+          provide: ControlPlaneConfig,
+          useValue: config.controlPlane
         }
       ]
     }).compile();
+    await moduleRef.init();
 
     dataPlaneService = moduleRef.get(DataPlaneService);
     await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-      "No state available yet"
+      "Data plane state not found"
     );
-    await dataPlaneService.initialized;
-    await new Promise((r) => setTimeout(r, 20));
   });
 
   afterEach(async () => {
@@ -248,7 +182,6 @@ describe("Dataplane Service", () => {
   describe("Config management", () => {
     it("Get state", async () => {
       await dataPlaneService.initialized;
-      await new Promise((r) => setTimeout(r, 100));
       const state = await dataPlaneService.getStateDto();
       expect(state.identifier).toBeDefined();
       expect(state.details).toBeDefined();
@@ -460,137 +393,6 @@ describe("Dataplane Service", () => {
           })
         )
       ).rejects.toThrow("Could not deserialize");
-    });
-  });
-});
-
-describe("Starting without initial dataset configuration", () => {
-  let dataPlaneService: DataPlaneService;
-  let server: SetupServer;
-
-  beforeAll(async () => {
-    await TypeOrmTestHelper.instance.setupTestDB();
-    const config = plainToClass(RootConfig, {
-      server: {},
-      controlPlane: {
-        dataPlaneEndpoint: "http://127.0.0.1/data-plane",
-        managementEndpoint: "http://localhost:3000/management",
-        controlEndpoint: "http://localhost:3000",
-        authorization: "Basic YWRtaW46YWRtaW4=",
-        initializationDelay: 1
-      },
-      dataset: undefined,
-      logging: {
-        debug: true
-      }
-    });
-
-    server = setupServer(
-      http.post<PathParams, DataPlaneCreation>(
-        `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request }) => {
-          const requestBody = await request.json();
-          return HttpResponse.json({
-            ...requestBody,
-            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
-          });
-        }
-      ),
-      http.post(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        async ({ request }) => {
-          return HttpResponse.json(await request.json());
-        }
-      )
-    );
-
-    server.listen({ onUnhandledRequest: "error" });
-
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmTestHelper.instance.module([
-          TransferDao,
-          DataPlaneStateDao,
-          VersionedDatasetDao,
-          DatasetItemDao,
-          IngressLogDao,
-          EgressLogDao
-        ]),
-        TypeOrmModule.forFeature([
-          TransferDao,
-          DataPlaneStateDao,
-          VersionedDatasetDao,
-          DatasetItemDao,
-          IngressLogDao,
-          EgressLogDao
-        ])
-      ],
-      controllers: [DataPlaneController],
-      providers: [
-        DataPlaneService,
-        LoggingService,
-        AuthClientService,
-        {
-          provide: AuthConfig,
-          useValue: { enabled: false }
-        },
-        {
-          provide: LoggingConfig,
-          useValue: { debug: true }
-        },
-        {
-          provide: RootConfig,
-          useValue: config
-        }
-      ]
-    }).compile();
-
-    dataPlaneService = moduleRef.get(DataPlaneService);
-    await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-      "No state available yet"
-    );
-
-    await new Promise((r) => setTimeout(r, 20));
-  });
-
-  afterAll(() => {
-    TypeOrmTestHelper.instance.teardownTestDB();
-    server.close();
-  });
-
-  describe("Initial state", () => {
-    it("Add dataset config", async () => {
-      await dataPlaneService.initialized;
-      await new Promise((r) => setTimeout(r, 1000));
-      expect(() => dataPlaneService.getDatasetConfig()).toThrow(
-        "No dataset configured"
-      );
-      await dataPlaneService.updateDatasetConfig(
-        DatasetConfig.parse(
-          {
-            type: "versioned",
-            id: `urn:uuid:test`,
-            title: "HTTPBin",
-            currentVersion: "0.9.2",
-            versions: [
-              {
-                version: "0.9.2",
-                authorization: "Bearer AAAAAAA",
-                semanticModelRef: "http://some-more-specific-ontology.org",
-                distributions: [
-                  {
-                    mediaType: "application/json",
-                    openApiSpecRef: "https://httpbin.org/spec.json",
-                    backendUrl: "https://httpbin.org/anything"
-                  }
-                ]
-              }
-            ]
-          },
-          validateOrRejectSync
-        )
-      );
-      expect(dataPlaneService.getDatasetConfig()).toBeDefined();
     });
   });
 });

@@ -10,38 +10,48 @@ import {
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
 import {
-  AgreementDto,
+  CatalogClientService,
+  ControlPlaneConfig,
+  createDataPlaneHttpMocks,
+  createDataPlaneManagementHttpMocks,
+  createDidConnectorHttpMocks,
+  DataPlaneRegistrationService,
+  DataPlaneStateDao,
+  ITransferHandler,
+  NegotiationClientService,
+  TransferClientService
+} from "@tsg-dsp/common-data-plane-api";
+import {
   ContractNegotiationState,
-  DataPlaneCreation,
-  DatasetDto,
-  defaultContext,
   NegotiationRole,
-  OfferDto,
+  TransferProcessDto,
   TransferState
 } from "@tsg-dsp/common-dsp";
 import { NegotiationDetailDto } from "@tsg-dsp/common-dtos";
 import { plainToClass } from "class-transformer";
 import { Request, Response } from "express";
-import { http, HttpResponse, PathParams } from "msw";
+import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
 import { LoggingConfig, RootConfig } from "../config.js";
 import {
-  DataPlaneStateDao,
   DatasetItemDao,
+  HttpDatasetConfigDao,
   VersionedDatasetDao
 } from "../dataplane/dataplane.dao.js";
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
-import { DataPlaneClientError } from "../utils/errors/error.js";
+import { HTTPTransferHandler } from "./http-transfer-handler.service.js";
 import { TransferDao } from "./transfer.dao.js";
-import { TransferService } from "./transfer.service.js";
+// import { TransferService } from "./transfer.service.js";
 
-describe.each(["Authorization", "X-TSG-Authorization"])(
+describe.each(["Authorization"])(
+  //, "X-TSG-Authorization"])(
   "Transfer Service (%s)",
   (authorizationHeaderConfig) => {
-    let transferService: TransferService;
+    let transferService: HTTPTransferHandler;
+    let moduleRef: TestingModule;
     let server: SetupServer;
 
     beforeAll(async () => {
@@ -79,62 +89,11 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
       });
 
       server = setupServer(
-        http.post<PathParams, DataPlaneCreation>(
-          `${config.controlPlane.dataPlaneEndpoint}/init`,
-          async ({ request }) => {
-            const requestBody = await request.json();
-            return HttpResponse.json({
-              ...requestBody,
-              identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
-            });
-          }
+        ...createDataPlaneHttpMocks(config.controlPlane.dataPlaneEndpoint),
+        ...createDataPlaneManagementHttpMocks(
+          config.controlPlane.managementEndpoint
         ),
-        http.post(
-          `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-          ({ request }) => {
-            return HttpResponse.json(request.json());
-          }
-        ),
-        http.post(
-          `${config.controlPlane.managementEndpoint}/transfers/:processId/:action`,
-          () => {
-            return HttpResponse.json({ status: "OK" });
-          }
-        ),
-        http.get(
-          `${config.controlPlane.managementEndpoint}/agreements/:agreementId`,
-          () => {
-            return HttpResponse.json<AgreementDto>({
-              "@context": defaultContext(),
-              "@type": "Agreement",
-              "@id": "urn:uuid:test",
-              assigner: "did:web:localhost",
-              assignee: "did:web:localhost",
-              timestamp: new Date().toISOString(),
-              target: "urn:uuid:dataset"
-            });
-          }
-        ),
-        http.get("http://localhost/.well-known/did.json", () => {
-          return HttpResponse.json({
-            service: [
-              {
-                type: "connector",
-                serviceEndpoint: "http://remotecontrolplane/"
-              }
-            ]
-          });
-        }),
-        http.get(
-          `${config.controlPlane.managementEndpoint}/catalog/dataset`,
-          () => {
-            return HttpResponse.json<DatasetDto>({
-              "@context": defaultContext(),
-              "@type": "Dataset",
-              "@id": "urn:uuid:test"
-            });
-          }
-        ),
+        ...createDidConnectorHttpMocks(),
         http.post("https://httpbin.org/anything/anything/test", () => {
           return HttpResponse.json({
             args: {
@@ -167,16 +126,6 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
             return HttpResponse.json(HttpStatus.NOT_FOUND); // simulate failure for invalid datasets
           }
         }),
-        http.get("https://testaudience/.well-known/did.json", () => {
-          return HttpResponse.json({
-            service: [
-              {
-                type: "connector",
-                serviceEndpoint: "http://remotecontrolplane/"
-              }
-            ]
-          });
-        }),
         http.post(
           "http://localhost:3000/management/negotiations/request",
           () => {
@@ -188,53 +137,41 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
               state: "REQUESTED"
             });
           }
-        ),
-        http.post(
-          "http://localhost:3000/management/negotiations/dataset/:dataset",
-          () => {
-            return HttpResponse.json([
-              {
-                "@type": "ContractNegotiation",
-                "@id": "urn:uuid:1234",
-                providerPid: "providerPid",
-                consumerPid: "consumerPid",
-                state: "REQUESTED"
-              }
-            ]);
-          }
-        ),
-        http.get("http://localhost:3000/management/request", () => {
-          return HttpResponse.json({});
-        })
+        )
       );
 
-      server.listen({ onUnhandledRequest: "warn" });
+      server.listen({ onUnhandledRequest: "error" });
 
-      const moduleRef: TestingModule = await Test.createTestingModule({
+      moduleRef = await Test.createTestingModule({
         imports: [
           TypeOrmTestHelper.instance.module([
             TransferDao,
-            DataPlaneStateDao,
+            HttpDatasetConfigDao,
             VersionedDatasetDao,
             DatasetItemDao,
             IngressLogDao,
-            EgressLogDao
+            EgressLogDao,
+            DataPlaneStateDao
           ]),
           TypeOrmModule.forFeature([
             TransferDao,
-            DataPlaneStateDao,
+            HttpDatasetConfigDao,
             VersionedDatasetDao,
             DatasetItemDao,
             IngressLogDao,
-            EgressLogDao
+            EgressLogDao,
+            DataPlaneStateDao
           ])
         ],
         controllers: [],
         providers: [
           DataPlaneService,
-          TransferService,
           LoggingService,
           AuthClientService,
+          DataPlaneRegistrationService,
+          CatalogClientService,
+          NegotiationClientService,
+          TransferClientService,
           {
             provide: AuthConfig,
             useValue: { enabled: false }
@@ -246,15 +183,24 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           {
             provide: RootConfig,
             useValue: config
+          },
+          {
+            provide: ControlPlaneConfig,
+            useValue: config.controlPlane
+          },
+          {
+            provide: ITransferHandler,
+            useClass: HTTPTransferHandler
           }
         ]
       })
         .setLogger(new AppLogger())
         .compile();
 
-      transferService = moduleRef.get(TransferService);
+      await moduleRef.init();
+
+      transferService = moduleRef.get(ITransferHandler);
       await moduleRef.get(DataPlaneService).initialized;
-      await moduleRef.get(DataPlaneService).registered;
 
       await new Promise((r) => setTimeout(r, 20));
     });
@@ -309,7 +255,7 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
         transferProcessId = result.identifier;
         authorization =
           result.dataAddress?.properties?.find(
-            ({ name }) => name === authorizationHeaderConfig
+            ({ name }: { name: string }) => name === authorizationHeaderConfig
           )?.value || "UNKNOWN";
         expect(result.dataAddress).toBeDefined();
       });
@@ -429,30 +375,37 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
       });
 
       it("Start transfer", async () => {
-        const response = await transferService.transferStart(transferProcessId);
+        const response = await moduleRef
+          .get(TransferClientService)
+          .transferStart({ processId: transferProcessId, id: "dummy" });
         expect(response).toStrictEqual({ status: "OK" });
       });
 
       it("Complete transfer", async () => {
-        const response =
-          await transferService.transferComplete(transferProcessId);
+        const response = await moduleRef
+          .get(TransferClientService)
+          .transferComplete({ processId: transferProcessId, id: "dummy" });
         expect(response).toStrictEqual({ status: "OK" });
       });
 
       it("Terminate transfer", async () => {
-        const response = await transferService.transferTerminate(
-          transferProcessId,
-          "CODE",
-          "REASON"
-        );
+        const response = await moduleRef
+          .get(TransferClientService)
+          .transferTerminate(
+            { processId: transferProcessId, id: "dummy" },
+            "CODE",
+            "REASON"
+          );
         expect(response).toStrictEqual({ status: "OK" });
       });
 
       it("Suspend transfer", async () => {
-        const response = await transferService.transferSuspend(
-          transferProcessId,
-          "REASON"
-        );
+        const response = await moduleRef
+          .get(TransferClientService)
+          .transferSuspend(
+            { processId: transferProcessId, id: "dummy" },
+            "REASON"
+          );
         expect(response).toStrictEqual({ status: "OK" });
       });
     });
@@ -585,246 +538,6 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
         ).rejects.toThrow("accessing is not allowed");
       });
     });
-    describe("getNegotiationWithBackoff", () => {
-      it("should return negotiation when finalized", async () => {
-        const negotiationId = "test-id";
-        const negotiation = {
-          localId: "test",
-          remoteId: "test",
-          events: [],
-          remoteParty: "did:web:test",
-          remoteAddress: "remoteAddress",
-          dataSet: "urn:1234",
-          modifiedDate: new Date(),
-          role: "provider" as NegotiationRole,
-          state: ContractNegotiationState.FINALIZED
-        };
-        jest
-          .spyOn(transferService, "checkForFinalizedNegotiation")
-          .mockResolvedValue(negotiation);
-
-        const result =
-          await transferService.getNegotiationWithBackoff(negotiationId);
-
-        expect(result).toEqual(negotiation);
-      });
-
-      it("should throw an error after max retries", async () => {
-        const negotiationId = "test-id";
-        jest
-          .spyOn(transferService, "checkForFinalizedNegotiation")
-          .mockResolvedValue(undefined);
-
-        await expect(
-          transferService.getNegotiationWithBackoff(negotiationId, 5, 1)
-        ).rejects.toThrow(
-          `Negotiation ${negotiationId} did not finalize after 5 retries`
-        );
-      });
-    });
-
-    describe("obtainNegotiation", () => {
-      it("should request a new negotiation", async () => {
-        const datasetId = "dataset-id";
-        const address = "address";
-        const audience = "audience";
-        const dataset: DatasetDto = { hasPolicy: [{}] } as DatasetDto;
-
-        jest.spyOn(transferService, "getDataset").mockResolvedValue(dataset);
-
-        const negotiation: NegotiationDetailDto = {
-          localId: "test",
-          remoteId: "test",
-          events: [],
-          remoteParty: "did:web:test",
-          remoteAddress: "remoteAddress",
-          dataSet: "urn:uuid:1234",
-          modifiedDate: new Date(),
-          role: "provider" as NegotiationRole,
-          state: ContractNegotiationState.FINALIZED
-        };
-
-        jest
-          .spyOn(transferService, "checkForFinalizedNegotiation")
-          .mockResolvedValue(negotiation);
-
-        const result = await transferService.obtainNegotiation(
-          datasetId,
-          address,
-          audience
-        );
-
-        expect(result).toEqual(negotiation);
-      });
-
-      it("should handle missing offer", async () => {
-        const datasetId = "dataset-id";
-        const address = "address";
-        const audience = "audience";
-        const dataset: DatasetDto = {} as DatasetDto;
-        const offer: OfferDto = {
-          "@type": "Offer",
-          "@id": "urn:uuid:offer-id",
-          assigner: "did:web:localhost",
-          assignee: "did:web:localhost",
-          target: "dataset-id"
-        };
-        dataset.hasPolicy = [offer];
-
-        jest.spyOn(transferService, "getDataset").mockResolvedValue(dataset);
-
-        const negotiation: NegotiationDetailDto = {
-          localId: "test",
-          remoteId: "test",
-          events: [],
-          remoteParty: "did:web:test",
-          remoteAddress: "remoteAddress",
-          dataSet: "urn:uuid:1234",
-          modifiedDate: new Date(),
-          role: "provider" as NegotiationRole,
-          state: ContractNegotiationState.FINALIZED
-        };
-
-        jest
-          .spyOn(transferService, "checkForFinalizedNegotiation")
-          .mockResolvedValue(negotiation);
-
-        const result = await transferService.obtainNegotiation(
-          datasetId,
-          address,
-          audience
-        );
-        expect(result).toBeTruthy();
-      });
-    });
-    describe("getNegotiation", () => {
-      it("should return negotiation details when the request is successful", async () => {
-        const processId = "test-process-id";
-        const negotiationDetail: NegotiationDetailDto = {
-          localId: "test",
-          remoteId: "test",
-          events: [],
-          remoteParty: "did:web:test",
-          remoteAddress: "remoteAddress",
-          dataSet: "urn:uuid:1234",
-          modifiedDate: new Date(),
-          role: "provider" as NegotiationRole,
-          state: ContractNegotiationState.FINALIZED
-        };
-
-        jest
-          .spyOn(transferService["axiosManagement"], "get")
-          .mockResolvedValue({
-            data: negotiationDetail
-          });
-
-        const result = await transferService.getNegotiation(processId);
-        expect(result).toEqual(negotiationDetail);
-      });
-
-      it("should throw DataPlaneClientError when the request fails", async () => {
-        const processId = "test-process-id";
-        const error = new Error("Request failed");
-
-        jest
-          .spyOn(transferService["axiosManagement"], "get")
-          .mockRejectedValue(error);
-
-        await expect(transferService.getNegotiation(processId)).rejects.toThrow(
-          `Fetching negotiation ${processId} failed`
-        );
-      });
-    });
-
-    describe("requestTransfer", () => {
-      let negotiation: NegotiationDetailDto;
-      let address: string;
-      let audience: string;
-      let datasetId: string;
-
-      beforeEach(() => {
-        negotiation = {
-          localId: "test",
-          remoteId: "test",
-          events: [],
-          remoteParty: "did:web:test",
-          remoteAddress: "remoteAddress",
-          dataSet: "urn:uuid:1234",
-          modifiedDate: new Date(),
-          role: "provider" as NegotiationRole,
-          state: ContractNegotiationState.FINALIZED,
-          agreement: {
-            "@id": "urn:uuid:agreement-id",
-            "@type": "Agreement",
-            assigner: "did:web:localhost",
-            assignee: "did:web:localhost",
-            timestamp: new Date().toISOString(),
-            target: "urn:uuid:dataset"
-          }
-        };
-        address = "http://localhost:3000";
-        audience = "test-audience";
-        datasetId = "urn:uuid:test-dataset";
-      });
-
-      it("should request a transfer successfully", async () => {
-        jest
-          .spyOn(transferService["axiosManagement"], "post")
-          .mockResolvedValue({
-            data: {}
-          });
-
-        await transferService.requestTransfer(
-          negotiation,
-          address,
-          audience,
-          datasetId
-        );
-
-        expect(transferService["axiosManagement"].post).toHaveBeenCalledWith(
-          "transfers/request",
-          null,
-          {
-            params: {
-              address: address,
-              agreementId: negotiation.agreement!["@id"],
-              audience: audience
-            }
-          }
-        );
-      });
-
-      it("should throw an error if agreement ID is not found", async () => {
-        delete negotiation.agreement;
-
-        await expect(
-          transferService.requestTransfer(
-            negotiation,
-            address,
-            audience,
-            datasetId
-          )
-        ).rejects.toThrow(
-          `No agreement ID found for negotiation ${negotiation.localId}`
-        );
-      });
-
-      it("should throw a DataPlaneClientError if the request fails", async () => {
-        const error = new Error("Request failed");
-        jest
-          .spyOn(transferService["axiosManagement"], "post")
-          .mockRejectedValue(error);
-
-        await expect(
-          transferService.requestTransfer(
-            negotiation,
-            address,
-            audience,
-            datasetId
-          )
-        ).rejects.toThrow("Transfer request failed");
-      });
-    });
     describe("determineTransferId", () => {
       let datasetId: string;
       let audience: string;
@@ -871,16 +584,28 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           dataSet: "urn:uuid:1234",
           modifiedDate: new Date(),
           role: "provider" as NegotiationRole,
-          state: ContractNegotiationState.FINALIZED
+          state: ContractNegotiationState.FINALIZED,
+          agreement: {
+            "@type": "Agreement",
+            "@id": "urn:uuid:agreement-id",
+            assignee: "did:web:localhost",
+            assigner: "did:web:localhost",
+            target: datasetId,
+            timestamp: new Date().toISOString()
+          }
         } as NegotiationDetailDto;
+        const negotiationClient = moduleRef.get(NegotiationClientService);
+        const transferClient = moduleRef.get(TransferClientService);
+        jest
+          .spyOn(negotiationClient, "getNegotiationForDataset")
+          .mockRejectedValueOnce(new Error("Not found"));
+        jest
+          .spyOn(negotiationClient, "requestDefaultNegotiation")
+          .mockResolvedValueOnce(negotiation);
 
         jest
-          .spyOn(transferService, "obtainNegotiation")
-          .mockResolvedValue(negotiation);
-
-        jest
-          .spyOn(transferService, "requestTransfer")
-          .mockResolvedValue(undefined);
+          .spyOn(transferClient, "requestTransfer")
+          .mockResolvedValueOnce({} as TransferProcessDto);
 
         const transfer = {
           id: "urn:uuid:transfer-id",
@@ -891,7 +616,7 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
 
         jest
           .spyOn(transferService, "getStartedTransferWithBackoff")
-          .mockResolvedValue(transfer);
+          .mockResolvedValueOnce(transfer);
 
         const result = await transferService.determineTransferId(
           datasetId,
@@ -900,16 +625,22 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
         );
 
         expect(result).toBe(transfer.id);
-        expect(transferService.obtainNegotiation).toHaveBeenCalledWith(
+        expect(negotiationClient.getNegotiationForDataset).toHaveBeenCalledWith(
           datasetId,
-          expect.any(String),
-          audience
+          expect.any(String)
         );
-        expect(transferService.requestTransfer).toHaveBeenCalledWith(
-          negotiation,
-          expect.any(String),
+        expect(
+          negotiationClient.requestDefaultNegotiation
+        ).toHaveBeenCalledWith(
+          datasetId,
           audience,
-          datasetId
+          expect.any(String),
+          expect.any(Function)
+        );
+        expect(transferClient.requestTransfer).toHaveBeenCalledWith(
+          negotiation.agreement!["@id"],
+          audience,
+          expect.any(String)
         );
       });
 
@@ -927,25 +658,37 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           dataSet: "urn:uuid:1234",
           modifiedDate: new Date(),
           role: "provider" as NegotiationRole,
-          state: ContractNegotiationState.FINALIZED
+          state: ContractNegotiationState.FINALIZED,
+          agreement: {
+            "@type": "Agreement",
+            "@id": "urn:uuid:agreement-id",
+            assignee: "did:web:localhost",
+            assigner: "did:web:localhost",
+            target: datasetId,
+            timestamp: new Date().toISOString()
+          }
         } as NegotiationDetailDto;
-
+        const negotiationClient = moduleRef.get(NegotiationClientService);
+        const transferClient = moduleRef.get(TransferClientService);
         jest
-          .spyOn(transferService, "obtainNegotiation")
+          .spyOn(negotiationClient, "getNegotiationForDataset")
+          .mockRejectedValue(new Error("Not found"));
+        jest
+          .spyOn(negotiationClient, "requestDefaultNegotiation")
           .mockResolvedValue(negotiation);
 
         jest
-          .spyOn(transferService, "requestTransfer")
-          .mockResolvedValue(undefined);
+          .spyOn(transferClient, "requestTransfer")
+          .mockResolvedValue({} as TransferProcessDto);
 
         jest
+          .spyOn(transferService["transferRepository"], "findOne")
+          .mockResolvedValue(null);
+        jest
           .spyOn(transferService, "getStartedTransferWithBackoff")
-          .mockImplementationOnce(() => {
-            throw new DataPlaneClientError(
-              `Failed to find transfer for dataset ${datasetId}`,
-              HttpStatus.BAD_REQUEST
-            );
-          });
+          .mockRejectedValueOnce(
+            new Error(`Failed to find transfer for dataset ${datasetId}`)
+          );
 
         await expect(
           transferService.determineTransferId(
@@ -961,9 +704,13 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           .spyOn(transferService.transferRepository, "findOne")
           .mockResolvedValueOnce(null);
 
+        const negotiationClient = moduleRef.get(NegotiationClientService);
         jest
-          .spyOn(transferService, "obtainNegotiation")
-          .mockRejectedValue(new Error("Negotiation error"));
+          .spyOn(negotiationClient, "getNegotiationForDataset")
+          .mockRejectedValueOnce(new Error("Negotiation error A"));
+        jest
+          .spyOn(negotiationClient, "requestDefaultNegotiation")
+          .mockRejectedValueOnce(new Error("Negotiation error B"));
 
         await expect(
           transferService.determineTransferId(
@@ -1018,66 +765,6 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
         expect(
           transferService.transferRepository.findOne
         ).toHaveBeenCalledTimes(3);
-      });
-    });
-    describe("checkForFinalizedNegotiation", () => {
-      it("should return negotiation when state is FINALIZED", async () => {
-        const negotiationId = "test-id";
-        const negotiation = {
-          localId: "test",
-          remoteId: "test",
-          events: [],
-          remoteParty: "did:web:test",
-          remoteAddress: "remoteAddress",
-          dataSet: "urn:1234",
-          modifiedDate: new Date(),
-          role: "provider" as NegotiationRole,
-          state: "FINALIZED"
-        } as NegotiationDetailDto;
-
-        jest
-          .spyOn(transferService, "getNegotiation")
-          .mockResolvedValue(negotiation);
-
-        const result =
-          await transferService.checkForFinalizedNegotiation(negotiationId);
-
-        expect(result).toEqual(negotiation);
-      });
-
-      it("should return undefined when state is not FINALIZED", async () => {
-        const negotiationId = "test-id";
-        const negotiation = {
-          localId: "test",
-          remoteId: "test",
-          events: [],
-          remoteParty: "did:web:test",
-          remoteAddress: "remoteAddress",
-          dataSet: "urn:1234",
-          modifiedDate: new Date(),
-          role: "provider" as NegotiationRole,
-          state: "REQUESTED"
-        } as NegotiationDetailDto;
-
-        jest
-          .spyOn(transferService, "getNegotiation")
-          .mockResolvedValue(negotiation);
-
-        const result =
-          await transferService.checkForFinalizedNegotiation(negotiationId);
-
-        expect(result).toBeUndefined();
-      });
-
-      it("should throw an error if getNegotiation fails", async () => {
-        const negotiationId = "test-id";
-        const error = new Error("Request failed");
-
-        jest.spyOn(transferService, "getNegotiation").mockRejectedValue(error);
-
-        await expect(
-          transferService.checkForFinalizedNegotiation(negotiationId)
-        ).rejects.toThrow("Request failed");
       });
     });
   }

@@ -37,8 +37,6 @@ export class DataPlaneDao extends MetaEntity implements IDataPlane {
   @Column({ type: String })
   managementAddress!: string;
   @Column({ type: String })
-  managementToken!: string;
-  @Column({ type: String })
   catalogSynchronization!: "push" | "pull";
   @Column({ type: String })
   role!: "consumer" | "provider" | "both";

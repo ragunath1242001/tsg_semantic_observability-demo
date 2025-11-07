@@ -3,6 +3,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Logger,
   Param,
   Post,
@@ -17,6 +18,10 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
+import {
+  ITransferHandler,
+  TransferClientService
+} from "@tsg-dsp/common-data-plane-api";
 import { AgreementDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import {
   ApiForbiddenResponseDefault,
@@ -24,14 +29,18 @@ import {
   TransferDto
 } from "@tsg-dsp/common-dtos";
 
-import { TransfersService } from "./transfers.service.js";
+import { AnalyticsTransferHandler } from "./analytics-transfer-handler.service.js";
 
 @ApiTags("Data Plane Management")
 @ApiOAuth2(["controlplane_dataplane"])
 @Controller("management/transfers")
 @Roles("controlplane_dataplane")
 export class TransfersManagementController {
-  constructor(private readonly transfersService: TransfersService) {}
+  constructor(
+    @Inject(ITransferHandler)
+    private readonly transferHandler: AnalyticsTransferHandler,
+    private readonly transferClientService: TransferClientService
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
@@ -39,7 +48,7 @@ export class TransfersManagementController {
   @ApiResponse({ status: HttpStatus.OK, type: [TransferDto] })
   @ApiForbiddenResponseDefault()
   async getTransfers(): Promise<TransferDto[]> {
-    return await this.transfersService.getTransfers();
+    return await this.transferHandler.getTransfers();
   }
 
   @Get(":id")
@@ -48,7 +57,7 @@ export class TransfersManagementController {
   @ApiResponse({ status: HttpStatus.OK, type: TransferDto })
   @ApiForbiddenResponseDefault()
   async getTransfer(@Param("id") id: string): Promise<TransferDto> {
-    return await this.transfersService.getTransferById(id);
+    return await this.transferHandler.getTransferById(id);
   }
 
   @Get(":id/metadata")
@@ -62,7 +71,7 @@ export class TransfersManagementController {
   async getMetadata(
     @Param("id") id: string
   ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
-    return await this.transfersService.getMetadata(id);
+    return await this.transferHandler.getMetadata(id);
   }
 
   @Post(":id/start")
@@ -72,7 +81,8 @@ export class TransfersManagementController {
   @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.ACCEPTED)
   async startTransfer(@Param("id") id: string): Promise<void> {
-    return await this.transfersService.transferStart(id);
+    const transfer = await this.transferHandler.getTransferById(id);
+    await this.transferClientService.transferStart(transfer);
   }
 
   @Post(":id/completion")
@@ -82,7 +92,8 @@ export class TransfersManagementController {
   @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.ACCEPTED)
   async completeTransfer(@Param("id") id: string): Promise<void> {
-    return await this.transfersService.transferComplete(id);
+    const transfer = await this.transferHandler.getTransferById(id);
+    await this.transferClientService.transferComplete(transfer);
   }
 
   @Post(":id/termination")
@@ -98,7 +109,8 @@ export class TransfersManagementController {
     @Query("code", nonEmptyStringPipe) code: string,
     @Query("code", nonEmptyStringPipe) reason: string
   ): Promise<void> {
-    return await this.transfersService.transferTerminate(id, code, reason);
+    const transfer = await this.transferHandler.getTransferById(id);
+    await this.transferClientService.transferTerminate(transfer, code, reason);
   }
 
   @Post(":id/suspension")
@@ -112,6 +124,7 @@ export class TransfersManagementController {
     @Param("id") id: string,
     @Query("code", nonEmptyStringPipe) reason: string
   ): Promise<void> {
-    return await this.transfersService.transferSuspend(id, reason);
+    const transfer = await this.transferHandler.getTransferById(id);
+    await this.transferClientService.transferSuspend(transfer, reason);
   }
 }

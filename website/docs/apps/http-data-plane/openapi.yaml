@@ -148,6 +148,62 @@ paths:
       security: *a5
       summary: Get catalog
       tags: *a6
+  /api/management/registry/addresses:
+    get:
+      description: Get the current registry addresses from the Control Plane.
+      operationId: DataPlaneManagementController_getRegistryAddresses
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    didId:
+                      type: string
+                    address:
+                      type: string
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a5
+      summary: Get registry addresses
+      tags: *a6
+  /api/management/registry/catalog/{participantId}:
+    get:
+      description: Get the catalog of a participant based on its participant ID.
+      operationId: DataPlaneManagementController_getRegistryCatalog
+      parameters:
+        - name: participantId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a5
+      summary: Get participant catalog
+      tags: *a6
   /api/management/refresh:
     post:
       description: Use this endpoint to (re)register your data plane. Currently it
@@ -563,6 +619,878 @@ paths:
       security: *a8
       summary: Get egress logs
       tags: *a9
+  /api/management/transfers:
+    get:
+      operationId: TransferManagementController_getTransfers
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransferDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a10
+        - oauth2:
+            - controlplane_dataplane
+      summary: Get all transfers
+      tags: &a11
+        - Data Plane Management
+  /api/management/transfers/{id}:
+    get:
+      operationId: TransferManagementController_getTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Get transfer by ID
+      tags: *a11
+  /api/management/transfers/{id}/metadata:
+    get:
+      operationId: TransferManagementController_getMetadata
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetadataDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Get metadata of transfer by ID
+      tags: *a11
+  /api/management/transfers/{id}/start:
+    post:
+      operationId: TransferManagementController_startTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Start a transfer by ID
+      tags: *a11
+  /api/management/transfers/{id}/completion:
+    post:
+      operationId: TransferManagementController_completeTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Complete a transfer by ID
+      tags: *a11
+  /api/management/transfers/{id}/termination:
+    post:
+      operationId: TransferManagementController_terminateTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: code
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: reason
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Terminate a transfer by ID
+      tags: *a11
+  /api/management/transfers/{id}/suspension:
+    post:
+      operationId: TransferManagementController_suspendTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: code
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Suspend a transfer by ID
+      tags: *a11
+  /api/management/transfers/{id}/execute/{path}:
+    get:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: TransferManagementController_executeTransfer_get
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request
+      tags: *a11
+    post:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: TransferManagementController_executeTransfer_post
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request
+      tags: *a11
+    put:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: TransferManagementController_executeTransfer_put
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request
+      tags: *a11
+    delete:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: TransferManagementController_executeTransfer_delete
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request
+      tags: *a11
+    patch:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: TransferManagementController_executeTransfer_patch
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request
+      tags: *a11
+    options:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: TransferManagementController_executeTransfer_options
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request
+      tags: *a11
+    head:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: TransferManagementController_executeTransfer_head
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request
+      tags: *a11
+    search:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: TransferManagementController_executeTransfer_search
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request
+      tags: *a11
+  /api/management/execute/{path}:
+    get:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_get
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request without transfer ID
+      tags: *a11
+    post:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_post
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request without transfer ID
+      tags: *a11
+    put:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_put
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request without transfer ID
+      tags: *a11
+    delete:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_delete
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request without transfer ID
+      tags: *a11
+    patch:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_patch
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request without transfer ID
+      tags: *a11
+    options:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_options
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request without transfer ID
+      tags: *a11
+    head:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_head
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request without transfer ID
+      tags: *a11
+    search:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_search
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Proxy a request without transfer ID
+      tags: *a11
+  /api/proxy/{id}/{path}:
+    get:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_get
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: &a12
+        - Proxy
+    post:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_post
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a12
+    put:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_put
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a12
+    delete:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_delete
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a12
+    patch:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_patch
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a12
+    options:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_options
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a12
+    head:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_head
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a12
+    search:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_search
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a12
   /api/transfers/request/{role}:
     post:
       description: Requests a transfer from control plane to data plane.
@@ -607,11 +1535,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a10
+      security: &a13
         - oauth2:
             - controlplane_dataplane
       summary: Request Transfer
-      tags: &a11
+      tags: &a14
         - Data Plane
   /api/transfers/{id}/start:
     post:
@@ -632,9 +1560,9 @@ paths:
       responses:
         "202":
           description: Transfer started successfully
-      security: *a10
+      security: *a13
       summary: Start transfer process
-      tags: *a11
+      tags: *a14
   /api/transfers/{id}/completion:
     post:
       operationId: TransferController_completeTransfer
@@ -654,9 +1582,9 @@ paths:
       responses:
         "202":
           description: Transfer completed successfully
-      security: *a10
+      security: *a13
       summary: Complete transfer process
-      tags: *a11
+      tags: *a14
   /api/transfers/{id}/termination:
     post:
       operationId: TransferController_terminateTransfer
@@ -676,9 +1604,9 @@ paths:
       responses:
         "202":
           description: Transfer terminated successfully
-      security: *a10
+      security: *a13
       summary: Terminate transfer process
-      tags: *a11
+      tags: *a14
   /api/transfers/{id}/suspension:
     post:
       operationId: TransferController_suspendTransfer
@@ -698,880 +1626,8 @@ paths:
       responses:
         "202":
           description: Transfer suspended successfully
-      security: *a10
+      security: *a13
       summary: Suspend transfer process
-      tags: *a11
-  /api/management/transfers:
-    get:
-      operationId: TransferManagementController_getTransfers
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/TransferDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: &a12
-        - oauth2:
-            - controlplane_dataplane
-      summary: Get all transfers
-      tags: &a13
-        - Data Plane Management
-  /api/management/transfers/{id}:
-    get:
-      operationId: TransferManagementController_getTransfer
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TransferDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Get transfer by ID
-      tags: *a13
-  /api/management/transfers/{id}/metadata:
-    get:
-      operationId: TransferManagementController_getMetadata
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MetadataDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Get metadata of transfer by ID
-      tags: *a13
-  /api/management/transfers/{id}/start:
-    post:
-      operationId: TransferManagementController_startTransfer
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-      responses:
-        "202":
-          description: ""
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Start a transfer by ID
-      tags: *a13
-  /api/management/transfers/{id}/completion:
-    post:
-      operationId: TransferManagementController_completeTransfer
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-      responses:
-        "202":
-          description: ""
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Complete a transfer by ID
-      tags: *a13
-  /api/management/transfers/{id}/termination:
-    post:
-      operationId: TransferManagementController_terminateTransfer
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: code
-          required: true
-          in: query
-          schema:
-            type: string
-        - name: reason
-          required: true
-          in: query
-          schema:
-            type: string
-      responses:
-        "202":
-          description: ""
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Terminate a transfer by ID
-      tags: *a13
-  /api/management/transfers/{id}/suspension:
-    post:
-      operationId: TransferManagementController_suspendTransfer
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: code
-          required: true
-          in: query
-          schema:
-            type: string
-      responses:
-        "202":
-          description: ""
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Suspend a transfer by ID
-      tags: *a13
-  /api/management/transfers/{id}/execute/{path}:
-    get:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: TransferManagementController_executeTransfer_get
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request
-      tags: *a13
-    post:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: TransferManagementController_executeTransfer_post
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request
-      tags: *a13
-    put:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: TransferManagementController_executeTransfer_put
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request
-      tags: *a13
-    delete:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: TransferManagementController_executeTransfer_delete
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request
-      tags: *a13
-    patch:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: TransferManagementController_executeTransfer_patch
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request
-      tags: *a13
-    options:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: TransferManagementController_executeTransfer_options
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request
-      tags: *a13
-    head:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: TransferManagementController_executeTransfer_head
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request
-      tags: *a13
-    search:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: TransferManagementController_executeTransfer_search
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request
-      tags: *a13
-  /api/management/execute/{path}:
-    get:
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
-      operationId: TransferManagementController_executeTransferWithoutId_get
-      parameters:
-        - name: x-dataset-id
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-audience
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-controlplane-address
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request without transfer ID
-      tags: *a13
-    post:
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
-      operationId: TransferManagementController_executeTransferWithoutId_post
-      parameters:
-        - name: x-dataset-id
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-audience
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-controlplane-address
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request without transfer ID
-      tags: *a13
-    put:
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
-      operationId: TransferManagementController_executeTransferWithoutId_put
-      parameters:
-        - name: x-dataset-id
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-audience
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-controlplane-address
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request without transfer ID
-      tags: *a13
-    delete:
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
-      operationId: TransferManagementController_executeTransferWithoutId_delete
-      parameters:
-        - name: x-dataset-id
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-audience
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-controlplane-address
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request without transfer ID
-      tags: *a13
-    patch:
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
-      operationId: TransferManagementController_executeTransferWithoutId_patch
-      parameters:
-        - name: x-dataset-id
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-audience
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-controlplane-address
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request without transfer ID
-      tags: *a13
-    options:
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
-      operationId: TransferManagementController_executeTransferWithoutId_options
-      parameters:
-        - name: x-dataset-id
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-audience
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-controlplane-address
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request without transfer ID
-      tags: *a13
-    head:
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
-      operationId: TransferManagementController_executeTransferWithoutId_head
-      parameters:
-        - name: x-dataset-id
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-audience
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-controlplane-address
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request without transfer ID
-      tags: *a13
-    search:
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
-      operationId: TransferManagementController_executeTransferWithoutId_search
-      parameters:
-        - name: x-dataset-id
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-audience
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-controlplane-address
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a12
-      summary: Proxy a request without transfer ID
-      tags: *a13
-  /api/proxy/{id}/{path}:
-    get:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: ProxyController_getData_get
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "200":
-          description: ""
-      summary: Proxy a request
-      tags: &a14
-        - Proxy
-    post:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: ProxyController_getData_post
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "200":
-          description: ""
-      summary: Proxy a request
-      tags: *a14
-    put:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: ProxyController_getData_put
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "200":
-          description: ""
-      summary: Proxy a request
-      tags: *a14
-    delete:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: ProxyController_getData_delete
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "200":
-          description: ""
-      summary: Proxy a request
-      tags: *a14
-    patch:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: ProxyController_getData_patch
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "200":
-          description: ""
-      summary: Proxy a request
-      tags: *a14
-    options:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: ProxyController_getData_options
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "200":
-          description: ""
-      summary: Proxy a request
-      tags: *a14
-    head:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: ProxyController_getData_head
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "200":
-          description: ""
-      summary: Proxy a request
-      tags: *a14
-    search:
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
-      operationId: ProxyController_getData_search
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer identifier
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string | string[] | undefined
-      responses:
-        "200":
-          description: ""
-      summary: Proxy a request
       tags: *a14
 info:
   title: TSG HTTP Data Plane
@@ -1667,9 +1723,6 @@ components:
         managementAddress:
           type: string
           example: http://localhost/manage
-        managementToken:
-          type: string
-          example: token123
         catalogSynchronization:
           type: string
           enum:
@@ -1692,7 +1745,6 @@ components:
         - endpointPrefix
         - callbackAddress
         - managementAddress
-        - managementToken
         - catalogSynchronization
         - role
         - identifier
@@ -2605,97 +2657,6 @@ components:
       required:
         - accepted
         - identifier
-    TransferStartMessageSchema:
-      type: object
-      properties:
-        "@type":
-          type: string
-          example: TransferStartMessage
-        providerPid:
-          type: string
-          example: provider-pid-789
-        consumerPid:
-          type: string
-          example: consumer-pid-123
-        dataAddress:
-          example:
-            "@type": DataAddress
-            endpointType: http
-            endpoint: https://api.example.com
-            endpointProperties:
-              - "@type": EndpointProperty
-                name: name
-                value: value
-          allOf:
-            - $ref: "#/components/schemas/DataAddressSchema"
-      required:
-        - "@type"
-        - providerPid
-        - consumerPid
-    TransferCompletionMessageSchema:
-      type: object
-      properties:
-        "@type":
-          type: string
-          example: TransferCompletionMessage
-        providerPid:
-          type: string
-          example: provider-pid-789
-        consumerPid:
-          type: string
-          example: consumer-pid-123
-      required:
-        - "@type"
-        - providerPid
-        - consumerPid
-    TransferTerminationMessageSchema:
-      type: object
-      properties:
-        "@type":
-          type: string
-          example: TransferTerminationMessage
-        providerPid:
-          type: string
-          example: provider-pid-789
-        consumerPid:
-          type: string
-          example: consumer-pid-123
-        code:
-          type: string
-          example: TERMINATED
-        reason:
-          example:
-            - Contract breach
-          type: array
-          items:
-            type: string
-      required:
-        - "@type"
-        - providerPid
-        - consumerPid
-        - code
-    TransferSuspensionMessageSchema:
-      type: object
-      properties:
-        "@type":
-          type: string
-          example: TransferSuspensionMessage
-        providerPid:
-          type: string
-          example: provider-pid-789
-        consumerPid:
-          type: string
-          example: consumer-pid-123
-        reason:
-          example:
-            - Technical issue
-          type: array
-          items:
-            type: string
-      required:
-        - "@type"
-        - providerPid
-        - consumerPid
     TransferDto:
       type: object
       properties:
@@ -2817,6 +2778,97 @@ components:
       required:
         - agreement
         - dataset
+    TransferStartMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: TransferStartMessage
+        providerPid:
+          type: string
+          example: provider-pid-789
+        consumerPid:
+          type: string
+          example: consumer-pid-123
+        dataAddress:
+          example:
+            "@type": DataAddress
+            endpointType: http
+            endpoint: https://api.example.com
+            endpointProperties:
+              - "@type": EndpointProperty
+                name: name
+                value: value
+          allOf:
+            - $ref: "#/components/schemas/DataAddressSchema"
+      required:
+        - "@type"
+        - providerPid
+        - consumerPid
+    TransferCompletionMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: TransferCompletionMessage
+        providerPid:
+          type: string
+          example: provider-pid-789
+        consumerPid:
+          type: string
+          example: consumer-pid-123
+      required:
+        - "@type"
+        - providerPid
+        - consumerPid
+    TransferTerminationMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: TransferTerminationMessage
+        providerPid:
+          type: string
+          example: provider-pid-789
+        consumerPid:
+          type: string
+          example: consumer-pid-123
+        code:
+          type: string
+          example: TERMINATED
+        reason:
+          example:
+            - Contract breach
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - providerPid
+        - consumerPid
+        - code
+    TransferSuspensionMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: TransferSuspensionMessage
+        providerPid:
+          type: string
+          example: provider-pid-789
+        consumerPid:
+          type: string
+          example: consumer-pid-123
+        reason:
+          example:
+            - Technical issue
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - providerPid
+        - consumerPid
 externalDocs:
   description: Git Repository
   url: https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway

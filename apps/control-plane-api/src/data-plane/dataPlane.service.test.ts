@@ -123,7 +123,6 @@ describe("DataPlane Service", () => {
         endpointPrefix: "/api",
         callbackAddress: "http://localhost/api/callback",
         managementAddress: "http://localhost/api/management",
-        managementToken: "",
         catalogSynchronization: "pull",
         role: "consumer"
       };
@@ -141,7 +140,6 @@ describe("DataPlane Service", () => {
           endpointPrefix: "/api",
           callbackAddress: "http://localhost/api/callback",
           managementAddress: "http://localhost/api/management",
-          managementToken: "",
           catalogSynchronization: "pull",
           role: "consumer"
         };
@@ -182,7 +180,6 @@ describe("DataPlane Service", () => {
         endpointPrefix: "/api",
         callbackAddress: "http://localhost/api/callback",
         managementAddress: "http://localhost/api/management",
-        managementToken: "",
         catalogSynchronization: "pull",
         role: "consumer"
       };
@@ -245,7 +242,6 @@ describe("DataPlane Service", () => {
         endpointPrefix: "/api",
         callbackAddress: "http://localhost/api/callback",
         managementAddress: "http://localhost/api/management",
-        managementToken: "",
         catalogSynchronization: "pull",
         role: "consumer"
       };
@@ -302,7 +298,6 @@ describe("DataPlane Service", () => {
         endpointPrefix: "/api",
         callbackAddress: "http://localhost/api/callback",
         managementAddress: "http://localhost/api/management",
-        managementToken: "",
         catalogSynchronization: "pull",
         role: "consumer"
       };

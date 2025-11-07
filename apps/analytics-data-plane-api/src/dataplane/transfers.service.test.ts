@@ -1,40 +1,53 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import {
+  AuthClientService,
+  AuthConfig,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
+import {
+  CatalogClientService,
+  ControlPlaneConfig,
+  createDataPlaneHttpMocks,
+  createDataPlaneManagementHttpMocks,
+  createDidConnectorHttpMocks,
+  ITransferHandler,
+  NegotiationClientService,
+  TransferClientService
+} from "@tsg-dsp/common-data-plane-api";
 import { plainToClass } from "class-transformer";
-import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 import { RootConfig } from "../config.js";
 import { AlgorithmEventDao } from "../events/algorithm-event.dao.js";
 import { InternalEventDao } from "../events/internal-event.dao.js";
-import { ManagementClientMock } from "./management-client.mock.js";
-import { ManagementClient } from "./management-client.service.js";
+import { AnalyticsTransferHandler } from "./analytics-transfer-handler.service.js";
 import { TransferDao } from "./transfer.dao.js";
-import { TransfersService } from "./transfers.service.js";
 
 describe("TransfersService", () => {
-  let transfersService: TransfersService;
+  let transfersService: AnalyticsTransferHandler;
+  let transferClient: TransferClientService;
   let server: SetupServer;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const config = plainToClass(RootConfig, {
-      server: {}
+      server: {},
+      controlPlane: {
+        dataPlaneEndpoint: "http://127.0.0.1/data-plane",
+        managementEndpoint: "http://localhost:3000/management",
+        controlEndpoint: "http://localhost:3000",
+        initializationDelay: 1
+      }
     });
 
     server = setupServer(
-      http.get("http://localhost/.well-known/did.json", () => {
-        return HttpResponse.json({
-          service: [
-            {
-              type: "connector",
-              serviceEndpoint: "http://remotecontrolplane/"
-            }
-          ]
-        });
-      })
+      ...createDataPlaneHttpMocks(config.controlPlane.dataPlaneEndpoint),
+      ...createDataPlaneManagementHttpMocks(
+        config.controlPlane.managementEndpoint
+      ),
+      ...createDidConnectorHttpMocks()
     );
     server.listen({ onUnhandledRequest: "error" });
 
@@ -54,19 +67,32 @@ describe("TransfersService", () => {
         ])
       ],
       providers: [
-        TransfersService,
+        AuthClientService,
+        CatalogClientService,
+        NegotiationClientService,
+        TransferClientService,
         {
           provide: RootConfig,
           useValue: config
         },
         {
-          provide: ManagementClient,
-          useValue: ManagementClientMock
+          provide: ControlPlaneConfig,
+          useValue: config.controlPlane
+        },
+        {
+          provide: AuthConfig,
+          useValue: { enabled: false }
+        },
+        {
+          provide: ITransferHandler,
+          useClass: AnalyticsTransferHandler
         }
       ]
     }).compile();
+    await module.init();
 
-    transfersService = module.get(TransfersService);
+    transfersService = module.get(ITransferHandler);
+    transferClient = module.get(TransferClientService);
   });
 
   afterAll(() => {
@@ -138,19 +164,27 @@ describe("TransfersService", () => {
     });
 
     it("Start transfer", async () => {
-      const response = await transfersService.transferStart(transferProcessId);
+      const response = await transferClient.transferStart({
+        id: "test",
+        processId: transferProcessId
+      });
       expect(response).toStrictEqual({ status: "OK" });
     });
 
     it("Complete transfer", async () => {
-      const response =
-        await transfersService.transferComplete(transferProcessId);
+      const response = await transferClient.transferComplete({
+        id: "test",
+        processId: transferProcessId
+      });
       expect(response).toStrictEqual({ status: "OK" });
     });
 
     it("Terminate transfer", async () => {
-      const response = await transfersService.transferTerminate(
-        transferProcessId,
+      const response = await transferClient.transferTerminate(
+        {
+          id: "test",
+          processId: transferProcessId
+        },
         "CODE",
         "REASON"
       );
@@ -158,8 +192,11 @@ describe("TransfersService", () => {
     });
 
     it("Suspend transfer", async () => {
-      const response = await transfersService.transferSuspend(
-        transferProcessId,
+      const response = await transferClient.transferSuspend(
+        {
+          id: "test",
+          processId: transferProcessId
+        },
         "REASON"
       );
       expect(response).toStrictEqual({ status: "OK" });

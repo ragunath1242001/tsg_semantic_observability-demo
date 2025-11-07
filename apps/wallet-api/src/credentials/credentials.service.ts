@@ -18,6 +18,7 @@ import { DeepPartial, Equal, Or, Repository } from "typeorm";
 
 import { InitCredentialConfig, RootConfig } from "../config.js";
 import { DidService } from "../did/did.service.js";
+import { KeysService } from "../keys/keys.service.js";
 import { SignatureService } from "../keys/signature.service.js";
 import {
   CredentialDao,
@@ -33,6 +34,7 @@ export class CredentialsService {
     @InjectRepository(CredentialDao)
     private readonly credentialRepository: Repository<CredentialDao>,
     private readonly didService: DidService,
+    private readonly keysService: KeysService,
     private readonly signatureService: SignatureService,
     @InjectRepository(StatusListCredentialDao)
     private readonly statusListCredentialRepository: Repository<StatusListCredentialDao>
@@ -60,6 +62,10 @@ export class CredentialsService {
           this.logger.log(`Using existing initial credential ${credential.id}`);
         }
       }, `insert initial credential ${credential.id}`);
+    }
+    if (this.config.issuance.issuer.length > 0) {
+      await this.keysService.initialized;
+      await this.assignStatusListIndex();
     }
     return true;
   }

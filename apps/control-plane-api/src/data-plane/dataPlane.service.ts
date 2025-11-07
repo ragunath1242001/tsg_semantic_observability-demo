@@ -152,7 +152,6 @@ export class DataPlaneService {
       endpointPrefix: dataPlaneCreation.endpointPrefix,
       callbackAddress: dataPlaneCreation.callbackAddress,
       managementAddress: dataPlaneCreation.managementAddress,
-      managementToken: dataPlaneCreation.managementToken,
       catalogSynchronization: dataPlaneCreation.catalogSynchronization,
       role: dataPlaneCreation.role
     };
@@ -282,18 +281,12 @@ export class DataPlaneService {
     return catalog;
   }
 
-  private async authorizationToken(
-    dataPlaneStatus: DataPlane
-  ): Promise<string | undefined> {
-    if (dataPlaneStatus.managementToken.trim() != "") {
-      return `Bearer ${dataPlaneStatus.managementToken}`;
+  private async authorizationToken(): Promise<string | undefined> {
+    const token = await this.authClientService.getToken();
+    if (token) {
+      return `Bearer ${token}`;
     } else {
-      const token = await this.authClientService.getToken();
-      if (token) {
-        return `Bearer ${token}`;
-      } else {
-        return undefined;
-      }
+      return undefined;
     }
   }
 
@@ -301,7 +294,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlaneStatus),
+          Authorization: await this.authorizationToken(),
           "If-None-Match": dataPlaneStatus.etag
         }
       };
@@ -339,7 +332,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlaneStatus)
+          Authorization: await this.authorizationToken()
         }
       };
       const datasetJson = await this.axios.get<void>(
@@ -437,7 +430,7 @@ export class DataPlaneService {
       try {
         const requestConfig: AxiosRequestConfig = {
           headers: {
-            Authorization: await this.authorizationToken(dataPlane),
+            Authorization: await this.authorizationToken(),
             "X-Remote-Party": remoteParty,
             "X-Dataset-Id": agreement.target
           }
@@ -489,7 +482,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlane)
+          Authorization: await this.authorizationToken()
         }
       };
       await this.axios.post(
@@ -521,7 +514,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlane)
+          Authorization: await this.authorizationToken()
         }
       };
       await this.axios.post(
@@ -553,7 +546,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlane)
+          Authorization: await this.authorizationToken()
         }
       };
       await this.axios.post(
@@ -585,7 +578,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlane)
+          Authorization: await this.authorizationToken()
         }
       };
       await this.axios.post(

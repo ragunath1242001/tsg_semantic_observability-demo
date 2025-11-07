@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { CommonDataPlaneModule } from "@tsg-dsp/common-data-plane-api";
 
 import { AlgorithmInstancesModule } from "../algorithm-instances/algorithm-instances.module.js";
 import { DataPlaneModule } from "../dataplane/dataplane.module.js";
@@ -13,7 +14,8 @@ import { InternalEventDao } from "./internal-event.dao.js";
   imports: [
     DataPlaneModule,
     AlgorithmInstancesModule,
-    TypeOrmModule.forFeature([AlgorithmEventDao, InternalEventDao])
+    TypeOrmModule.forFeature([AlgorithmEventDao, InternalEventDao]),
+    CommonDataPlaneModule
   ],
   controllers: [EventsController, EventsManagementController],
   providers: [EventsService]

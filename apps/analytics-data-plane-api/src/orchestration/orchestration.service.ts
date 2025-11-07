@@ -12,6 +12,7 @@ import {
 } from "@kubernetes/client-node";
 import { Injectable, Logger } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { hostname } from "os";
 import { Writable } from "stream";
 
@@ -50,17 +51,51 @@ export class OrchestrationService {
 
   private deploymentOwnerRef: V1OwnerReference | null = null;
 
-  async getJobsForAlgorithmInstance(
-    algorithmInstanceId: string
-  ): Promise<V1Job[]> {
-    const namespace = this.config.kubernetesConfig.namespace;
+  private followingJobStatus: Array<string> = [];
 
-    const jobList = await this.batchV1Api.listNamespacedJob({
-      namespace,
-      labelSelector: `adp.tsg.app/algorithm-instance-id=${algorithmInstanceId}`
-    });
-
-    return jobList.items;
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleCron() {
+    const newFollowingJobs = await Promise.all(
+      this.followingJobStatus.map(async (algorithmInstanceId) => {
+        this.logger.debug(
+          `Checking status for algorithm instance ${algorithmInstanceId}`
+        );
+        const jobs =
+          await this.getJobsForAlgorithmInstance(algorithmInstanceId);
+        if (jobs.length > 0) {
+          const succeeded = jobs[0].status?.succeeded ?? 0;
+          const failed = jobs[0].status?.failed ?? 0;
+          if (succeeded > 0) {
+            this.logger.debug(
+              `Algorithm instance ${algorithmInstanceId} succeeded`
+            );
+            await this.algorithmInstancesService.updateStatus(
+              algorithmInstanceId,
+              "completed"
+            );
+            return null;
+          }
+          if (failed > 0) {
+            this.logger.debug(
+              `Algorithm instance ${algorithmInstanceId} failed`
+            );
+            await this.algorithmInstancesService.updateStatus(
+              algorithmInstanceId,
+              "failed"
+            );
+            return null;
+          }
+          this.logger.debug(
+            `Algorithm instance ${algorithmInstanceId} still running`
+          );
+          return algorithmInstanceId;
+        }
+        return algorithmInstanceId;
+      })
+    );
+    this.followingJobStatus = newFollowingJobs.filter(
+      (id): id is string => id !== null
+    );
   }
 
   @OnEvent("job.spawn")
@@ -225,7 +260,10 @@ export class OrchestrationService {
         namespace,
         labels: {
           "adp.tsg.app/component": "analytics-job",
-          "adp.tsg.app/algorithm-instance-id": algorithmInstanceId
+          "adp.tsg.app/algorithm-instance-id": algorithmInstanceId,
+          "adp.tsg.app/adp-uid": deploymentOwnerRef
+            ? deploymentOwnerRef.uid
+            : "external"
         },
         ...(deploymentOwnerRef && {
           ownerReferences: [deploymentOwnerRef]
@@ -265,6 +303,7 @@ export class OrchestrationService {
       namespace,
       body: jobManifest
     });
+    this.followingJobStatus.push(algorithmInstanceId);
 
     const jobUid = createdJob.metadata?.uid;
     if (!jobUid) {
@@ -309,6 +348,24 @@ export class OrchestrationService {
     return {
       token: eventsAccessToken
     };
+  }
+
+  async getJobsForAlgorithmInstance(
+    algorithmInstanceId: string
+  ): Promise<V1Job[]> {
+    const namespace = this.config.kubernetesConfig.namespace;
+    const deploymentOwnerRef = await this.getDeploymentOwnerReference();
+    let labelSelector = `adp.tsg.app/algorithm-instance-id=${algorithmInstanceId}`;
+    if (deploymentOwnerRef) {
+      labelSelector += `,adp.tsg.app/adp-uid=${deploymentOwnerRef.uid}`;
+    }
+
+    const jobList = await this.batchV1Api.listNamespacedJob({
+      namespace,
+      labelSelector
+    });
+
+    return jobList.items;
   }
 
   async getPodsForJob(jobName: string) {

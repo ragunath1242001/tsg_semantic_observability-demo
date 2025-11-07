@@ -20,6 +20,7 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
+import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import { CatalogDto, CatalogSchema, DatasetDto } from "@tsg-dsp/common-dsp";
 import {
   ApiForbiddenResponseDefault,
@@ -33,7 +34,10 @@ import { DataPlaneService } from "./dataplane.service.js";
 @Controller("/management")
 @Roles("controlplane_dataplane")
 export class DataPlaneManagementController {
-  constructor(private readonly dataPlaneService: DataPlaneService) {}
+  constructor(
+    private readonly dataPlaneService: DataPlaneService,
+    private readonly catalog: CatalogClientService
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("/state")
@@ -56,7 +60,7 @@ export class DataPlaneManagementController {
   @ApiOkResponse({ type: CatalogSchema })
   @ApiForbiddenResponseDefault()
   async getCatalog(): Promise<CatalogDto> {
-    return await this.dataPlaneService.getControlPlaneCatalog();
+    return await this.catalog.getOwnCatalog();
   }
 
   @Get("/registry/addresses")
@@ -68,7 +72,7 @@ export class DataPlaneManagementController {
   @ApiOkResponse({ type: [Object] })
   @ApiForbiddenResponseDefault()
   async getRegistryAddresses(): Promise<{ didId: string; address: string }[]> {
-    return await this.dataPlaneService.getRegistryAddresses();
+    return await this.catalog.getRegistryAddresses();
   }
 
   @Get("/participant-id")
@@ -80,7 +84,7 @@ export class DataPlaneManagementController {
   @ApiOkResponse({ type: String })
   @ApiForbiddenResponseDefault()
   async getParticipantId(): Promise<string> {
-    return await this.dataPlaneService.getParticipantId();
+    return await this.catalog.getParticipantId();
   }
 
   @Post("/refresh")

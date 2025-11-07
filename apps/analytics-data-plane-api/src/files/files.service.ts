@@ -2,6 +2,7 @@ import { HttpStatus, Injectable, Logger, StreamableFile } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CSVW, FileUpdateDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import {
   DataService,
   Dataset,
@@ -29,7 +30,8 @@ export class FilesService {
     @InjectRepository(FileMetadataDao)
     private readonly fileRepository: Repository<FileMetadataDao>,
     private readonly filesConfig: FilesConfig,
-    private readonly rootConfig: RootConfig
+    private readonly rootConfig: RootConfig,
+    private readonly catalog: CatalogClientService
   ) {}
 
   private readonly logger = new Logger(this.constructor.name);
@@ -197,7 +199,7 @@ export class FilesService {
             );
           }
         }
-        const catalog = await this.dataplaneService.getControlPlaneCatalog();
+        const catalog = await this.catalog.getOwnCatalog();
         const datasetId = dbentry.datasetId ?? `urn:uuid:${dbentry.identifier}`;
         const datasetDto = new Dataset({
           id: datasetId,

@@ -19,10 +19,12 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import {
+  nonEmptyStringPipe,
   Roles,
   validateOrRejectSync,
   validationPipe
 } from "@tsg-dsp/common-api";
+import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
 import {
   ApiForbiddenResponseDefault,
@@ -44,7 +46,10 @@ import { DataPlaneService } from "./dataplane.service.js";
 @Controller("/management")
 @Roles("controlplane_dataplane")
 export class DataPlaneManagementController {
-  constructor(private readonly dataPlaneService: DataPlaneService) {}
+  constructor(
+    private readonly dataPlaneService: DataPlaneService,
+    private readonly catalog: CatalogClientService
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("/state")
@@ -69,7 +74,41 @@ export class DataPlaneManagementController {
   @ApiOkResponse({ type: CatalogSchema })
   @ApiForbiddenResponseDefault()
   async getCatalog(): Promise<CatalogDto> {
-    return await this.dataPlaneService.getControlPlaneCatalog();
+    return await this.catalog.getOwnCatalog();
+  }
+
+  @Get("/registry/addresses")
+  @Roles(["controlplane_dataplane", "readonly_user"])
+  @ApiOperation({
+    summary: "Get registry addresses",
+    description: "Get the current registry addresses from the Control Plane."
+  })
+  @ApiOkResponse({
+    schema: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { didId: { type: "string" }, address: { type: "string" } }
+      }
+    }
+  })
+  @ApiForbiddenResponseDefault()
+  async getRegistryAddresses(): Promise<{ didId: string; address: string }[]> {
+    return await this.catalog.getRegistryAddresses();
+  }
+
+  @Get("/registry/catalog/:participantId")
+  @Roles(["controlplane_dataplane", "readonly_user"])
+  @ApiOperation({
+    summary: "Get participant catalog",
+    description: "Get the catalog of a participant based on its participant ID."
+  })
+  @ApiOkResponse({ type: [CatalogSchema] })
+  @ApiForbiddenResponseDefault()
+  async getRegistryCatalog(
+    @Param("participantId", nonEmptyStringPipe) participantId: string
+  ): Promise<CatalogDto> {
+    return await this.catalog.getParticipantCatalog(participantId);
   }
 
   @Post("/refresh")

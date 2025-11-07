@@ -183,7 +183,7 @@ const participants = ref<AlgorithmParticipant[]>([]);
 const getParticipantCatalog = async (didId: string) => {
   try {
     const response = await http.get<CatalogDto>(
-      `management/algorithm-instances/catalogs/${didId}`
+      `management/algorithm-instances/catalogs/${encodeURIComponent(didId)}`
     );
     if (!response.data.dataset || response.data.dataset.length === 0) {
       datasetOptions.value[didId] = [
@@ -339,7 +339,7 @@ const submitAlgorithmInstance = async () => {
 
 const getParticipantId = async () => {
   try {
-    const response = await http.get(`/participant-id`);
+    const response = await http.get(`/management/participant-id`);
     participantId = response.data;
   } catch (error) {
     toast.add(

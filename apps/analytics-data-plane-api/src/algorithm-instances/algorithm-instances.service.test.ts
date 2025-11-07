@@ -12,22 +12,34 @@ import {
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
 import {
+  CatalogClientService,
+  ControlPlaneConfig,
+  createDataPlaneHttpMocks,
+  createDataPlaneManagementHttpMocks,
+  createDidConnectorHttpMocks,
+  ITransferHandler,
+  NegotiationClientService,
+  TransferClientService
+} from "@tsg-dsp/common-data-plane-api";
+import {
   DataPlaneRequestResponseDto,
   TransferRequestMessageDto,
   TransferState
 } from "@tsg-dsp/common-dsp";
+import { plainToClass } from "class-transformer";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
 
 import { RootConfig } from "../config.js";
-import { ManagementClientMock } from "../dataplane/management-client.mock.js";
-import { ManagementClient } from "../dataplane/management-client.service.js";
+import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
-import { TransfersService } from "../dataplane/transfers.service.js";
 import { AlgorithmEventDao } from "../events/algorithm-event.dao.js";
 import { InternalEventDao } from "../events/internal-event.dao.js";
 import { AlgorithmInstanceDao } from "./algorithm-instance.dao.js";
 import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 
 describe("AlgorithmInstancesService", () => {
+  let server: SetupServer;
   let algorithmInstancesService: AlgorithmInstancesService;
 
   const sampleAlgorithmInstanceDto: CreateAlgorithmInstanceDto = {
@@ -92,6 +104,33 @@ describe("AlgorithmInstancesService", () => {
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
 
+    const config = plainToClass(RootConfig, {
+      server: {},
+      controlPlane: {
+        dataPlaneEndpoint: "http://127.0.0.1/data-plane",
+        managementEndpoint: "http://localhost:3000/management",
+        controlEndpoint: "http://localhost:3000",
+        initializationDelay: 1
+      },
+      logging: {
+        debug: true
+      }
+    });
+
+    server = setupServer(
+      ...createDataPlaneHttpMocks(config.controlPlane.dataPlaneEndpoint),
+      ...createDataPlaneManagementHttpMocks(
+        config.controlPlane.managementEndpoint
+      ),
+      ...createDidConnectorHttpMocks(),
+      http.post(
+        `http://localhost:3000/data-address/events/:instanceId/algorithm-event`,
+        () => {
+          return HttpResponse.text();
+        }
+      )
+    );
+    server.listen({ onUnhandledRequest: "error" });
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         EventEmitterModule.forRoot(),
@@ -111,26 +150,24 @@ describe("AlgorithmInstancesService", () => {
       providers: [
         AlgorithmInstancesService,
         AuthClientService,
-        TransfersService,
+        CatalogClientService,
+        NegotiationClientService,
+        TransferClientService,
         {
           provide: RootConfig,
-          useValue: {
-            controlPlane: {
-              dataPlaneEndpoint: "http://127.0.0.1/data-plane",
-              managementEndpoint: "http://localhost:3000/management",
-              controlEndpoint: "http://localhost:3000",
-              authorization: "Basic YWRtaW46YWRtaW4=",
-              initializationDelay: 1
-            }
-          }
+          useValue: config
+        },
+        {
+          provide: ControlPlaneConfig,
+          useValue: config.controlPlane
         },
         {
           provide: AuthConfig,
           useValue: { enabled: false }
         },
         {
-          provide: ManagementClient,
-          useValue: ManagementClientMock
+          provide: ITransferHandler,
+          useClass: AnalyticsTransferHandler
         }
       ]
     }).compile();
@@ -223,7 +260,7 @@ describe("AlgorithmInstancesService", () => {
       ).transfers
     ).toHaveLength(1);
     const reloadedTransferDao = await algorithmInstancesService[
-      "transfersService"
+      "transferHandler"
     ].getTransferById(transferDao.id);
     expect(reloadedTransferDao).toBeDefined();
     expect(

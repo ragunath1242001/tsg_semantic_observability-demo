@@ -3686,9 +3686,6 @@ components:
         managementAddress:
           type: string
           example: http://localhost/manage
-        managementToken:
-          type: string
-          example: token123
         catalogSynchronization:
           type: string
           enum: &a30
@@ -3711,7 +3708,6 @@ components:
         - endpointPrefix
         - callbackAddress
         - managementAddress
-        - managementToken
         - catalogSynchronization
         - role
     DataPlaneDetailsDto:
@@ -3732,9 +3728,6 @@ components:
         managementAddress:
           type: string
           example: http://localhost/manage
-        managementToken:
-          type: string
-          example: token123
         catalogSynchronization:
           type: string
           enum: *a30
@@ -3752,7 +3745,6 @@ components:
         - endpointPrefix
         - callbackAddress
         - managementAddress
-        - managementToken
         - catalogSynchronization
         - role
         - identifier

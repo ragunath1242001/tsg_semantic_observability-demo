@@ -5,9 +5,14 @@ import {
   AuthConfig,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
-import { DataPlaneCreation } from "@tsg-dsp/common-dsp";
+import {
+  CatalogClientService,
+  ControlPlaneConfig,
+  createDataPlaneHttpMocks,
+  DataPlaneRegistrationService,
+  DataPlaneStateDao
+} from "@tsg-dsp/common-data-plane-api";
 import { plainToClass } from "class-transformer";
-import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
 import { LoggingConfig, RootConfig } from "../config.js";
@@ -16,8 +21,8 @@ import { LoggingService } from "../logging/logging.service.js";
 import { TransferDao } from "../transfer/transfer.dao.js";
 import { DataPlaneController } from "./dataplane.controller.js";
 import {
-  DataPlaneStateDao,
   DatasetItemDao,
+  HttpDatasetConfigDao,
   VersionedDatasetDao
 } from "./dataplane.dao.js";
 import { DataPlaneService } from "./dataplane.service.js";
@@ -64,40 +69,7 @@ describe("Dataplane with CollectionDatasetConfig", () => {
     });
 
     server = setupServer(
-      http.post<PathParams, DataPlaneCreation>(
-        `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request }) => {
-          const requestBody = await request.json();
-          return HttpResponse.json({
-            ...requestBody,
-            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
-          });
-        }
-      ),
-      http.post(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        async ({ request }) => {
-          return HttpResponse.json(await request.json());
-        }
-      ),
-      http.post(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/dataset`,
-        async () => {
-          return HttpResponse.text();
-        }
-      ),
-      http.put(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/dataset/:datasetId`,
-        async () => {
-          return HttpResponse.text();
-        }
-      ),
-      http.delete(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/dataset/:datasetId`,
-        async () => {
-          return HttpResponse.text();
-        }
-      )
+      ...createDataPlaneHttpMocks(config.controlPlane.dataPlaneEndpoint)
     );
 
     server.listen({ onUnhandledRequest: "error" });
@@ -106,19 +78,21 @@ describe("Dataplane with CollectionDatasetConfig", () => {
       imports: [
         TypeOrmTestHelper.instance.module([
           TransferDao,
-          DataPlaneStateDao,
+          HttpDatasetConfigDao,
           VersionedDatasetDao,
           DatasetItemDao,
           IngressLogDao,
-          EgressLogDao
+          EgressLogDao,
+          DataPlaneStateDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
-          DataPlaneStateDao,
+          HttpDatasetConfigDao,
           VersionedDatasetDao,
           DatasetItemDao,
           IngressLogDao,
-          EgressLogDao
+          EgressLogDao,
+          DataPlaneStateDao
         ])
       ],
       controllers: [DataPlaneController],
@@ -126,6 +100,8 @@ describe("Dataplane with CollectionDatasetConfig", () => {
         DataPlaneService,
         LoggingService,
         AuthClientService,
+        DataPlaneRegistrationService,
+        CatalogClientService,
         {
           provide: AuthConfig,
           useValue: { enabled: false }
@@ -137,20 +113,20 @@ describe("Dataplane with CollectionDatasetConfig", () => {
         {
           provide: RootConfig,
           useValue: config
+        },
+        {
+          provide: ControlPlaneConfig,
+          useValue: config.controlPlane
         }
       ]
     }).compile();
+    await moduleRef.init();
 
     dataPlaneService = moduleRef.get(DataPlaneService);
     await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-      "No state available yet"
+      "Data plane state not found"
     );
     await dataPlaneService.initialized;
-    let i = 0;
-    while (dataPlaneService["state"] === undefined && i < 100) {
-      await new Promise((r) => setTimeout(r, 50));
-      i++;
-    }
   });
 
   afterAll(() => {

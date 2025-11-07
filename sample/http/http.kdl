@@ -106,7 +106,6 @@ layout {
         pane name="bravo/wallet-api" command="bash" {
             // Todo: Remove sleep once https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/-/issues/351 is resolved
             args "-c" "
-                sleep 5 &&
                 cd $(git rev-parse --show-toplevel) && 
                 rm -f $(pwd)/apps/wallet-api/bravo.db &&
                 CONFIG_PATH=$(pwd)/sample/http/configs/bravo-wallet.yaml pnpm --inspect-brk dev:wallet-api

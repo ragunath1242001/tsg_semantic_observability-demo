@@ -32,10 +32,6 @@ class DataPlaneBaseDto {
   @IsString()
   managementAddress!: string;
 
-  @ApiProperty({ example: "token123" })
-  @IsString()
-  managementToken!: string;
-
   @ApiProperty({ enum: ["push", "pull"], example: "push" })
   @IsEnum(["push", "pull"])
   catalogSynchronization!: "push" | "pull";

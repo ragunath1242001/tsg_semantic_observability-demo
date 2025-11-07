@@ -8,21 +8,35 @@ import {
   AuthConfig,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
+import {
+  CatalogClientService,
+  ControlPlaneConfig,
+  createDataPlaneHttpMocks,
+  createDataPlaneManagementHttpMocks,
+  createDidConnectorHttpMocks,
+  DataPlaneRegistrationService,
+  DataPlaneStateDao,
+  ITransferHandler,
+  NegotiationClientService,
+  TransferClientService
+} from "@tsg-dsp/common-data-plane-api";
 import { TransferState } from "@tsg-dsp/common-dsp";
+import { plainToClass } from "class-transformer";
+import { HttpResponse } from "msw";
+import { http } from "msw/core/http";
+import { SetupServer, setupServer } from "msw/node";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { RootConfig } from "../config.js";
-import { DataPlaneStateDao } from "../dataplane/dataplane.dao.js";
-import { ManagementClientMock } from "../dataplane/management-client.mock.js";
-import { ManagementClient } from "../dataplane/management-client.service.js";
+import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
-import { TransfersService } from "../dataplane/transfers.service.js";
 import { AlgorithmEventDao } from "./algorithm-event.dao.js";
 import { EventsService } from "./events.service.js";
 import { InternalEventDao } from "./internal-event.dao.js";
 
 describe("EventsService", () => {
+  let server: SetupServer;
   const TRANSFER_ID = "urn:uuid:16228d2e-5662-4961-bf2c-d929f48a7f3f";
   const REMOTE_PARTY_ID = "did:web:remoteparty";
   const ALGORITHM_EVENT_ID = "urn:uuid:16a3b006-faa7-41fb-bffd-55d900a1ee0f";
@@ -38,6 +52,34 @@ describe("EventsService", () => {
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
 
+    const config = plainToClass(RootConfig, {
+      server: {},
+      controlPlane: {
+        dataPlaneEndpoint: "http://127.0.0.1/data-plane",
+        managementEndpoint: "http://localhost:3000/management",
+        controlEndpoint: "http://localhost:3000",
+        initializationDelay: 1
+      },
+      logging: {
+        debug: true
+      }
+    });
+
+    server = setupServer(
+      ...createDataPlaneHttpMocks(config.controlPlane.dataPlaneEndpoint),
+      ...createDataPlaneManagementHttpMocks(
+        config.controlPlane.managementEndpoint
+      ),
+      ...createDidConnectorHttpMocks(),
+      http.post(
+        `http://localhost:3000/data-address/events/:instanceId/algorithm-event`,
+        () => {
+          return HttpResponse.text();
+        }
+      )
+    );
+
+    server.listen({ onUnhandledRequest: "error" });
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         EventEmitterModule.forRoot(),
@@ -57,35 +99,40 @@ describe("EventsService", () => {
         ])
       ],
       providers: [
-        {
-          provide: ManagementClient,
-          useValue: ManagementClientMock
-        },
-        TransfersService,
         EventsService,
         AlgorithmInstancesService,
         AuthClientService,
+        DataPlaneRegistrationService,
+        CatalogClientService,
+        NegotiationClientService,
+        TransferClientService,
         {
           provide: RootConfig,
-          useValue: {
-            controlPlane: {
-              dataPlaneEndpoint: "http://127.0.0.1/data-plane",
-              managementEndpoint: "http://localhost:3000/management",
-              controlEndpoint: "http://localhost:3000",
-              authorization: "Basic YWRtaW46YWRtaW4=",
-              initializationDelay: 1
-            }
-          }
+          useValue: config
+        },
+        {
+          provide: ControlPlaneConfig,
+          useValue: config.controlPlane
         },
         {
           provide: AuthConfig,
           useValue: { enabled: false }
+        },
+        {
+          provide: ITransferHandler,
+          useClass: AnalyticsTransferHandler
         }
       ]
     }).compile();
+    await moduleRef.init();
 
     eventsService = moduleRef.get(EventsService);
     algorithmInstancesService = moduleRef.get(AlgorithmInstancesService);
+  });
+
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
+    server.close();
   });
 
   it("should create an algorithm instance", async () => {
@@ -193,7 +240,7 @@ describe("EventsService", () => {
     const authorizationHeader = `Bearer ${eventsAccessToken}`;
     await eventsService["algorithmInstancesService"].linkTransfer({
       algorithmInstanceId,
-      transfer: await eventsService["transfersService"][
+      transfer: await eventsService["transferHandler"][
         "transferRepository"
       ].save({
         id: TRANSFER_ID,
@@ -275,7 +322,7 @@ describe("EventsService", () => {
       } as any);
     await eventsService["algorithmInstancesService"].linkTransfer({
       algorithmInstanceId,
-      transfer: await eventsService["transfersService"][
+      transfer: await eventsService["transferHandler"][
         "transferRepository"
       ].save({
         id: "transfer-1",
@@ -301,7 +348,7 @@ describe("EventsService", () => {
     });
     await eventsService["algorithmInstancesService"].linkTransfer({
       algorithmInstanceId,
-      transfer: await eventsService["transfersService"][
+      transfer: await eventsService["transferHandler"][
         "transferRepository"
       ].save({
         id: "transfer-2",
@@ -402,7 +449,7 @@ describe("EventsService", () => {
     const authorizationHeader = `Bearer FAKE_TOKEN`;
     await eventsService["algorithmInstancesService"].linkTransfer({
       algorithmInstanceId,
-      transfer: await eventsService["transfersService"][
+      transfer: await eventsService["transferHandler"][
         "transferRepository"
       ].save({
         id: "transfer-1",
