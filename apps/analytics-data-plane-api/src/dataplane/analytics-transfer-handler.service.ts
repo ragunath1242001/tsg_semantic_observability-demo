@@ -2,6 +2,13 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AlgorithmParticipant } from "@tsg-dsp/analytics-data-plane-dtos";
 import {
+  CatalogClientService,
+  DataPlaneError,
+  ITransferHandler,
+  NegotiationClientService,
+  TransferClientService
+} from "@tsg-dsp/common-data-plane-api";
+import {
   AgreementDto,
   DataPlaneAddressDto,
   DataPlaneRequestResponseDto,
@@ -14,25 +21,23 @@ import {
   TransferTerminationMessageDto
 } from "@tsg-dsp/common-dsp";
 import { NegotiationDetailDto, TransferDto } from "@tsg-dsp/common-dtos";
-import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import crypto from "crypto";
 import { Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
-import { DataPlaneError } from "../utils/errors/error.js";
-import { ManagementClient } from "./management-client.service.js";
 import { TransferDao } from "./transfer.dao.js";
 
 @Injectable()
-export class TransfersService {
+export class AnalyticsTransferHandler implements ITransferHandler {
   constructor(
     private readonly config: RootConfig,
     @InjectRepository(TransferDao)
     private readonly transferRepository: Repository<TransferDao>,
-    private readonly managementClient: ManagementClient
+    private readonly catalog: CatalogClientService,
+    private readonly negotiation: NegotiationClientService,
+    private readonly transfer: TransferClientService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
-
   private listeners: Map<
     string,
     { state: TransferState; listener: (transfer: TransferDao) => void }[]
@@ -72,82 +77,49 @@ export class TransfersService {
 
   async getTransferById(id: string) {
     const transfer = await this.transferRepository.findOne({
-      where: { id },
+      where: { id: id },
       relations: ["algorithmInstance"]
     });
     if (!transfer) {
       throw new DataPlaneError(
         `Transfer ${id} not found`,
         HttpStatus.NOT_FOUND
-      ).andLog(this.logger);
-    }
-    return transfer;
-  }
-
-  async getTransferByProcessId(processId: string) {
-    const transfer = await this.transferRepository.findOne({
-      where: { processId },
-      relations: ["algorithmInstance"]
-    });
-    if (!transfer) {
-      throw new DataPlaneError(
-        `Transfer with processId ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger);
+      );
     }
     return transfer;
   }
 
   async getTransferBySecret(secret: string) {
     const transfer = await this.transferRepository.findOne({
-      where: { secret },
+      where: { secret: secret },
       relations: ["algorithmInstance"]
     });
     if (!transfer) {
       throw new DataPlaneError(
-        `Invalid token, transfer by secret not found`,
+        `Transfer with secret ${secret} not found`,
         HttpStatus.NOT_FOUND
-      ).andLog(this.logger);
+      );
     }
     return transfer;
   }
 
-  async getParticipantControlPlaneAddress(
-    participantDidId: string
-  ): Promise<string> {
-    const didDocument = await resolveDid(participantDidId);
-    const service = didDocument.service?.find(
-      (service) =>
-        service.type === "connector" &&
-        typeof service.serviceEndpoint === "string"
+  async getMetadata(
+    id: string
+  ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
+    const transfer = await this.getTransferById(id);
+    const agreement = await this.negotiation.getAgreement(
+      transfer.request.agreementId
     );
-    if (!service) {
-      throw new DataPlaneError(
-        `Could not find ControlPlaneService in DID document for ${participantDidId}`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger);
-    }
-    return service.serviceEndpoint as string;
-  }
 
-  async getOrObtainNegotiationForDataset(
-    dataset: DatasetDto,
-    participantId: string,
-    remoteAddress: string
-  ): Promise<NegotiationDetailDto> {
-    try {
-      return await this.managementClient.getNegotiationForDataset(
-        dataset["@id"],
-        participantId
-      );
-    } catch (_) {
-      return await this.managementClient.requestNegotiation(
-        dataset.hasPolicy?.[0],
-        dataset["@id"],
-        participantId,
-        remoteAddress
-      );
-    }
+    const dataset = await this.catalog.getDataset(
+      agreement.target,
+      transfer.remoteParty
+    );
+
+    return {
+      agreement: agreement,
+      dataset: dataset
+    };
   }
 
   async requestTransferForParticipant(
@@ -156,26 +128,42 @@ export class TransfersService {
     algorithmInstanceId: string,
     listenForStarted = false
   ) {
-    const remoteAddress = await this.getParticipantControlPlaneAddress(
-      participant.didId
-    );
-    const negotiation = await this.getOrObtainNegotiationForDataset(
-      dataset,
+    let negotiation: NegotiationDetailDto;
+    try {
+      negotiation = await this.negotiation.getNegotiationForDataset(
+        dataset["@id"],
+        participant.didId
+      );
+    } catch (_) {
+      this.logger.debug(
+        `No negotiation found for dataset ${dataset["@id"]} with participant ${participant.didId}, starting new negotiation`
+      );
+      negotiation = await this.negotiation.requestDefaultNegotiation(
+        dataset["@id"],
+        participant.didId,
+        undefined,
+        async () => dataset
+      );
+    }
+    if (!negotiation.agreement) {
+      throw new DataPlaneError(
+        `No agreement found for negotiation ${negotiation.localId}`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+    const transferDto = await this.transfer.requestTransfer(
+      negotiation.agreement["@id"],
       participant.didId,
-      remoteAddress
-    );
-    const transferDto = await this.requestTransfer(
-      negotiation,
-      remoteAddress,
-      participant.didId
+      undefined
     );
 
     this.logger.log(
       `Transfer requested for algorithm instance ${algorithmInstanceId} to participant ${participant.didId} with transfer ID ${transferDto.consumerPid}/${transferDto.providerPid}`
     );
 
-    const transfer = await this.transferRepository.findOneByOrFail({
-      processId: transferDto.consumerPid
+    const transfer = await this.transferRepository.findOneOrFail({
+      where: { processId: transferDto.consumerPid },
+      relations: ["algorithmInstance"]
     });
 
     this.logger.log(
@@ -188,25 +176,6 @@ export class TransfersService {
     } else {
       return transfer;
     }
-  }
-
-  async requestTransfer(
-    negotiation: NegotiationDetailDto,
-    address: string,
-    audience: string
-  ) {
-    const agreementId = negotiation?.agreement?.["@id"];
-    if (!agreementId) {
-      throw new DataPlaneError(
-        `No agreement ID found for negotiation ${negotiation.localId}`,
-        HttpStatus.BAD_REQUEST
-      ).andLog(this.logger);
-    }
-    return await this.managementClient.requestTransfer(
-      agreementId,
-      audience,
-      address
-    );
   }
 
   async handleTransferRequest(
@@ -250,38 +219,11 @@ export class TransfersService {
     });
     return transfer.response;
   }
-
-  async transferStart(id: string) {
-    const transfer = await this.getTransferById(id);
-    return this.managementClient.transferStart(transfer);
-  }
-
-  async transferComplete(id: string) {
-    const transfer = await this.getTransferById(id);
-    return this.managementClient.transferComplete(transfer);
-  }
-
-  async transferTerminate(id: string, code: string, reason: string) {
-    const transfer = await this.getTransferById(id);
-    return this.managementClient.transferTerminate(transfer, code, reason);
-  }
-
-  async transferSuspend(id: string, reason: string) {
-    const transfer = await this.getTransferById(id);
-    return this.managementClient.transferSuspend(transfer, reason);
-  }
-
   async handleTransferStart(
     transferStartMessage: TransferStartMessageDto,
     processId: string
-  ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new DataPlaneError(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger);
-    }
+  ): Promise<void> {
+    const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.STARTED;
     if (transfer.role === "consumer") {
       if (transferStartMessage.dataAddress === undefined) {
@@ -295,81 +237,31 @@ export class TransfersService {
     await this.transferRepository.save(transfer);
     this.notifyListeners(transfer, TransferState.STARTED);
   }
-
   async handleTransferComplete(
     _transferCompletionMessage: TransferCompletionMessageDto,
     processId: string
-  ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new DataPlaneError(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger);
-    }
+  ): Promise<void> {
+    const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.COMPLETED;
     await this.transferRepository.save(transfer);
     this.notifyListeners(transfer, TransferState.COMPLETED);
   }
-
   async handleTransferTerminate(
     _transferTerminationMessage: TransferTerminationMessageDto,
     processId: string
-  ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new DataPlaneError(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger);
-    }
+  ): Promise<void> {
+    const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.TERMINATED;
     await this.transferRepository.save(transfer);
     this.notifyListeners(transfer, TransferState.TERMINATED);
   }
-
   async handleTransferSuspend(
     _transferSuspensionMessage: TransferSuspensionMessageDto,
     processId: string
-  ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new DataPlaneError(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger);
-    }
+  ): Promise<void> {
+    const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.SUSPENDED;
     await this.transferRepository.save(transfer);
     this.notifyListeners(transfer, TransferState.SUSPENDED);
-  }
-
-  async getMetadata(
-    id: string
-  ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
-    const transfer = await this.getTransferById(id);
-    const agreement = await this.managementClient.getAgreement(
-      transfer.request.agreementId
-    );
-    const did = await resolveDid(transfer.remoteParty);
-    const connectorService = did.service?.find(
-      (s) => s.type === "connector" && typeof s.serviceEndpoint === "string"
-    );
-    if (!connectorService) {
-      throw new DataPlaneError(
-        `No connector service defined in DID document for ${transfer.remoteParty}`,
-        HttpStatus.BAD_REQUEST
-      ).andLog(new Logger("DidResolver"), "log");
-    }
-
-    const dataset = await this.managementClient.getDataset(
-      `${connectorService.serviceEndpoint}`,
-      agreement.target,
-      transfer.remoteParty
-    );
-    return {
-      agreement: agreement,
-      dataset: dataset
-    };
   }
 }

@@ -3,15 +3,22 @@ import {
   HttpStatus,
   Injectable,
   Logger,
+  OnModuleInit,
   UnprocessableEntityException
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AuthClientService } from "@tsg-dsp/common-api";
+import { promiseMap } from "@tsg-dsp/common-api";
+import {
+  CatalogClientService,
+  createInitPromise,
+  DataPlaneRegistrationService,
+  DataPlaneStateDao,
+  InitPromise
+} from "@tsg-dsp/common-data-plane-api";
 import {
   CatalogDto,
   Constraint,
   DataPlaneCreation,
-  DataPlaneDetailsDto,
   Dataset,
   DatasetDto,
   defaultContext,
@@ -34,48 +41,37 @@ import {
   RuleConstraintConfig,
   VersionedDatasetConfig
 } from "@tsg-dsp/http-data-plane-dtos";
-import { AxiosInstance } from "axios";
 import crypto from "crypto";
 import { IsNull, Not, Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
 import { defArray } from "../utils/arrays.js";
-import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
+import { DataPlaneError } from "../utils/errors/error.js";
 import {
-  DataPlaneStateDao,
   DatasetItemDao,
+  HttpDatasetConfigDao,
   VersionedDatasetDao
 } from "./dataplane.dao.js";
 
 @Injectable()
-export class DataPlaneService {
-  private readonly axiosDataPlane: AxiosInstance;
-  private readonly axiosManagement: AxiosInstance;
+export class DataPlaneService implements OnModuleInit {
   constructor(
     private readonly config: RootConfig,
-    authClient: AuthClientService,
-    @InjectRepository(DataPlaneStateDao)
-    private readonly stateRepository: Repository<DataPlaneStateDao>,
+    private readonly registration: DataPlaneRegistrationService,
+    private readonly catalog: CatalogClientService,
+    @InjectRepository(HttpDatasetConfigDao)
+    private readonly configRepository: Repository<HttpDatasetConfigDao>,
     @InjectRepository(DatasetItemDao)
     private readonly itemRepository: Repository<DatasetItemDao>,
     @InjectRepository(VersionedDatasetDao)
     private readonly versionedItemRepository: Repository<VersionedDatasetDao>
-  ) {
-    this.initialized = this.init();
-    this.axiosDataPlane = authClient.axiosInstance({
-      baseURL: this.config.controlPlane.dataPlaneEndpoint
-    });
-    this.axiosManagement = authClient.axiosInstance({
-      baseURL: this.config.controlPlane.managementEndpoint
-    });
-  }
+  ) {}
   logger = new Logger(this.constructor.name);
-  initialized: Promise<void>;
-  registered?: Promise<unknown>;
-  private state?: DataPlaneStateDao;
+  initialized: InitPromise = createInitPromise();
+  private activeConfig?: HttpDatasetConfigDao;
 
-  async init() {
-    const state = await this.stateRepository.findOneBy([]);
+  async onModuleInit() {
+    const activeConfig = await this.configRepository.findOneBy([]);
     if (
       this.config.dataset?.type === "collection" &&
       this.config.initCollection?.length
@@ -92,86 +88,67 @@ export class DataPlaneService {
       }
     }
 
-    if (state) {
+    if (activeConfig) {
       this.logger.log("Loading state from database");
-      this.state = state;
+      this.activeConfig = activeConfig;
+      this.initialized.resolve();
     } else {
       this.logger.log(
         `Creating new state (after ${this.config.controlPlane.initializationDelay}ms)`
       );
-      this.registered = new Promise<void>((resolve, reject) => {
-        setTimeout(async () => {
-          try {
-            await this.registerDataplane();
-            resolve();
-          } catch (error) {
-            this.logger.error("Error registering dataplane", error);
-            reject(error);
-          }
-        }, this.config.controlPlane.initializationDelay);
-      });
+      setTimeout(async () => {
+        try {
+          await this.registerDataplane();
+          this.initialized.resolve();
+        } catch (error) {
+          this.logger.error("Error registering dataplane", error);
+          this.initialized.reject(error);
+        }
+      }, this.config.controlPlane.initializationDelay);
     }
   }
 
   async registerDataplane() {
-    const managementToken = ""; // TODO: should be removed, due to move towards oAuth
     const dataPlaneCreation: DataPlaneCreation = {
-      identifier: this.state?.identifier,
       title: this.config.controlPlane.dataPlaneTitle,
       dataplaneType: "tsg:HTTP",
       endpointPrefix: `${this.config.server.publicAddress}/data`,
       callbackAddress: this.config.server.publicAddress,
       managementAddress: this.config.server.publicAddress,
-      managementToken: managementToken,
       catalogSynchronization: "push",
       role: this.config.dataset ? "both" : "consumer"
     };
-    const details = await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/init`,
-      dataPlaneCreation
-    );
+
+    const details = await this.registration.register(dataPlaneCreation);
     if (this.config.dataset) {
       const datasets = await this.createDatasets(
-        this.state?.datasetConfig || this.config.dataset
+        this.activeConfig?.datasetConfig || this.config.dataset
       );
       const catalogDto: CatalogDto = {
         "@context": defaultContext(),
         "@type": "Catalog",
-        "@id": details.data.identifier,
+        "@id": details.identifier,
         participantId: "",
         dataset: datasets
       };
-      await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-        `/${details.data.identifier}/catalog`,
-        catalogDto
-      );
+      await this.catalog.syncCatalog(details.identifier, catalogDto);
     }
-    const state = await this.stateRepository.save({
-      identifier: details.data.identifier,
-      managementToken: managementToken,
-      details: details.data,
-      datasetConfig: this.state?.datasetConfig || this.config.dataset
+    this.activeConfig = await this.configRepository.save({
+      identifier: details.identifier,
+      datasetConfig: this.activeConfig?.datasetConfig || this.config.dataset
     });
-    this.state = state;
-    return state;
   }
 
-  getState(): DataPlaneStateDao {
-    if (!this.state) {
-      throw new DataPlaneError(
-        "No state available yet",
-        HttpStatus.SERVICE_UNAVAILABLE
-      );
-    }
-    return this.state;
+  async getState(): Promise<DataPlaneStateDao> {
+    return this.registration.getState();
   }
 
   async getStateDto(): Promise<DataPlaneStateDto> {
-    return this.getState();
+    return this.registration.getState();
   }
 
   getDatasetConfig(): DatasetConfig {
-    const datasetConfig = this.getState().datasetConfig;
+    const datasetConfig = this.activeConfig?.datasetConfig;
     if (datasetConfig) {
       return datasetConfig;
     } else {
@@ -179,31 +156,20 @@ export class DataPlaneService {
     }
   }
 
-  async getControlPlaneCatalog(): Promise<CatalogDto> {
-    try {
-      const response =
-        await this.axiosManagement.get<CatalogDto>("/catalog/request");
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        "Fetching own catalog from control plane failed",
-        err
-      ).andLog(this.logger);
-    }
-  }
-
   async getDatasets(): Promise<DatasetDto[]> {
-    if (!this.state) {
+    if (!this.activeConfig) {
       throw new DataPlaneError(
-        "No state available yet",
+        "No active config available yet",
         HttpStatus.SERVICE_UNAVAILABLE
       );
     }
 
-    if (this.state.datasetConfig instanceof VersionedDatasetConfig) {
+    if (this.activeConfig.datasetConfig instanceof VersionedDatasetConfig) {
       const items = await this.versionedItemRepository.find();
       return items.map((item) => item.dataset);
-    } else if (this.state.datasetConfig instanceof CollectionDatasetConfig) {
+    } else if (
+      this.activeConfig.datasetConfig instanceof CollectionDatasetConfig
+    ) {
       const items = await this.itemRepository.find({
         where: {
           dataset: Not(IsNull())
@@ -216,19 +182,21 @@ export class DataPlaneService {
   }
 
   async getDatasetItems(): Promise<DatasetItemWithDto[]> {
-    if (!this.state) {
+    if (!this.activeConfig) {
       throw new DataPlaneError(
-        "No state available yet",
+        "No active config available yet",
         HttpStatus.SERVICE_UNAVAILABLE
       );
     }
 
-    if (this.state.datasetConfig instanceof VersionedDatasetConfig) {
+    if (this.activeConfig.datasetConfig instanceof VersionedDatasetConfig) {
       throw new DataPlaneError(
         "Can't get dataset items from versioned dataset configuration",
         HttpStatus.BAD_REQUEST
       );
-    } else if (this.state.datasetConfig instanceof CollectionDatasetConfig) {
+    } else if (
+      this.activeConfig.datasetConfig instanceof CollectionDatasetConfig
+    ) {
       return await this.itemRepository.find();
     }
     return [];
@@ -238,13 +206,13 @@ export class DataPlaneService {
     id: string,
     currentVersion: boolean = true
   ): Promise<DatasetDto> {
-    if (!this.state) {
+    if (!this.activeConfig) {
       throw new DataPlaneError(
-        "No state available yet",
+        "No active config available yet",
         HttpStatus.SERVICE_UNAVAILABLE
       );
     }
-    if (this.state.datasetConfig instanceof VersionedDatasetConfig) {
+    if (this.activeConfig.datasetConfig instanceof VersionedDatasetConfig) {
       const versionedDataset = await this.getVersionedDataset(id);
       if (
         currentVersion &&
@@ -304,14 +272,11 @@ export class DataPlaneService {
         "Can't find given current version in given list of dataset versions"
       );
     }
-    const currentState = this.getState();
+    const currentState = await this.registration.getState();
 
     if (currentState.details.role === "consumer") {
       currentState.details.role = "both";
-      await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-        `/init`,
-        currentState.details
-      );
+      await this.registration.register(currentState.details);
     }
 
     const datasets = await this.createDatasets(datasetConfig);
@@ -322,28 +287,22 @@ export class DataPlaneService {
       participantId: "",
       dataset: datasets
     };
-    await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/${currentState.identifier}/catalog`,
-      catalogDto
-    );
-    const state = await this.stateRepository.save({
+    await this.catalog.syncCatalog(currentState.details.identifier, catalogDto);
+    this.activeConfig = await this.configRepository.save({
       ...currentState,
       datasetConfig: datasetConfig
     });
-
-    this.state = state;
-    return state;
   }
 
   async getBackendConfig(dataset: DatasetDto) {
-    if (!this.state) {
+    if (!this.activeConfig) {
       throw new DataPlaneError(
         "No state available yet",
         HttpStatus.SERVICE_UNAVAILABLE
       );
     }
-    if (this.state.datasetConfig instanceof VersionedDatasetConfig) {
-      const version = this.state.datasetConfig.versions.find(
+    if (this.activeConfig.datasetConfig instanceof VersionedDatasetConfig) {
+      const version = this.activeConfig.datasetConfig.versions.find(
         (v) => v.version === dataset.version
       );
       if (!version) {
@@ -366,7 +325,7 @@ export class DataPlaneService {
   }
 
   async addDatasetItem(item: DatasetItem) {
-    const state = this.getState();
+    const state = await this.getState();
     const datasetConfig = this.getDatasetConfig();
     if (datasetConfig instanceof CollectionDatasetConfig) {
       const itemDao = this.itemRepository.create({
@@ -377,7 +336,7 @@ export class DataPlaneService {
         itemDao,
         datasetConfig
       );
-      await this.axiosDataPlane.post(`/${state.identifier}/dataset`, dataset);
+      await this.catalog.syncDataset(state.details.identifier, dataset);
       return itemDao;
     }
     throw new DataPlaneError(
@@ -387,7 +346,7 @@ export class DataPlaneService {
   }
 
   async updateDatasetItem(id: string, item: DatasetItem) {
-    const state = this.getState();
+    const state = await this.getState();
     const datasetConfig = this.getDatasetConfig();
     if (datasetConfig instanceof CollectionDatasetConfig) {
       const itemDao = await this.getDatasetItem(id);
@@ -404,10 +363,7 @@ export class DataPlaneService {
         itemDao,
         datasetConfig
       );
-      await this.axiosDataPlane.put(
-        `/${state.identifier}/dataset/${encodeURIComponent(id)}`,
-        dataset
-      );
+      await this.catalog.updateDataset(state.details.identifier, id, dataset);
       return itemDao;
     }
     throw new DataPlaneError(
@@ -417,13 +373,11 @@ export class DataPlaneService {
   }
 
   async removeDatasetItem(id: string) {
-    const state = this.getState();
+    const state = await this.getState();
     const datasetConfig = this.getDatasetConfig();
     if (datasetConfig instanceof CollectionDatasetConfig) {
       const itemDao = await this.getDatasetItem(id);
-      await this.axiosDataPlane.delete(
-        `/${state.identifier}/dataset/${encodeURIComponent(id)}`
-      );
+      await this.catalog.deleteDataset(state.details.identifier, id);
       await this.itemRepository.remove(itemDao);
       return itemDao;
     }
@@ -448,11 +402,9 @@ export class DataPlaneService {
     datasetConfig: CollectionDatasetConfig
   ): Promise<DatasetDto[]> {
     const items = await this.itemRepository.find();
-    const datasets: DatasetDto[] = [];
-    for (const item of items) {
-      datasets.push(await this.createCollectionDataset(item, datasetConfig));
-    }
-    return datasets;
+    return await promiseMap(items, async (item) => {
+      return this.createCollectionDataset(item, datasetConfig);
+    });
   }
 
   private async createCollectionDataset(
@@ -576,14 +528,9 @@ export class DataPlaneService {
   ): Promise<Policy[] | undefined> {
     if (!policyConfig) return;
     if (policyConfig.type === "default") return;
-    let catalog: CatalogDto | undefined = undefined;
-    try {
-      catalog = await this.getControlPlaneCatalog();
-    } catch (_) {
-      this.logger.warn(
-        "Catalog could not be fetched from control plane, therefore, assigner fields in ODRL offers will be empty."
-      );
-    }
+
+    const participantId = await this.catalog.getOptionalParticipantId();
+
     if (policyConfig.type === "manual") {
       if (!policyConfig.raw) {
         throw new DataPlaneError(
@@ -597,7 +544,7 @@ export class DataPlaneService {
             deserialized.target = datasetId;
           }
           if (!deserialized.assigner) {
-            deserialized.assigner = catalog?.participantId || "";
+            deserialized.assigner = participantId || "";
           }
           return [deserialized];
         } catch (err) {
@@ -612,7 +559,7 @@ export class DataPlaneService {
 
     return [
       new Offer({
-        assigner: catalog?.participantId || "",
+        assigner: participantId || "",
         target: datasetId,
         permission: policyConfig.permissions?.map((permission) => {
           return new Permission({

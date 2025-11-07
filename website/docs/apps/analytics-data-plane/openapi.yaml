@@ -102,23 +102,6 @@ paths:
       security: *a3
       summary: Health check
       tags: *a4
-  /api/participant-id:
-    get:
-      description: Retrieves the ID of the participant.
-      operationId: DataPlaneController_getParticipantId
-      parameters: []
-      responses:
-        "200":
-          description: ""
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a3
-      summary: Get participant ID
-      tags: *a4
   /api/management/state:
     get:
       description: Get the state of the data plane, consisting of the id, details and
@@ -318,7 +301,7 @@ paths:
   /api/transfers/request/{role}:
     post:
       description: Requests a transfer from control plane to data plane.
-      operationId: TransfersController_requestTransfer
+      operationId: TransferController_requestTransfer
       parameters:
         - name: role
           required: true
@@ -367,7 +350,7 @@ paths:
         - Data Plane
   /api/transfers/{id}/start:
     post:
-      operationId: TransfersController_startTransfer
+      operationId: TransferController_startTransfer
       parameters:
         - name: id
           required: true
@@ -389,7 +372,7 @@ paths:
       tags: *a8
   /api/transfers/{id}/completion:
     post:
-      operationId: TransfersController_completeTransfer
+      operationId: TransferController_completeTransfer
       parameters:
         - name: id
           required: true
@@ -411,7 +394,7 @@ paths:
       tags: *a8
   /api/transfers/{id}/termination:
     post:
-      operationId: TransfersController_terminateTransfer
+      operationId: TransferController_terminateTransfer
       parameters:
         - name: id
           required: true
@@ -433,7 +416,7 @@ paths:
       tags: *a8
   /api/transfers/{id}/suspension:
     post:
-      operationId: TransfersController_suspendTransfer
+      operationId: TransferController_suspendTransfer
       parameters:
         - name: id
           required: true
@@ -1592,9 +1575,6 @@ components:
         managementAddress:
           type: string
           example: http://localhost/manage
-        managementToken:
-          type: string
-          example: token123
         catalogSynchronization:
           type: string
           enum:
@@ -1617,7 +1597,6 @@ components:
         - endpointPrefix
         - callbackAddress
         - managementAddress
-        - managementToken
         - catalogSynchronization
         - role
         - identifier

@@ -2,7 +2,7 @@ import { HttpStatus, Logger } from "@nestjs/common";
 import axios from "axios";
 import { DIDDocument } from "did-resolver";
 
-import { DataPlaneError } from "./errors/error.js";
+import { DataPlaneError } from "../errors/index.js";
 
 export async function resolve(didId: string) {
   if (!didId.startsWith("did:web:")) {

@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
@@ -8,14 +8,18 @@ import {
   OrchestrationStatusDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { parseNetworkError } from "@tsg-dsp/common-api";
+import {
+  CatalogClientService,
+  ITransferHandler,
+  TransferClientService
+} from "@tsg-dsp/common-data-plane-api";
 import axios, { AxiosResponse } from "axios";
 import { plainToInstance } from "class-transformer";
 import { randomBytes } from "crypto";
 import { Repository } from "typeorm";
 
-import { ManagementClient } from "../dataplane/management-client.service.js";
+import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
-import { TransfersService } from "../dataplane/transfers.service.js";
 import { getAxiosConfigFromDataAddress } from "../utils/axios.js";
 import { DataPlaneError } from "../utils/errors/error.js";
 import { promiseAllOrThrow } from "../utils/promises.js";
@@ -28,8 +32,10 @@ export class AlgorithmInstancesService {
     @InjectRepository(AlgorithmInstanceDao)
     private readonly algorithmInstanceRepository: Repository<AlgorithmInstanceDao>,
     private eventEmitter: EventEmitter2,
-    private readonly transfersService: TransfersService,
-    private readonly managementClient: ManagementClient
+    private readonly catalog: CatalogClientService,
+    private readonly transfer: TransferClientService,
+    @Inject(ITransferHandler)
+    private readonly transferHandler: AnalyticsTransferHandler
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -130,6 +136,18 @@ export class AlgorithmInstancesService {
         HttpStatus.NOT_FOUND
       );
     }
+  }
+
+  async updateStatus(
+    algorithmInstanceId: string,
+    status: string
+  ): Promise<AlgorithmInstanceDto> {
+    const algorithmInstance =
+      await this.getAlgorithmInstance(algorithmInstanceId);
+    algorithmInstance.status = status;
+    const updatedInstance =
+      await this.algorithmInstanceRepository.save(algorithmInstance);
+    return plainToInstance(AlgorithmInstanceDto, updatedInstance);
   }
 
   async linkTransfer({
@@ -255,7 +273,7 @@ export class AlgorithmInstancesService {
   private async createTransfersForParticipants(
     algorithmInstance: AlgorithmInstanceDto
   ) {
-    const ownParticipantId = await this.managementClient.getOwnParticipantId();
+    const ownParticipantId = await this.catalog.getParticipantId();
     const externalParticipants = algorithmInstance.participants.filter(
       (participant) => participant.didId !== ownParticipantId
     );
@@ -272,9 +290,11 @@ export class AlgorithmInstancesService {
     participant: AlgorithmParticipant,
     algorithmInstance: AlgorithmInstanceDto
   ) {
-    const orchestrationDataset =
-      await this.managementClient.fetchDatasetForParticipant(participant, true);
-    const transfer = await this.transfersService.requestTransferForParticipant(
+    const orchestrationDataset = await this.catalog.getDatasetConformingTo(
+      "tsg:analytics-orchestration",
+      participant.didId
+    );
+    const transfer = await this.transferHandler.requestTransferForParticipant(
       participant,
       orchestrationDataset,
       algorithmInstance.id,
@@ -334,7 +354,7 @@ export class AlgorithmInstancesService {
     authorizationHeader: string | undefined;
   }): Promise<OrchestrationStatusDto> {
     const token = parseToken(authorizationHeader);
-    const transfer = await this.transfersService.getTransferBySecret(token);
+    const transfer = await this.transferHandler.getTransferBySecret(token);
 
     await this.algorithmInstanceRepository.save({
       ...createAlgorithmInstance,
@@ -364,14 +384,14 @@ export class AlgorithmInstancesService {
       startedAt: new Date(),
       status: "running"
     });
-    const ownParticipantId = await this.managementClient.getOwnParticipantId();
+    const ownParticipantId = await this.catalog.getParticipantId();
     const participant = algorithmInstance.participants.find(
       (p) => p.didId === ownParticipantId
     );
 
     this.eventEmitter.emit("job.spawn", {
       algorithmInstanceId: algorithmInstance.id,
-      participantId: await this.managementClient.getOwnParticipantId(),
+      participantId: await this.catalog.getParticipantId(),
       imageName: algorithmInstance.algorithmDefinition.image,
       command: undefined,
       datasetId: participant?.dataset

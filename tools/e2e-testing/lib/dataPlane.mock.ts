@@ -22,7 +22,6 @@ export function setupDataPlaneMock(
       endpointPrefix: "",
       callbackAddress: `http://127.0.0.1/data-plane/${id}`,
       managementAddress: `http://127.0.0.1/data-plane/${id}`,
-      managementToken: "",
       catalogSynchronization: "push",
       role: role,
       title: "Mock Data Plane"

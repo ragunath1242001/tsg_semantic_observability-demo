@@ -6,16 +6,20 @@ import {
   RawBodyRequest
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AppError, AuthClientService } from "@tsg-dsp/common-api";
+import { AppError } from "@tsg-dsp/common-api";
+import {
+  CatalogClientService,
+  DataPlaneError,
+  ITransferHandler,
+  NegotiationClientService,
+  retryWithBackoff,
+  TransferClientService
+} from "@tsg-dsp/common-data-plane-api";
 import {
   AgreementDto,
-  ContractNegotiationDto,
-  ContractNegotiationState,
   DataPlaneAddressDto,
   DataPlaneRequestResponseDto,
   DatasetDto,
-  defaultContext,
-  OfferDto,
   TransferCompletionMessageDto,
   TransferRequestMessageDto,
   TransferStartMessageDto,
@@ -24,7 +28,7 @@ import {
   TransferTerminationMessageDto
 } from "@tsg-dsp/common-dsp";
 import { NegotiationDetailDto, TransferDto } from "@tsg-dsp/common-dtos";
-import axios, { AxiosInstance } from "axios";
+import axios from "axios";
 import crypto from "crypto";
 import { Request, Response } from "express";
 import { IncomingHttpHeaders } from "http";
@@ -35,26 +39,21 @@ import { RootConfig } from "../config.js";
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { LogEntry } from "../logging/logging.dto.js";
 import { LoggingService } from "../logging/logging.service.js";
-import { resolveControlPlaneServiceUrl } from "../utils/didServiceResolver.js";
-import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
 import { TransferDao } from "./transfer.dao.js";
 
 @Injectable()
-export class TransferService {
-  private readonly axiosManagement: AxiosInstance;
+export class HTTPTransferHandler implements ITransferHandler {
+  protected readonly logger = new Logger(this.constructor.name);
   constructor(
     private readonly config: RootConfig,
     private readonly loggingService: LoggingService,
+    private readonly catalog: CatalogClientService,
+    private readonly negotiation: NegotiationClientService,
+    private readonly transfer: TransferClientService,
     private readonly dataPlaneService: DataPlaneService,
-    authClient: AuthClientService,
     @InjectRepository(TransferDao)
     readonly transferRepository: Repository<TransferDao>
-  ) {
-    this.axiosManagement = authClient.axiosInstance({
-      baseURL: this.config.controlPlane.managementEndpoint
-    });
-  }
-  logger = new Logger(this.constructor.name);
+  ) {}
 
   async getTransfers(): Promise<TransferDto[]> {
     return await this.transferRepository.find({});
@@ -68,62 +67,17 @@ export class TransferService {
     return transfer;
   }
 
-  async getDataset(
-    did: string,
-    datasetId: string,
-    cpAddress?: string
-  ): Promise<DatasetDto> {
-    const address = cpAddress ?? (await resolveControlPlaneServiceUrl(did));
-
-    try {
-      const response = await this.axiosManagement.get<DatasetDto>(
-        `/catalog/dataset`,
-        {
-          params: {
-            address: address,
-            id: datasetId,
-            audience: did
-          }
-        }
-      );
-      if (!response.data) {
-        throw new DataPlaneClientError(
-          `Dataset ${datasetId} not found at ${address} (${did})`,
-          HttpStatus.NOT_FOUND
-        );
-      }
-      this.logger.debug(
-        `Dataset ${datasetId} found at ${address} (${did}): ${JSON.stringify(response.data)}`
-      );
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Fetching dataset ${datasetId} at ${address} (${did}) failed`,
-        err
-      ).andLog(this.logger);
-    }
-  }
-
   async getMetadata(
     id: string
   ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
     const transfer = await this.getTransferById(id);
-    let agreement: AgreementDto;
-    try {
-      const response = await this.axiosManagement.get<AgreementDto>(
-        `/agreements/${transfer.request.agreementId}`
-      );
-      agreement = response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Fetching agreement ${transfer.request.agreementId} failed`,
-        err
-      ).andLog(this.logger);
-    }
+    const agreement = await this.negotiation.getAgreement(
+      transfer.request.agreementId
+    );
 
-    const dataset = await this.getDataset(
-      transfer.remoteParty,
-      agreement.target
+    const dataset = await this.catalog.getDataset(
+      agreement.target,
+      transfer.remoteParty
     );
 
     return {
@@ -173,78 +127,10 @@ export class TransferService {
 
     return transfer.response;
   }
-
-  async transferStart(id: string) {
-    const transfer = await this.getTransferById(id);
-    try {
-      const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/start`
-      );
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Error starting transfer ${id}`,
-        err
-      ).andLog(this.logger);
-    }
-  }
-
-  async transferComplete(id: string) {
-    const transfer = await this.getTransferById(id);
-    try {
-      const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/completion`
-      );
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Error starting transfer ${id}`,
-        err
-      ).andLog(this.logger);
-    }
-  }
-
-  async transferTerminate(id: string, code: string, reason: string) {
-    const transfer = await this.getTransferById(id);
-    try {
-      const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/termination`,
-        {
-          code: code,
-          reason: reason
-        }
-      );
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Error starting transfer ${id}`,
-        err
-      ).andLog(this.logger);
-    }
-  }
-
-  async transferSuspend(id: string, reason: string) {
-    const transfer = await this.getTransferById(id);
-    try {
-      const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/suspension`,
-        {
-          reason: reason
-        }
-      );
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Error starting transfer ${id}`,
-        err
-      ).andLog(this.logger);
-    }
-  }
-
   async handleTransferStart(
     transferStartMessage: TransferStartMessageDto,
     processId: string
-  ) {
+  ): Promise<void> {
     const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.STARTED;
     if (transfer.role === "consumer") {
@@ -258,173 +144,37 @@ export class TransferService {
     }
     await this.transferRepository.save(transfer);
   }
-
   async handleTransferComplete(
     _transferCompletionMessage: TransferCompletionMessageDto,
     processId: string
-  ) {
+  ): Promise<void> {
     const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.COMPLETED;
     await this.transferRepository.save(transfer);
   }
-
   async handleTransferTerminate(
     _transferTerminationMessage: TransferTerminationMessageDto,
     processId: string
-  ) {
+  ): Promise<void> {
     const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.TERMINATED;
     await this.transferRepository.save(transfer);
   }
-
-  async getNegotiation(processId: string): Promise<NegotiationDetailDto> {
-    try {
-      const response = await this.axiosManagement.get<NegotiationDetailDto>(
-        `/negotiations/${processId}`
-      );
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Fetching negotiation ${processId} failed`,
-        err
-      ).andLog(this.logger);
-    }
-  }
-
-  async checkForFinalizedNegotiation(
-    negotiationId: string
-  ): Promise<NegotiationDetailDto | undefined> {
-    const negotiation = await this.getNegotiation(negotiationId);
-    if (negotiation.state === ContractNegotiationState.FINALIZED) {
-      return negotiation;
-    }
-    return undefined;
-  }
-  async getNegotiationWithBackoff(
-    negotiationId: string,
-    maxRetries?: number,
-    initialDelay?: number
-  ): Promise<NegotiationDetailDto> {
-    return await this.retryWithBackoff(
-      () => this.checkForFinalizedNegotiation(negotiationId),
-      `Negotiation ${negotiationId} did not finalize after ${maxRetries} retries`,
-      maxRetries,
-      initialDelay
-    );
-  }
-
-  private async retryWithBackoff<T>(
-    operation: () => Promise<T | undefined | null>,
-    errorMessage: string,
-    retries: number = 7,
-    delay: number = 100
-  ): Promise<T> {
-    if (retries <= 0) {
-      this.logger.error(errorMessage);
-      throw new DataPlaneClientError(errorMessage, HttpStatus.BAD_REQUEST);
-    }
-    await new Promise((resolve) => setTimeout(resolve, delay));
-    try {
-      const result = await operation();
-      if (result) {
-        return result;
-      }
-    } catch (err) {
-      this.logger.debug(`Retry attempt failed: ${err}`);
-    }
-    return this.retryWithBackoff(
-      operation,
-      errorMessage,
-      retries - 1,
-      delay * 2 // Exponential backoff
-    );
-  }
-
-  async obtainNegotiation(
-    datasetId: string,
-    address: string,
-    audience: string
-  ): Promise<NegotiationDetailDto> {
-    this.logger.debug(
-      `Requesting negotiation for dataset ${datasetId} at address ${address} with audience ${audience}.`
-    );
-    const dataset = await this.getDataset(audience, datasetId, address);
-    if (!dataset.hasPolicy || dataset.hasPolicy.length === 0) {
-      throw new DataPlaneClientError(
-        `Dataset ${datasetId} does not have a policy defined`,
-        HttpStatus.BAD_REQUEST
-      );
-    }
-    const offer = dataset.hasPolicy?.[0] as OfferDto;
-    if (offer) {
-      offer["@context"] = defaultContext();
-    }
-    this.logger.debug(
-      `Offer for dataset ${datasetId} at address ${address} with audience ${audience}: ${JSON.stringify(offer)}`
-    );
-    const response = await this.axiosManagement.post<ContractNegotiationDto>(
-      "negotiations/request",
-      offer,
-      {
-        params: {
-          dataSet: datasetId,
-          address: address,
-          audience: audience
-        }
-      }
-    );
-    this.logger.debug(
-      `Contract negotiation requested for ${datasetId} at address ${address} with audience ${audience}.`
-    );
-    return await this.getNegotiationWithBackoff(response.data?.providerPid);
-  }
-
   async handleTransferSuspend(
     _transferSuspensionMessage: TransferSuspensionMessageDto,
     processId: string
-  ) {
+  ): Promise<void> {
     const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.SUSPENDED;
     await this.transferRepository.save(transfer);
   }
 
-  async requestTransfer(
-    negotiation: NegotiationDetailDto,
-    address: string,
-    audience: string,
-    datasetId: string
-  ) {
-    try {
-      const agreementId = negotiation?.agreement?.["@id"];
-      if (!agreementId) {
-        throw new DataPlaneError(
-          `No agreement ID found for negotiation ${negotiation.localId}`,
-          HttpStatus.BAD_REQUEST
-        );
-      }
-      await this.axiosManagement.post("transfers/request", null, {
-        params: {
-          address: address,
-          agreementId: agreementId,
-          audience: audience
-        }
-      });
-
-      this.logger.debug(
-        `Transfer requested for dataset ${datasetId} with agreement ${agreementId} at address ${address} with audience ${audience}.`
-      );
-    } catch (err) {
-      throw new DataPlaneClientError("Transfer request failed", err).andLog(
-        this.logger
-      );
-    }
-  }
   async getStartedTransferWithBackoff(
     datasetId: string,
     maxRetries?: number,
     initialDelay?: number
   ): Promise<TransferDao> {
-    return await this.retryWithBackoff(
+    return retryWithBackoff(
       () =>
         this.transferRepository.findOne({
           where: { datasetId: datasetId, state: TransferState.STARTED },
@@ -441,41 +191,43 @@ export class TransferService {
     audience: string,
     controlPlaneAddress?: string
   ): Promise<string> {
-    let transfer: TransferDao | null;
-    let negotiation: NegotiationDetailDto | null;
-    transfer = await this.transferRepository.findOne({
+    let transfer = await this.transferRepository.findOne({
       where: { datasetId: datasetId, state: TransferState.STARTED },
       order: { createdDate: "DESC" }
     });
-    const address =
-      controlPlaneAddress ?? (await resolveControlPlaneServiceUrl(audience));
     if (!transfer) {
       this.logger.debug(
         `Did not find active transfer for dataset ${datasetId}, checking for negotiation.`
       );
-
+      let negotiation: NegotiationDetailDto;
       try {
-        const resp = await this.axiosManagement.get<NegotiationDetailDto>(
-          `negotiations/dataset/${datasetId}`,
-          {
-            params: {
-              remoteParty: audience
-            }
-          }
+        negotiation = await this.negotiation.getNegotiationForDataset(
+          datasetId,
+          audience
         );
-        negotiation = resp.data;
       } catch (_) {
         this.logger.debug(
           `No negotiation found for dataset ${datasetId}, requesting new negotiation.`
         );
-        negotiation = await this.obtainNegotiation(
+        negotiation = await this.negotiation.requestDefaultNegotiation(
           datasetId,
-          address,
-          audience
+          audience,
+          controlPlaneAddress,
+          async () =>
+            this.catalog.getDataset(datasetId, audience, controlPlaneAddress)
         );
       }
-
-      await this.requestTransfer(negotiation, address, audience, datasetId);
+      if (!negotiation.agreement) {
+        throw new DataPlaneError(
+          `No agreement found for negotiation ${negotiation.localId} for dataset ${datasetId} with participant ${audience}`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      await this.transfer.requestTransfer(
+        negotiation.agreement["@id"],
+        audience,
+        controlPlaneAddress
+      );
       transfer = await this.getStartedTransferWithBackoff(datasetId);
     }
     return transfer.id;

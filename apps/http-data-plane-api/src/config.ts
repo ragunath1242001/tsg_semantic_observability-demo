@@ -6,6 +6,7 @@ import {
   ServerConfig,
   SQLiteConfig
 } from "@tsg-dsp/common-api";
+import { ControlPlaneConfig } from "@tsg-dsp/common-data-plane-api";
 import {
   CollectionDatasetConfig,
   DatasetConfig,
@@ -16,37 +17,10 @@ import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
-  IsNumber,
   IsOptional,
   IsString,
-  IsUrl,
   ValidateNested
 } from "class-validator";
-
-export class ControlPlaneConfig {
-  @Description("Data plane management endpoint")
-  @IsString()
-  @IsUrl({ require_tld: false })
-  public readonly dataPlaneEndpoint!: string;
-  @Description("Control plane management endpoint")
-  @IsString()
-  @IsUrl({ require_tld: false })
-  public readonly managementEndpoint!: string;
-  @Description("Public control plane endpoint")
-  @IsString()
-  @IsUrl({ require_tld: false })
-  public readonly controlEndpoint!: string;
-  @Description("Initialization delay in milliseconds")
-  @IsNumber()
-  @IsOptional()
-  @Type(() => Number)
-  public readonly initializationDelay: number = 5000;
-  @Description("Data Plane title")
-  @IsString()
-  @IsOptional()
-  public readonly dataPlaneTitle: string =
-    `HTTP Data Plane - ${process.env.TSG_MODE === "development" ? "dev" : `v${process.env.TSG_VERSION}`}`;
-}
 
 export class LoggingConfig {
   @Description("Enable debug request logging")

@@ -369,7 +369,8 @@ onUnmounted(() => {
     </Card>
     <JobComponent
       class="col-span-12"
-      :algorithm-instance-id="algorithmInstanceId" />
+      :algorithm-instance-id="algorithmInstanceId"
+      :debug="false" />
 
     <div class="col-span-12 columns-1 xl:columns-2 gap-4">
       <AlgorithmUIComponent

@@ -23,8 +23,9 @@ interface CreateJob {
 const k8sStore = useK8sStore();
 const toast = useToast();
 
-const { algorithmInstanceId } = defineProps<{
+const { algorithmInstanceId, debug } = defineProps<{
   algorithmInstanceId: string;
+  debug: boolean;
 }>();
 
 const jobs = ref<V1Job[]>([]);
@@ -276,21 +277,27 @@ onMounted(async () => {
       </div>
     </Dialog>
     <Card>
-      <template #title>Jobs</template>
-      <template #subtitle>
-        Jobs associated with this algorithm instance
+      <template #title>
+        <div class="flex justify-between items-center">
+          <span>Jobs</span>
+          <div>
+            <Button
+              v-if="debug"
+              icon="pi pi-plus"
+              label="Create Job"
+              class="mb-2"
+              size="small"
+              @click="creating = true" />
+            <Button
+              icon="pi pi-refresh"
+              label="Refresh"
+              class="ml-2"
+              size="small"
+              @click="getJobs(algorithmInstanceId)" />
+          </div>
+        </div>
       </template>
       <template #content>
-        <Button
-          icon="pi pi-plus"
-          label="Create Job"
-          class="mb-2"
-          @click="creating = true" />
-        <Button
-          icon="pi pi-refresh"
-          label="Refresh"
-          class="ml-2"
-          @click="getJobs(algorithmInstanceId)" />
         <DataTable
           v-model:selection="selectedJob"
           :value="jobs"

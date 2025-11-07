@@ -1,7 +1,18 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import {
+  AuthClientService,
+  AuthConfig,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
+import {
+  CatalogClientService,
+  ControlPlaneConfig,
+  createDataPlaneManagementHttpMocks
+} from "@tsg-dsp/common-data-plane-api";
+import { plainToClass } from "class-transformer";
 import fs from "fs/promises";
+import { SetupServer, setupServer } from "msw/node";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -11,6 +22,7 @@ import { FilesService } from "./files.service.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
 
 describe("FilesService", () => {
+  let server: SetupServer;
   let filesService: FilesService;
   const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
   const __dirname = path.dirname(__filename); // get the name of the directory
@@ -19,6 +31,25 @@ describe("FilesService", () => {
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     await fs.mkdir(testUploadDir);
+    const config = plainToClass(RootConfig, {
+      server: {},
+      controlPlane: {
+        dataPlaneEndpoint: "http://127.0.0.1/data-plane",
+        managementEndpoint: "http://localhost:3000/management",
+        controlEndpoint: "http://localhost:3000",
+        initializationDelay: 1
+      },
+      logging: {
+        debug: true
+      }
+    });
+    server = setupServer(
+      ...createDataPlaneManagementHttpMocks(
+        config.controlPlane.managementEndpoint
+      )
+    );
+    server.listen({ onUnhandledRequest: "error" });
+
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([FileMetadataDao]),
@@ -45,11 +76,24 @@ describe("FilesService", () => {
           }
         },
         FilesService,
+        AuthClientService,
+        CatalogClientService,
         {
           provide: FilesConfig,
           useValue: { path: testUploadDir }
         },
-        RootConfig
+        {
+          provide: RootConfig,
+          useValue: config
+        },
+        {
+          provide: ControlPlaneConfig,
+          useValue: config.controlPlane
+        },
+        {
+          provide: AuthConfig,
+          useValue: { enabled: false }
+        }
       ]
     }).compile();
 
@@ -61,6 +105,7 @@ describe("FilesService", () => {
   afterAll(async () => {
     TypeOrmTestHelper.instance.teardownTestDB();
     await fs.rm(testUploadDir, { recursive: true, force: true }); // Clean up the test directory
+    server.close();
   });
 
   it("should be defined", () => {

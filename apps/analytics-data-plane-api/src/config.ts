@@ -7,42 +7,17 @@ import {
   SQLiteConfig,
   valueToBoolean
 } from "@tsg-dsp/common-api";
+import { ControlPlaneConfig } from "@tsg-dsp/common-data-plane-api";
 import { DatasetDto } from "@tsg-dsp/common-dsp";
 import { Transform, Type } from "class-transformer";
 import {
   IsArray,
   IsBoolean,
   IsDefined,
-  IsNumber,
   IsOptional,
   IsString,
-  IsUrl,
   ValidateNested
 } from "class-validator";
-
-export class ControlPlaneConfig {
-  @Description("Data plane management endpoint")
-  @IsString()
-  @IsUrl({ require_tld: false })
-  public readonly dataPlaneEndpoint!: string;
-  @Description("Control plane management endpoint")
-  @IsString()
-  @IsUrl({ require_tld: false })
-  public readonly managementEndpoint!: string;
-  @Description("Public control plane endpoint")
-  @IsString()
-  @IsUrl({ require_tld: false })
-  public readonly controlEndpoint!: string;
-  @Description("Initialization delay in milliseconds")
-  @IsNumber()
-  @Type(() => Number)
-  public readonly initializationDelay: number = 5000;
-  @Description("Data Plane title")
-  @IsString()
-  @IsOptional()
-  public readonly title: string =
-    `Analytics Data Plane - ${process.env.TSG_MODE === "development" ? "dev" : `v${process.env.TSG_VERSION}`}`;
-}
 
 export class LoggingConfig {
   @Description("Enable debug request logging")

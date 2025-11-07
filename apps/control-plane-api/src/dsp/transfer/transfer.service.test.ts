@@ -340,7 +340,6 @@ describe("Transfer service", () => {
       endpointPrefix: "",
       callbackAddress: "http://127.0.0.1/data-plane",
       managementAddress: "http://127.0.0.1/data-plane",
-      managementToken: "DpuwVK9bnX2MVGf6MVVjlBnI4PvtQSGJ",
       catalogSynchronization: "push",
       role: "both"
     });

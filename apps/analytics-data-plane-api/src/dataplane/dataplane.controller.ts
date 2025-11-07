@@ -53,16 +53,4 @@ export class DataPlaneController {
   async healthCheck() {
     return;
   }
-
-  @Get("/participant-id")
-  @ApiOperation({
-    summary: "Get participant ID",
-    description: "Retrieves the ID of the participant."
-  })
-  @ApiOkResponse()
-  @ApiForbiddenResponseDefault()
-  @HttpCode(HttpStatus.OK)
-  async getParticipantId() {
-    return this.dataPlaneService.getParticipantId();
-  }
 }

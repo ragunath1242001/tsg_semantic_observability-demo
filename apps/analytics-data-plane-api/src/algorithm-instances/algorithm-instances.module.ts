@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "@tsg-dsp/common-api";
+import { CommonDataPlaneModule } from "@tsg-dsp/common-data-plane-api";
 
 import { DataPlaneModule } from "../dataplane/dataplane.module.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
@@ -13,7 +14,8 @@ import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
   imports: [
     TypeOrmModule.forFeature([AlgorithmInstanceDao, TransferDao]),
     AuthModule,
-    DataPlaneModule
+    DataPlaneModule,
+    CommonDataPlaneModule
   ],
   controllers: [
     AlgorithmInstancesManagementController,

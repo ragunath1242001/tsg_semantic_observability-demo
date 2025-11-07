@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger
+} from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
@@ -8,15 +14,19 @@ import {
   InternalEventDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { parseNetworkError } from "@tsg-dsp/common-api";
+import {
+  CatalogClientService,
+  ITransferHandler,
+  TransferClientService
+} from "@tsg-dsp/common-data-plane-api";
 import axios from "axios";
 import crypto from "crypto";
 import { MoreThan, Repository } from "typeorm";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
-import { ManagementClient } from "../dataplane/management-client.service.js";
+import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
-import { TransfersService } from "../dataplane/transfers.service.js";
 import { getAxiosConfigFromDataAddress } from "../utils/axios.js";
 import { DataPlaneError } from "../utils/errors/error.js";
 import { parseToken } from "../utils/token.js";
@@ -26,8 +36,10 @@ import { InternalEventDao } from "./internal-event.dao.js";
 @Injectable()
 export class EventsService {
   constructor(
-    private readonly transfersService: TransfersService,
-    private readonly managementClient: ManagementClient,
+    private readonly catalog: CatalogClientService,
+    private readonly transfer: TransferClientService,
+    @Inject(ITransferHandler)
+    private readonly transferHandler: AnalyticsTransferHandler,
     private readonly algorithmInstancesService: AlgorithmInstancesService,
     private readonly eventEmitter: EventEmitter2,
     @InjectRepository(AlgorithmEventDao)
@@ -83,7 +95,7 @@ export class EventsService {
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
-    const ownParticipantId = await this.managementClient.getOwnParticipantId();
+    const ownParticipantId = await this.catalog.getParticipantId();
 
     const transferPromises = await Promise.allSettled(
       createEvent.recipients
@@ -97,13 +109,12 @@ export class EventsService {
               transfer.remoteParty === recipient && transfer.role === "consumer"
           );
           if (!recipientTransfer) {
-            const dataset =
-              await this.managementClient.fetchDatasetForParticipant(
-                recipientDetail,
-                false
-              );
+            const dataset = await this.catalog.getDataset(
+              recipientDetail.dataset,
+              recipient
+            );
             const transfer =
-              await this.transfersService.requestTransferForParticipant(
+              await this.transferHandler.requestTransferForParticipant(
                 recipientDetail,
                 dataset,
                 algorithmInstance.id,
@@ -226,9 +237,9 @@ export class EventsService {
         createEvent
       });
       isOwnEvent = true;
-      createdBy = await this.managementClient.getOwnParticipantId();
+      createdBy = await this.catalog.getParticipantId();
     } else {
-      const transfer = await this.transfersService.getTransferBySecret(token);
+      const transfer = await this.transferHandler.getTransferBySecret(token);
       await this.createRemoteAlgorithmEvent({
         algorithmInstance,
         createEvent,
@@ -307,7 +318,7 @@ export class EventsService {
       );
       await this.algorithmEventsRepository.save(event);
     } else {
-      const transfer = await this.transfersService.getTransferBySecret(token);
+      const transfer = await this.transferHandler.getTransferBySecret(token);
 
       if (
         transfer &&
@@ -373,7 +384,7 @@ export class EventsService {
       );
       return event.data;
     } else {
-      const transfer = await this.transfersService.getTransferBySecret(token);
+      const transfer = await this.transferHandler.getTransferBySecret(token);
 
       if (
         transfer &&

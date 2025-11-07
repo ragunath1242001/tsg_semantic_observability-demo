@@ -95,5 +95,6 @@ onMounted(async () => {
 
   <JobComponent
     v-if="selectedAlgorithmInstanceId"
-    :algorithm-instance-id="selectedAlgorithmInstanceId" />
+    :algorithm-instance-id="selectedAlgorithmInstanceId"
+    :debug="true" />
 </template>

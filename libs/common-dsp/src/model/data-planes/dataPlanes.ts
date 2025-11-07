@@ -40,7 +40,6 @@ export interface IDataPlane extends IDataPlaneStatus {
   endpointPrefix: string;
   callbackAddress: string;
   managementAddress: string;
-  managementToken: string;
   catalogSynchronization: "push" | "pull";
   role: "consumer" | "provider" | "both";
 }
@@ -50,7 +49,6 @@ export class DataPlane extends DataPlaneStatus {
   endpointPrefix: string;
   callbackAddress: string;
   managementAddress: string;
-  managementToken: string;
   catalogSynchronization: "push" | "pull";
   role: "consumer" | "provider" | "both";
 
@@ -60,7 +58,6 @@ export class DataPlane extends DataPlaneStatus {
     this.endpointPrefix = value.endpointPrefix;
     this.callbackAddress = value.callbackAddress;
     this.managementAddress = value.managementAddress;
-    this.managementToken = value.managementToken;
     this.catalogSynchronization = value.catalogSynchronization;
     this.role = value.role;
   }

@@ -4,6 +4,7 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
+  Inject,
   Logger,
   Param,
   Post,
@@ -34,15 +35,25 @@ import {
 } from "@tsg-dsp/common-dsp";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
-import { TransfersService } from "./transfers.service.js";
+import { ITransferHandler } from "../interfaces/index.js";
 
+/**
+ * Shared transfer controller for data plane implementations
+ * Handles all transfer lifecycle endpoints
+ *
+ * Usage: Import this controller in your data plane module along with
+ * a TransferHandlerService implementation injected via ITransferHandler token
+ */
 @Controller("transfers")
 @ApiTags("Data Plane")
 @ApiOAuth2(["controlplane_dataplane"])
 @Roles("controlplane_dataplane")
-export class TransfersController {
-  constructor(private readonly transfersService: TransfersService) {}
+export class TransferController {
   private readonly logger = new Logger(this.constructor.name);
+
+  constructor(
+    @Inject(ITransferHandler) private readonly transferHandler: ITransferHandler
+  ) {}
 
   @Post("request/:role")
   @HttpCode(HttpStatus.OK)
@@ -61,12 +72,10 @@ export class TransfersController {
     @Headers("x-dataset-id") datasetId: string
   ): Promise<DataPlaneRequestResponseDto> {
     this.logger.log(
-      `Requesting transfer for ${remoteParty} as ${role} with processId ${processId} and with message: ${JSON.stringify(
-        body
-      )}`
+      `Requesting transfer for ${remoteParty} as ${role} with processId ${processId}`
     );
 
-    return await this.transfersService.handleTransferRequest(
+    return await this.transferHandler.handleTransferRequest(
       body,
       role,
       processId,
@@ -88,12 +97,8 @@ export class TransfersController {
     @Body() body: TransferStartMessageDto,
     @Param("id") id: string
   ): Promise<void> {
-    this.logger.log(
-      `Requesting transfer start for id ${id}, with message:${JSON.stringify(
-        body
-      )}`
-    );
-    return await this.transfersService.handleTransferStart(body, id);
+    this.logger.log(`Requesting transfer start for id ${id}`);
+    return await this.transferHandler.handleTransferStart(body, id);
   }
 
   @Post(":id/completion")
@@ -109,12 +114,8 @@ export class TransfersController {
     @Body() body: TransferCompletionMessageDto,
     @Param("id") id: string
   ): Promise<void> {
-    this.logger.log(
-      `Requesting transfer complete for id ${id}, with message:${JSON.stringify(
-        body
-      )}`
-    );
-    await this.transfersService.handleTransferComplete(body, id);
+    this.logger.log(`Requesting transfer complete for id ${id}`);
+    await this.transferHandler.handleTransferComplete(body, id);
   }
 
   @Post(":id/termination")
@@ -130,12 +131,8 @@ export class TransfersController {
     @Body() body: TransferTerminationMessageDto,
     @Param("id") id: string
   ): Promise<void> {
-    this.logger.log(
-      `Requesting transfer terminate for id ${id}, with message:${JSON.stringify(
-        body
-      )}`
-    );
-    await this.transfersService.handleTransferTerminate(body, id);
+    this.logger.log(`Requesting transfer terminate for id ${id}`);
+    await this.transferHandler.handleTransferTerminate(body, id);
   }
 
   @Post(":id/suspension")
@@ -151,11 +148,7 @@ export class TransfersController {
     @Body() body: TransferSuspensionMessageDto,
     @Param("id") id: string
   ): Promise<void> {
-    this.logger.log(
-      `Requesting transfer suspend for id ${id}, with message:${JSON.stringify(
-        body
-      )}`
-    );
-    await this.transfersService.handleTransferSuspend(body, id);
+    this.logger.log(`Requesting transfer suspend for id ${id}`);
+    await this.transferHandler.handleTransferSuspend(body, id);
   }
 }

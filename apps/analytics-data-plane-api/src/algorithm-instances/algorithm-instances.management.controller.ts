@@ -21,13 +21,13 @@ import {
   CreateAlgorithmInstanceDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { Roles } from "@tsg-dsp/common-api";
+import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
 import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 
-import { ManagementClient } from "../dataplane/management-client.service.js";
 import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 
 @Controller("management/algorithm-instances")
@@ -37,7 +37,7 @@ import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 export class AlgorithmInstancesManagementController {
   constructor(
     private readonly algorithmInstancesService: AlgorithmInstancesService,
-    private readonly managementClient: ManagementClient
+    private readonly catalog: CatalogClientService
   ) {}
 
   @Get()
@@ -86,7 +86,7 @@ export class AlgorithmInstancesManagementController {
   async getCatalogByParticipantId(
     @Param("participantId") participantId: string
   ): Promise<CatalogDto> {
-    return await this.managementClient.getParticipantCatalog(participantId);
+    return await this.catalog.getParticipantCatalog(participantId);
   }
 
   @Get("transfer/:transferId")

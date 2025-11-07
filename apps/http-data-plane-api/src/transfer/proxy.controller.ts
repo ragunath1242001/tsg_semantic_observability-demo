@@ -1,6 +1,7 @@
 import {
   All,
   Controller,
+  Inject,
   Logger,
   Param,
   RawBodyRequest,
@@ -9,15 +10,19 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { ITransferHandler } from "@tsg-dsp/common-data-plane-api/dist/interfaces/index.js";
 import { Request, Response } from "express";
 
-import { TransferService } from "./transfer.service.js";
+import { HTTPTransferHandler } from "./http-transfer-handler.service.js";
 
 @ApiTags("Proxy")
 @Controller()
 @DisableOAuthGuard()
 export class ProxyController {
-  constructor(private readonly transferService: TransferService) {}
+  constructor(
+    @Inject(ITransferHandler)
+    private readonly transferHandler: HTTPTransferHandler
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @All("/proxy/:id/*path")
@@ -43,7 +48,7 @@ export class ProxyController {
   ) {
     const normalizedPath = Array.isArray(path) ? path.join("/") : path || "";
 
-    await this.transferService.handleProxyRequest(
+    await this.transferHandler.handleProxyRequest(
       id,
       normalizedPath,
       request,

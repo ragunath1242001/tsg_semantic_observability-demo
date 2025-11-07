@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { MulterModule } from "@nestjs/platform-express";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { GenericConfigModule } from "@tsg-dsp/common-api";
+import { CommonDataPlaneModule } from "@tsg-dsp/common-data-plane-api";
 import fs from "fs";
 import { diskStorage } from "multer";
 
@@ -15,6 +16,7 @@ import { FileMetadataDao } from "./filesMetadata.dao.js";
   imports: [
     TypeOrmModule.forFeature([FileMetadataDao]),
     DataPlaneModule,
+    CommonDataPlaneModule,
     MulterModule.register({
       storage: diskStorage({
         destination: function (_req, _file, cb) {

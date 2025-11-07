@@ -7,12 +7,16 @@ import {
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
 import {
-  DataPlaneCreation,
-  DatasetDto,
-  defaultContext
-} from "@tsg-dsp/common-dsp";
+  CatalogClientService,
+  ControlPlaneConfig,
+  createDataPlaneHttpMocks,
+  createDataPlaneManagementHttpMocks,
+  createDidConnectorHttpMocks,
+  DataPlaneRegistrationService,
+  DataPlaneStateDao
+} from "@tsg-dsp/common-data-plane-api";
+import { DatasetDto, defaultContext } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
-import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
@@ -20,11 +24,8 @@ import { RootConfig } from "../config.js";
 import { AlgorithmEventDao } from "../events/algorithm-event.dao.js";
 import { InternalEventDao } from "../events/internal-event.dao.js";
 import { DataPlaneController } from "./dataplane.controller.js";
-import { DataPlaneStateDao } from "./dataplane.dao.js";
 import { DataPlaneService } from "./dataplane.service.js";
 import { DatasetDao } from "./dataset.dao.js";
-import { ManagementClientMock } from "./management-client.mock.js";
-import { ManagementClient } from "./management-client.service.js";
 import { TransferDao } from "./transfer.dao.js";
 
 describe("Dataplane Service", () => {
@@ -77,50 +78,11 @@ describe("Dataplane Service", () => {
     });
 
     server = setupServer(
-      http.post<PathParams, DataPlaneCreation>(
-        `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request }) => {
-          const requestBody = await request.json();
-          return HttpResponse.json({
-            ...requestBody,
-            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
-          });
-        }
+      ...createDataPlaneHttpMocks(config.controlPlane.dataPlaneEndpoint),
+      ...createDataPlaneManagementHttpMocks(
+        config.controlPlane.managementEndpoint
       ),
-      http.post(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        ({ request }) => {
-          return HttpResponse.json(request.json());
-        }
-      ),
-      http.post(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/dataset`,
-        ({ request }) => {
-          return HttpResponse.json(request.json());
-        }
-      ),
-      http.put(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/dataset/:datasetId`,
-        ({ request }) => {
-          return HttpResponse.json(request.json());
-        }
-      ),
-      http.delete(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/dataset/:datasetId`,
-        () => {
-          return HttpResponse.json({});
-        }
-      ),
-      http.get("http://localhost/.well-known/did.json", () => {
-        return HttpResponse.json({
-          service: [
-            {
-              type: "connector",
-              serviceEndpoint: "http://remotecontrolplane/"
-            }
-          ]
-        });
-      })
+      ...createDidConnectorHttpMocks()
     );
 
     server.listen({ onUnhandledRequest: "error" });
@@ -133,7 +95,8 @@ describe("Dataplane Service", () => {
           AlgorithmEventDao,
           InternalEventDao,
           DataPlaneStateDao,
-          DatasetDao
+          DatasetDao,
+          DataPlaneStateDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
@@ -141,13 +104,16 @@ describe("Dataplane Service", () => {
           AlgorithmEventDao,
           InternalEventDao,
           DataPlaneStateDao,
-          DatasetDao
+          DatasetDao,
+          DataPlaneStateDao
         ])
       ],
       controllers: [DataPlaneController],
       providers: [
         DataPlaneService,
         AuthClientService,
+        DataPlaneRegistrationService,
+        CatalogClientService,
         {
           provide: AuthConfig,
           useValue: { enabled: false }
@@ -157,19 +123,21 @@ describe("Dataplane Service", () => {
           useValue: config
         },
         {
-          provide: ManagementClient,
-          useValue: ManagementClientMock
+          provide: ControlPlaneConfig,
+          useValue: config.controlPlane
         }
       ]
     })
       .setLogger(new AppLogger())
       .compile();
+    await moduleRef.init();
 
     dataPlaneService = moduleRef.get(DataPlaneService);
   });
 
   afterAll(async () => {
     TypeOrmTestHelper.instance.teardownTestDB();
+    server.close();
   });
 
   describe("Config management", () => {
@@ -207,7 +175,7 @@ describe("Dataplane Service", () => {
 
     it("Initialize data plane", async () => {
       await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-        "No state available yet"
+        "Data plane state not found - may not be registered yet"
       );
 
       await dataPlaneService.initialized;

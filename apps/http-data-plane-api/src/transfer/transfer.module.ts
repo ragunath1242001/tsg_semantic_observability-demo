@@ -1,27 +1,37 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "@tsg-dsp/common-api";
+import {
+  CommonDataPlaneModule,
+  ITransferHandler,
+  TransferController
+} from "@tsg-dsp/common-data-plane-api";
 
 import { DataPlaneModule } from "../dataplane/dataplane.module.js";
 import { LoggingModule } from "../logging/logging.module.js";
+import { HTTPTransferHandler } from "./http-transfer-handler.service.js";
 import { ProxyController } from "./proxy.controller.js";
-import { TransferController } from "./transfer.controller.js";
 import { TransferDao } from "./transfer.dao.js";
 import { TransferManagementController } from "./transfer.management.controller.js";
-import { TransferService } from "./transfer.service.js";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([TransferDao]),
     AuthModule,
     LoggingModule,
-    DataPlaneModule
+    DataPlaneModule,
+    CommonDataPlaneModule
   ],
   controllers: [
-    TransferController,
     TransferManagementController,
-    ProxyController
+    ProxyController,
+    TransferController
   ],
-  providers: [TransferService]
+  providers: [
+    {
+      provide: ITransferHandler,
+      useClass: HTTPTransferHandler
+    }
+  ]
 })
 export class TransferModule {}

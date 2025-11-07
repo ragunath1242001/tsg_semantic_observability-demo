@@ -1,14 +1,15 @@
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { promiseMap } from "@tsg-dsp/common-api";
 import {
-  AuthClientService,
-  parseNetworkError,
-  promiseMap
-} from "@tsg-dsp/common-api";
+  CatalogClientService,
+  createInitPromise,
+  DataPlaneRegistrationService,
+  DataPlaneStateDao,
+  InitPromise
+} from "@tsg-dsp/common-data-plane-api";
 import {
-  CatalogDto,
   DataPlaneCreation,
-  DataPlaneDetailsDto,
   DatasetDto,
   defaultContext,
   DistributionDto,
@@ -16,41 +17,24 @@ import {
   PermissionDto
 } from "@tsg-dsp/common-dsp";
 import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
-import { AxiosInstance } from "axios";
 import crypto from "crypto";
 import { Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
-import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
-import { DataPlaneStateDao } from "./dataplane.dao.js";
+import { DataPlaneError } from "../utils/errors/error.js";
 import { DatasetDao } from "./dataset.dao.js";
-import { ManagementClient } from "./management-client.service.js";
 
 @Injectable()
-export class DataPlaneService {
-  private readonly axiosDataPlane: AxiosInstance;
-  private readonly axiosControlPlane: AxiosInstance;
-
+export class DataPlaneService implements OnModuleInit {
   constructor(
     private readonly config: RootConfig,
-    authClient: AuthClientService,
-    @InjectRepository(DataPlaneStateDao)
-    private readonly stateRepository: Repository<DataPlaneStateDao>,
     @InjectRepository(DatasetDao)
     private readonly datasetRepository: Repository<DatasetDao>,
-    private readonly managementClient: ManagementClient
-  ) {
-    this.initialized = this.init();
-    this.axiosDataPlane = authClient.axiosInstance({
-      baseURL: this.config.controlPlane.dataPlaneEndpoint
-    });
-    this.axiosControlPlane = authClient.axiosInstance({
-      baseURL: this.config.controlPlane.controlEndpoint
-    });
-  }
+    private readonly registration: DataPlaneRegistrationService,
+    private readonly catalog: CatalogClientService
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
-  initialized: Promise<void>;
-  private state?: DataPlaneStateDao;
+  initialized: InitPromise = createInitPromise();
   private defaultDataset: DatasetDto[] = this.createDataset();
 
   private createDataset(): DatasetDto[] {
@@ -93,83 +77,50 @@ export class DataPlaneService {
     ];
   }
 
-  async init() {
-    const state = await this.stateRepository.findOneBy([]);
-    if (state) {
-      this.logger.log("Loading state from database");
-      this.state = state;
+  async onModuleInit() {
+    const isRegistered = await this.registration.isRegistered();
+    if (isRegistered) {
+      this.logger.log("Data plane is already registered");
+      this.initialized.resolve();
     } else {
       this.logger.log(
         `Creating new state (after ${this.config.controlPlane.initializationDelay}ms)`
       );
-      return new Promise<void>((resolve) => {
-        setTimeout(async () => {
+      setTimeout(async () => {
+        try {
           await this.registerDataplane();
-          resolve();
-        }, this.config.controlPlane.initializationDelay);
-      });
+          this.initialized.resolve();
+        } catch (error) {
+          this.logger.error("Error registering dataplane", error);
+          this.initialized.reject(error);
+        }
+      }, this.config.controlPlane.initializationDelay);
     }
   }
 
   async registerDataplane() {
     this.logger.log("Registering data plane with control plane");
     const dataPlaneCreation: DataPlaneCreation = {
-      identifier: this.state?.identifier,
-      title: this.config.controlPlane.title,
+      title: this.config.controlPlane.dataPlaneTitle,
       dataplaneType: "tsg:analytics",
       endpointPrefix: `${this.config.server.publicAddress}/data`,
       callbackAddress: this.config.server.publicAddress,
       managementAddress: this.config.server.publicAddress,
-      managementToken: "",
       catalogSynchronization: "push",
       role: "both"
     };
-    const details = await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/init`,
-      dataPlaneCreation
-    );
-    const state = await this.stateRepository.save({
-      identifier: details.data.identifier,
-      details: details.data
-    });
-    this.state = state;
+    const details = await this.registration.register(dataPlaneCreation);
     if (await this.hasStoredDatasets()) {
       this.logger.log("Using stored datasets");
       const datasets = await this.getDatasets();
       await promiseMap(datasets, async (datasetDto) => {
-        await this.axiosDataPlane.post(
-          `/${details.data.identifier}/dataset`,
-          datasetDto
-        );
+        await this.catalog.syncDataset(details.identifier, datasetDto);
       });
     } else {
       this.logger.log("Creating new datasets");
       const datasetDtos = this.config.dataset ?? this.defaultDataset;
       await promiseMap(datasetDtos, this.addDataset.bind(this));
     }
-    return state;
-  }
-
-  async getControlPlaneCatalog(): Promise<CatalogDto> {
-    return this.managementClient.getOwnCatalog();
-  }
-
-  async getRegistryAddresses(): Promise<{ didId: string; address: string }[]> {
-    try {
-      const response = await this.axiosControlPlane.get<
-        { didId: string; address: string }[]
-      >("/registry/addresses");
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        "Fetching registry addresses from control plane failed",
-        err
-      ).andLog(this.logger);
-    }
-  }
-
-  async getParticipantId() {
-    return this.managementClient.getOwnParticipantId();
   }
 
   async hasStoredDatasets(): Promise<boolean> {
@@ -196,66 +147,45 @@ export class DataPlaneService {
   }
 
   async addDataset(dataset: DatasetDto) {
-    const currentState = this.getState();
-    try {
-      await this.axiosDataPlane.post(
-        `/${currentState.identifier}/dataset`,
-        dataset
-      );
-
-      await this.datasetRepository.save({
-        identifier: dataset["@id"],
-        dataset
-      });
-    } catch (error) {
-      throw parseNetworkError(error, "adding dataset to control plane");
-    }
+    const currentState = await this.getState();
+    await this.datasetRepository.save({
+      identifier: dataset["@id"],
+      dataset
+    });
+    await this.catalog.syncDataset(currentState.details.identifier, dataset);
   }
 
   async updateDataset(datasetId: string, updatedDataset: DatasetDto) {
-    const currentState = this.getState();
+    const currentState = await this.getState();
 
     // Check if the dataset exists and fail early if not
     await this.getDataset(datasetId);
-
-    try {
-      await this.axiosDataPlane.put(
-        `/${currentState.identifier}/dataset/${datasetId}`,
-        updatedDataset
-      );
-      await this.datasetRepository.update(
-        { identifier: datasetId },
-        { dataset: updatedDataset }
-      );
-    } catch (error) {
-      throw parseNetworkError(error, "updating dataset in control plane");
-    }
+    await this.datasetRepository.save({
+      identifier: datasetId,
+      dataset: updatedDataset
+    });
+    await this.catalog.updateDataset(
+      currentState.details.identifier,
+      datasetId,
+      updatedDataset
+    );
   }
 
   async deleteDataset(datasetId: string) {
-    const currentState = this.getState();
+    const currentState = await this.getState();
     await this.getDataset(datasetId);
-    try {
-      await this.axiosDataPlane.delete(
-        `/${currentState.identifier}/dataset/${datasetId}`
-      );
-      await this.datasetRepository.delete({ identifier: datasetId });
-    } catch (error) {
-      throw parseNetworkError(error, "deleting dataset in control plane");
-    }
+    await this.datasetRepository.delete({ identifier: datasetId });
+    await this.catalog.deleteDataset(
+      currentState.details.identifier,
+      datasetId
+    );
   }
 
-  private getState(): DataPlaneStateDao {
-    if (!this.state) {
-      throw new DataPlaneError(
-        "No state available yet",
-        HttpStatus.SERVICE_UNAVAILABLE
-      );
-    }
-    return this.state;
+  async getState(): Promise<DataPlaneStateDao> {
+    return this.registration.getState();
   }
 
   async getStateDto(): Promise<DataPlaneStateDto> {
-    return this.getState();
+    return this.registration.getState();
   }
 }
