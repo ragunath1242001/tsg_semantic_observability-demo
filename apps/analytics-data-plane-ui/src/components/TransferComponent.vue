@@ -2,7 +2,7 @@
 import { TransferDto } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import http from "@tsg-dsp/common-ui/utils/http";
-import { defineProps, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 
 import { stateSeverity } from "../utils/stateseverity";
 

@@ -9,16 +9,24 @@ import {
 import { Roles, validationPipe } from "@tsg-dsp/common-api";
 import { toArray } from "@tsg-dsp/common-dsp";
 import {
+  ApiBadRequestResponseDefault,
   ProofDocument,
+  SignedJwtResponse,
   SignRequest,
+  SignRequestJwt,
+  ValidateJWTRequest,
   ValidateRequest
 } from "@tsg-dsp/common-dtos";
 import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { validateDataIntegrityProof } from "@tsg-dsp/common-signing-and-validation";
+import {
+  validateDataIntegrityProof,
+  validateJwt
+} from "@tsg-dsp/common-signing-and-validation";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
+import { JWTPayload } from "jose";
 
 import { SignatureService } from "./signature.service.js";
 
@@ -56,6 +64,36 @@ export class SignatureManagementController {
     };
   }
 
+  @Post("sign/jwt")
+  @ApiOperation({
+    summary: "Sign document as JWT",
+    description: "Sign a JSON document as JWT with default or defined key"
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: SignRequestJwt })
+  @ApiOkResponse({ type: SignedJwtResponse })
+  @ApiNotFoundResponseDefault()
+  @ApiForbiddenResponseDefault()
+  async signJwt(
+    @Body(validationPipe) signRequest: SignRequestJwt
+  ): Promise<SignedJwtResponse> {
+    const jwt = await this.signatureService.signAsJwt(
+      signRequest.body,
+      signRequest.audience,
+      {
+        key: signRequest.keyId,
+        expirationTime: signRequest.expirationTime
+          ? new Date(signRequest.expirationTime)
+          : undefined,
+        subject: signRequest.subject,
+        typ: signRequest.typ
+      }
+    );
+    return {
+      jwt
+    };
+  }
+
   @Post("validate")
   @ApiOperation({
     summary: "Validate signed document",
@@ -65,11 +103,30 @@ export class SignatureManagementController {
   @ApiOkResponse({ type: ProofDocument })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
+  @ApiBadRequestResponseDefault()
   async validate(
     @Body(validationPipe) validateRequest: ValidateRequest
   ): Promise<ProofDocument> {
     const { proof, ...plainDocument } = validateRequest.proofDocument!;
     await validateDataIntegrityProof(plainDocument, toArray(proof)[0]);
     return validateRequest.proofDocument!;
+  }
+
+  @Post("validate/jwt")
+  @ApiOperation({
+    summary: "Validate signed JWT",
+    description: "Validates a signed JWT and returns the payload upon success"
+  })
+  @ApiBody({ type: ValidateJWTRequest })
+  @ApiOkResponse({ type: Object })
+  @ApiNotFoundResponseDefault()
+  @ApiForbiddenResponseDefault()
+  @ApiBadRequestResponseDefault()
+  async validateJwt(
+    @Body(validationPipe) validateRequest: ValidateJWTRequest
+  ): Promise<JWTPayload> {
+    return await validateJwt(validateRequest.jwt, {
+      validateJti: validateRequest.jti
+    });
   }
 }

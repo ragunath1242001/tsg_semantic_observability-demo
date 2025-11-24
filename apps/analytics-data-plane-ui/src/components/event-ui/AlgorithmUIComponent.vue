@@ -4,7 +4,6 @@ import {
   UIElementType,
   UITemplate
 } from "@tsg-dsp/analytics-data-plane-dtos";
-import { defineProps } from "vue";
 
 import FieldUI from "./FieldUI.vue";
 import LineGraphUI from "./LineGraphUI.vue";

@@ -10,8 +10,7 @@ import {
 import { parseNetworkError } from "@tsg-dsp/common-api";
 import {
   CatalogClientService,
-  ITransferHandler,
-  TransferClientService
+  ITransferHandler
 } from "@tsg-dsp/common-data-plane-api";
 import axios, { AxiosResponse } from "axios";
 import { plainToInstance } from "class-transformer";
@@ -33,7 +32,6 @@ export class AlgorithmInstancesService {
     private readonly algorithmInstanceRepository: Repository<AlgorithmInstanceDao>,
     private eventEmitter: EventEmitter2,
     private readonly catalog: CatalogClientService,
-    private readonly transfer: TransferClientService,
     @Inject(ITransferHandler)
     private readonly transferHandler: AnalyticsTransferHandler
   ) {}

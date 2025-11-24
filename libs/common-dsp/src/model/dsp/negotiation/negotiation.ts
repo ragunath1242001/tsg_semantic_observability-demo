@@ -99,7 +99,7 @@ export class PolicyRule<
   @IsOptional()
   assigner?: string;
   @Namespace("odrl")
-  @ValidateNested()
+  @IsString({ each: true })
   @IsOptional()
   assignee?: OrArray<string>;
   @Namespace("odrl")
@@ -163,7 +163,7 @@ export class Policy<
   @IsOptional()
   assigner?: string;
   @Namespace("odrl")
-  @IsString()
+  @IsString({ each: true })
   @IsOptional()
   assignee?: OrArray<string>;
   @Namespace("odrl")

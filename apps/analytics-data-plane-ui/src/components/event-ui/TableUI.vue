@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { UITemplate } from "@tsg-dsp/analytics-data-plane-dtos";
-import { defineProps } from "vue";
 
 const { uiTemplate } = defineProps<{
   uiTemplate: UITemplate;

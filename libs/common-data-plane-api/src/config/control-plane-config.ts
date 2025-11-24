@@ -13,6 +13,12 @@ export class ControlPlaneConfig {
   @IsUrl({ require_tld: false })
   public readonly managementEndpoint!: string;
 
+  @Description("Wallet endpoint")
+  @IsString()
+  @IsUrl({ require_tld: false })
+  @IsOptional()
+  public readonly walletEndpoint?: string;
+
   @Description("Public control plane endpoint")
   @IsString()
   @IsUrl({ require_tld: false })

@@ -22,11 +22,7 @@ import {
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { Roles } from "@tsg-dsp/common-api";
 import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
-import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
-import {
-  ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault
-} from "@tsg-dsp/common-dtos";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
 import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 
@@ -72,21 +68,6 @@ export class AlgorithmInstancesManagementController {
     return this.algorithmInstancesService.createAlgorithmInstance(
       createAlgorithmInstance
     );
-  }
-
-  @Get("catalogs/:participantId")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: "Get catalog by participant ID",
-    description: "Fetches a specific catalog by its participant ID."
-  })
-  @ApiOkResponse({ type: CatalogSchema })
-  @ApiForbiddenResponseDefault()
-  @ApiNotFoundResponseDefault()
-  async getCatalogByParticipantId(
-    @Param("participantId") participantId: string
-  ): Promise<CatalogDto> {
-    return await this.catalog.getParticipantCatalog(participantId);
   }
 
   @Get("transfer/:transferId")

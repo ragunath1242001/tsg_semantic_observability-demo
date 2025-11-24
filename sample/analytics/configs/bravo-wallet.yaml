@@ -44,3 +44,20 @@ didServices:
 
 did:
   method: "did:web:"
+
+issueConfigurations:
+  - id: ProjectAgreementCredential
+    credentialType: ProjectAgreementCredential
+    description: Project Agreement Credential
+    document:
+      "@context":
+        "@protected": true
+        "@version": 1.1
+        ProjectAgreementCredential:
+          "@context":
+            - https://www.w3.org/ns/credentials/v2
+          "@id": adp:ProjectAgreementCredential
+        adp: https://tsg.dataspac.es/context/adp
+        hash: "https://w3id.org/security#hash"
+        id: "@id"
+        type: "@type"

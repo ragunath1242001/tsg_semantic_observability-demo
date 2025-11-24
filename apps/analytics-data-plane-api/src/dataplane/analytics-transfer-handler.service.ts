@@ -20,7 +20,7 @@ import {
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto
 } from "@tsg-dsp/common-dsp";
-import { NegotiationDetailDto, TransferDto } from "@tsg-dsp/common-dtos";
+import { TransferDto } from "@tsg-dsp/common-dtos";
 import crypto from "crypto";
 import { Repository } from "typeorm";
 
@@ -82,7 +82,21 @@ export class AnalyticsTransferHandler implements ITransferHandler {
     });
     if (!transfer) {
       throw new DataPlaneError(
-        `Transfer ${id} not found`,
+        `Transfer by id ${id} not found`,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return transfer;
+  }
+
+  async getTransferByProcessId(processId: string) {
+    const transfer = await this.transferRepository.findOne({
+      where: { processId },
+      relations: ["algorithmInstance"]
+    });
+    if (!transfer) {
+      throw new DataPlaneError(
+        `Transfer by processId ${processId} not found`,
         HttpStatus.NOT_FOUND
       );
     }
@@ -128,23 +142,13 @@ export class AnalyticsTransferHandler implements ITransferHandler {
     algorithmInstanceId: string,
     listenForStarted = false
   ) {
-    let negotiation: NegotiationDetailDto;
-    try {
-      negotiation = await this.negotiation.getNegotiationForDataset(
-        dataset["@id"],
-        participant.didId
-      );
-    } catch (_) {
-      this.logger.debug(
-        `No negotiation found for dataset ${dataset["@id"]} with participant ${participant.didId}, starting new negotiation`
-      );
-      negotiation = await this.negotiation.requestDefaultNegotiation(
-        dataset["@id"],
-        participant.didId,
-        undefined,
-        async () => dataset
-      );
-    }
+    const negotiation = await this.negotiation.requestDefaultNegotiation(
+      dataset["@id"],
+      participant.didId,
+      undefined,
+      async () => dataset
+    );
+
     if (!negotiation.agreement) {
       throw new DataPlaneError(
         `No agreement found for negotiation ${negotiation.localId}`,

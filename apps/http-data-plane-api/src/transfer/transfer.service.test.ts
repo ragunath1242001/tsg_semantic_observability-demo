@@ -625,10 +625,6 @@ describe.each(["Authorization"])(
         );
 
         expect(result).toBe(transfer.id);
-        expect(negotiationClient.getNegotiationForDataset).toHaveBeenCalledWith(
-          datasetId,
-          expect.any(String)
-        );
         expect(
           negotiationClient.requestDefaultNegotiation
         ).toHaveBeenCalledWith(

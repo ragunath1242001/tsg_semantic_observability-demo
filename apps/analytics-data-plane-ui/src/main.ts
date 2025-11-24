@@ -14,6 +14,10 @@ import {
   Message,
   Skeleton
 } from "primevue";
+import Accordion from "primevue/accordion";
+import AccordionContent from "primevue/accordioncontent";
+import AccordionHeader from "primevue/accordionheader";
+import AccordionPanel from "primevue/accordionpanel";
 import AutoComplete from "primevue/autocomplete";
 import Badge from "primevue/badge";
 import Button from "primevue/button";
@@ -27,6 +31,7 @@ import DataTable from "primevue/datatable";
 import DataView from "primevue/dataview";
 import Dialog from "primevue/dialog";
 import DialogService from "primevue/dialogservice";
+import Divider from "primevue/divider";
 import Drawer from "primevue/drawer";
 import FileUpload from "primevue/fileupload";
 import IconField from "primevue/iconfield";
@@ -136,6 +141,11 @@ app.component("Textarea", Textarea);
 app.component("Toast", Toast);
 app.component("ToggleSwitch", ToggleSwitch);
 app.component("Tree", Tree);
+app.component("Accordion", Accordion);
+app.component("AccordionPanel", AccordionPanel);
+app.component("AccordionHeader", AccordionHeader);
+app.component("AccordionContent", AccordionContent);
+app.component("Divider", Divider);
 
 app.component("MonacoEditorVue", MonacoEditorVue);
 

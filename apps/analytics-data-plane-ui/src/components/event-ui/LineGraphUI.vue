@@ -4,7 +4,7 @@ import {
   UITemplate
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { ChartData, ChartOptions } from "chart.js";
-import { computed, defineProps } from "vue";
+import { computed } from "vue";
 import { Line } from "vue-chartjs";
 
 import { registerChartJs } from "../../utils/chart";

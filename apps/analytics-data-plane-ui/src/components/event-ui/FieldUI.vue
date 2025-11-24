@@ -4,7 +4,7 @@ import {
   UITemplate
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { formatDate } from "@tsg-dsp/common-ui/utils/date";
-import { computed, defineProps, ref } from "vue";
+import { computed, ref } from "vue";
 
 const { uiTemplate, data } = defineProps<{
   uiTemplate: UITemplate;

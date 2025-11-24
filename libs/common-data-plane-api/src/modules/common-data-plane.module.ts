@@ -7,6 +7,7 @@ import { CatalogClientService } from "../services/catalog-client.service.js";
 import { DataPlaneRegistrationService } from "../services/dataplane-registration.service.js";
 import { NegotiationClientService } from "../services/negotiation-client.service.js";
 import { TransferClientService } from "../services/transfer-client.service.js";
+import { WalletClientService } from "../services/wallet-client.service.js";
 
 @Module({
   imports: [TypeOrmModule.forFeature([DataPlaneStateDao]), AuthModule],
@@ -14,13 +15,15 @@ import { TransferClientService } from "../services/transfer-client.service.js";
     CatalogClientService,
     DataPlaneRegistrationService,
     NegotiationClientService,
-    TransferClientService
+    TransferClientService,
+    WalletClientService
   ],
   exports: [
     CatalogClientService,
     DataPlaneRegistrationService,
     NegotiationClientService,
-    TransferClientService
+    TransferClientService,
+    WalletClientService
   ]
 })
 export class CommonDataPlaneModule {}

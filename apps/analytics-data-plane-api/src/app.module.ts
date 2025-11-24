@@ -17,6 +17,7 @@ import { DataPlaneModule } from "./dataplane/dataplane.module.js";
 import { EventsModule } from "./events/events.module.js";
 import { FilesModule } from "./files/files.module.js";
 import { OrchestrationModule } from "./orchestration/orchestration.module.js";
+import { ProjectAgreementsModule } from "./project-agreements/project-agreements.module.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -37,6 +38,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     FilesModule,
     OrchestrationModule,
     AlgorithmInstancesModule,
+    ProjectAgreementsModule,
     EventsModule,
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({

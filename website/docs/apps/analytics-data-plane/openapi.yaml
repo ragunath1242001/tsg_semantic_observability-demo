@@ -171,6 +171,38 @@ paths:
       security: *a5
       summary: Get registry addresses
       tags: *a6
+  /api/management/registry/catalog/{participantId}:
+    get:
+      description: Fetches a specific catalog by its participant ID.
+      operationId: DataPlaneManagementController_getCatalogByParticipantId
+      parameters:
+        - name: participantId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a5
+      summary: Get catalog by participant ID
+      tags: *a6
   /api/management/participant-id:
     get:
       description: Get the ID of the current participant from the Control Plane catalog.
@@ -1120,38 +1152,6 @@ paths:
       security: *a16
       summary: Create algorithm instance
       tags: *a17
-  /api/management/algorithm-instances/catalogs/{participantId}:
-    get:
-      description: Fetches a specific catalog by its participant ID.
-      operationId: AlgorithmInstancesManagementController_getCatalogByParticipantId
-      parameters:
-        - name: participantId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CatalogSchema"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a16
-      summary: Get catalog by participant ID
-      tags: *a17
   /api/management/algorithm-instances/transfer/{transferId}:
     get:
       description: Retrieve an algorithm instance by its associated transfer ID
@@ -1283,6 +1283,205 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Start an algorithm instance
       tags: *a18
+  /api/project-agreements/signature-request:
+    post:
+      description: Receives a signature request message from an initiator via transfer.
+      operationId: ProjectAgreementsController_handleSignatureRequestMessage
+      parameters:
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignatureRequestMessage"
+      responses:
+        "201":
+          description: Signature request received successfully
+      summary: Handle Signature Request Message
+      tags: &a19
+        - Project Agreements
+  /api/project-agreements/finalization:
+    post:
+      description: Receives a finalization message with all signatures via transfer.
+      operationId: ProjectAgreementsController_handleFinalizationMessage
+      parameters:
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectAgreementFinalizationMessage"
+      responses:
+        "200":
+          description: Finalization message received successfully
+      summary: Handle Finalization Message
+      tags: *a19
+  /api/project-agreements/signature-callback:
+    post:
+      description: Receives a signature response callback from a participant at the
+        callback URL.
+      operationId: ProjectAgreementsController_handleSignatureCallback
+      parameters:
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignatureResponseMessage"
+      responses:
+        "201":
+          description: Signature callback received successfully
+      summary: Handle Signature Callback
+      tags: *a19
+  /api/management/project-agreements:
+    get:
+      description: Retrieves all project agreements.
+      operationId: ProjectAgreementsManagementController_getAll
+      parameters: []
+      responses:
+        "200":
+          description: List of project agreements retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectAgreementDetailDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a20
+        - oauth2:
+            - controlplane_dataplane
+      summary: Get all Project Agreements
+      tags: &a21
+        - Project Agreements
+    post:
+      description: Creates a new project agreement and initiates the signature
+        collection process.
+      operationId: ProjectAgreementsManagementController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectAgreementDto"
+      responses:
+        "201":
+          description: Project agreement created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectAgreementDetailDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a20
+      summary: Create Project Agreement
+      tags: *a21
+  /api/management/project-agreements/{id}/sign:
+    post:
+      description: Signs a project agreement with the given ID.
+      operationId: ProjectAgreementsManagementController_signProjectAgreement
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Project Agreement ID
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Project agreement signature requested successfully
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a20
+      summary: Sign Project Agreement
+      tags: *a21
+  /api/management/project-agreements/{id}/link/{datasetId}:
+    post:
+      description: Links a dataset to the specified project agreement.
+      operationId: ProjectAgreementsManagementController_linkDatasetToProjectAgreement
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Project Agreement ID
+          schema:
+            type: number
+        - name: datasetId
+          required: true
+          in: path
+          description: Dataset ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Dataset linked to project agreement successfully
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a20
+      summary: Link Dataset to Project Agreement
+      tags: *a21
+  /api/management/project-agreements/{id}/unlink/{datasetId}:
+    post:
+      description: Unlinks a dataset from the specified project agreement.
+      operationId: ProjectAgreementsManagementController_unlinkDatasetFromProjectAgreement
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Project Agreement ID
+          schema:
+            type: number
+        - name: datasetId
+          required: true
+          in: path
+          description: Dataset ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Dataset unlinked from project agreement successfully
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a20
+      summary: Unlink Dataset from Project Agreement
+      tags: *a21
   /api/events/{algorithmInstanceId}/internal-event:
     post:
       operationId: EventsController_createInternalEvent
@@ -1301,7 +1500,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: &a19
+      tags: &a22
         - Events
   /api/events/{algorithmInstanceId}/algorithm-event:
     post:
@@ -1338,7 +1537,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Create an algorithm event
-      tags: *a19
+      tags: *a22
   /api/events/{algorithmInstanceId}/upload/{eventId}:
     post:
       description: Uploads binary algorithm event data.
@@ -1369,7 +1568,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Upload algorithm event data
-      tags: *a19
+      tags: *a22
   /api/events/{algorithmInstanceId}/data/{eventId}:
     get:
       operationId: EventsController_getEventData
@@ -1392,7 +1591,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a19
+      tags: *a22
   /api/events/{algorithmInstanceId}/poll:
     get:
       description: Long polling endpoint that returns the next available algorithm
@@ -1423,7 +1622,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Poll for the next available algorithm event for this algorithm instance
-      tags: *a19
+      tags: *a22
   /api/events/{algorithmInstanceId}:
     get:
       description: Retrieves all algorithm and internal events for the specified
@@ -1445,7 +1644,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get all events for an algorithm instance
-      tags: *a19
+      tags: *a22
   /api/management/algorithm-instances/{algorithmInstanceId}/events/{eventId}/data:
     get:
       description: Returns the raw binary data for the specified algorithm event.
@@ -1653,7 +1852,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: &a20 []
+          example: &a23 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1684,7 +1883,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a20
+          example: *a23
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1710,7 +1909,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a20
+          example: *a23
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1736,17 +1935,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: &a27 []
+          example: &a30 []
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: &a28 []
+          example: &a31 []
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: &a29 []
+          example: &a32 []
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -1778,7 +1977,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: &a21
+          example: &a24
             - keyword1
             - keyword2
           type: array
@@ -1788,14 +1987,14 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: &a22
+          example: &a25
             - theme1
             - theme2
           type: array
           items:
             type: string
         conformsTo:
-          example: &a23
+          example: &a26
             - conformsToExample
           type: array
           items:
@@ -1804,7 +2003,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: &a24
+          example: &a27
             - description1
             - description2
           type: array
@@ -1841,12 +2040,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: &a25 []
+          example: &a28 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: &a26
+          example: &a29
             - version1
             - version2
           type: array
@@ -1906,7 +2105,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a21
+          example: *a24
           type: array
           items:
             type: string
@@ -1914,12 +2113,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a22
+          example: *a25
           type: array
           items:
             type: string
         conformsTo:
-          example: *a23
+          example: *a26
           type: array
           items:
             type: string
@@ -1927,7 +2126,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a24
+          example: *a27
           type: array
           items:
             type: string
@@ -1962,12 +2161,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a25
+          example: *a28
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a26
+          example: *a29
           type: array
           items:
             type: string
@@ -2035,7 +2234,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a21
+          example: *a24
           type: array
           items:
             type: string
@@ -2043,12 +2242,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a22
+          example: *a25
           type: array
           items:
             type: string
         conformsTo:
-          example: *a23
+          example: *a26
           type: array
           items:
             type: string
@@ -2056,7 +2255,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a24
+          example: *a27
           type: array
           items:
             type: string
@@ -2091,12 +2290,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a25
+          example: *a28
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a26
+          example: *a29
           type: array
           items:
             type: string
@@ -2139,7 +2338,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a21
+          example: *a24
           type: array
           items:
             type: string
@@ -2147,12 +2346,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a22
+          example: *a25
           type: array
           items:
             type: string
         conformsTo:
-          example: *a23
+          example: *a26
           type: array
           items:
             type: string
@@ -2160,7 +2359,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a24
+          example: *a27
           type: array
           items:
             type: string
@@ -2195,12 +2394,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a25
+          example: *a28
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a26
+          example: *a29
           type: array
           items:
             type: string
@@ -2579,17 +2778,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: *a27
+          example: *a30
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: *a28
+          example: *a31
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: *a29
+          example: *a32
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -3233,6 +3432,208 @@ components:
           example: 60
       required:
         - status
+    ProjectAgreementParticipant:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the participant
+        didId:
+          type: string
+          description: Decentralized identifier of the participant
+          example: did:example:participant-1
+      required:
+        - title
+        - didId
+    ProjectAgreementDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the project agreement
+        title:
+          type: string
+          description: Title of the project
+        description:
+          type: string
+          description: Description of the project
+        participants:
+          description: List of participants in the project
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectAgreementParticipant"
+        validFrom:
+          type: string
+          description: Start date of the agreement validity
+          example: 2024-01-01T00:00:00Z
+        validUntil:
+          type: string
+          description: End date of the agreement validity
+          example: 2025-01-01T00:00:00Z
+        purpose:
+          type: string
+          description: Purpose of the data sharing
+        researchQuestion:
+          type: string
+          description: Research question being addressed
+        objectives:
+          description: List of objectives for the project
+          type: array
+          items:
+            type: string
+        hypotheses:
+          description: List of hypotheses for the project
+          type: array
+          items:
+            type: string
+        dataUseConditions:
+          description: List of data use conditions
+          type: array
+          items:
+            type: string
+        securityMeasures:
+          description: List of security measures
+          type: array
+          items:
+            type: string
+        complianceRequirements:
+          description: List of compliance requirements
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - title
+        - description
+        - participants
+        - validFrom
+        - validUntil
+        - purpose
+        - researchQuestion
+        - objectives
+        - hypotheses
+        - dataUseConditions
+        - securityMeasures
+        - complianceRequirements
+    ProjectAgreementCallbackDto:
+      type: object
+      properties:
+        url:
+          type: string
+          description: URL to send the callback to
+        authToken:
+          type: string
+          description: Authorization token for the callback
+      required:
+        - url
+        - authToken
+    SignatureRequestMessage:
+      type: object
+      properties:
+        projectAgreement:
+          description: Project agreement to be signed
+          allOf:
+            - $ref: "#/components/schemas/ProjectAgreementDto"
+        callback:
+          description: Callback information for the signature
+          allOf:
+            - $ref: "#/components/schemas/ProjectAgreementCallbackDto"
+      required:
+        - projectAgreement
+        - callback
+    DCPCredentialRequestInitiation:
+      type: object
+      properties:
+        issuerId:
+          type: string
+          example: did:web:issuer.example
+          pattern: ^did:[a-z0-9]+:.*
+        preAuthorizedCode:
+          type: string
+          example: pre-auth-code-xyz
+        credentialType:
+          example:
+            - ExampleCredential
+          type: array
+          items:
+            type: string
+      required:
+        - issuerId
+        - preAuthorizedCode
+        - credentialType
+    ProjectAgreementFinalizationMessage:
+      type: object
+      properties:
+        projectId:
+          type: string
+          description: Unique identifier of the project agreement
+        hash:
+          type: string
+          description: Hash of the finalized project agreement
+        signatures:
+          type: object
+          description: Signatures from all participants
+        offer:
+          description: Credential offer for the project agreement credential
+          allOf:
+            - $ref: "#/components/schemas/DCPCredentialRequestInitiation"
+      required:
+        - projectId
+        - hash
+        - signatures
+        - offer
+    SignatureResponseMessage:
+      type: object
+      properties:
+        participantId:
+          type: string
+          description: Decentralized identifier of the participant
+        projectId:
+          type: string
+          description: Unique identifier of the project agreement
+        signature:
+          type: string
+          description: Signature provided by the participant
+      required:
+        - participantId
+        - projectId
+        - signature
+    ProjectAgreementDetailDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Internal identifier of the project agreement
+        initiator:
+          type: string
+          description: Decentralized identifier of the initiator
+        projectAgreement:
+          description: Project agreement details
+          allOf:
+            - $ref: "#/components/schemas/ProjectAgreementDto"
+        signatures:
+          type: object
+          description: Signatures from all participants
+        hash:
+          type: string
+          description: Hash of the project agreement
+          example: abc123def456ghi789jkl012mno345pq
+        status:
+          type: string
+          description: Current status of the project agreement
+        datasets:
+          description: Datasets linked to the project agreement
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - initiator
+        - projectAgreement
+        - signatures
+        - hash
+        - status
+        - datasets
     CreateInternalEventDto:
       type: object
       properties:

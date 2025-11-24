@@ -191,6 +191,16 @@ export class NegotiationClientService {
     remoteAddress: string | undefined,
     datasetFetcher: () => Promise<DatasetDto>
   ): Promise<NegotiationDetailDto> {
+    const existingNegotiation = await this.getNegotiationForDataset(
+      datasetId,
+      participantId
+    ).catch(() => null);
+    if (existingNegotiation) {
+      this.logger.log(
+        `Using existing negotiation ${existingNegotiation.localId} for dataset ${datasetId} with participant ${participantId}`
+      );
+      return existingNegotiation;
+    }
     const dataset = await datasetFetcher();
     if (!dataset.hasPolicy || dataset.hasPolicy.length === 0) {
       throw new DataPlaneClientError(

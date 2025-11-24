@@ -10,7 +10,7 @@ import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { DataTableRowSelectEvent, useToast } from "primevue";
-import { defineProps, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 
 import { useK8sStore } from "../stores/k8s";
 

@@ -38,11 +38,12 @@ export class DataPlaneService implements OnModuleInit {
   private defaultDataset: DatasetDto[] = this.createDataset();
 
   private createDataset(): DatasetDto[] {
-    const datasetId = `urn:uuid:${crypto.randomUUID()}`;
+    const orchestrationDatasetId = `urn:uuid:${crypto.randomUUID()}`;
+    const projectAgreementsDatasetId = `urn:uuid:${crypto.randomUUID()}`;
     return [
       {
         "@context": defaultContext(),
-        "@id": datasetId,
+        "@id": orchestrationDatasetId,
         "@type": "Dataset",
         title: "Analytics Data Plane Orchestration",
         description: [
@@ -55,12 +56,12 @@ export class DataPlaneService implements OnModuleInit {
         hasPolicy: [
           {
             "@type": "Offer",
-            "@id": `${datasetId}:policy`,
+            "@id": `${orchestrationDatasetId}:policy`,
             permission: [
               {
                 "@type": "Permission",
                 action: "use",
-                target: datasetId
+                target: orchestrationDatasetId
               } as PermissionDto
             ]
           } as OfferDto
@@ -68,7 +69,41 @@ export class DataPlaneService implements OnModuleInit {
         distribution: [
           {
             "@type": "Distribution",
-            "@id": `${datasetId}:application/analytics-data-plane`,
+            "@id": `${orchestrationDatasetId}:application/analytics-data-plane`,
+            title: "Analytics Data Plane (tsg:analytics)",
+            format: "tsg:analytics"
+          } as DistributionDto
+        ]
+      } as DatasetDto,
+      {
+        "@context": defaultContext(),
+        "@id": projectAgreementsDatasetId,
+        "@type": "Dataset",
+        title: "Analytics Data Plane Project Agreements",
+        description: [
+          "Project agreement service for the orchestration of project agreements in the Analytics Data Plane"
+        ],
+        conformsTo: ["tsg:project-agreement"],
+        keyword: ["analytics", "project-agreement"],
+        theme: ["analytics", "project-agreement"],
+        language: "en",
+        hasPolicy: [
+          {
+            "@type": "Offer",
+            "@id": `${projectAgreementsDatasetId}:policy`,
+            permission: [
+              {
+                "@type": "Permission",
+                action: "use",
+                target: projectAgreementsDatasetId
+              } as PermissionDto
+            ]
+          } as OfferDto
+        ],
+        distribution: [
+          {
+            "@type": "Distribution",
+            "@id": `${projectAgreementsDatasetId}:application/analytics-data-plane`,
             title: "Analytics Data Plane (tsg:analytics)",
             format: "tsg:analytics"
           } as DistributionDto
@@ -160,15 +195,15 @@ export class DataPlaneService implements OnModuleInit {
 
     // Check if the dataset exists and fail early if not
     await this.getDataset(datasetId);
-    await this.datasetRepository.save({
-      identifier: datasetId,
-      dataset: updatedDataset
-    });
     await this.catalog.updateDataset(
       currentState.details.identifier,
       datasetId,
       updatedDataset
     );
+    await this.datasetRepository.save({
+      identifier: datasetId,
+      dataset: updatedDataset
+    });
   }
 
   async deleteDataset(datasetId: string) {

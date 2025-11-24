@@ -3,6 +3,7 @@ import { DataIntegrityProof, OrArray } from "@tsg-dsp/common-dsp";
 import { Type } from "class-transformer";
 import {
   IsBoolean,
+  IsDateString,
   IsDefined,
   IsIn,
   IsObject,
@@ -100,4 +101,75 @@ export class ValidateRequest {
   @Type(() => ProofDocument)
   @ValidateNested()
   proofDocument?: ProofDocument;
+}
+
+export class SignedJwtResponse {
+  @ApiProperty({
+    description: "The signed JWT",
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  })
+  @IsString()
+  @IsDefined()
+  jwt!: string;
+}
+
+export class ValidateJWTRequest {
+  @ApiProperty({
+    description: "The JWT to be validated",
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  })
+  @IsString()
+  @IsDefined()
+  jwt!: string;
+
+  @ApiPropertyOptional({
+    description: "Whether to check the 'jti' claim in the JWT",
+    example: true
+  })
+  @IsBoolean()
+  @IsOptional()
+  jti?: boolean;
+}
+
+export class SignRequestJwt {
+  @ApiProperty({
+    example: { id: "document1", content: "This is a sample document" }
+  })
+  @IsObject()
+  @IsDefined()
+  body!: Record<string, any>;
+
+  @ApiPropertyOptional({
+    example: "did:example:audience-12345"
+  })
+  @IsString()
+  @IsOptional()
+  audience?: string;
+  @ApiPropertyOptional({
+    example: "did:example:12345"
+  })
+  @IsString()
+  @IsOptional()
+  keyId?: string;
+
+  @ApiPropertyOptional({
+    example: "2025-12-31T23:59:59Z"
+  })
+  @IsOptional()
+  @IsDateString()
+  expirationTime?: string;
+
+  @ApiPropertyOptional({
+    example: "subject-12345"
+  })
+  @IsString()
+  @IsOptional()
+  subject?: string;
+
+  @ApiPropertyOptional({
+    example: "JWT"
+  })
+  @IsString()
+  @IsOptional()
+  typ?: string;
 }

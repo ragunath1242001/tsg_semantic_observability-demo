@@ -44,6 +44,7 @@
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
     "@tsg-dsp/common-signing-and-validation": "workspace:*",
+    "@tsg-dsp/wallet-dtos": "workspace:*",
     "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",

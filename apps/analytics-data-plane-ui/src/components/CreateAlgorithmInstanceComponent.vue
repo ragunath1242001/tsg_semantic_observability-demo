@@ -5,7 +5,6 @@ import {
   UIElementType
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { AlgorithmParticipant } from "@tsg-dsp/analytics-data-plane-dtos";
-import { CatalogDto } from "@tsg-dsp/common-dsp";
 import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
@@ -182,10 +181,8 @@ const participants = ref<AlgorithmParticipant[]>([]);
 
 const getParticipantCatalog = async (didId: string) => {
   try {
-    const response = await http.get<CatalogDto>(
-      `management/algorithm-instances/catalogs/${encodeURIComponent(didId)}`
-    );
-    if (!response.data.dataset || response.data.dataset.length === 0) {
+    const catalog = await registryStore.fetchParticipantCatalog(didId);
+    if (!catalog.dataset || catalog.dataset.length === 0) {
       datasetOptions.value[didId] = [
         {
           label: "No datasets found",
@@ -201,13 +198,13 @@ const getParticipantCatalog = async (didId: string) => {
       });
       return;
     }
-    datasetOptions.value[didId] = response.data.dataset?.map((dataset) => ({
+    datasetOptions.value[didId] = catalog.dataset?.map((dataset) => ({
       label: dataset.title
         ? `${dataset.title} (${dataset["@id"]})`
         : dataset["@id"],
       value: dataset["@id"]
     }));
-    return response.data;
+    return catalog;
   } catch (error) {
     toast.add(
       toastError({
