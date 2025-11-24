@@ -1,3 +1,4 @@
+import { CatalogDto } from "@tsg-dsp/common-dsp";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { defineStore } from "pinia";
 
@@ -57,6 +58,21 @@ export const useRegistryStore = defineStore("registry", {
         return response.data;
       } catch (error) {
         console.error("Error fetching current participant ID:", error);
+        throw error;
+      }
+    },
+
+    async fetchParticipantCatalog(didId: string) {
+      try {
+        const response = await http.get<CatalogDto>(
+          `management/registry/catalog/${encodeURIComponent(didId)}`
+        );
+        return response.data;
+      } catch (error) {
+        console.error(
+          `Error fetching catalog for participant ${didId}:`,
+          error
+        );
         throw error;
       }
     },

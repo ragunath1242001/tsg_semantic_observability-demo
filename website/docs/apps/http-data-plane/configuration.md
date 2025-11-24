@@ -55,6 +55,7 @@ Authentication for frontend services can be done via OAuth. This helps users who
 | `controlPlane`                                                           | Yes      | `ControlPlaneConfig`               | Control plane configuration                         |                           |
 | `controlPlane.dataPlaneEndpoint`                                         | Yes      | `URL`                              | Data plane management endpoint                      |                           |
 | `controlPlane.managementEndpoint`                                        | Yes      | `URL`                              | Control plane management endpoint                   |                           |
+| `controlPlane.walletEndpoint`                                            |          | `URL`                              | Wallet endpoint                                     |                           |
 | `controlPlane.controlEndpoint`                                           | Yes      | `URL`                              | Public control plane endpoint                       |                           |
 | `controlPlane.initializationDelay`                                       |          | `Number`                           | Initialization delay in milliseconds                | `5000`                    |
 | `controlPlane.dataPlaneTitle`                                            |          | `String`                           | Data Plane title                                    | `"Data Plane - v0.0.0"`   |

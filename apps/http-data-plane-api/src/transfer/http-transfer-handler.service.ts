@@ -27,7 +27,7 @@ import {
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto
 } from "@tsg-dsp/common-dsp";
-import { NegotiationDetailDto, TransferDto } from "@tsg-dsp/common-dtos";
+import { TransferDto } from "@tsg-dsp/common-dtos";
 import axios from "axios";
 import crypto from "crypto";
 import { Request, Response } from "express";
@@ -199,24 +199,13 @@ export class HTTPTransferHandler implements ITransferHandler {
       this.logger.debug(
         `Did not find active transfer for dataset ${datasetId}, checking for negotiation.`
       );
-      let negotiation: NegotiationDetailDto;
-      try {
-        negotiation = await this.negotiation.getNegotiationForDataset(
-          datasetId,
-          audience
-        );
-      } catch (_) {
-        this.logger.debug(
-          `No negotiation found for dataset ${datasetId}, requesting new negotiation.`
-        );
-        negotiation = await this.negotiation.requestDefaultNegotiation(
-          datasetId,
-          audience,
-          controlPlaneAddress,
-          async () =>
-            this.catalog.getDataset(datasetId, audience, controlPlaneAddress)
-        );
-      }
+      const negotiation = await this.negotiation.requestDefaultNegotiation(
+        datasetId,
+        audience,
+        controlPlaneAddress,
+        async () =>
+          this.catalog.getDataset(datasetId, audience, controlPlaneAddress)
+      );
       if (!negotiation.agreement) {
         throw new DataPlaneError(
           `No agreement found for negotiation ${negotiation.localId} for dataset ${datasetId} with participant ${audience}`,

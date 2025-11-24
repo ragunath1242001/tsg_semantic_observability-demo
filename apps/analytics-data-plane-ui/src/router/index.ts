@@ -10,6 +10,7 @@ import CreateAlgorithmInstance from "../views/instances/CreateAlgorithmInstance.
 import InstanceDetails from "../views/instances/InstanceDetails.vue";
 import LoginVue from "../views/Login.vue";
 import Metadata from "../views/Metadata.vue";
+import ProjectAgreements from "../views/ProjectAgreements.vue";
 import ConsumerView from "../views/transfers/ConsumerView.vue";
 import ProviderView from "../views/transfers/ProviderView.vue";
 
@@ -47,6 +48,11 @@ const router = createRouter({
           path: "/algorithms/instances/:id",
           name: "algorithm-instance-details",
           component: InstanceDetails
+        },
+        {
+          path: "/project-agreements",
+          name: "project-agreements",
+          component: ProjectAgreements
         },
         {
           path: "/provider/:id",

@@ -1605,6 +1605,39 @@ paths:
       summary: Sign document
       tags: &a22
         - Management Signatures
+  /api/management/signature/sign/jwt:
+    post:
+      description: Sign a JSON document as JWT with default or defined key
+      operationId: SignatureManagementController_signJwt
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignRequestJwt"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignedJwtResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a21
+      summary: Sign document as JWT
+      tags: *a22
   /api/management/signature/validate:
     post:
       description: Validates a document that includes a `proof` property
@@ -1623,6 +1656,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProofDocument"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "403":
           description: Forbidden
           content:
@@ -1637,6 +1676,45 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security: *a21
       summary: Validate signed document
+      tags: *a22
+  /api/management/signature/validate/jwt:
+    post:
+      description: Validates a signed JWT and returns the payload upon success
+      operationId: SignatureManagementController_validateJwt
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateJWTRequest"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a21
+      summary: Validate signed JWT
       tags: *a22
   /issue-configuration/{id}:
     get:
@@ -4078,6 +4156,40 @@ components:
             $ref: "#/components/schemas/DataIntegrityProof"
       required:
         - proof
+    SignRequestJwt:
+      type: object
+      properties:
+        body:
+          type: object
+          example:
+            id: document1
+            content: This is a sample document
+        audience:
+          type: string
+          example: did:example:audience-12345
+        keyId:
+          type: string
+          example: did:example:12345
+        expirationTime:
+          type: string
+          example: 2025-12-31T23:59:59Z
+        subject:
+          type: string
+          example: subject-12345
+        typ:
+          type: string
+          example: JWT
+      required:
+        - body
+    SignedJwtResponse:
+      type: object
+      properties:
+        jwt:
+          type: string
+          description: The signed JWT
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      required:
+        - jwt
     ValidateRequest:
       type: object
       properties:
@@ -4092,6 +4204,19 @@ components:
               proofValue: zQm...
           allOf:
             - $ref: "#/components/schemas/ProofDocument"
+    ValidateJWTRequest:
+      type: object
+      properties:
+        jwt:
+          type: string
+          description: The JWT to be validated
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        jti:
+          type: boolean
+          description: Whether to check the 'jti' claim in the JWT
+          example: true
+      required:
+        - jwt
     IssueConfigurationDto:
       type: object
       properties:

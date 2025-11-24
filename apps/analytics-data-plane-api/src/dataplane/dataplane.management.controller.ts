@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  Param,
   Post,
   Put,
   Query
@@ -24,6 +25,7 @@ import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import { CatalogDto, CatalogSchema, DatasetDto } from "@tsg-dsp/common-dsp";
 import {
   ApiForbiddenResponseDefault,
+  ApiNotFoundResponseDefault,
   DataPlaneStateDto
 } from "@tsg-dsp/common-dtos";
 
@@ -73,6 +75,21 @@ export class DataPlaneManagementController {
   @ApiForbiddenResponseDefault()
   async getRegistryAddresses(): Promise<{ didId: string; address: string }[]> {
     return await this.catalog.getRegistryAddresses();
+  }
+
+  @Get("/registry/catalog/:participantId")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Get catalog by participant ID",
+    description: "Fetches a specific catalog by its participant ID."
+  })
+  @ApiOkResponse({ type: CatalogSchema })
+  @ApiForbiddenResponseDefault()
+  @ApiNotFoundResponseDefault()
+  async getCatalogByParticipantId(
+    @Param("participantId") participantId: string
+  ): Promise<CatalogDto> {
+    return await this.catalog.getParticipantCatalog(participantId);
   }
 
   @Get("/participant-id")

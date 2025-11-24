@@ -77,6 +77,16 @@ const menuList: Menu[] = [
         to: "/algorithms/instances"
       }
     ]
+  },
+  {
+    label: "Collaboration",
+    items: [
+      {
+        label: "Project Agreements",
+        icon: "pi pi-fw pi-file-edit",
+        to: "/project-agreements"
+      }
+    ]
   }
 ];
 

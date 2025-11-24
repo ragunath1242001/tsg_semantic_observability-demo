@@ -42,7 +42,7 @@ layout {
             args "-c" "BACKEND=http://localhost:3501 pnpm --inspect-brk dev:control-plane-ui --port 3551"
         }
     }
-    tab name="💾 alfa/data-plane" split_direction="vertical" {
+    tab name="💾 alfa/data-plane" split_direction="vertical" focus=true {
         pane name="alfa/data-plane-api" command="bash" {
             args "-c" "
                 cd $(git rev-parse --show-toplevel) && 

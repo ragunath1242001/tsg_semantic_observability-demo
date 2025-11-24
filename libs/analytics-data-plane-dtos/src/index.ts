@@ -9,3 +9,4 @@ export * from "./k8s/meta.dto.js";
 export * from "./k8s/pod.dto.js";
 export * from "./logging.dto.js";
 export * from "./orchestration.dto.js";
+export * from "./project-agreement.dto.js";

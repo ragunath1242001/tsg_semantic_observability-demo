@@ -15,6 +15,7 @@ controlPlane:
   dataPlaneEndpoint: http://localhost:3501/data-plane
   managementEndpoint: http://localhost:3501/management
   controlEndpoint: http://localhost:3501
+  walletEndpoint: http://localhost:3500
 
 runtime:
   color: "#3B8BF6"

@@ -19,7 +19,7 @@
         - .gitlab-ci.yml
   script:
     - pnpm install --frozen-lockfile
-    - pnpm run --filter "./libs/common*" -r  build
+    - pnpm run --filter "./libs/common*" --filter "./libs/wallet-dtos" -r  build
     - NODE_OPTIONS="--experimental-vm-modules" pnpm test:$LIB-ci
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts:
