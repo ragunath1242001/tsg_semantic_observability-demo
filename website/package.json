@@ -15,10 +15,10 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc"
   },
-  "packageManager": "npm@11.6.2",
+  "packageManager": "npm@11.6.3",
   "dependencies": {
-    "@docusaurus/core": "3.9.1",
-    "@docusaurus/preset-classic": "3.9.1",
+    "@docusaurus/core": "3.9.2",
+    "@docusaurus/preset-classic": "3.9.2",
     "@docusaurus/theme-mermaid": "^3.5.2",
     "@iconify-json/fluent": "^1.2.15",
     "@iconify-json/logos": "^1.2.4",
@@ -32,9 +32,9 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.9.1",
-    "@docusaurus/tsconfig": "3.9.1",
-    "@docusaurus/types": "3.9.1",
+    "@docusaurus/module-type-aliases": "3.9.2",
+    "@docusaurus/tsconfig": "3.9.2",
+    "@docusaurus/types": "3.9.2",
     "typescript": "~5.9.0"
   },
   "browserslist": {
