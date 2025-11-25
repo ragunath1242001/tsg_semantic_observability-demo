@@ -15,7 +15,7 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc"
   },
-  "packageManager": "npm@11.6.1",
+  "packageManager": "npm@11.6.2",
   "dependencies": {
     "@docusaurus/core": "3.9.1",
     "@docusaurus/preset-classic": "3.9.1",
