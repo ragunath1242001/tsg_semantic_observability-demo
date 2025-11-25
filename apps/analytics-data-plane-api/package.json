@@ -79,7 +79,7 @@
     "@types/jsonld": "^1.5.15",
     "@types/jsonpath": "^0.2.4",
     "@types/multer": "^2.0.0",
-    "@types/node": "^22.19.1",
+    "@types/node": "^24.0.0",
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^8.47.0",
     "@typescript-eslint/parser": "^8.47.0",

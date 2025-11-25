@@ -9,7 +9,7 @@ variables:
   RULES_CHANGES_PATH: "**/*"
 
 .base-rules:
-  image: node:22
+  image: node:24
   variables:
     # Corepack integrity checks are often failing in CI, so we disable them
     COREPACK_INTEGRITY_KEYS: "0"
@@ -81,7 +81,7 @@ renovate_test:
       if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 release:
-  image: node:22
+  image: node:24
   tags:
     - saas-linux-large-amd64
   stage: release
@@ -117,7 +117,7 @@ release:
     - if: '$RELEASE_NOW == "true" && $CI_COMMIT_BRANCH == "main"'
 
 test_release:
-  image: node:22
+  image: node:24
   stage: release
   needs: []
   before_script:
