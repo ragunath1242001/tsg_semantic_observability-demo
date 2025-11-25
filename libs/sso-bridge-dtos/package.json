@@ -13,15 +13,15 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@nestjs/swagger": "^11.0.4",
+    "@nestjs/swagger": "^11.2.3",
     "@tsg-dsp/common-dtos": "workspace:*",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0",
-    "jose": "^6.0.12",
+    "class-validator": "^0.14.3",
+    "jose": "^6.1.2",
     "reflect-metadata": "^0.2.0",
     "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   }
 }

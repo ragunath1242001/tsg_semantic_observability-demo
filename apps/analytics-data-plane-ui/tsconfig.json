@@ -4,12 +4,11 @@
     "skipLibCheck": true /* skipLibCheck, because of an error in Pinia with higher typescript versions https://github.com/vuejs/pinia/discussions/2605 */,
     "target": "esnext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }

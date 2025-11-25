@@ -22,21 +22,21 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/node": "^22.17.1",
+    "@types/node": "^22.19.1",
     "@types/semver": "^7.5.8",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@commander-js/extra-typings": "^14.0.0",
-    "@inquirer/prompts": "^7.8.1",
-    "axios": "^1.11.0",
+    "@inquirer/prompts": "^8.0.1",
+    "axios": "^1.13.2",
     "chalk": "^5.5.0",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0",
-    "commander": "^14.0.0",
+    "class-validator": "^0.14.3",
+    "commander": "^14.0.2",
     "diff": "^8.0.0",
-    "eta": "^4.0.0",
-    "inquirer": "^12.9.1",
+    "eta": "^4.4.1",
+    "inquirer": "^13.0.1",
     "postgres": "^3.4.5",
     "reflect-metadata": "^0.2.2",
     "semver": "^7.7.1",

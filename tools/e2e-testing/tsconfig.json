@@ -4,8 +4,8 @@
     "lib": ["ES2022"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "module": "NodeNext",
-    "moduleResolution": "nodeNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowJs": true,
     "sourceMap": true,
@@ -14,8 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true,
-    "isolatedModules": true
+    "skipLibCheck": true
   },
   "exclude": ["jest.config.ts", "coverage/", "dist/"]
 }

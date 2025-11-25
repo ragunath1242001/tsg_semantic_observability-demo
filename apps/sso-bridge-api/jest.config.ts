@@ -9,7 +9,7 @@ const config: Config.InitialOptions = {
       }
     ]
   },
-  // transformIgnorePatterns: ["node_modules/(?!@tsg-dsp)"],
+  transformIgnorePatterns: [],
   testTimeout: 30000,
   testEnvironment: "node",
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",

@@ -16,6 +16,7 @@ export default async (): Promise<Config> => {
         }
       ]
     },
+    transformIgnorePatterns: [],
     coveragePathIgnorePatterns: ["/node_modules/"]
   };
 };

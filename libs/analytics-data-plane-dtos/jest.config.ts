@@ -9,6 +9,7 @@ const config: Config.InitialOptions = {
       }
     ]
   },
+  transformIgnorePatterns: [],
   testTimeout: 30000,
   testEnvironment: "node",
   extensionsToTreatAsEsm: [".ts"],
