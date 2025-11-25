@@ -24,7 +24,7 @@
     "@nestjs/testing": "^11.1.9",
     "@types/deep-equal": "^1.0.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.19.1",
+    "@types/node": "^24.0.0",
     "@typescript-eslint/eslint-plugin": "^8.47.0",
     "@typescript-eslint/parser": "^8.47.0",
     "eslint": "^9.39.1",

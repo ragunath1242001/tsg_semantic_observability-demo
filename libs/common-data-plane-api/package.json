@@ -38,7 +38,7 @@
     "@jest/types": "^30.0.5",
     "@nestjs/testing": "^11.1.9",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.19.1",
+    "@types/node": "^24.0.0",
     "jest": "^30.0.5",
     "ts-jest": "^29.4.1",
     "typescript": "^5.9.3"
