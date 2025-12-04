@@ -2,3 +2,35 @@ packages:
   - "apps/**"
   - "libs/**"
   - "tools/**"
+
+# Supply Chain Security Settings
+# See https://pnpm.io/supply-chain-security
+
+# Delay installing newly published versions by 3 days (4320 minutes)
+# This reduces the risk of installing compromised packages as malware
+# is usually detected and removed from npm within hours
+minimumReleaseAge: 4320
+
+# Prevent installation if a package's trust level has decreased
+# compared to previous releases (e.g., was published by trusted publisher
+# but now only has provenance or no trust evidence)
+trustPolicy: no-downgrade
+
+# Exclude known safe packages from trust policy checks
+# These packages lost provenance attestation in recent versions or have new
+# major versions with trust evidence
+trustPolicyExclude:
+  - rxjs@7.8.2
+  - detect-port@1.6.1
+  - chokidar@4.0.3
+  - langium@3.3.1
+  - undici@6.22.0
+  - semver@6.3.1
+
+# Explicitly list packages allowed to run postinstall/preinstall scripts
+# pnpm v10+ blocks scripts by default for security
+# Add packages here only after reviewing their postinstall scripts
+onlyBuiltDependencies:
+  - bcrypt
+  - esbuild
+  - sqlite3
