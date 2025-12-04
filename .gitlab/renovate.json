@@ -6,5 +6,11 @@
   "labels": ["Renovate"],
   "prHourlyLimit": 0,
   "branchPrefix": "renovate-",
-  "packageRules": []
+  "packageRules": [
+    {
+      "description": "Wait 3 days before proposing npm package updates to reduce supply chain attack risk",
+      "matchDatasources": ["npm"],
+      "minimumReleaseAge": "3 days"
+    }
+  ]
 }

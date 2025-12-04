@@ -6,9 +6,7 @@ pages:
   needs: []
   script:
     - cd website/
-    # TODO workaround for: https://github.com/postmanlabs/postman-code-generators/issues/772
-    - mv /usr/local/bin/yarn /usr/local/bin/yarn.bak
-    - npm install
+    - npm ci
     - npm run docusaurus clean-api-docs all
     - npm run docusaurus gen-api-docs all
     - npm run build:gitlab
@@ -30,12 +28,11 @@ website-build:
   needs: []
   script:
     - cd website/
-    # TODO workaround for: https://github.com/postmanlabs/postman-code-generators/issues/772
-    - mv /usr/local/bin/yarn /usr/local/bin/yarn.bak
-    - npm install
+    - npm ci
     - npm run docusaurus clean-api-docs all
     - npm run docusaurus gen-api-docs all
-    - npm run build:gitlab
+    # Build only for current version to save time in CI
+    - npm run build:gitlab -- --config docusaurus.validate.config.ts
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
