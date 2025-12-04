@@ -1,0 +1,33 @@
+---
+id: compliancerequest
+title: "ComplianceRequest"
+description: ""
+sidebar_label: "ComplianceRequest"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"vcId":"vc-456","clearingHouse":"clearing-house-02","credentials":[{"credential":"example-credential-1","issuer":"issuer-1"},{"credential":"example-credential-2","issuer":"issuer-2"}],"note":"Optional compliance note"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ComplianceRequest"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"vcId":{"type":"string","example":"vc-456","description":"Unique identifier for the VC"},"clearingHouse":{"type":"string","example":"clearing-house-02","description":"Clearing house identifier"},"credentials":{"example":[{"credential":"example-credential-1","issuer":"issuer-1"},{"credential":"example-credential-2","issuer":"issuer-2"}],"description":"An array of verifiable credentials","type":"array","items":{"type":"object","properties":{"@context":{"type":"array","example":["https://www.w3.org/ns/credentials/v2"],"items":{"type":"string","enum":["https://www.w3.org/ns/credentials/v2","string"]}},"type":{"example":["VerifiableCredential","TestCredential"],"type":"array","items":{"type":"string"}},"id":{"type":"string","example":"http://example.edu/credentials/1872"},"credentialSubject":{"additionalProperties":true,"example":{"id":"did:example:subject-1","customProp":"value"},"allOf":[{"type":"object","properties":{"id":{"type":"string","example":"did:example:subject-1"}},"required":["id"],"title":"CredentialSubject"}]},"issuer":{"type":"string","example":"did:example:issuer"},"issuanceDate":{"type":"string","example":"2020-01-01T00:00:00Z"},"expirationDate":{"type":"string","example":"2030-01-01T00:00:00Z"},"validFrom":{"type":"string","example":"2020-01-01T00:00:00Z"},"validUntil":{"type":"string","example":"2030-01-01T00:00:00Z"},"evidence":{"type":"object","additionalProperties":true,"example":{"type":"DocumentVerification","verifier":"did:example:verifier"}},"credentialStatus":{"oneOf":[{"type":"object","properties":{"id":{"type":"string","example":"did:example:credential-status"},"type":{"type":"string","enum":["BitstringStatusListEntry"],"example":"BitstringStatusListEntry"},"statusPurpose":{"type":"string","enum":["refresh","revocation","suspension","message"],"example":"suspension"},"statusListIndex":{"type":"string","example":"0"},"statusListCredential":{"type":"string","example":"did:example:status-credential"},"statusSize":{"type":"string","example":"10"},"statusMessage":{"example":[{"status":"deadbeef","message":"Status message detail"}],"type":"array","items":{"type":"object","properties":{"status":{"type":"string","example":"deadbeef"},"message":{"type":"string","example":"Status message detail"}},"required":["status","message"],"title":"StatusMessage"}},"statusReference":{"type":"string","example":"https://example.com/status"}},"required":["id","type","statusPurpose","statusListIndex","statusListCredential"],"title":"CredentialStatus"},{"type":"array","items":{"type":"object","properties":{"id":{"type":"string","example":"did:example:credential-status"},"type":{"type":"string","enum":["BitstringStatusListEntry"],"example":"BitstringStatusListEntry"},"statusPurpose":{"type":"string","enum":["refresh","revocation","suspension","message"],"example":"suspension"},"statusListIndex":{"type":"string","example":"0"},"statusListCredential":{"type":"string","example":"did:example:status-credential"},"statusSize":{"type":"string","example":"10"},"statusMessage":{"example":[{"status":"deadbeef","message":"Status message detail"}],"type":"array","items":{"type":"object","properties":{"status":{"type":"string","example":"deadbeef"},"message":{"type":"string","example":"Status message detail"}},"required":["status","message"],"title":"StatusMessage"}},"statusReference":{"type":"string","example":"https://example.com/status"}},"required":["id","type","statusPurpose","statusListIndex","statusListCredential"],"title":"CredentialStatus"}}]},"proof":{"example":[{"type":"DataIntegrityProof","created":"2020-01-01T00:00:00Z","proofPurpose":"assertionMethod","cryptosuite":"eddsa-jcs-2022","proofValue":"","verificationMethod":"did:example:123456#key-1"}],"type":"array","items":{"type":"object","properties":{"id":{"type":"string","example":"did:example:xyz#proof-1"},"type":{"type":"string","enum":["DataIntegrityProof"],"example":"DataIntegrityProof"},"proofPurpose":{"type":"string","example":"assertionMethod"},"verificationMethod":{"type":"string","example":"did:example:author#verificationKey"},"cryptosuite":{"type":"string","example":"ecdsa-2019"},"created":{"type":"string","example":"2021-01-01T00:00:00Z"},"expires":{"type":"string","example":"2022-01-01T00:00:00Z"},"domain":{"example":["example.com"],"type":"array","items":{"type":"string"}},"challenge":{"type":"string","example":"1234567890"},"proofValue":{"type":"string","example":"ProofValueString"},"previousProof":{"example":["PreviousProof1","PreviousProof2"],"type":"array","items":{"type":"string"}},"nonce":{"type":"string","example":"nonce-string"}},"required":["type","proofPurpose","cryptosuite","proofValue"],"title":"DataIntegrityProof"}}},"required":["@context","type","credentialSubject","issuer","proof"],"title":"VerifiableCredential"}},"note":{"type":"string","example":"Optional compliance note","description":"Additional optional note"}},"required":["vcId","clearingHouse","credentials"],"title":"ComplianceRequest"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

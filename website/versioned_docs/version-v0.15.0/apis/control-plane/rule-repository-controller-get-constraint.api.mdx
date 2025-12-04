@@ -1,0 +1,72 @@
+---
+id: rule-repository-controller-get-constraint
+title: "Get constraint"
+description: "Get constraint based on its identifier"
+sidebar_label: "Get constraint"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVk1v2zgQ/SvEnHYLrW1kc9ItSNMgQJsEadoegsAYk2OLDUWy5CiuYei/L0jJlr8a9LCHPezJBmfezJsPPnENiqIM2rN2Fkq4JhbS2cgBtWUxw0hKOCs0R6EVWdZzTQEKcJ4CJtCNghIeGkMP5F3U7MLq0lkOzhgK0wXx5TYcFOAxYE1MIUL5tAaLNUEJWkEBgX40OpCCkkNDBejExyNXUECUFdUI5Rp45RPCNvWMArTtcwJG72ykmOxnk0n62a8KCpDOMllONvTeaJnJj7/H5LA+TuBm30lmxiGVyroLr9UJEkV/sAb6ibU3yXbxePfp5hIKQGPu5rnYHhU5aLuAAsg2NZRPg+vHu+uby4uP8FwAa85hhuY9JnT73G5tJwJusw8w0Xm3xX5LfhO8i2nb3Rk9dQE2bE5S/uQUGWjbhDyf/H08lw8uzLRSZP+9AXUb9VZ5DxRdEyTdOv7gGqtSbyIjN/Ft3PnkXNw6FluQdIqOt2EHcj45bwuoKUZc0CnqQ/DHikRqLkUmJUJPUShHUVjHgn7qyKOUlUJw4W2mOywPZpa7sy23L2Fndlcp+Ht226GdHw9t07/Ma57T/D+9/970Ul9INkHzKquPw4arsxRGdvLsDVqaoqq1heeko4yLpMpw9YqmyfNLwWviyiWNX1An4FxBCWP0elyjxQXVZHnsndFyNR4+HeO1Vm0iS+G1U/vngdDntA7dxDe0hvZ2BwXMjVtmF48xLl1Q3SI53wFPVFGeOiz2DxUy5n+H3oOha96MMFDYLm/y7482tg8u1MhQwtd72HwCoGL2cCC28JWCnmucGRL3gSJZzu0VlkiREuyEdHXd2HRtSMyIl0RW8NIJbSOjlRSFmwuuSPScRaY6yiui7dzlBvZr8Pj5WvSfYHGfKzrk81jpKO482Yv7GxE9ST3vb6yIlVvGnIms8k5b3qbeizkSn1zkjWnwxZCugkHu6krG98gYPcpUvGMnnSkExk1eUmK2yn5X0mgfSXxz4UXbhbgOrvEDOo7EHVcUDpLFxnsXWL/usmAnanxJxkA5dpqukGjFjAQqNZCTyGjcohBo1SEMWXy5EdoyBZSpOzGH4OTiDUoaCTGdvrt1TO+m01LstVXRXFude6o7FUiBbJ96RkLpQJLNShhtX0iJpeZKoIjaLsxBs7drMBJQQLpPe+8alEl42wKMlmQjDUoKFx5lReJsNIECmmD6DY3leLxcLkeYzSMXFuMeG8cfby6vbj9f/XU2mowqrk3eMe8i12h3Iu+/FA9XbD18EX7/TdlfIaafPPYGtU2KmUmve915AvQaChiUJ0lS1p6uFwOdUqskX5WLnHDrdcr7JZi2Tcc/GgqrTpReMeSrmVVS6Zj+KyjnaCK9UdUfD70y/yl+Rb0/RJvIJVGlbmYvtOoevfk5VxGqJDRP695wISV53oEcfVHbXV2+vnpMz8wm9edYRbeyvz5N51gxxS9kccM7SzC0xS8CbtR6KgPl4aKJW+wioOUp90/Ztv0HIkFUPQ==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get constraint"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/policy/constraint/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get constraint based on its identifier
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"number"},"type":{"example":"ATOMIC","allOf":[{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"}]},"title":{"type":"string","example":"Constraint title"},"description":{"type":"string","example":"Constraint description"}},"required":["type","title"],"title":"ConstraintModel"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

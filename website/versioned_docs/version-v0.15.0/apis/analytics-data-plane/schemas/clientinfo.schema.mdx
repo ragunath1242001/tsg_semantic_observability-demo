@@ -1,0 +1,33 @@
+---
+id: clientinfo
+title: "ClientInfo"
+description: ""
+sidebar_label: "ClientInfo"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"sub":"user-id-123","name":"John Doe","email":"john.doe@example.com","didId":"did:example:123456789","roles":["admin","user"],"refreshToken":"refresh-token-abc123"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ClientInfo"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"sub":{"type":"string","example":"user-id-123"},"name":{"type":"string","example":"John Doe"},"email":{"type":"string","example":"john.doe@example.com"},"didId":{"type":"string","example":"did:example:123456789"},"roles":{"example":["admin","user"],"type":"array","items":{"type":"string"}},"refreshToken":{"type":"string","example":"refresh-token-abc123"}},"required":["sub","name","email","roles"],"title":"ClientInfo"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

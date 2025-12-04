@@ -1,0 +1,33 @@
+---
+id: policyschema
+title: "PolicySchema"
+description: ""
+sidebar_label: "PolicySchema"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@id":"3f2592da-ffc9-40cb-a336-a9daa9343ce8","@type":"Offer","assigner":"assignerExample","assignee":"assigneeExample","profile":"profileExample","permission":[],"prohibition":[],"obligation":[],"target":"targetExample"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"PolicySchema"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@id":{"type":"string","example":"3f2592da-ffc9-40cb-a336-a9daa9343ce8"},"@type":{"type":"string","example":"Offer"},"assigner":{"type":"string","example":"assignerExample"},"assignee":{"type":"string","example":"assigneeExample"},"profile":{"type":"string","example":"profileExample"},"permission":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"Permission"},"assigner":{"type":"string","example":"assignerExample"},"assignee":{"type":"string","example":"assigneeExample"},"action":{"type":"string","example":"actionExample"},"target":{"type":"string","example":"targetExample"},"constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"Constraint"},"leftOperand":{"type":"string","example":"leftOperandExample"},"operator":{"type":"string","example":"operatorExample"},"rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","leftOperand","operator"],"title":"ConstraintSchema"}},"Duty":{"example":[],"type":"array","items":{"type":"string"}}},"required":["@type","action"],"title":"PermissionSchema"}},"prohibition":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"Prohibition"},"assigner":{"type":"string","example":"assignerExample"},"assignee":{"type":"string","example":"assigneeExample"},"action":{"type":"string","example":"actionExample"},"target":{"type":"string","example":"targetExample"},"constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"Constraint"},"leftOperand":{"type":"string","example":"leftOperandExample"},"operator":{"type":"string","example":"operatorExample"},"rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","leftOperand","operator"],"title":"ConstraintSchema"}}},"required":["@type","action"],"title":"ProhibitionSchema"}},"obligation":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"Duty"},"assigner":{"type":"string","example":"assignerExample"},"assignee":{"type":"string","example":"assigneeExample"},"action":{"type":"string","example":"actionExample"},"target":{"type":"string","example":"targetExample"},"constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"Constraint"},"leftOperand":{"type":"string","example":"leftOperandExample"},"operator":{"type":"string","example":"operatorExample"},"rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","leftOperand","operator"],"title":"ConstraintSchema"}}},"required":["@type","action"],"title":"DutySchema"}},"target":{"type":"string","example":"targetExample"}},"required":["@id","@type"],"title":"PolicySchema"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

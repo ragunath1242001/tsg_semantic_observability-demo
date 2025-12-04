@@ -1,6 +1,6 @@
 {
   "name": "@tsg-dsp/e2e-testing",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "description": "End-to-end testing tool",
   "engines": {
     "node": ">= 16.14"

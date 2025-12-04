@@ -1,0 +1,33 @@
+---
+id: filemetadatadto
+title: "FileMetadataDto"
+description: ""
+sidebar_label: "FileMetadataDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"identifier":"45f38abb-e7d7-4cf1-ac19-ac447466b8f5","fileSizeInBytes":1000,"fileName":"1744033172435-file.csv","originalFileName":"file.csv","mediaType":"text/csv","presentInLastCheck":true,"csvw":{"@context":["http://example.com/csvw.json"],"tables":{"url":"http://example.com/table.csv","tableSchema":{"columns":[{"name":"http://example.com/tableSchema.json"}]},"dialect":{"header":true}}},"datasetId":"dataset-123"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"FileMetadataDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"identifier":{"type":"string","example":"45f38abb-e7d7-4cf1-ac19-ac447466b8f5"},"fileSizeInBytes":{"type":"number","example":1000},"fileName":{"type":"string","example":"1744033172435-file.csv"},"originalFileName":{"type":"string","example":"file.csv"},"mediaType":{"type":"string","example":"text/csv"},"presentInLastCheck":{"type":"boolean","example":true},"csvw":{"type":"object","properties":{"@context":{"example":["http://example.com/csvw.json"],"type":"array","items":{"type":"string"}},"tables":{"type":"object","properties":{"url":{"type":"string","example":"http://example.com/table.csv"},"tableSchema":{"type":"object","properties":{"columns":{"example":[{"name":"http://example.com/tableSchema.json"}],"type":"array","items":{"type":"string"}}},"title":"CSVWTableSchema"},"dialect":{"type":"object","example":{"header":true}}},"required":["url"],"title":"CSVWTable"}},"required":["@context"],"title":"CSVW"},"datasetId":{"type":"string","example":"dataset-123"}},"required":["identifier","fileSizeInBytes","fileName","originalFileName","mediaType","presentInLastCheck","csvw"],"title":"FileMetadataDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

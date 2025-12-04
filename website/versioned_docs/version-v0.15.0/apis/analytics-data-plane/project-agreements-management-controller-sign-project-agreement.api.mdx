@@ -1,0 +1,72 @@
+---
+id: project-agreements-management-controller-sign-project-agreement
+title: "Sign Project Agreement"
+description: "Signs a project agreement with the given ID."
+sidebar_label: "Sign Project Agreement"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVcFu4zYQ/RViTi3AtYw0J92CTVIEaLPGJt1LYBhjaWxxK5FcziiOIejfC1KybMROgPpigdSM3jy+99hBSVwE48U4Czk8ma1lhcoH95MKUbgNRA1ZUTsjlZKK1Na8klUPtzPQ4DwFjKUPJeSwGIpuDjX8N1rcpsevzkpwdU1hxWZr378JGjwGbEgoMOQvHVhsCHIwJWgI9Ks1gUrIJbSkwUSkHqUC/Q7+2FdNjdXDLWjgoqIGIe9A9j62tW2zpgB9v4zd2TvLxHH/aj6Pf5e7HsmIM6C0gVTERixUKm6Lgpg3bV3voddwPf/jvNW9C2tTlmRBQ+GsxNnzDtD72hSJyewnxze7c9BuHVFEqkLkXcwAeWBqeoslGLsFDfSGja/j0ndi14aCHp3cu9aWER0LSsuf113Pr9WjEzUVFa6kcxZPSq7n172GhphxS5egH5s/V6fkhRGiKh2xsk4UvRmWWfwqheDC50hPUPanenkZ2JnGHUdYahAjqfIuNr8VB338aWAq2mBkn0TosJXqKrYpBv36Gi2tShRMT7CMAhLcRs2ei4/jhxqSykV3eMeDzqWCHDL0Jmsmf2Sj4b5MGuOsM2WfRaVF/BReB2ssjxifokIGERyQHhkfFjRsardLr3hk3rlQDtpyfihEi/VeTMHTUCssm+SwD7f0pa0jKRcrj9sDz2vCQGHSeawalw579y40KJDDjwXow1iViD9z/Q8KZmNwXZNaBGKykpykLFFJpRKnCtc0rY0OI7Um2RFZJTunjGVBWxArt0nhNp6zSlBnSU3GblwidlTM89Of6uYwoLpFQbVIg72H9VwZVt882ZvFg2JPhdmMHldcuR2nD5ItvTNWJgSXWseojcc/9B2jA4sYHb2G2hRkmY5ZADcei4rU1WwOGtpQj8RxnmW73W6GaXvmwjYbazn76+Hr3ePT3Zer2XxWSVOn0aNkG7QnneP9oM6E/n707pht//dGGc9Z6E0yX6OxMQHSCN1onRdAb0DD0TxDJL6zD2jI0+2RHLTUUEX/5S/QdWtk+ifUfR+Xf7UU9oOvXjEkFSXvl4bjcwn5BmumTyb87fuYN7+fMzPcPxeHGhfR7uPpYt3ScLb/0n64+Pplr6EiLKNPXrpx46YoyMtJydnd0Z+mzuLb03M0bBupO0+HKeG6y3g+ygD1qcUPQ6SYgV5/0PyQSKsiUElWDNY81W4DWlmlun7Z9/1/wdwFHw==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Sign Project Agreement"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/project-agreements/{id}/sign"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Signs a project agreement with the given ID.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Project Agreement ID","schema":{"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Project agreement signature requested successfully"},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

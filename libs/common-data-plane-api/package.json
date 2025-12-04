@@ -1,6 +1,6 @@
 {
   "name": "@tsg-dsp/common-data-plane-api",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "description": "Common functionality for data plane APIs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

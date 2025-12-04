@@ -1,0 +1,33 @@
+---
+id: validatejwtrequest
+title: "ValidateJWTRequest"
+description: ""
+sidebar_label: "ValidateJWTRequest"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"jwt":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...","jti":true}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ValidateJWTRequest"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"jwt":{"type":"string","description":"The JWT to be validated","example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."},"jti":{"type":"boolean","description":"Whether to check the 'jti' claim in the JWT","example":true}},"required":["jwt"],"title":"ValidateJWTRequest"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

@@ -1,0 +1,72 @@
+---
+id: transfer-management-controller-start-transfer
+title: "Start a transfer process"
+description: "Start a transfer process"
+sidebar_label: "Start a transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVk1vGzkM/SuCTrvFxBPkOLdsky0CbBOjSbOHwDBoDe1Ro5FUiRPXMOa/L6j5shM3uwX25LFEUuTT46P20nkMQNrZm1IW8iGAjWsMn8HCBmu09NFZCs4YDMtIEGiwkJn0EKBGwhBl8bSXFmqUhfTBKYzxppSZDPi90QFLWVBoMJPasgFQJTNZYlRBez5aFnLeeYmbK5nJqCqsQRZ7STvPMSMFbTeybRddTIz0hyt3bDEdsQYTMZPKWUJLvAfeG61Sdfm3yOfs38Z2q2+oiMsJjAVpjLyLtvROd3GOs8gk/oDaG16qiHyR5yUQnHkDFs9Gv/ZNxMHrCCs22N3y30y+gGkOlx/Tfy66zwBCgJ3MpCas47/X0J3yXv5HCbRjBv/FpU+uPbzlp+7IIQ4nril5XQHBnAGa9+6yfe06IndUxqkYl2UZMMYrchwlhYne2dhVfXF+zj/H/BpoKxKJsRSxUUy4dWMMI/o/sSYSUBNPMfcAwslM9lmkMtgmomqCpl0iiYOGqguGRnVNmBi2hLLWtk95XGQGpi+5SHyBDTflWHYUU0czpMfg3DMmAgQNIPU9LDNZI1WOlcG7mMrl5i1kDl7n9RgyHzxjvh/7v80T1tzPGF46lVhMJd4zpB1qQ6ETut1CJtfGbZOJhxi3LpTdZTjfOZ7ApfglsIqfbXTXsUIIGEYCsH2/NOz96UINJAv5OJdjm7IqvFG4Rwx6rWFlUMwDRrSUKCYsYomlICeUq+vGMvVQrJC2iFbQ1gltI4FVGIVbC6pQ9DmLlOoskYuJ+mVSxuuJa5OQvadWx0T+ZYVqWdvXLl1h360P959EPzxE6to3iDxUOoo7j/ZyfiOiR6XXfd+JWLltTLUOGY7FH8Wcic8u0rA12UJAEdAAdcjyJqtH9KAYfkdOOZMJiMO5WIrVLtldK6N9RPG3C8/absSn4Bo/eceZuKMKw6vDYuO9C6RfDrMgJ2p45s2AKTYjLxRYsUIBZTklp4DAuE0mwJav3YDE1xuhLWEAxejEFILYxBtQOBNiufxw6wg/LJeFOIK1xLW2OmGqo7COUiDbH71CUeqAisxOGG2fsRRbTZUAEbXdmFdgj0ScCaYChtjdY99eoFg+20wardBGnCaQvPSgKhQXs3OZySaYnouxyPPtdjuDtD1zYZP3vjH/6+bj9e399dnF7HxWUW0Sy1mEarAHkd+RriOyjdJC+INyb0Bbnncpl32vak8SvGbNm6Qyk6OyyUwWh2+bTtwWmaxYGYsnud+vIOLXYNqWl783GHad5L1ASI2fGqvUkb+nB8urPMdJJH/70k/H38XR8+hkJcMLwe4O2lRm8hl3R4+y1KsVQsm69rTv9z92h549cJTJ/80obLPB41Ip9PSu7eJgfMzv7h9YNPtXW+1K9gmw5VcibLtcXQIhKXta20sDdtPAhm27mMwCHg6nhsU4L/en0Xg7GMRP1H+ALU2aVPTJgMNQWqqAJVrSYOLouwlgaZn82kXbtv8AUXcEyA==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Start a transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/transfers/{processId}/start"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Start a transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"processId","required":true,"in":"path","description":"Process ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":false,"content":{"application/json":{"schema":{"type":"object","properties":{"endpoint":{"type":"string","example":"http://data-plane-endpoint"},"properties":{"example":[{"name":"propertyName","value":"propertyValue"}],"type":"array","items":{"type":"object","properties":{"name":{"type":"string","example":"propertyName"},"value":{"type":"string","example":"propertyValue"}},"required":["name","value"],"title":"DataPlaneProperty"}}},"required":["endpoint","properties"],"title":"DataPlaneAddressDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Transfer started successfully","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"success"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

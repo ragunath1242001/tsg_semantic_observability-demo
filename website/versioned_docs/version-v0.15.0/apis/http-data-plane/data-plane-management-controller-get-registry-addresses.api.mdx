@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-get-registry-addresses
+title: "Get registry addresses"
+description: "Get the current registry addresses from the Control Plane."
+sidebar_label: "Get registry addresses"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVcFu40YM/ZUBz6ptpD75FuwmaYA2NTbuXoLAoDW0NVtpZsKh4hiG/r2gJMte2+mh9cUSOSQfOe9Re7CUcnZRXPAwgwcSIwWZvGYmL4Zp45LwzqC1TClRMmsOVXvmS/DCoTTzEj2NIIMQiVETPVqYwVcUbF1/oMcNVeSljyiJlxuSb33u20NqyCAiY0VCnGD28poBU4rBq2+2h5vJRP9+RgwZ5MELeVEfxli6vAUx/pH0wB5SXlCF+iS7SDADZMYdZOCEqnRiD6sflIuiYG1FXFfWOqsNDceSsPMbaDLoh3LF1/0ymE5+vYR8H3jlrCX/H7B/gtFjRZcwMqAPrGKppm+UQs05PQW5D7W3ij8JSn0F/mncdDI1T0HMEJQHe1rK19WK+DRkOpk2GVSUEm7oGvRj8kVBhumtpiRkDfcQjQ2UjA9i6MMlGWlVYg7870hPUDbKnLfaMVmYvXTTGdrtW3jNQJy0kXea/KsE6G8tUV6zkx3MXvYQsJbiRtPkHX2jknppUbB9gtdGU+FGKduyvlOEOfJea1UkRVBdbKi9PpQCZjDG6MbVcHB80NsYT0SRiN8HRRywPSszuss/IDxOujNksC7Dtj0SMaVtYNtxKsQusBCJQx9LtJVTel6zZmfWY/fn54+ebpYrQiYeuKwBvenguw9cocAMvs8hO7SgSSE7E853Yrd2uCrJzJkSeWnVYjyRJWskmDxUVe1VRWRWJFsib2QbjPNJ0OeUTFh3C65fXrFbXorU+XVoh9izYvH8YH5bLObmeKcXiBaFS+bPSP52/mhSpNytewmbVIRtamuRtzE4L0Pxs6y6O/WCf1pomOtSaDIoXU4+0VHlcBsxL8jcjCaQQc1lP640G4+32+0IW/co8Gbcx6bx749f7p6e7365GU1GhVRl23AMSSr0J5l1/V+u/POu98et9f8+GP1dC33IOJbovCq9bWjfC+QFMDrI4CgRUGl3NWDYwJRUYkVIoiH7/QoT/cVl06j5rSbedeJ5R27po29NBgWhVW6+7OFv2ulk85yilnjHsm4/Fec7uTmV8sPdQjHUivRSfMPiOH54/O4k9xWdmc+0lPUAW+1Ck32S8iDzZc5kyYvDMg2xG0YvyzaueW2a5h83GMec
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get registry addresses"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/registry/addresses"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get the current registry addresses from the Control Plane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"didId":{"type":"string"},"address":{"type":"string"}}}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

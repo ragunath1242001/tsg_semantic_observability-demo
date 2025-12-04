@@ -1,0 +1,72 @@
+---
+id: rule-repository-controller-get-constraint-by-odrl
+title: "Get constraint by ODRL"
+description: "Get constraint based on an ODRL constraint"
+sidebar_label: "Get constraint by ODRL"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV0tvGzkM/iuCjsXUNrI5+bRp6gYB0jhI3PYQBAYt0R41GkmVOHENY/77QpqHx48mXaCHPewpjvgQ+ZHix9lyiUF45UhZw8f8CokJawJ5UIbYAgJKZg0Dw6Yf7296Mp5x69BDNLyWfMzvS4336GxQZP3m0hryVmv08xXSZWf2YTOVXvOMO/BQIKEPfPz4lHGPP0oM9MHKDR9v07/Ko+Rj8iVmXFhDaCiKwDmtRLp4+D3EsLc8iBwLiL9o45CPuV18RxGDdD6GSQpDlP5dizu1QF6ZFc84/oTC6Xi0i5VXGde4pGnM08jXzXqKk+awaiGy/nXbVqtn6NUqP3Fxl1ZnvOUvoMso65t0ng5c3eMSPRrxBgYnTfZ8duV5bDDdh6qX+VPGSdEBtA91vaqqdhacNaGu0NloFP/styX/Yw2g+miasligj3C3bbGD4GI2/Xx9yTMOWk+XfPx4Ai9TFhGATvVmenV9eXFzOuVZtK6eqk72e03Iau0q24fkN437Nod1a8pW+z8Z8mcrUTdFOh/9dVyXT9YvlJRo/lyBDBRvYHOPwZZe4K2lT7Y0MmITCKgMr9udj87ZrSXWGQkr8bgbeibno/Mq4wWGACt89RXyWY6sGWEomW9CZNJiYMYSw58q0CDeit6/NQ96UR7ULKHTpduk0KvdJDr/SLYr2vlx0Vr8UlzLdM3/1fvvVS/igqL0ijZp+lgoKT+LbkTNrU6DwTnIQhn+VEU3sIpkyieREVL9ovMCKbeRoJ0NqWBAOR/zITg1LMDACgs0NHRWK7EZ7gh+aGuiDuhfOpZuI0rzuy55G9cO3/og40tt10nFQQhr62XdSdbVhifSGJ86zPYPJRCkX4faO0GN3gLBo++6N+o3R63sk/UFEB/zr3e85QCeEzl+MG35V/RqqWChkd15DGgo4csMokTJyDJhi6I08d0gWyCtEQ2jtWXKBAIjMDC7ZJQja2JmKdRB6pH4yu53+89kx+3NvtJfSg52klOLR3/vOFoujneLVxeIX+4PbywJGVdmaVNbNN09e7hizVrI7lKdDlGe5SqwqUNzcXfNgkOhls0gYiG365DwQyOdVYY6QPd8DthnG6gV7XTBxxeugepqReFHIAgORCypJSuszhiE9l6UbLFJehOhlQvIvln/rMyKXXlbup11GLAp5egPLgulc9aTeulHQZYV8ByFHpPv2LNMgGELZCDlLjgBBNquMgZGHpoBsS/XTBlCDyKiE5ILiipOg8ABY/P5u1tL+G4+H7M9WCUulVEJU1UPt+jINFcvkEnlUZDeMK3MM0q2VpQzYEGZlT4Au2vuAeMZj1Nib10DEfkkLtFKoAm4Iwh+4UDkyM4GI57x0uvm3YXxcLherweQxAPrV8PGNgxvri8ntw+T92eD0SCnQqeXE2daAabn+fALZpM+XA5bbbsjvH/3zdO8R8KfNHQalImdnhLYNpP1kYNTPOO72RqHbpquNS69D6g4YZ8ynsfJPH7k2228/IvXVRWPf5ToN/XcfQGfpk/8r8p4jiDjaHvc8mfc1PMhZvN+Vu907Ys+ovIqay0uhEBHr+r2yeNu+jCLc7P5PCsS+XIP6zhPYF0X3SZ003BPZ1uuwazKRL+89hmLFvnhFF90DNeJwGx6ER5zA/sFAWRNkolsUtInHba8NBceJRpSoENnu/JgaE7N1l5V/wD7EUtw
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get constraint by ODRL"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/policy/constraint/odrl"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get constraint based on an ODRL constraint
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"Constraint"},"leftOperand":{"type":"string","example":"leftOperandExample"},"operator":{"type":"string","example":"operatorExample"},"rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","leftOperand","operator"],"title":"ConstraintSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"number"},"type":{"example":"ATOMIC","allOf":[{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"}]},"title":{"type":"string","example":"Constraint title"},"description":{"type":"string","example":"Constraint description"}},"required":["type","title"],"title":"ConstraintModel"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

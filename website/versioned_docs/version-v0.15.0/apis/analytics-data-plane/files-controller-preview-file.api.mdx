@@ -1,0 +1,72 @@
+---
+id: files-controller-preview-file
+title: "Preview file"
+description: "Preview file"
+sidebar_label: "Preview file"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVcFu4zgM/RWBp13AGwfdnHwrZtpBgUEnmHbnUgQBYzGxZm1JI9FNs4H/fUHZcdIm7WlySSCJ5Hvk48senKeAbJy901DArakpfnKWg6trCksf6NnQVo4hA48BG2IKEYqnPVhsCAowGjII9Ks1gTQUHFrKwFgowCNXkEEsK2oQij3wzktE5GDsBrouG5MMhR7Mf/Retl8thd2ldLZtVhSg6xYSGb2zkaLcz6Z/y5emWAbjhaRQdGFltCYLGZTOMlmWR+h9bcrUifxnlJf780pu9ZNKlk4E6Rubvk7P4S29DOgFG1/L0XeKrg0l3Tu+da3V0GUQGbmNH8fNpjN171iNQaXTdE79JGQ2nXUZNBQjbugS9GPyx4qUdJoik1ZhgKi0o6isY0UvJvJEqlIILnyM9ARldzrAp747I92BwiIDNpwibyT5Z3bQySeDSGUbDO+Sxhy2XF1JmrJXpa/R0lIjY/oFC5k640Yk2ctXcr8e+bwXl1r3Mm6IKydq31Capai0gBy9yeVFzPdGd/mgSEFO4bnX/OKI7kG00Y//gPHY6/4gg3XttumJxxi3LuheVc73gWix3rEp40hnibpJYn/3Krt0dWzHxcjjdd/hFWGgMCpcooajw92tCw0yFPBjDtmBVsXs4W1vf1Awa4OrmtQ8UCTLaYeUJdKkFTtVuqZprewWqRXxlsgq3jplbGS0JUXl1oorUsOEVYI6SToydu1SYwetPD58UdcHguozMqp5IvYW1mNlovrmyV7P71T0VJr1sN0qVm4bU0Gy2jtjeURwKfUEMpDx93kH08BSTKPLoDYl2UhHF4Brj2VF6moyhQzaUA+Ni0Web7fbCabriQubfIiN+de7Tzf3Dzd/XU2mk4qbOlH3LnKD9iTzGxm/Ijxqj+mFc1+jsbK4qf5+kPgToDeiyrQlGRTJuQ86X2RQucjybL9fYaR/Qt11ctwbr2yjNlEmraFYYx3pDMPop/DH98EB/lRHAb3G9i/tzoz/GetWXoJs9TOGJKzfX3o4RLs7rXmAZDR0iy6DilDLmjzth4vrsiTPJyFnfxoCe7SXLzePsq6t9P7cG0Zn21+G854DqA8X/MAhmQzIH+zF5Ac/WpaBNFk2WMcxdhPQ8jLFdYuu6/4Hn3XQDg==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Preview file"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/files/{id}/preview"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Preview file
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}},{"name":"previewSize","required":true,"in":"query","schema":{"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
