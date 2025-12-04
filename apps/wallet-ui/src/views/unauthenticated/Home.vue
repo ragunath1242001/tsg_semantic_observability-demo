@@ -70,7 +70,7 @@ const createCredentialOffer = async () => {
     };
 
     const response = await http.post<CredentialOffer>(
-      "management/issuance/offers?mobile=false",
+      "management/issuance/offers/public?mobile=false",
       offerRequest
     );
     if (response.status === 200) {
@@ -143,7 +143,7 @@ onMounted(async () => {
   <Dialog
     v-model:visible="showDialog"
     modal
-    header="Create a new Job"
+    header="Request a new Credential"
     width="30rem"
     @hide="showDialog = false">
     <div class="flex flex-col gap-4 mb-4">

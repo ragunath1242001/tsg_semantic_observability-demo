@@ -126,7 +126,7 @@ describe("DCP Issuance", () => {
         {
           provide: IssueConfigurationService,
           useValue: {
-            getIssueConfiguration: jest.fn().mockImplementation(() => ({
+            getIssueConfigurationByType: jest.fn().mockImplementation(() => ({
               id: "Example",
               credentialType: "ExampleCredentialType",
               documentUrl: "https://example.com/context.json",

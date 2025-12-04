@@ -17,7 +17,7 @@
     "@types/dom-view-transitions": "^1.0.5",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/tsconfig": "^0.7.0 || ^0.8.0",
-    "pinia": "^3.0.3",
+    "pinia": "^3.0.4",
     "primeicons": "^7.0.0",
     "primevue": "^4.3.7",
     "tailwindcss": "^4.1.11",

@@ -130,7 +130,7 @@ export class IssuanceService {
     credentialType: string
   ): Promise<CredentialSubject> {
     const issuerConfig =
-      await this.issueConfigurationService.getIssueConfiguration(
+      await this.issueConfigurationService.getIssueConfigurationByType(
         credentialType
       );
     if (!issuerConfig) {
