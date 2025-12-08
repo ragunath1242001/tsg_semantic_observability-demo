@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
-import AppLayout from "@/layout/AppLayout.vue";
+import AppLayout from "@/layout/AppLayoutSsoBridge.vue";
 
 import { useAuthStore } from "../stores/user.js";
 import Dashboard from "../views/Dashboard.vue";
