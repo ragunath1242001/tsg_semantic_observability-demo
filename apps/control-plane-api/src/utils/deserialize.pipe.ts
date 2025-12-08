@@ -15,8 +15,7 @@ type Constructor<T> = new (...args: any[]) => T;
 export class DeserializePipe<
   InType extends ContextDto,
   OutType extends SerializableClass<InType>
-> implements PipeTransform<InType, Promise<OutType>>
-{
+> implements PipeTransform<InType, Promise<OutType>> {
   private readonly logger = new Logger(this.constructor.name);
 
   constructor(private readonly type?: Constructor<OutType>) {}

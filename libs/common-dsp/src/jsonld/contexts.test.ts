@@ -12,12 +12,10 @@ test("Check JSON & TS context match", async () => {
   const { default: odrlJson } = await import("./contexts/odrl-profile.json");
   const { default: healthJson } = await import("./contexts/health.json");
   const { default: tsgJson } = await import("./contexts/tsg.json");
-  const { default: credentialsv2json } = await import(
-    "./contexts/preload/credentials.v2.json"
-  );
-  const { default: dataIntegrityJson } = await import(
-    "./contexts/preload/data-integrity.json"
-  );
+  const { default: credentialsv2json } =
+    await import("./contexts/preload/credentials.v2.json");
+  const { default: dataIntegrityJson } =
+    await import("./contexts/preload/data-integrity.json");
 
   expect(dsp).toEqual(dspJson);
   expect(odrl).toEqual(odrlJson);

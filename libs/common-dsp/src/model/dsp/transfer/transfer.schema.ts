@@ -108,9 +108,7 @@ export class TransferStartMessageSchema implements TransferStartMessageDto {
   "dataAddress"?: DataAddressDto;
 }
 
-export class TransferCompletionMessageSchema
-  implements TransferCompletionMessageDto
-{
+export class TransferCompletionMessageSchema implements TransferCompletionMessageDto {
   @ApiProperty({ example: "TransferCompletionMessage" })
   "@type": "TransferCompletionMessage";
   @ApiProperty({ example: "provider-pid-789" })
@@ -119,9 +117,7 @@ export class TransferCompletionMessageSchema
   "consumerPid": string;
 }
 
-export class TransferSuspensionMessageSchema
-  implements TransferSuspensionMessageDto
-{
+export class TransferSuspensionMessageSchema implements TransferSuspensionMessageDto {
   @ApiProperty({ example: "TransferSuspensionMessage" })
   "@type": "TransferSuspensionMessage";
   @ApiProperty({ example: "provider-pid-789" })
@@ -133,9 +129,7 @@ export class TransferSuspensionMessageSchema
   "reason"?: Array<any>;
 }
 
-export class TransferTerminationMessageSchema
-  implements TransferTerminationMessageDto
-{
+export class TransferTerminationMessageSchema implements TransferTerminationMessageDto {
   @ApiProperty({ example: "TransferTerminationMessage" })
   "@type": "TransferTerminationMessage";
   @ApiProperty({ example: "provider-pid-789" })

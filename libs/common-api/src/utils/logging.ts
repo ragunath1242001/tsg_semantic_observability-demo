@@ -44,9 +44,10 @@ export class RequestContext {
 }
 
 @Injectable()
-export class RequestContextMiddleware
-  implements NestMiddleware<Request, Response>
-{
+export class RequestContextMiddleware implements NestMiddleware<
+  Request,
+  Response
+> {
   use(req: Request, res: Response, next: () => void) {
     RequestContext.cls.run(
       new RequestContext(crypto.randomBytes(16).toString("hex"), req, res),

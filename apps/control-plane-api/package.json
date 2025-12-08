@@ -93,6 +93,6 @@
     "ts-node": "^10.9.2",
     "tsc-watch": "^7.0.0",
     "typescript": "^5.9.3",
-    "typescript-json-schema": "^0.66.0"
+    "typescript-json-schema": "^0.67.0"
   }
 }
