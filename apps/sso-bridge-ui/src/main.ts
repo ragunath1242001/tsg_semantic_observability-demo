@@ -4,6 +4,7 @@ import "@tsg-dsp/common-ui/assets/tailwind.css";
 import Lara from "@primevue/themes/lara";
 import { createPinia } from "pinia";
 import {
+  Badge,
   Button,
   Column,
   DataTable,
@@ -55,6 +56,7 @@ app.use(PrimeVue, {
   }
 });
 app.directive("tooltip", Tooltip);
+app.component("Badge", Badge);
 app.component("Button", Button);
 app.component("Card", Card);
 app.component("Column", Column);

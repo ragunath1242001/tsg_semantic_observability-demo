@@ -21,11 +21,14 @@ export interface TopbarProps {
   logoUrl: string;
   needSignin?: boolean;
   router: Router;
+  showSettings?: boolean;
 }
 
-const props = defineProps<TopbarProps>();
+const props = withDefaults(defineProps<TopbarProps>(), {
+  showSettings: true
+});
 
-const { title, logoUrl, needSignin, router } = toRefs(props);
+const { title, logoUrl, needSignin, router, showSettings } = toRefs(props);
 onMounted(() => {
   bindOutsideClickListener();
 });
@@ -141,7 +144,7 @@ const logout = () => {
             <span>Sign in</span>
           </button>
           <button
-            v-if="!needSignin && !userStore.isReadOnly"
+            v-if="!needSignin && !userStore.isReadOnly && showSettings"
             class="layout-topbar-action"
             @click="onConfigButtonClick">
             <i class="pi pi-cog"></i>
