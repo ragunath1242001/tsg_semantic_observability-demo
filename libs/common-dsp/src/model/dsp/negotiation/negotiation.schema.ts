@@ -50,9 +50,7 @@ export class HashedMessageSchema implements HashedMessage {
   "algorithm": string;
 }
 
-export class ContractAgreementVerificationMessageSchema
-  implements ContractAgreementVerificationMessageDto
-{
+export class ContractAgreementVerificationMessageSchema implements ContractAgreementVerificationMessageDto {
   @ApiProperty({ example: "ContractAgreementVerificationMessage" })
   "@type": "ContractAgreementVerificationMessage";
 
@@ -112,9 +110,7 @@ export class ContractNegotiationSchema
   "state"!: ContractNegotiationState;
 }
 
-export class ContractNegotiationEventMessageSchema
-  implements ContractNegotiationEventMessageDto
-{
+export class ContractNegotiationEventMessageSchema implements ContractNegotiationEventMessageDto {
   @ApiProperty({ example: "ContractNegotiationEventMessage" })
   "@type": "ContractNegotiationEventMessage";
 
@@ -151,9 +147,7 @@ export class ContractOfferMessageSchema implements ContractOfferMessageDto {
   "callbackAddress"?: string;
 }
 
-export class ContractAgreementMessageSchema
-  implements ContractAgreementMessageDto
-{
+export class ContractAgreementMessageSchema implements ContractAgreementMessageDto {
   @ApiProperty({ example: "ContractAgreementMessage" })
   "@type": "ContractAgreementMessage";
 
@@ -176,9 +170,7 @@ export class ContractAgreementMessageSchema
   "agreement"!: AgreementDto;
 }
 
-export class ContractNegotiationTerminationMessageSchema
-  implements ContractNegotiationTerminationMessageDto
-{
+export class ContractNegotiationTerminationMessageSchema implements ContractNegotiationTerminationMessageDto {
   @ApiProperty({ example: "ContractNegotiationTerminationMessage" })
   "@type": "ContractNegotiationTerminationMessage";
 

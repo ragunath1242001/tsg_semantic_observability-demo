@@ -16,7 +16,7 @@
     "typecheck": "tsc",
     "audit:signatures": "npm audit signatures"
   },
-  "packageManager": "npm@11.6.3",
+  "packageManager": "npm@11.6.4",
   "dependencies": {
     "@docusaurus/core": "3.9.2",
     "@docusaurus/preset-classic": "3.9.2",

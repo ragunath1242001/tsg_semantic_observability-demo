@@ -7,9 +7,10 @@ import {
   PaginationParametersExtended
 } from "./pagination.parameters.js";
 
-export class PaginationInterceptor<T>
-  implements NestInterceptor<Paginated<T>, T>
-{
+export class PaginationInterceptor<T> implements NestInterceptor<
+  Paginated<T>,
+  T
+> {
   intercept(
     context: ExecutionContext,
     next: CallHandler<Paginated<T>>
