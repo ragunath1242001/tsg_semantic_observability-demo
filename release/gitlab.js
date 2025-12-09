@@ -70,29 +70,3 @@ export async function createRelease(newVersion, changelog) {
     }
   }
 }
-
-export async function replaceVersion(oldVersion, newVersion, debug = false) {
-  console.log(`Replacing deployment version ${oldVersion} with ${newVersion}`);
-  // pull deployments repo from gitlab
-
-  if (!debug) {
-    await execPromise(
-      `git clone https://semantic-release:${process.env.DEPLOYMENTS_TOKEN}@${process.env.CI_SERVER_HOST}/tno-tsg/deployments.git`
-    );
-    // replace version in argocd repo
-    await execPromise(
-      `cd deployments && find . -type f -name "*.yaml" -exec sed -i '' -e "s/v${oldVersion}/v${newVersion}/g" -e "s/\\([^v]\\)${oldVersion}/\\1${newVersion}/g" {} +`
-    );
-    // commit changes
-    await execPromise(
-      `git remote add deployments_origin https://semantic-release:${process.env.DEPLOYMENTS_TOKEN}@${process.env.CI_SERVER_HOST}/deployments.git`
-    );
-    await execPromise(`git add .`);
-    await execPromise(`git commit -m "chore: release v${newVersion}"`);
-    // push changes to deployments repo
-    await execPromise(`git push deployments_origin HEAD:main`);
-  } else {
-    console.log("DEBUG: Not committing changes to deployments repo");
-    console.log("DEBUG: Not pushing changes");
-  }
-}

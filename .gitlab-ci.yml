@@ -98,7 +98,12 @@ release:
   script:
     - cd release/
     - npm install
-    - VERSION=v$(node version.js)
+    - NEW_VERSION=$(node version.js)
+    - OLD_VERSION=$(node version.js --current)
+    - echo "NEW_VERSION=$NEW_VERSION" >> ../build.env
+    - echo "OLD_VERSION=$OLD_VERSION" >> ../build.env
+    - echo "Old Version:$OLD_VERSION, New Version:$NEW_VERSION"
+    - VERSION=v$NEW_VERSION
     - echo $VERSION
     - cd ../website/
     - npm install
@@ -111,8 +116,31 @@ release:
     - cd ..
     - node ./release/release.js
   artifacts:
+    reports:
+      dotenv: build.env
     paths:
       - public
+  rules:
+    - if: '$RELEASE_NOW == "true" && $CI_COMMIT_BRANCH == "main"'
+
+update_deployments:
+  stage: release
+  image: node:24
+  needs:
+    - job: release
+      artifacts: true
+  variables:
+    GIT_EMAIL: semantic-release-bot@dataspac.es
+    GIT_NAME: semantic-release
+  script:
+    - git clone https://semantic-release:${DEPLOYMENTS_TOKEN}@${CI_SERVER_HOST}/tno-tsg/deployments.git
+    - cd deployments
+    - 'find . -type f -name "*.yaml" -exec sed -i -e "s/v${OLD_VERSION}/v${NEW_VERSION}/g" -e "s/\([^v]\)${OLD_VERSION}/\1${NEW_VERSION}/g" {} +'
+    - git config user.email "${GIT_EMAIL}"
+    - git config user.name "${GIT_NAME}"
+    - git add .
+    - 'git commit -m "chore: release v${NEW_VERSION}"'
+    - git push origin main
   rules:
     - if: '$RELEASE_NOW == "true" && $CI_COMMIT_BRANCH == "main"'
 

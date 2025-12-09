@@ -8,7 +8,6 @@ import semver from "semver";
 import {
   commitChanges,
   createRelease,
-  replaceVersion,
   setConfig,
   setRemote
 } from "./gitlab.js";
@@ -146,12 +145,9 @@ console.log(`\n\n------------------------\n\n`);
 if (debug) {
   console.log("DEBUG: Not committing changes");
   console.log("DEBUG: Not creating a new git tag");
-  await replaceVersion(currentVersion, newVersion, debug);
 } else {
   await setConfig(process.env.GIT_EMAIL, process.env.GIT_NAME);
   await setRemote();
   await commitChanges(conventionalClient, newVersion);
   await createRelease(newVersion, changelog);
-  // replace current version with new version in other repo with argocd
-  await replaceVersion(currentVersion, newVersion);
 }
