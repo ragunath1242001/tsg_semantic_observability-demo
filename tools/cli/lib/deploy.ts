@@ -516,11 +516,13 @@ export class Deploy {
         | "dryRun"
       )[] = await checkbox({
         message: "Confirm or update configuration",
-        instructions: ` (Press ${chalk.blue(
-          "<space>"
-        )} to toggle options and ${chalk.blue("<enter>")} to confirm options)`,
         theme: {
-          helpMode: "always"
+          style: {
+            keysHelpTip: () =>
+              ` (Press ${chalk.blue(
+                "<space>"
+              )} to toggle options and ${chalk.blue("<enter>")} to confirm options)`
+          }
         },
         choices: [
           {
