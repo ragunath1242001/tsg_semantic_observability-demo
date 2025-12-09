@@ -63,20 +63,24 @@ export const execPromise = (
         if (error) {
           console.error(stderr);
           if (confirmOnError) {
-            const promise = confirm({
-              message: "Error executing command, continue?"
-            });
+            const controller = new AbortController();
+            const promise = confirm(
+              {
+                message: "Error executing command, continue?"
+              },
+              { signal: controller.signal }
+            );
             Promise.race([
               promise,
               new Promise((resolve) =>
                 setTimeout(() => {
                   console.log();
                   log("log", "No response within 30 seconds, continuing");
+                  controller.abort();
                   resolve(true);
                 }, 30000)
               )
             ]).then((result) => {
-              promise.cancel();
               if (result) {
                 resolve(stderr);
               } else {
