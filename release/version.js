@@ -4,6 +4,12 @@ import semver from "semver";
 
 const conventionalClient = new ConventionalGitClient(process.cwd());
 const currentVersion = await conventionalClient.getVersionFromTags();
+
+if (process.argv.includes("--current")) {
+  console.log(currentVersion ?? "0.0.0");
+  process.exit();
+}
+
 const bumper = new Bumper(conventionalClient).loadPreset("conventionalcommits");
 const recommendation = await bumper.bump();
 
