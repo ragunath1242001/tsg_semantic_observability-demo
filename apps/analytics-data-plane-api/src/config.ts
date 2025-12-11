@@ -51,6 +51,13 @@ export class RuntimeConfig {
   @IsOptional()
   @IsString()
   darkThemeUrl?: string;
+  @Description(
+    "Whether a project agreement is required when creating an algorithm instance"
+  )
+  @IsBoolean()
+  @IsOptional()
+  @Transform(valueToBoolean)
+  public readonly requireProjectAgreement: boolean = false;
 }
 
 export class KubernetesConfig {

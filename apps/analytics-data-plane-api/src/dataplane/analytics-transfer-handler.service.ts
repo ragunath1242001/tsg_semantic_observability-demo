@@ -6,6 +6,7 @@ import {
   DataPlaneError,
   ITransferHandler,
   NegotiationClientService,
+  resolveControlPlaneServiceUrl,
   TransferClientService
 } from "@tsg-dsp/common-data-plane-api";
 import {
@@ -13,6 +14,7 @@ import {
   DataPlaneAddressDto,
   DataPlaneRequestResponseDto,
   DatasetDto,
+  OfferDto,
   TransferCompletionMessageDto,
   TransferRequestMessageDto,
   TransferStartMessageDto,
@@ -140,14 +142,34 @@ export class AnalyticsTransferHandler implements ITransferHandler {
     participant: AlgorithmParticipant,
     dataset: DatasetDto,
     algorithmInstanceId: string,
-    listenForStarted = false
+    listenForStarted = false,
+    offer?: OfferDto
   ) {
-    const negotiation = await this.negotiation.requestDefaultNegotiation(
-      dataset["@id"],
-      participant.didId,
-      undefined,
-      async () => dataset
-    );
+    let negotiation;
+
+    if (offer) {
+      // Use the specific offer (e.g., from a project agreement)
+      const remoteAddress = await resolveControlPlaneServiceUrl(
+        participant.didId
+      );
+      negotiation = await this.negotiation.requestNegotiation(
+        offer,
+        dataset["@id"],
+        participant.didId,
+        remoteAddress
+      );
+      this.logger.log(
+        `Requested negotiation with specific offer for dataset ${dataset["@id"]} with participant ${participant.didId}`
+      );
+    } else {
+      // Use the default negotiation (first policy in dataset)
+      negotiation = await this.negotiation.requestDefaultNegotiation(
+        dataset["@id"],
+        participant.didId,
+        undefined,
+        async () => dataset
+      );
+    }
 
     if (!negotiation.agreement) {
       throw new DataPlaneError(

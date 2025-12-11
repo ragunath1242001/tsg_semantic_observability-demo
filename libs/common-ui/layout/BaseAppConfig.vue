@@ -83,7 +83,7 @@ const handleUploadDark = async (event) => {
         name="file"
         choose-icon="pi pi-pencil"
         accept="image/svg+xml"
-        class="ml-2"
+        class="ml-2 mt-3"
         :max-file-size="1000000"
         custom-upload
         :auto="true"
@@ -110,7 +110,7 @@ const handleUploadDark = async (event) => {
         choose-icon="pi pi-pencil"
         custom-upload
         accept="image/svg+xml"
-        class="ml-2"
+        class="ml-2 mt-3"
         :max-file-size="1000000"
         :auto="true"
         choose-label="Change"

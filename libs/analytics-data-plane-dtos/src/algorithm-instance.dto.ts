@@ -5,6 +5,7 @@ import {
   ArrayNotEmpty,
   IsDate,
   IsDefined,
+  IsNumber,
   IsOptional,
   IsString,
   ValidateNested
@@ -13,6 +14,7 @@ import {
 import { AlgorithmDefinitionDto } from "./algorithm-definition.dto.js";
 import { AlgorithmEventDto } from "./algorithm-event.dto.js";
 import { InternalEventDto } from "./internal-event.dto.js";
+import { ProjectAgreementSummaryDto } from "./project-agreement.dto.js";
 
 export class AlgorithmParticipant {
   @ApiProperty({ example: "did:example:123456789" })
@@ -50,6 +52,14 @@ export class CreateAlgorithmInstanceDto {
   @Type(() => AlgorithmParticipant)
   @ArrayNotEmpty()
   public participants!: AlgorithmParticipant[];
+
+  @ApiPropertyOptional({
+    description:
+      "The ID of the project agreement to link to this algorithm instance"
+  })
+  @IsNumber()
+  @IsOptional()
+  public projectAgreementId?: number;
 }
 
 export class AlgorithmInstanceDto {
@@ -103,4 +113,12 @@ export class AlgorithmInstanceDto {
   @ValidateNested({ each: true })
   @Type(() => InternalEventDto)
   internalEvents!: Array<InternalEventDto>;
+
+  @ApiPropertyOptional({
+    description: "The project agreement linked to this algorithm instance"
+  })
+  @ValidateNested()
+  @Type(() => ProjectAgreementSummaryDto)
+  @IsOptional()
+  projectAgreement?: ProjectAgreementSummaryDto;
 }

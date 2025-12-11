@@ -189,6 +189,41 @@ export class DatasetSummaryDto {
   public title!: string;
 }
 
+export class ProjectAgreementSummaryDto {
+  @ApiProperty({ description: "Internal identifier of the project agreement" })
+  @IsDefined()
+  public id!: number;
+
+  @ApiProperty({ description: "Project identifier" })
+  @IsString()
+  @IsDefined()
+  public projectId!: string;
+
+  @ApiProperty({ description: "Hash of the project agreement" })
+  @IsString()
+  @IsOptional()
+  public hash?: string;
+
+  @ApiProperty({ description: "Title of the project agreement" })
+  @IsString()
+  @IsDefined()
+  public title!: string;
+
+  @ApiProperty({ description: "Current status of the project agreement" })
+  @IsIn([
+    "WAITING_FOR_SIGNATURES",
+    "SIGNATURE_REQUESTED",
+    "SIGNED",
+    "FINALIZED"
+  ])
+  @IsDefined()
+  public status!:
+    | "WAITING_FOR_SIGNATURES"
+    | "SIGNATURE_REQUESTED"
+    | "SIGNED"
+    | "FINALIZED";
+}
+
 export class ProjectAgreementDetailDto {
   @ApiProperty({ description: "Internal identifier of the project agreement" })
   @IsString()

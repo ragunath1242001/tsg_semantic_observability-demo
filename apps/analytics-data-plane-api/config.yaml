@@ -17,6 +17,7 @@ server:
 
 runtime:
   color: "#3B8BF6"
+  # requireProjectAgreement: true
 
 files:
   path: "./uploads"

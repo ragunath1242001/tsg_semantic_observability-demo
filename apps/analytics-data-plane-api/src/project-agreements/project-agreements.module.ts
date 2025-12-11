@@ -24,6 +24,7 @@ import { ProjectAgreementsService } from "./project-agreements.service.js";
     ProjectAgreementsController,
     ProjectAgreementsManagementController
   ],
-  providers: [ProjectAgreementsService]
+  providers: [ProjectAgreementsService],
+  exports: [ProjectAgreementsService]
 })
 export class ProjectAgreementsModule {}

@@ -23,6 +23,10 @@ import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.
 import { RootConfig } from "../config.js";
 import { AlgorithmEventDao } from "../events/algorithm-event.dao.js";
 import { InternalEventDao } from "../events/internal-event.dao.js";
+import {
+  ProjectAgreementCallbackDao,
+  ProjectAgreementDao
+} from "../project-agreements/project-agreement.dao.js";
 import { DataPlaneController } from "./dataplane.controller.js";
 import { DataPlaneService } from "./dataplane.service.js";
 import { DatasetDao } from "./dataset.dao.js";
@@ -96,7 +100,8 @@ describe("Dataplane Service", () => {
           InternalEventDao,
           DataPlaneStateDao,
           DatasetDao,
-          DataPlaneStateDao
+          ProjectAgreementDao,
+          ProjectAgreementCallbackDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
@@ -105,7 +110,8 @@ describe("Dataplane Service", () => {
           InternalEventDao,
           DataPlaneStateDao,
           DatasetDao,
-          DataPlaneStateDao
+          ProjectAgreementDao,
+          ProjectAgreementCallbackDao
         ])
       ],
       controllers: [DataPlaneController],

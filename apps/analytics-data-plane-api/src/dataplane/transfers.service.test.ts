@@ -11,6 +11,7 @@ import {
   createDataPlaneHttpMocks,
   createDataPlaneManagementHttpMocks,
   createDidConnectorHttpMocks,
+  DataPlaneError,
   ITransferHandler,
   NegotiationClientService,
   TransferClientService
@@ -22,7 +23,13 @@ import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.
 import { RootConfig } from "../config.js";
 import { AlgorithmEventDao } from "../events/algorithm-event.dao.js";
 import { InternalEventDao } from "../events/internal-event.dao.js";
+import {
+  ProjectAgreementCallbackDao,
+  ProjectAgreementDao
+} from "../project-agreements/project-agreement.dao.js";
+import { ProjectAgreementsService } from "../project-agreements/project-agreements.service.js";
 import { AnalyticsTransferHandler } from "./analytics-transfer-handler.service.js";
+import { DatasetDao } from "./dataset.dao.js";
 import { TransferDao } from "./transfer.dao.js";
 
 describe("TransfersService", () => {
@@ -57,13 +64,19 @@ describe("TransfersService", () => {
           TransferDao,
           AlgorithmInstanceDao,
           AlgorithmEventDao,
-          InternalEventDao
+          InternalEventDao,
+          ProjectAgreementDao,
+          ProjectAgreementCallbackDao,
+          DatasetDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
           AlgorithmInstanceDao,
           AlgorithmEventDao,
-          InternalEventDao
+          InternalEventDao,
+          ProjectAgreementDao,
+          ProjectAgreementCallbackDao,
+          DatasetDao
         ])
       ],
       providers: [
@@ -86,6 +99,18 @@ describe("TransfersService", () => {
         {
           provide: ITransferHandler,
           useClass: AnalyticsTransferHandler
+        },
+        {
+          provide: ProjectAgreementsService,
+          useValue: {
+            findById: (id: number) =>
+              Promise.reject(
+                new DataPlaneError(
+                  `Project Agreement with id ${id} not found`,
+                  404
+                )
+              )
+          }
         }
       ]
     }).compile();

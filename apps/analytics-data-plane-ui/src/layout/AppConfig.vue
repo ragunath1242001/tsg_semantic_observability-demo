@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import BaseAppConfig from "@tsg-dsp/common-ui/layout/BaseAppConfig.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
 import Drawer from "primevue/drawer";
@@ -32,6 +33,11 @@ const updateSettings = async () => {
       v-model:light-theme-url="runtimeStore.lightThemeUrl"
       :toast="toast"
       :runtime-store="runtimeStore" />
+
+    <div class="text-xl mt-2">Project Agreements</div>
+    <FormField label="Require agreement for analysis" :label-width="8">
+      <ToggleSwitch v-model="runtimeStore.requireProjectAgreement" />
+    </FormField>
     <Button label="Save Settings" class="mt-4" @click="updateSettings" />
   </Drawer>
 </template>

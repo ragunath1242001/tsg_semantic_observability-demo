@@ -5,6 +5,7 @@ import { CommonDataPlaneModule } from "@tsg-dsp/common-data-plane-api";
 
 import { DataPlaneModule } from "../dataplane/dataplane.module.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
+import { ProjectAgreementsModule } from "../project-agreements/project-agreements.module.js";
 import { AlgorithmInstancesController } from "./algorithm-instance.controller.js";
 import { AlgorithmInstanceDao } from "./algorithm-instance.dao.js";
 import { AlgorithmInstancesManagementController } from "./algorithm-instances.management.controller.js";
@@ -15,7 +16,8 @@ import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
     TypeOrmModule.forFeature([AlgorithmInstanceDao, TransferDao]),
     AuthModule,
     DataPlaneModule,
-    CommonDataPlaneModule
+    CommonDataPlaneModule,
+    ProjectAgreementsModule
   ],
   controllers: [
     AlgorithmInstancesManagementController,
