@@ -14,6 +14,11 @@ export class ProjectAgreementsService {
     return response.data;
   }
 
+  static async getFinalized(): Promise<ProjectAgreementDetailDto[]> {
+    const agreements = await this.getAll();
+    return agreements.filter((a) => a.status === "FINALIZED");
+  }
+
   static async create(
     projectAgreement: ProjectAgreementDto
   ): Promise<ProjectAgreementDetailDto> {

@@ -363,6 +363,30 @@ onUnmounted(() => {
                   severity="info" />
               </div>
             </FormField>
+            <FormField
+              v-if="algorithmInstance?.projectAgreement"
+              label="Project Agreement">
+              <div
+                class="p-3 bg-surface-50 dark:bg-surface-800 rounded border border-surface-200 dark:border-surface-700">
+                <div class="flex items-center gap-2">
+                  <Tag
+                    :value="algorithmInstance.projectAgreement.status"
+                    :severity="
+                      algorithmInstance.projectAgreement.status === 'FINALIZED'
+                        ? 'success'
+                        : 'warning'
+                    " />
+                  <span class="font-semibold">{{
+                    algorithmInstance.projectAgreement.title
+                  }}</span>
+                </div>
+                <div class="text-sm text-surface-500 mt-1">
+                  <span class="font-mono">{{
+                    algorithmInstance.projectAgreement.projectId
+                  }}</span>
+                </div>
+              </div>
+            </FormField>
           </div>
         </div>
       </template>

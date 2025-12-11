@@ -2,10 +2,12 @@
 import {
   AlgorithmDefinitionDto,
   CreateAlgorithmInstanceDto,
+  ProjectAgreementDetailDto,
   UIElementType
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { AlgorithmParticipant } from "@tsg-dsp/analytics-data-plane-dtos";
 import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { Ajv } from "ajv";
@@ -15,23 +17,40 @@ import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import schema from "../assets/algorithm-definition.schema.json";
+import { ProjectAgreementsService } from "../services/ProjectAgreementsService";
 import { useAlgorithmInstancesStore } from "../stores/algorithm-instances";
 import { RegistryParticipant, useRegistryStore } from "../stores/registry";
+import { useRuntimeStore } from "../stores/runtime";
 
 const router = useRouter();
 const registryStore = useRegistryStore();
 const algorithmStore = useAlgorithmInstancesStore();
+const runtimeStore = useRuntimeStore();
 
 const algorithmId = crypto.randomUUID();
 
 let participantId = "";
 const participantOptions = computed(() => {
-  const options = registryStore.participants
+  let availableParticipants = registryStore.participants;
+
+  // If a project agreement is selected, filter to only participants in that agreement
+  if (selectedProjectAgreement.value) {
+    const projectParticipantIds =
+      selectedProjectAgreement.value.projectAgreement.participants.map(
+        (p) => p.didId
+      );
+    availableParticipants = availableParticipants.filter((participant) =>
+      projectParticipantIds.includes(participant.didId)
+    );
+  }
+
+  const options = availableParticipants
     .map((participant: RegistryParticipant) => ({
       label: participant.didId,
       value: participant.didId
     }))
     .filter((option) => option.value !== participantId);
+
   return [
     {
       label: `${participantId} (You)`,
@@ -149,16 +168,6 @@ const validateAlgortithmDefinition = (
   const valid = validate(algorithmDefinition.value);
   if (valid) {
     activateCallback("2");
-    algorithmDefinition.value.roleDefinitions.forEach((role) => {
-      const alreadyPresent = participants.value.some(
-        (p) => p.role === role.name
-      );
-      if (role.cardinality.min > 0 && !alreadyPresent) {
-        Array.from({ length: role.cardinality.min }).forEach(() => {
-          addParticipant("", role.name, "");
-        });
-      }
-    });
   } else {
     const errorMessages = validate.errors.map((error) => {
       const path = error.instancePath || "root";
@@ -174,8 +183,74 @@ const validateAlgortithmDefinition = (
   }
 };
 
+/* --------------------------
+   2. Project Agreement step
+   -------------------------- */
+const projectAgreements = ref<ProjectAgreementDetailDto[]>([]);
+const selectedProjectAgreement = ref<ProjectAgreementDetailDto | null>(null);
+const projectAgreementsLoading = ref(false);
+
+const loadProjectAgreements = async () => {
+  projectAgreementsLoading.value = true;
+  try {
+    projectAgreements.value = await ProjectAgreementsService.getFinalized();
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Loading project agreements failed",
+        defaultMessage: "Could not load finalized project agreements"
+      })
+    );
+  } finally {
+    projectAgreementsLoading.value = false;
+  }
+};
+
+const isProjectAgreementRequired = computed(
+  () => runtimeStore.requireProjectAgreement
+);
+
+const validateProjectAgreement = (
+  activateCallback: (value: string | number) => void
+) => {
+  if (isProjectAgreementRequired.value && !selectedProjectAgreement.value) {
+    toast.add({
+      severity: "error",
+      summary: "Project Agreement Required",
+      detail:
+        "A project agreement is required to create an algorithm instance. Please select a finalized project agreement.",
+      life: 5000
+    });
+    return;
+  }
+
+  // Reset participants when project agreement changes and add participants based on project agreement
+  participants.value = [];
+  if (selectedProjectAgreement.value && algorithmDefinition.value) {
+    algorithmDefinition.value.roleDefinitions.forEach((role) => {
+      if (role.cardinality.min > 0) {
+        Array.from({ length: role.cardinality.min }).forEach(() => {
+          addParticipant("", role.name, "");
+        });
+      }
+    });
+  } else if (algorithmDefinition.value) {
+    // Add default participants if no project agreement selected
+    algorithmDefinition.value.roleDefinitions.forEach((role) => {
+      if (role.cardinality.min > 0) {
+        Array.from({ length: role.cardinality.min }).forEach(() => {
+          addParticipant("", role.name, "");
+        });
+      }
+    });
+  }
+
+  activateCallback("3");
+};
+
 /* --------------------
-   2. Participants step
+   3. Participants step
    -------------------- */
 const participants = ref<AlgorithmParticipant[]>([]);
 
@@ -289,11 +364,11 @@ const validateParticipants = (
   }
 
   summary.value = JSON.stringify(generateInstanceDto(), null, 2);
-  activateCallback("3");
+  activateCallback("4");
 };
 
 /* ---------------
-   3. Summary step
+   4. Summary step
    --------------- */
 const summary = ref("");
 const isSubmitting = ref(false);
@@ -302,7 +377,8 @@ const generateInstanceDto = (): CreateAlgorithmInstanceDto => {
   const instanceDto: CreateAlgorithmInstanceDto = {
     id: algorithmId,
     algorithmDefinition: algorithmDefinition.value,
-    participants: [...participants.value]
+    participants: [...participants.value],
+    projectAgreementId: selectedProjectAgreement.value?.id
   };
   return instanceDto;
 };
@@ -350,7 +426,11 @@ const getParticipantId = async () => {
 };
 
 onMounted(async () => {
-  await Promise.allSettled([getParticipantId(), registryStore.initialize()]);
+  await Promise.allSettled([
+    getParticipantId(),
+    registryStore.initialize(),
+    loadProjectAgreements()
+  ]);
 });
 </script>
 <template>
@@ -359,8 +439,9 @@ onMounted(async () => {
       <Stepper value="1" linear>
         <StepList>
           <Step value="1">Algorithm Definition</Step>
-          <Step value="2">Participants</Step>
-          <Step value="3">Summary</Step>
+          <Step value="2">Project Agreement</Step>
+          <Step value="3">Participants</Step>
+          <Step value="4">Summary</Step>
         </StepList>
         <StepPanels>
           <StepPanel v-slot="{ active, activateCallback }" value="1">
@@ -390,11 +471,129 @@ onMounted(async () => {
               </div>
             </template>
           </StepPanel>
-          <StepPanel v-slot="{ activateCallback }" value="2">
+          <StepPanel v-slot="{ active, activateCallback }" value="2">
+            <template v-if="active">
+              <p class="mb-4">
+                <template v-if="isProjectAgreementRequired">
+                  Select a finalized project agreement to link to this algorithm
+                  instance. A project agreement is
+                  <strong>required</strong> for this data plane.
+                </template>
+                <template v-else>
+                  Optionally select a finalized project agreement to link to
+                  this algorithm instance. You can skip this step if you don't
+                  want to link a project agreement.
+                </template>
+              </p>
+              <div v-if="projectAgreementsLoading" class="flex justify-center">
+                <ProgressSpinner style="width: 50px; height: 50px" />
+              </div>
+              <div
+                v-else-if="projectAgreements.length === 0"
+                class="p-4 text-center text-gray-500 border border-dashed rounded-md">
+                <p>No finalized project agreements found.</p>
+                <p v-if="isProjectAgreementRequired" class="mt-2 text-red-500">
+                  A project agreement is required. Please create and finalize a
+                  project agreement first.
+                </p>
+              </div>
+              <div v-else>
+                <DataTable
+                  v-model:selection="selectedProjectAgreement"
+                  :value="projectAgreements"
+                  selection-mode="single"
+                  data-key="id"
+                  :rows="5"
+                  :rows-per-page-options="[5, 10, 20]"
+                  paginator
+                  responsive-layout="scroll">
+                  <Column selection-mode="single" header-style="width: 3rem" />
+                  <Column
+                    field="projectAgreement.title"
+                    header="Title"
+                    :sortable="true" />
+                  <Column
+                    field="projectAgreement.description"
+                    header="Description"
+                    :sortable="false">
+                    <template #body="slotProps">
+                      <span class="text-sm truncate max-w-xs">{{
+                        slotProps.data.projectAgreement.description
+                      }}</span>
+                    </template>
+                  </Column>
+                  <Column field="initiator" header="Initiator" :sortable="true">
+                    <template #body="slotProps">
+                      <span class="text-sm font-mono">{{
+                        slotProps.data.initiator || "N/A"
+                      }}</span>
+                    </template>
+                  </Column>
+                  <Column
+                    field="projectAgreement.validUntil"
+                    header="Valid Until"
+                    :sortable="true">
+                    <template #body="slotProps">
+                      {{
+                        formatRelative(
+                          slotProps.data.projectAgreement.validUntil
+                        )
+                      }}
+                    </template>
+                  </Column>
+                </DataTable>
+                <div
+                  v-if="selectedProjectAgreement"
+                  class="mt-4 p-3 bg-surface-50 dark:bg-surface-800 rounded border border-surface-200 dark:border-surface-700">
+                  <h4 class="font-semibold mb-2">Selected Project Agreement</h4>
+                  <p>
+                    <strong>Title:</strong>
+                    {{ selectedProjectAgreement.projectAgreement.title }}
+                  </p>
+                  <p>
+                    <strong>Purpose:</strong>
+                    {{ selectedProjectAgreement.projectAgreement.purpose }}
+                  </p>
+                  <p>
+                    <strong>Participants:</strong>
+                    {{
+                      selectedProjectAgreement.projectAgreement.participants
+                        .map((p) => p.title || p.didId)
+                        .join(", ")
+                    }}
+                  </p>
+                </div>
+              </div>
+              <div class="flex pt-6 gap-4">
+                <Button
+                  icon="pi pi-arrow-left"
+                  icon-pos="left"
+                  label="Back"
+                  class="mb-2 w-full"
+                  @click="activateCallback('1')" />
+                <Button
+                  icon="pi pi-arrow-right"
+                  icon-pos="right"
+                  :label="
+                    isProjectAgreementRequired || selectedProjectAgreement
+                      ? 'Next'
+                      : 'Skip'
+                  "
+                  class="mb-2 w-full"
+                  @click="validateProjectAgreement(activateCallback)" />
+              </div>
+            </template>
+          </StepPanel>
+          <StepPanel v-slot="{ activateCallback }" value="3">
             <p class="mb-4">
-              Add participants to the algorithm instance below. The first
-              participant in the list is the initiator of the algorithm instance
-              and is always required.
+              Add participants to the algorithm instance below.
+              <template v-if="selectedProjectAgreement">
+                Only participants from the selected project agreement are
+                available.
+              </template>
+              <template v-else>
+                All registered participants are available for selection.
+              </template>
             </p>
             <div class="mt-4">
               <div
@@ -476,7 +675,7 @@ onMounted(async () => {
                 icon-pos="left"
                 label="Back"
                 class="mb-2 w-full"
-                @click="activateCallback('1')" />
+                @click="activateCallback('2')" />
               <Button
                 icon="pi pi-arrow-right"
                 icon-pos="right"
@@ -485,7 +684,7 @@ onMounted(async () => {
                 @click="validateParticipants(activateCallback)" />
             </div>
           </StepPanel>
-          <StepPanel v-slot="{ active, activateCallback }" value="3">
+          <StepPanel v-slot="{ active, activateCallback }" value="4">
             <template v-if="active">
               <p class="mb-4">
                 Verify the algorithm instance below. The <i>id</i> and
@@ -504,7 +703,7 @@ onMounted(async () => {
                   icon-pos="left"
                   label="Back"
                   class="mb-2 w-full"
-                  @click="activateCallback('2')" />
+                  @click="activateCallback('3')" />
                 <Button
                   icon="pi pi-send"
                   icon-pos="right"

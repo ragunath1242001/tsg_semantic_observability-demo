@@ -5,20 +5,25 @@ import {
   AlgorithmInstanceDto,
   AlgorithmParticipant,
   CreateAlgorithmInstanceDto,
-  OrchestrationStatusDto
+  OrchestrationStatusDto,
+  ProjectAgreementSummaryDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { parseNetworkError } from "@tsg-dsp/common-api";
 import {
   CatalogClientService,
   ITransferHandler
 } from "@tsg-dsp/common-data-plane-api";
+import { OfferDto } from "@tsg-dsp/common-dsp";
 import axios, { AxiosResponse } from "axios";
 import { plainToInstance } from "class-transformer";
 import { randomBytes } from "crypto";
 import { Repository } from "typeorm";
 
+import { RootConfig } from "../config.js";
 import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
+import { ProjectAgreementDao } from "../project-agreements/project-agreement.dao.js";
+import { ProjectAgreementsService } from "../project-agreements/project-agreements.service.js";
 import { getAxiosConfigFromDataAddress } from "../utils/axios.js";
 import { DataPlaneError } from "../utils/errors/error.js";
 import { promiseAllOrThrow } from "../utils/promises.js";
@@ -30,10 +35,12 @@ export class AlgorithmInstancesService {
   constructor(
     @InjectRepository(AlgorithmInstanceDao)
     private readonly algorithmInstanceRepository: Repository<AlgorithmInstanceDao>,
+    private readonly projectAgreementsService: ProjectAgreementsService,
     private eventEmitter: EventEmitter2,
     private readonly catalog: CatalogClientService,
     @Inject(ITransferHandler)
-    private readonly transferHandler: AnalyticsTransferHandler
+    private readonly transferHandler: AnalyticsTransferHandler,
+    private readonly config: RootConfig
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -44,7 +51,7 @@ export class AlgorithmInstancesService {
     const result = await this.algorithmInstanceRepository.find({
       relations: ["transfers", "algorithmEvents", "internalEvents"]
     });
-    return plainToInstance(AlgorithmInstanceDto, result);
+    return result.map((instance) => this.mapToDto(instance));
   }
 
   async getAlgorithmInstance(id: string): Promise<AlgorithmInstanceDao> {
@@ -64,7 +71,29 @@ export class AlgorithmInstancesService {
 
   async getAlgorithmInstanceDto(id: string): Promise<AlgorithmInstanceDto> {
     const algorithmInstance = await this.getAlgorithmInstance(id);
-    return plainToInstance(AlgorithmInstanceDto, algorithmInstance);
+    return this.mapToDto(algorithmInstance);
+  }
+
+  private mapToDto(instance: AlgorithmInstanceDao): AlgorithmInstanceDto {
+    const dto = plainToInstance(AlgorithmInstanceDto, instance);
+    if (instance.projectAgreement) {
+      dto.projectAgreement = this.mapProjectAgreementToSummary(
+        instance.projectAgreement
+      );
+    }
+    return dto;
+  }
+
+  private mapProjectAgreementToSummary(
+    projectAgreement: ProjectAgreementDao
+  ): ProjectAgreementSummaryDto {
+    return {
+      id: projectAgreement.id,
+      projectId: projectAgreement.projectId,
+      hash: projectAgreement.hash,
+      title: projectAgreement.projectAgreement.title,
+      status: projectAgreement.status
+    };
   }
 
   async getAlgorithmInstanceFromTransferId(transferId: string) {
@@ -82,7 +111,7 @@ export class AlgorithmInstancesService {
       );
     }
 
-    return plainToInstance(AlgorithmInstanceDto, algorithmInstance);
+    return this.mapToDto(algorithmInstance);
   }
 
   private async getAlgorithmInstanceForJob(
@@ -145,7 +174,7 @@ export class AlgorithmInstancesService {
     algorithmInstance.status = status;
     const updatedInstance =
       await this.algorithmInstanceRepository.save(algorithmInstance);
-    return plainToInstance(AlgorithmInstanceDto, updatedInstance);
+    return this.mapToDto(updatedInstance);
   }
 
   async linkTransfer({
@@ -174,9 +203,88 @@ export class AlgorithmInstancesService {
     return await this.algorithmInstanceRepository.save(algorithmInstance);
   }
 
+  private async validateProjectAgreement(
+    createAlgorithmInstance: CreateAlgorithmInstanceDto
+  ): Promise<ProjectAgreementDao | undefined> {
+    if (
+      this.config.runtime?.requireProjectAgreement &&
+      !createAlgorithmInstance.projectAgreementId
+    ) {
+      throw new DataPlaneError(
+        "A project agreement is required to create an algorithm instance",
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+
+    if (!createAlgorithmInstance.projectAgreementId) {
+      return undefined;
+    }
+
+    const projectAgreement = await this.projectAgreementsService.findById(
+      createAlgorithmInstance.projectAgreementId
+    );
+
+    if (projectAgreement.status !== "FINALIZED") {
+      throw new DataPlaneError(
+        `Project Agreement with id ${projectAgreement.id} is not finalized. Current status: ${projectAgreement.status}`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+
+    const projectAgreementParticipantIds =
+      projectAgreement.projectAgreement.participants.map((p) => p.didId);
+    const algorithmInstanceParticipantIds =
+      createAlgorithmInstance.participants.map((p) => p.didId);
+
+    const invalidParticipants = algorithmInstanceParticipantIds.filter(
+      (participantId) => !projectAgreementParticipantIds.includes(participantId)
+    );
+
+    if (invalidParticipants.length > 0) {
+      throw new DataPlaneError(
+        `The following algorithm instance participants are not part of the project agreement: ${invalidParticipants.join(", ")}. ` +
+          `Project agreement participants: ${projectAgreementParticipantIds.join(", ")}`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+
+    return projectAgreement;
+  }
+
+  async getProjectAgreementOffer(
+    projectAgreement: ProjectAgreementDao,
+    participant: AlgorithmParticipant
+  ): Promise<OfferDto | undefined> {
+    const dataset = await this.catalog.getDataset(
+      participant.dataset,
+      participant.didId
+    );
+
+    if (!dataset) {
+      return undefined;
+    }
+
+    const offer = dataset.hasPolicy?.find((policy) =>
+      policy.permission?.some((permission) =>
+        permission.constraint?.some(
+          (constraint) =>
+            constraint.leftOperand === "tsg:presentationScope" &&
+            constraint.rightOperand ===
+              `nl.tsg.adp.project:${encodeURIComponent(projectAgreement.initiator)}:${projectAgreement.hash}}`
+        )
+      )
+    );
+
+    return offer as OfferDto | undefined;
+  }
+
   async createAlgorithmInstance(
     createAlgorithmInstance: CreateAlgorithmInstanceDto
   ): Promise<AlgorithmInstanceDto> {
+    const projectAgreement = await this.validateProjectAgreement(
+      createAlgorithmInstance
+    );
+
     const algorithmInstance = await this.algorithmInstanceRepository.save({
       ...createAlgorithmInstance,
       createdDate: new Date(),
@@ -185,14 +293,15 @@ export class AlgorithmInstancesService {
       finishedAt: undefined,
       transfers: [],
       algorithmEvents: [],
-      internalEvents: []
+      internalEvents: [],
+      projectAgreement: projectAgreement
     });
 
     setImmediate(() => {
       this.distributeAlgorithmInstance(algorithmInstance);
     }); // Use setImmediate to avoid blocking the event loop
 
-    return plainToInstance(AlgorithmInstanceDto, algorithmInstance);
+    return this.mapToDto(algorithmInstance);
   }
 
   private async sendCreateSignal(
@@ -257,7 +366,7 @@ export class AlgorithmInstancesService {
     }
   }
 
-  async distributeAlgorithmInstance(algorithmInstance: AlgorithmInstanceDto) {
+  async distributeAlgorithmInstance(algorithmInstance: AlgorithmInstanceDao) {
     const transfers =
       await this.createTransfersForParticipants(algorithmInstance);
     await this.sendStartSignalsToParticipants(transfers, algorithmInstance.id);
@@ -269,7 +378,7 @@ export class AlgorithmInstancesService {
   }
 
   private async createTransfersForParticipants(
-    algorithmInstance: AlgorithmInstanceDto
+    algorithmInstance: AlgorithmInstanceDao
   ) {
     const ownParticipantId = await this.catalog.getParticipantId();
     const externalParticipants = algorithmInstance.participants.filter(
@@ -286,17 +395,32 @@ export class AlgorithmInstancesService {
 
   private async initiateTransfer(
     participant: AlgorithmParticipant,
-    algorithmInstance: AlgorithmInstanceDto
+    algorithmInstance: AlgorithmInstanceDao
   ) {
     const orchestrationDataset = await this.catalog.getDatasetConformingTo(
       "tsg:analytics-orchestration",
       participant.didId
     );
+
+    let offer;
+    if (algorithmInstance.projectAgreement) {
+      offer = await this.getProjectAgreementOffer(
+        algorithmInstance.projectAgreement,
+        participant
+      );
+      if (offer) {
+        this.logger.log(
+          `Using project agreement offer for participant ${participant.didId} with dataset ${participant.dataset}`
+        );
+      }
+    }
+
     const transfer = await this.transferHandler.requestTransferForParticipant(
       participant,
       orchestrationDataset,
       algorithmInstance.id,
-      true
+      true,
+      offer
     );
     await this.linkTransfer({
       algorithmInstanceId: algorithmInstance.id,
@@ -307,7 +431,11 @@ export class AlgorithmInstancesService {
       `Transfer with id ${transfer.id} started for algorithm instance ${algorithmInstance.id} to participant ${participant.didId}.`
     );
 
-    await this.sendCreateSignal(participant, transfer, algorithmInstance);
+    await this.sendCreateSignal(
+      participant,
+      transfer,
+      this.mapToDto(algorithmInstance)
+    );
     return transfer;
   }
 

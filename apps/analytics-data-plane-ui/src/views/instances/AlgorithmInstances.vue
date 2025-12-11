@@ -138,6 +138,17 @@ onMounted(async () => {
             </template>
           </Column>
 
+          <Column field="projectAgreement" header="Project Agreement">
+            <template #body="props">
+              <Tag
+                v-if="props.data.projectAgreement"
+                v-tooltip="props.data.projectAgreement.projectId"
+                :value="props.data.projectAgreement.title"
+                severity="info" />
+              <span v-else class="text-gray-400">-</span>
+            </template>
+          </Column>
+
           <Column field="startedAt" header="Started" sortable>
             <template #body="props">
               <span v-if="props.data.startedAt">

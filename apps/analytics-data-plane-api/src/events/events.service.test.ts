@@ -14,6 +14,7 @@ import {
   createDataPlaneHttpMocks,
   createDataPlaneManagementHttpMocks,
   createDidConnectorHttpMocks,
+  DataPlaneError,
   DataPlaneRegistrationService,
   DataPlaneStateDao,
   ITransferHandler,
@@ -30,7 +31,13 @@ import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { RootConfig } from "../config.js";
 import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
+import { DatasetDao } from "../dataplane/dataset.dao.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
+import {
+  ProjectAgreementCallbackDao,
+  ProjectAgreementDao
+} from "../project-agreements/project-agreement.dao.js";
+import { ProjectAgreementsService } from "../project-agreements/project-agreements.service.js";
 import { AlgorithmEventDao } from "./algorithm-event.dao.js";
 import { EventsService } from "./events.service.js";
 import { InternalEventDao } from "./internal-event.dao.js";
@@ -88,14 +95,20 @@ describe("EventsService", () => {
           AlgorithmInstanceDao,
           InternalEventDao,
           AlgorithmEventDao,
-          DataPlaneStateDao
+          DataPlaneStateDao,
+          ProjectAgreementDao,
+          ProjectAgreementCallbackDao,
+          DatasetDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
           AlgorithmInstanceDao,
           InternalEventDao,
           AlgorithmEventDao,
-          DataPlaneStateDao
+          DataPlaneStateDao,
+          ProjectAgreementDao,
+          ProjectAgreementCallbackDao,
+          DatasetDao
         ])
       ],
       providers: [
@@ -121,6 +134,18 @@ describe("EventsService", () => {
         {
           provide: ITransferHandler,
           useClass: AnalyticsTransferHandler
+        },
+        {
+          provide: ProjectAgreementsService,
+          useValue: {
+            findById: (id: number) =>
+              Promise.reject(
+                new DataPlaneError(
+                  `Project Agreement with id ${id} not found`,
+                  404
+                )
+              )
+          }
         }
       ]
     }).compile();

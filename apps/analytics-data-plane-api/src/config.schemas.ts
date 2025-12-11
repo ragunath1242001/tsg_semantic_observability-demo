@@ -9,4 +9,10 @@ export class RuntimeConfigDto implements RuntimeConfig {
   darkThemeUrl?: string;
   @ApiPropertyOptional({ example: "https://example.com/lighttheme.png" })
   lightThemeUrl?: string;
+  @ApiPropertyOptional({
+    description:
+      "Whether a project agreement is required when creating an algorithm instance",
+    example: false
+  })
+  requireProjectAgreement: boolean = false;
 }

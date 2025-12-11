@@ -1732,6 +1732,11 @@ components:
         lightThemeUrl:
           type: string
           example: https://example.com/lighttheme.png
+        requireProjectAgreement:
+          type: boolean
+          description: Whether a project agreement is required when creating an algorithm
+            instance
+          example: false
       required:
         - color
     ErrorDto:
@@ -3346,6 +3351,30 @@ components:
         - name
         - number
         - timestamp
+    ProjectAgreementSummaryDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Internal identifier of the project agreement
+        projectId:
+          type: string
+          description: Project identifier
+        hash:
+          type: string
+          description: Hash of the project agreement
+        title:
+          type: string
+          description: Title of the project agreement
+        status:
+          type: string
+          description: Current status of the project agreement
+      required:
+        - id
+        - projectId
+        - hash
+        - title
+        - status
     AlgorithmInstanceDto:
       type: object
       properties:
@@ -3386,6 +3415,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/InternalEventDto"
+        projectAgreement:
+          description: The project agreement linked to this algorithm instance
+          allOf:
+            - $ref: "#/components/schemas/ProjectAgreementSummaryDto"
       required:
         - id
         - algorithmDefinition
@@ -3408,6 +3441,9 @@ components:
           type: array
           items:
             type: string
+        projectAgreementId:
+          type: number
+          description: The ID of the project agreement to link to this algorithm instance
       required:
         - id
         - algorithmDefinition

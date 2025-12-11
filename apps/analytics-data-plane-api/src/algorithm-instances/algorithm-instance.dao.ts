@@ -6,6 +6,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToOne,
   OneToMany,
@@ -15,6 +16,7 @@ import {
 import { TransferDao } from "../dataplane/transfer.dao.js";
 import { AlgorithmEventDao } from "../events/algorithm-event.dao.js";
 import { InternalEventDao } from "../events/internal-event.dao.js";
+import { ProjectAgreementDao } from "../project-agreements/project-agreement.dao.js";
 
 @Entity()
 export class AlgorithmInstanceDao {
@@ -53,4 +55,8 @@ export class AlgorithmInstanceDao {
   )
   @JoinTable()
   internalEvents!: InternalEventDao[];
+
+  @ManyToOne(() => ProjectAgreementDao, { nullable: true, eager: true })
+  @JoinColumn()
+  projectAgreement?: ProjectAgreementDao;
 }

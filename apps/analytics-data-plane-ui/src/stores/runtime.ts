@@ -7,13 +7,15 @@ interface RuntimeStore {
   color?: string;
   darkThemeUrl?: string;
   lightThemeUrl?: string;
+  requireProjectAgreement?: boolean;
 }
 
 export const useRuntimeStore = defineStore("runtime", {
   state: (): RuntimeStore => ({
     color: undefined,
     darkThemeUrl: undefined,
-    lightThemeUrl: undefined
+    lightThemeUrl: undefined,
+    requireProjectAgreement: false
   }),
   actions: {
     async getRuntimeSettings() {
@@ -22,6 +24,8 @@ export const useRuntimeStore = defineStore("runtime", {
         this.color = response.data.color;
         this.darkThemeUrl = response.data.darkThemeUrl;
         this.lightThemeUrl = response.data.lightThemeUrl;
+        this.requireProjectAgreement =
+          response.data.requireProjectAgreement ?? false;
       } catch (error) {
         console.debug("Error: ", error);
       }
