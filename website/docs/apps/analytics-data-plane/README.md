@@ -31,6 +31,7 @@ The Analytics Data Plane extends the TSG ecosystem with sophisticated distribute
 
 ### For Operators
 - **[Deployment Guide](../../tools/cli/README.md)** - Using the TSG CLI for deployment and management
+- **[Deployment & orchestration](./deployment.md)** - Docker/Kubernetes workload orchestration for analytics execution
 - **[Configuration Reference](./configuration.md)** - Complete configuration documentation
 
 ## Development Roadmap

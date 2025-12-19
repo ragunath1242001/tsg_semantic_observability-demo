@@ -23,5 +23,6 @@ runtime:
 files:
   path: "./uploads"
 
-kubernetesConfig:
-  namespace: analytics-dataplane-test
+orchestration:
+  type: "docker"
+  mountFiles: false

@@ -14,6 +14,7 @@ import {
   IsArray,
   IsBoolean,
   IsDefined,
+  IsIn,
   IsOptional,
   IsString,
   ValidateNested
@@ -60,12 +61,52 @@ export class RuntimeConfig {
   public readonly requireProjectAgreement: boolean = false;
 }
 
-export class KubernetesConfig {
+export type OrchestrationType = "kubernetes" | "docker";
+
+export abstract class OrchestrationConfigBase {
+  @Description("Orchestration type: 'kubernetes' or 'docker'")
+  @IsString()
+  @IsIn(["kubernetes", "docker"])
+  public readonly type!: OrchestrationType;
+}
+
+export class KubernetesConfig extends OrchestrationConfigBase {
+  override readonly type: "kubernetes" = "kubernetes" as const;
+
   @Description("Kubernetes namespace")
   @IsString()
   @IsOptional()
   public readonly namespace: string = "default";
 }
+
+export class DockerConfig extends OrchestrationConfigBase {
+  override readonly type: "docker" = "docker" as const;
+
+  @Description("Docker socket path (e.g., /var/run/docker.sock)")
+  @IsString()
+  @IsOptional()
+  public readonly socketPath?: string;
+
+  @Description("Docker network to use for containers")
+  @IsString()
+  @IsOptional()
+  public readonly network?: string;
+
+  @Description(
+    "Whether to mount files into Docker containers or provide files via HTTP"
+  )
+  @IsBoolean()
+  @IsOptional()
+  @Transform(valueToBoolean)
+  public readonly mountFiles: boolean = false;
+
+  @Description("Platform to use for Docker containers (e.g., 'linux/amd64')")
+  @IsString()
+  @IsOptional()
+  public readonly platform?: string;
+}
+
+export type OrchestrationConfig = KubernetesConfig | DockerConfig;
 
 export class RootConfig {
   @Description("Database configuration")
@@ -127,8 +168,16 @@ export class RootConfig {
   @IsDefined()
   public readonly runtime!: RuntimeConfig;
 
-  @Description("Kubernetes configuration")
-  @Type(() => KubernetesConfig)
-  @IsOptional()
-  public readonly kubernetesConfig: KubernetesConfig = new KubernetesConfig();
+  @Description("Orchestration configuration")
+  @ValidateNested()
+  @Type(() => OrchestrationConfigBase, {
+    discriminator: {
+      property: "type",
+      subTypes: [
+        { value: KubernetesConfig, name: "kubernetes" },
+        { value: DockerConfig, name: "docker" }
+      ]
+    }
+  })
+  public readonly orchestration: OrchestrationConfig = new KubernetesConfig();
 }
