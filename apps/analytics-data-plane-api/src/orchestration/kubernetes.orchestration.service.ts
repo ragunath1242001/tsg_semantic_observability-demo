@@ -17,11 +17,17 @@ import { hostname } from "os";
 import { Writable } from "stream";
 
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
-import { RootConfig } from "../config.js";
+import { KubernetesConfig, RootConfig } from "../config.js";
 import { FilesService } from "../files/files.service.js";
+import {
+  IOrchestrationService,
+  JobInfo,
+  PodList,
+  SpawnJobResult
+} from "./orchestration.interface.js";
 
 @Injectable()
-export class OrchestrationService {
+export class KubernetesOrchestrationService implements IOrchestrationService {
   private readonly batchV1Api: BatchV1Api;
   private readonly coreV1Api: CoreV1Api;
   private readonly appsV1Api: AppsV1Api;
@@ -30,6 +36,7 @@ export class OrchestrationService {
 
   constructor(
     private readonly config: RootConfig,
+    private readonly kubernetesConfig: KubernetesConfig,
     private readonly filesService: FilesService,
     private readonly algorithmInstancesService: AlgorithmInstancesService
   ) {
@@ -133,11 +140,11 @@ export class OrchestrationService {
     imageName: string,
     command?: string[],
     datasetId?: string
-  ) {
+  ): Promise<SpawnJobResult> {
     const time = new Date().getTime();
     const jobName = `adp-job-${algorithmInstanceId}-${time}`;
     const configMapName = `adp-config-${algorithmInstanceId}-${time}`;
-    const namespace = this.config.kubernetesConfig.namespace;
+    const namespace = this.kubernetesConfig.namespace;
 
     // Get the algorithm instance to retrieve participant information
     const algorithmInstance =
@@ -352,8 +359,7 @@ export class OrchestrationService {
 
   async getJobsForAlgorithmInstance(
     algorithmInstanceId: string
-  ): Promise<V1Job[]> {
-    const namespace = this.config.kubernetesConfig.namespace;
+  ): Promise<JobInfo[]> {
     const deploymentOwnerRef = await this.getDeploymentOwnerReference();
     let labelSelector = `adp.tsg.app/algorithm-instance-id=${algorithmInstanceId}`;
     if (deploymentOwnerRef) {
@@ -361,24 +367,24 @@ export class OrchestrationService {
     }
 
     const jobList = await this.batchV1Api.listNamespacedJob({
-      namespace,
+      namespace: this.kubernetesConfig.namespace,
       labelSelector
     });
-
     return jobList.items;
   }
 
-  async getPodsForJob(jobName: string) {
-    return await this.coreV1Api.listNamespacedPod({
-      namespace: this.config.kubernetesConfig.namespace,
+  async getPodsForJob(jobName: string): Promise<PodList> {
+    const podList = await this.coreV1Api.listNamespacedPod({
+      namespace: this.kubernetesConfig.namespace,
       labelSelector: `app=${jobName}`
     });
+    return podList as PodList;
   }
 
-  async getPodLogs(podName: string) {
+  async getPodLogs(podName: string): Promise<string> {
     return await this.coreV1Api.readNamespacedPodLog({
       name: podName,
-      namespace: this.config.kubernetesConfig.namespace,
+      namespace: this.kubernetesConfig.namespace,
       container: this.containerName,
       tailLines: 1000
     });
@@ -386,7 +392,7 @@ export class OrchestrationService {
 
   async watchPodLogs(jobName: string) {
     const podList = await this.coreV1Api.listNamespacedPod({
-      namespace: this.config.kubernetesConfig.namespace,
+      namespace: this.kubernetesConfig.namespace,
       labelSelector: `app=${jobName}`
     });
 
@@ -426,7 +432,7 @@ export class OrchestrationService {
     });
 
     await logStream.log(
-      this.config.kubernetesConfig.namespace,
+      this.kubernetesConfig.namespace,
       podName,
       this.containerName,
       logStreamWritable,
@@ -445,7 +451,6 @@ export class OrchestrationService {
     }
 
     try {
-      const namespace = this.config.kubernetesConfig.namespace;
       const podName = process.env["HOSTNAME"]; // Kubernetes sets this to the pod name
 
       if (!podName) {
@@ -458,7 +463,7 @@ export class OrchestrationService {
       // Get current pod information
       const currentPod = await this.coreV1Api.readNamespacedPod({
         name: podName,
-        namespace
+        namespace: this.kubernetesConfig.namespace
       });
 
       // Find the ReplicaSet owner reference
@@ -477,7 +482,7 @@ export class OrchestrationService {
       // TODO: Fix if not allowed
       const replicaSet = await this.appsV1Api.readNamespacedReplicaSet({
         name: replicaSetOwnerRef.name,
-        namespace
+        namespace: this.kubernetesConfig.namespace
       });
 
       // Find the Deployment owner reference

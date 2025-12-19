@@ -1,9 +1,9 @@
-import { V1Job, V1PodList } from "@kubernetes/client-node";
 import {
   Body,
   Controller,
   Get,
   HttpStatus,
+  Inject,
   Logger,
   Param,
   Post
@@ -21,14 +21,21 @@ import { JobDto, PodListDto } from "@tsg-dsp/analytics-data-plane-dtos";
 import { Roles } from "@tsg-dsp/common-api";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
-import { OrchestrationService } from "./orchestration.service.js";
+import {
+  IOrchestrationService,
+  JobInfo,
+  PodList
+} from "./orchestration.interface.js";
 
 @ApiTags("Data Plane Management")
 @ApiOAuth2(["controlplane_dataplane"])
 @Controller("management/k8s")
 @Roles("controlplane_dataplane")
 export class OrchestrationManagementController {
-  constructor(private readonly orchestrationService: OrchestrationService) {}
+  constructor(
+    @Inject(IOrchestrationService)
+    private readonly orchestrationService: IOrchestrationService
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("/jobs/algorithm-instance/:algorithmInstanceId")
@@ -44,7 +51,7 @@ export class OrchestrationManagementController {
   @ApiForbiddenResponseDefault()
   async getJobsForAlgorithmInstance(
     @Param("algorithmInstanceId") algorithmInstanceId: string
-  ): Promise<V1Job[]> {
+  ): Promise<JobInfo[]> {
     return await this.orchestrationService.getJobsForAlgorithmInstance(
       algorithmInstanceId
     );
@@ -61,7 +68,7 @@ export class OrchestrationManagementController {
   })
   @ApiOkResponse({ type: PodListDto })
   @ApiForbiddenResponseDefault()
-  async getJobPods(@Param("jobName") jobName: string): Promise<V1PodList> {
+  async getJobPods(@Param("jobName") jobName: string): Promise<PodList> {
     return await this.orchestrationService.getPodsForJob(jobName);
   }
 
@@ -76,7 +83,7 @@ export class OrchestrationManagementController {
   })
   @ApiOkResponse({ type: String })
   @ApiForbiddenResponseDefault()
-  async getJobLogs(@Param("podName") podName: string) {
+  async getJobLogs(@Param("podName") podName: string): Promise<string> {
     return await this.orchestrationService.getPodLogs(podName);
   }
 
