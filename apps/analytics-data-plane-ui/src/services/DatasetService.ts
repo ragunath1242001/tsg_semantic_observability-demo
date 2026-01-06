@@ -2,6 +2,31 @@ import type { DatasetDto } from "@tsg-dsp/common-dsp";
 
 import { DEFAULT_CONTEXTS } from "../config/metadata-wizard.constants";
 
+export interface CSVWColumnMetadata {
+  "@type"?: "csvw:Column";
+  name: string;
+  titles?: string | string[];
+  datatype?: string;
+  "dc:description"?: string;
+  description?: string;
+  required?: boolean;
+  null?: string | string[];
+  "csvw:null"?: number;
+  "csvw:uniqueCount"?: number;
+  "csvw:minInclusive"?: number | string;
+  "csvw:maxInclusive"?: number | string;
+  "csvw:pattern"?: string;
+  "healthdcatap:codingSystem"?: string;
+}
+
+/**
+ * Quality measurement following DQV (Data Quality Vocabulary)
+ */
+export interface QualityMeasurement {
+  "dqv:isMeasurementOf": string;
+  "dqv:value": number | string;
+}
+
 export interface ExtendedDataset extends Omit<DatasetDto, "adms:sample"> {
   "adms:sample"?: {
     "@type": "Distribution";
@@ -26,6 +51,25 @@ export interface ExtendedDataset extends Omit<DatasetDto, "adms:sample"> {
   "dqv:precision"?: string;
   "dqv:validity"?: string;
   "dpv:hasLegalBasis"?: string;
+  // Auto-generated metadata fields (from deterministic analysis)
+  "dcat:startDate"?: string;
+  "dcat:endDate"?: string;
+  "healthdcatap:minTypicalAge"?: number;
+  "healthdcatap:maxTypicalAge"?: number;
+  "dqv:hasQualityMeasurement"?: QualityMeasurement[];
+  "dcat:distribution"?: {
+    "@type"?: "dcat:Distribution";
+    "dcat:mediaType"?: string;
+    "dcat:byteSize"?: number;
+    "dct:format"?: string;
+  };
+  "csvw:tableSchema"?: {
+    "@type"?: "csvw:TableGroup" | "csvw:Table";
+    "csvw:columns"?: CSVWColumnMetadata[];
+    "csvw:primaryKey"?: string | string[];
+  };
+  // Source indicator for metadata
+  _metadataSource?: "deterministic" | "deterministic+llm" | "manual";
 }
 
 export class DatasetService {
@@ -117,7 +161,28 @@ export class DatasetService {
       "dqv:hasQualityAnnotation": {
         ...defaultDataset["dqv:hasQualityAnnotation"],
         ...extendedData["dqv:hasQualityAnnotation"]
-      }
+      },
+      // Preserve auto-generated metadata from backend
+      "csvw:tableSchema": extendedData["csvw:tableSchema"],
+      "dqv:hasQualityMeasurement": extendedData["dqv:hasQualityMeasurement"],
+      "dcat:startDate": extendedData["dcat:startDate"],
+      "dcat:endDate": extendedData["dcat:endDate"],
+      "healthdcatap:minTypicalAge": extendedData["healthdcatap:minTypicalAge"],
+      "healthdcatap:maxTypicalAge": extendedData["healthdcatap:maxTypicalAge"],
+      "healthdcatap:numberOfRecords":
+        extendedData["healthdcatap:numberOfRecords"] ||
+        defaultDataset["healthdcatap:numberOfRecords"],
+      "healthdcatap:hasCodingSystem":
+        extendedData["healthdcatap:hasCodingSystem"] ||
+        defaultDataset["healthdcatap:hasCodingSystem"],
+      "healthdcatap:healthTheme":
+        extendedData["healthdcatap:healthTheme"] ||
+        defaultDataset["healthdcatap:healthTheme"],
+      "dcat:distribution": extendedData["dcat:distribution"],
+      // Preserve QUANTUM quality fields if auto-detected from data
+      "dqv:completeness":
+        extendedData["dqv:completeness"] || defaultDataset["dqv:completeness"],
+      _metadataSource: extendedData._metadataSource
     } as ExtendedDataset;
   }
 

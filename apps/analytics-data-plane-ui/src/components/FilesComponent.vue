@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { CSVW, FileMetadataDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import {
+  CSVW,
+  FileMetadataDto,
+  MetadataStatus
+} from "@tsg-dsp/analytics-data-plane-dtos";
 import { DatasetDto } from "@tsg-dsp/common-dsp";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
@@ -8,7 +12,7 @@ import { usePrimeVue } from "primevue/config";
 import { SelectChangeEvent } from "primevue/select";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 import { triggerBlobDownload } from "../utils/downloadBlob";
 import FileDetailModal from "./files/FileDetailModal.vue";
@@ -103,6 +107,44 @@ const getFiles = async () => {
   }
 };
 
+// Poll for status updates when files are generating metadata
+const pollingInterval = ref<ReturnType<typeof setInterval> | null>(null);
+const POLLING_DELAY_MS = 3000;
+
+const hasFilesGeneratingMetadata = computed(() =>
+  filesList.value.some(
+    (file) =>
+      file.metadataStatus === MetadataStatus.PENDING ||
+      file.metadataStatus === MetadataStatus.GENERATING
+  )
+);
+
+const startPolling = () => {
+  if (pollingInterval.value) return;
+  pollingInterval.value = setInterval(() => {
+    getFiles();
+  }, POLLING_DELAY_MS);
+};
+
+const stopPolling = () => {
+  if (pollingInterval.value) {
+    clearInterval(pollingInterval.value);
+    pollingInterval.value = null;
+  }
+};
+
+watch(hasFilesGeneratingMetadata, (isGenerating) => {
+  if (isGenerating) {
+    startPolling();
+  } else {
+    stopPolling();
+  }
+});
+
+onUnmounted(() => {
+  stopPolling();
+});
+
 const removeFile = async (fileId: string) => {
   confirm.require({
     header: "Are you sure you want to delete this file?",
@@ -180,6 +222,12 @@ const formatSize = (bytes: number) => {
 
 const getStatusSeverity = (file: FileMetadataDto) => {
   if (!file.presentInLastCheck) return "danger";
+  if (file.metadataStatus === MetadataStatus.ERROR) return "danger";
+  if (
+    file.metadataStatus === MetadataStatus.PENDING ||
+    file.metadataStatus === MetadataStatus.GENERATING
+  )
+    return "info";
   if (!file.datasetId) return "warn";
   return "success";
 };
@@ -195,6 +243,12 @@ const getFileIcon = (mediaType: string) => {
 
 const getFileStatusText = (file: FileMetadataDto) => {
   if (!file.presentInLastCheck) return "Missing from disk";
+  if (file.metadataStatus === MetadataStatus.ERROR)
+    return `Metadata error: ${file.metadataError || "Unknown error"}`;
+  if (file.metadataStatus === MetadataStatus.GENERATING)
+    return "Generating metadata...";
+  if (file.metadataStatus === MetadataStatus.PENDING)
+    return "Metadata generation pending";
   if (!file.datasetId) return "No dataset linked";
   return "Ready";
 };
@@ -514,6 +568,11 @@ onMounted(async () => {
                   <Tag
                     :value="getFileStatusText(file)"
                     :severity="getStatusSeverity(file)"
+                    :icon="
+                      file.metadataStatus === 'generating'
+                        ? 'pi pi-spin pi-spinner'
+                        : undefined
+                    "
                     size="small" />
                   <span class="text-sm text-surface-600 dark:text-surface-400">
                     {{ formatSize(file.fileSizeInBytes) }}
@@ -681,6 +740,11 @@ onMounted(async () => {
                   <Tag
                     :value="getFileStatusText(file)"
                     :severity="getStatusSeverity(file)"
+                    :icon="
+                      file.metadataStatus === 'generating'
+                        ? 'pi pi-spin pi-spinner'
+                        : undefined
+                    "
                     size="small" />
                   <span
                     class="text-sm font-medium text-surface-700 dark:text-surface-300">

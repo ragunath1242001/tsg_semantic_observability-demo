@@ -17,8 +17,32 @@ import {
   IsIn,
   IsOptional,
   IsString,
+  ValidateIf,
   ValidateNested
 } from "class-validator";
+
+export class LLMConfig {
+  @Description("Enable LLM integration for AI-powered metadata generation")
+  @IsBoolean()
+  enabled: boolean = false;
+
+  @Description("API key for the (Open)AI service")
+  @IsString()
+  @ValidateIf((c) => c.enabled)
+  apiKey?: string;
+
+  @Description(
+    "Base URL for the (Open)AI service. Example: https://your-endpoint.cognitiveservices.azure.com/openai/v1/"
+  )
+  @IsString()
+  @ValidateIf((c) => c.enabled)
+  baseUrl?: string;
+
+  @Description("Model name to use (e.g., 'gpt-4o-mini')")
+  @IsString()
+  @IsOptional()
+  model?: string;
+}
 
 export class LoggingConfig {
   @Description("Enable debug request logging")
@@ -210,4 +234,10 @@ export class RootConfig {
   @Type(() => SplitConfig)
   @IsOptional()
   public readonly split: SplitConfig = new SplitConfig();
+
+  @Description("LLM configuration for AI-powered metadata enhancement")
+  @ValidateNested()
+  @Type(() => LLMConfig)
+  @IsOptional()
+  public readonly llm: LLMConfig = new LLMConfig();
 }

@@ -11,6 +11,9 @@ controlPlane:
   managementEndpoint: http://localhost:3000/management
   controlEndpoint: http://localhost:3000
 
+llm:
+  enabled: false
+
 server:
   port: 3001
   publicAddress: http://localhost:3001

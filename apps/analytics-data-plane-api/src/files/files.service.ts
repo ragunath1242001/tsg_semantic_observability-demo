@@ -7,7 +7,11 @@ import {
 } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { CSVW, FileUpdateDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import {
+  CSVW,
+  FileUpdateDto,
+  MetadataStatus
+} from "@tsg-dsp/analytics-data-plane-dtos";
 import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import {
   DataService,
@@ -30,6 +34,8 @@ import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { mergeFileDatasetUpdate } from "../utils/dataset-file-merge.js";
 import { DataPlaneError } from "../utils/errors/error.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
+import { MetadataGeneratorService } from "./metadata-generator.service.js";
+import { CombinedMetadataResult } from "./metadata-tools/metadata-types.js";
 
 @Injectable()
 export class FilesService {
@@ -39,6 +45,7 @@ export class FilesService {
     private readonly filesConfig: FilesConfig,
     private readonly rootConfig: RootConfig,
     private readonly catalog: CatalogClientService,
+    private readonly metadataGenerator: MetadataGeneratorService,
     private readonly bridgeWs: BridgeWsClientService,
     @Optional()
     private readonly dataplaneService?: DataPlaneService
@@ -204,11 +211,20 @@ export class FilesService {
     return accessToken;
   }
 
-  async processFile(file: Express.Multer.File): Promise<string[][]> {
+  async processFile(
+    file: Express.Multer.File,
+    maxLines?: number
+  ): Promise<string[][]> {
     const records: string[][] = [];
+    const parseOptions: { delimiter: string; to_line?: number } = {
+      delimiter: ","
+    };
+    if (maxLines !== undefined) {
+      parseOptions.to_line = maxLines;
+    }
     const parser = fs
       .createReadStream(this.filesConfig.path + "/" + file.filename)
-      .pipe(parse({ delimiter: ",", to_line: 10 }));
+      .pipe(parse(parseOptions));
     parser.on("readable", () => {
       let record: string[] | null;
       while ((record = parser.read() as string[] | null) !== null) {
@@ -221,12 +237,29 @@ export class FilesService {
 
   async createCSVW(
     file: Express.Multer.File,
-    dbentry: FileMetadataDao
+    dbentry: FileMetadataDao,
+    columnEnhancements?: Array<{
+      name: string;
+      datatype?: string;
+      description?: string;
+    }>
   ): Promise<string> {
-    const csv = await this.processFile(file);
-    const columns: { name: string }[] = csv[0].map((column: string) => {
-      return { name: column };
+    const csv = await this.processFile(file, 10);
+
+    // Build columns structure with optional enhancements
+    const columns: Array<{
+      name: string;
+      datatype?: string;
+      "dc:description"?: string;
+    }> = csv[0].map((column: string) => {
+      const enhancement = columnEnhancements?.find((e) => e.name === column);
+      return {
+        name: column,
+        datatype: enhancement?.datatype,
+        "dc:description": enhancement?.description
+      };
     });
+
     const csvw = {
       "@context": ["http://www.w3.org/ns/csvw"],
       tables: [
@@ -258,75 +291,161 @@ export class FilesService {
             HttpStatus.NOT_FOUND
           );
         }
+
+        // Update status to generating
+        dbentry.metadataStatus = MetadataStatus.GENERATING;
+        dbentry.metadataError = undefined;
+        await this.fileRepository.save(dbentry);
+
         const conformsTo: string[] = [];
-        if (file.mimetype === "text/csv") {
-          try {
-            const csvwUrl = await this.createCSVW(file, dbentry);
-            conformsTo.push(csvwUrl);
-          } catch (error) {
-            this.logger.debug(
-              `Error creating CSVW, probably not a CSV file: ${file.filename} -> ${error instanceof Error ? error.message : error}`
+
+        // Metadata container
+        let metadata: CombinedMetadataResult | null = null;
+
+        try {
+          // For CSV files, generate metadata (deterministic + optional LLM enhancement)
+          if (file.mimetype === "text/csv") {
+            // Read entire CSV for deterministic facts
+            const csvFull = await this.processFile(file);
+            const headers = csvFull[0] as string[];
+            const allRows = csvFull.slice(1) as string[][];
+
+            // Generate metadata: deterministic facts + LLM for descriptions/keywords
+            const useLLM = this.rootConfig.llm?.enabled ?? false;
+
+            // For LLM analysis, only use a subset of rows (first 20) to avoid token limits
+            const llmRows = useLLM ? allRows.slice(0, 20) : allRows;
+
+            const result = await this.metadataGenerator.generateMetadata(
+              headers,
+              allRows, // Pass all rows for deterministic facts
+              file.originalname,
+              useLLM,
+              llmRows // Pass subset for LLM
+            );
+
+            metadata = {
+              columns: result.columns,
+              dataset: result.dataset
+            };
+
+            this.logger.log(
+              `Generated metadata for ${file.originalname}: ${allRows.length} rows, ${headers.length} columns`
             );
           }
-        }
-        const datasetId = dbentry.datasetId ?? `urn:uuid:${dbentry.identifier}`;
 
-        const datasetDtoNoPolicy = this.buildDatasetDto({
-          datasetId,
-          title: file.originalname,
-          fileSizeInBytes: file.size,
-          mediaType: file.mimetype,
-          conformsTo
-        });
+          // Create CSVW with column metadata
+          if (file.mimetype === "text/csv") {
+            try {
+              const csvwUrl = await this.createCSVW(
+                file,
+                dbentry,
+                metadata?.columns
+              );
+              conformsTo.push(csvwUrl);
+            } catch (error) {
+              this.logger.debug(
+                `Error creating CSVW: ${file.filename} -> ${error instanceof Error ? error.message : error}`
+              );
+            }
+          }
 
-        // In client mode we only maintain local metadata; dataset publication happens server-side.
-        if (this.isClientMode || !this.dataplaneService) {
-          if (!dbentry.datasetId) {
+          const catalog = await this.catalog.getOwnCatalog();
+          const datasetId =
+            dbentry.datasetId ?? `urn:uuid:${dbentry.identifier}`;
+
+          // Use generated metadata if available, otherwise use defaults
+          const title = metadata?.dataset?.title || file.originalname;
+          const description = metadata?.dataset?.description
+            ? [metadata.dataset.description]
+            : [`Data file ${file.originalname}`];
+
+          this.logger.debug(
+            `Creating dataset: title="${title}", keywords=${JSON.stringify(metadata?.dataset?.keywords)}, temporal="${metadata?.dataset?.temporal}"`
+          );
+
+          const datasetDto = new Dataset({
+            id: datasetId,
+            extraProps: metadata?.dataset
+              ? Object.fromEntries(
+                  Object.entries(metadata.dataset).filter(
+                    ([key, value]) =>
+                      key.includes(":") && value !== undefined && value !== null
+                  )
+                )
+              : undefined,
+            distribution: [
+              new Distribution({
+                byteSize: `${file.size}`,
+                conformsTo: conformsTo,
+                title: title,
+                issued: new Date().toISOString(),
+                accessService: new DataService({
+                  endpointDescription: "Dataspace Protocol API",
+                  endpointURL: `${this.rootConfig.controlPlane?.controlEndpoint}`
+                }),
+                format: "tsg:analytics",
+                mediaType: file.mimetype,
+                description: description
+              })
+            ],
+            title: title,
+            description: description,
+            keyword: metadata?.dataset?.keywords,
+            theme: metadata?.dataset?.theme,
+            temporal: metadata?.dataset?.temporal,
+            spatial: metadata?.dataset?.spatial,
+            license: metadata?.dataset?.license,
+            hasPolicy: [
+              new Offer({
+                assigner: catalog.publisher as string,
+                permission: [
+                  new Permission({
+                    action: "odrl:use"
+                  })
+                ]
+              })
+            ]
+          }).serialize();
+
+          // Log the serialized dataset to verify metadata is included
+          this.logger.debug(
+            `Serialized dataset DTO: ${JSON.stringify(datasetDto, null, 2)}`
+          );
+
+          if (dbentry.datasetId) {
+            await this.dataplaneService?.updateDataset(
+              dbentry.datasetId,
+              datasetDto
+            );
+            this.logger.log(
+              `Updated dataset ${dbentry.datasetId} for file ${file.originalname}`
+            );
+          } else {
+            await this.dataplaneService?.addDataset(datasetDto);
             await this.fileRepository.update(dbentry.identifier, {
-              datasetId
+              datasetId: datasetId
             });
+            this.logger.log(
+              `Added new dataset ${datasetId} for file ${file.originalname}`
+            );
           }
 
-          if (this.isClientMode) {
-            // In split.client mode, the server side of the bridge does not run a FilesService.
-            // Exchange dataset updates instead so the server can sync/publish datasets.
-            this.bridgeWs.emit("client.datasets.upsert", {
-              dataset: datasetDtoNoPolicy
-            });
-          }
-          return;
-        }
-
-        const catalog = await this.catalog.getOwnCatalog();
-        const datasetDto = this.buildDatasetDto({
-          datasetId,
-          title: file.originalname,
-          fileSizeInBytes: file.size,
-          mediaType: file.mimetype,
-          conformsTo,
-          includePolicy: true,
-          policyAssigner: catalog.publisher as string
-        });
-
-        let existingDataset: DatasetDto | undefined;
-        try {
-          existingDataset = await this.dataplaneService.getDataset(datasetId);
-        } catch (_err) {
-          // If it doesn't exist yet, we'll create it below.
-        }
-
-        const merged = mergeFileDatasetUpdate(existingDataset, datasetDto, {
-          policyAssigner: catalog.publisher as string
-        });
-
-        if (existingDataset) {
-          await this.dataplaneService.updateDataset(datasetId, merged);
-        } else {
-          await this.dataplaneService.addDataset(merged);
-        }
-
-        if (!dbentry.datasetId) {
-          await this.fileRepository.update(dbentry.identifier, { datasetId });
+          // Mark metadata generation as complete
+          await this.fileRepository.update(dbentry.identifier, {
+            metadataStatus: MetadataStatus.COMPLETE
+          });
+        } catch (error) {
+          // Mark metadata generation as failed
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          this.logger.warn(
+            `Metadata generation failed for ${file.originalname}: ${errorMessage}`
+          );
+          await this.fileRepository.update(dbentry.identifier, {
+            metadataStatus: MetadataStatus.ERROR,
+            metadataError: errorMessage
+          });
         }
       })
     );
@@ -374,7 +493,8 @@ export class FilesService {
         mediaType: file.mimetype,
         presentInLastCheck: true,
         csvw: undefined,
-        datasetId: undefined
+        datasetId: undefined,
+        metadataStatus: MetadataStatus.PENDING
       });
     });
     await this.fileRepository.insert(fileEntries);

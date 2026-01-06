@@ -1,4 +1,4 @@
-import { CSVW } from "@tsg-dsp/analytics-data-plane-dtos";
+import { CSVW, MetadataStatus } from "@tsg-dsp/analytics-data-plane-dtos";
 import { IsOptional } from "class-validator";
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
@@ -28,4 +28,11 @@ export class FileMetadataDao {
 
   @Column({ type: String, nullable: true })
   datasetId?: string;
+
+  @Column({ type: String, default: MetadataStatus.PENDING })
+  metadataStatus!: MetadataStatus;
+
+  @Column({ type: String, nullable: true })
+  @IsOptional()
+  metadataError?: string;
 }

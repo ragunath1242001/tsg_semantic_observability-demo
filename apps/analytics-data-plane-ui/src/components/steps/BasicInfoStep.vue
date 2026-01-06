@@ -37,7 +37,17 @@ const updateKeywords = () => {
   localDataset.value = updatedDataset;
 };
 
+const { items: themes, addFromInput: addThemesFromInput } =
+  useArrayManager<string>(props.dataset.theme || []);
+
+const updateThemes = () => {
+  const updatedDataset = { ...localDataset.value };
+  updatedDataset.theme = [...themes.value];
+  localDataset.value = updatedDataset;
+};
+
 const keywordsInput = ref("");
+const themesInput = ref("");
 
 const conformsToValue = computed({
   get: () =>
@@ -71,6 +81,18 @@ const handleAddKeywords = () => {
 const handleRemoveKeyword = (index: number) => {
   const updatedDataset = { ...localDataset.value };
   updatedDataset.keyword = removeFromArray(updatedDataset.keyword, index);
+  localDataset.value = updatedDataset;
+};
+
+const handleAddThemes = () => {
+  addThemesFromInput(themesInput.value);
+  updateThemes();
+  themesInput.value = "";
+};
+
+const handleRemoveTheme = (index: number) => {
+  const updatedDataset = { ...localDataset.value };
+  updatedDataset.theme = removeFromArray(updatedDataset.theme, index);
   localDataset.value = updatedDataset;
 };
 </script>
@@ -127,6 +149,31 @@ const handleRemoveKeyword = (index: number) => {
             icon="pi pi-plus"
             size="small"
             @click="handleAddKeywords" />
+        </div>
+      </FormField>
+
+      <FormField label="Theme" :label-width="1" class="md:col-span-2">
+        <div
+          v-if="localDataset.theme?.length"
+          class="flex gap-2 flex-wrap mb-3">
+          <Chip
+            v-for="(theme, index) in localDataset.theme"
+            :key="index"
+            :label="theme"
+            removable
+            @remove="handleRemoveTheme(index)" />
+        </div>
+        <div class="flex gap-2">
+          <InputText
+            v-model="themesInput"
+            placeholder="Add themes (comma separated)"
+            class="flex-1"
+            @keyup.enter="handleAddThemes" />
+          <Button
+            label="Add"
+            icon="pi pi-plus"
+            size="small"
+            @click="handleAddThemes" />
         </div>
       </FormField>
 

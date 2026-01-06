@@ -2,11 +2,19 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsArray,
   IsBoolean,
+  IsEnum,
   IsNumber,
   IsObject,
   IsOptional,
   IsString
 } from "class-validator";
+
+export enum MetadataStatus {
+  PENDING = "pending",
+  GENERATING = "generating",
+  COMPLETE = "complete",
+  ERROR = "error"
+}
 
 export class CSVWTableSchema {
   @ApiPropertyOptional({
@@ -72,6 +80,22 @@ export class FileMetadataDto {
   @IsString()
   @IsOptional()
   datasetId?: string;
+
+  @ApiProperty({
+    enum: MetadataStatus,
+    example: MetadataStatus.COMPLETE,
+    description: "Status of metadata generation for this file"
+  })
+  @IsEnum(MetadataStatus)
+  metadataStatus!: MetadataStatus;
+
+  @ApiPropertyOptional({
+    example: "Failed to generate LLM metadata: API rate limit exceeded",
+    description: "Error message if metadata generation failed"
+  })
+  @IsString()
+  @IsOptional()
+  metadataError?: string;
 }
 
 export class FileUpdateDto {
