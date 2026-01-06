@@ -1,0 +1,33 @@
+---
+id: contractagreementverificationmessageschema
+title: "ContractAgreementVerificationMessageSchema"
+description: ""
+sidebar_label: "ContractAgreementVerificationMessageSchema"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@type":"ContractAgreementVerificationMessage","consumerPid":"urn:example:consumerPid","providerPid":"urn:example:providerPid","hashedMessage":{"digest":"sha256:abcdef1234567890","algorithm":"SHA-256"}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ContractAgreementVerificationMessageSchema"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@type":{"type":"string","example":"ContractAgreementVerificationMessage"},"consumerPid":{"type":"string","example":"urn:example:consumerPid"},"providerPid":{"type":"string","example":"urn:example:providerPid"},"hashedMessage":{"example":{"digest":"sha256:abcdef1234567890","algorithm":"SHA-256"},"allOf":[{"type":"object","properties":{"digest":{"type":"string","example":"sha256:abcdef1234567890"},"algorithm":{"type":"string","example":"SHA-256"}},"required":["digest","algorithm"],"title":"HashedMessageSchema"}]}},"required":["@type","consumerPid","providerPid"],"title":"ContractAgreementVerificationMessageSchema"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

@@ -1,0 +1,33 @@
+---
+id: signrequest
+title: "SignRequest"
+description: ""
+sidebar_label: "SignRequest"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"plainDocument":{"id":"document1","content":"This is a sample document"},"keyId":"did:example:12345","normalization":"RDFC","proofPurpose":"assertionMethod","options":{"created":"2023-10-12T18:25:43.511Z","proofPurpose":"assertionMethod"},"embeddedVerificationMethod":false}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"SignRequest"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"plainDocument":{"type":"object","example":{"id":"document1","content":"This is a sample document"}},"keyId":{"type":"string","example":"did:example:12345"},"normalization":{"type":"string","enum":["RDFC","JCS"],"default":"RDFC","example":"RDFC"},"proofPurpose":{"type":"string","default":"assertionMethod","example":"assertionMethod"},"options":{"example":{"created":"2023-10-12T18:25:43.511Z","proofPurpose":"assertionMethod"},"allOf":[{"type":"object","properties":{"id":{"type":"string","example":"did:example:xyz#proof-1"},"type":{"type":"string","enum":["DataIntegrityProof"],"example":"DataIntegrityProof"},"proofPurpose":{"type":"string","example":"assertionMethod"},"verificationMethod":{"type":"string","example":"did:example:author#verificationKey"},"cryptosuite":{"type":"string","example":"ecdsa-2019"},"created":{"type":"string","example":"2021-01-01T00:00:00Z"},"expires":{"type":"string","example":"2022-01-01T00:00:00Z"},"domain":{"example":["example.com"],"type":"array","items":{"type":"string"}},"challenge":{"type":"string","example":"1234567890"},"proofValue":{"type":"string","example":"ProofValueString"},"previousProof":{"example":["PreviousProof1","PreviousProof2"],"type":"array","items":{"type":"string"}},"nonce":{"type":"string","example":"nonce-string"}},"title":"PartialTypeClass"}]},"embeddedVerificationMethod":{"type":"boolean","default":false,"example":false}},"required":["plainDocument"],"title":"SignRequest"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

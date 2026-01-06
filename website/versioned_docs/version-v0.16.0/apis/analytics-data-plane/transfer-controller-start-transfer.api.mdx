@@ -1,0 +1,72 @@
+---
+id: transfer-controller-start-transfer
+title: "Start transfer process"
+description: "Start transfer process"
+sidebar_label: "Start transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJzNVktv4zYQ/ivEnFpAsdP00Fanptm0CNBujE2ai2EEE3FscSuRXJKK1zD034shJVl+pQHaQ0+yOZzhN69vZgvGksOgjL6TkMOjQ+2X5G6MDs5UFblnH9CF/hwysOiwpkDOQz7fgsaaIAclIQNHXxrlSEIeXEMZKA05WAwlZCDJF05Zfmn0jrj7ABn4oqQaId9C2Fi25oNTegVtu0hGyYdfjNzwjcM3CqMD6cAitLZSRXRm+tnzO9tj0+blMxWB/XDselDkWfpzEh8iyIC+Ym0rGmF+4ID8Qd7jiqCNhl6VJDdT8m0D/cULq+TFDz/+xMqF0b6p36HcX4zK3119z8oSA15L6chHH4bLgzvwYXQjA9LSGqXDYxKWIdjRaXfi8+kUrZp01iaFqUeXZqOozXfv3O6LN5D1hRE/Gbxi1fDf9G0XbQZYVffLaOVfp2bsZnvo51uKMQTtOAb/dPtUeNrT8Rll5F2h6m183A9Zf/zUhS7rEaJzyOoqUO3/kxI/wtb24N7S2sPdDsDfo9L51I65Y94hzfZrh/1W4STMh9Tk7Tk7e/UwSvbI5KiCemuLc+bGDb/fwSODp9hihzNa9tZon3JzdXnFnzMkGSmYpPBNUZD3y6aqNjFonorGqbCJBWawCeUVAy0Se9sKNT0zScRfsIi1gytu3eiwmKXzQ3aOmEXon7fOFIlAagql4TlhjY8FxtyeAzfEtL/up1sl22nEzNxO7jXNisUObwxE8rxHvavedJDBsjLreMWi92vjZOJzY5Miaqw2QRV+cPAZZR1HzllRdkq0C9BJzZ045e2F0JEbZgtrdUe97FfjamQ6fZrB0Kwd2e4H+omcWip8qUjMHHnSIU4voYkkSRGMKExdN5qnGokXCmsiLcLaCKV9QF2QF2YpQkmiy7mIUCexOngGftpNz9vj8XBypB1MtOOxdTC1jkfT0WT6/4+jlreVpYl12Hfww2/iuq8HMeqXo2WmVF7cW9LXszvhLRVq2a0hwpdm7WN+esRDwk6ZnjA0cj7ZTYEOWPBYajOoVEHaxwR23lxbLEoSV5NLyKBx1Shm6/V6glE8MW417XT99Pe7m9uPD7cXV5PLSRnqKlYKt3ONemT5LAXsuT40baCvYWorVJoHQESy7dhhDmgV90HPD5BBHpkzUcQig5LZJJ/DdvuCnv50Vdvy8ZeG3CYRxyu62CYxy1J5/i0hX2Ll6QjTsBLCN586+v5W7G+cJ2H3Y1VvRhUCGfxFm7ThxrWlJJTc//NtJ7hJz11006VXPNpGmX0HAp3dPzwyYXRbbW0k6zhc8xqN6/SwiS7FDopnW6hQrxpu0hySTc4eE+YpAh0Gwva0a+doUrzJgn08IhNDm50x3pP2c+FIkg4KKz/orhzq8Bz1uPfavwGZul6q
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Start transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/{id}/start"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Start transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"TransferStartMessage"},"providerPid":{"type":"string","example":"provider-pid-789"},"consumerPid":{"type":"string","example":"consumer-pid-123"},"dataAddress":{"example":{"@type":"DataAddress","endpointType":"http","endpoint":"https://api.example.com","endpointProperties":[{"@type":"EndpointProperty","name":"name","value":"value"}]},"allOf":[{"type":"object","properties":{"@type":{"type":"string","example":"DataAddress"},"endpointType":{"type":"string","example":"http"},"endpoint":{"type":"string","example":"https://api.example.com"},"endpointProperties":{"example":[{"@type":"EndpointProperty","name":"endpointName","value":"endpointValue"}],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"EndpointProperty"},"name":{"type":"string","example":"endpointName"},"value":{"type":"string","example":"endpointValue"}},"required":["@type","name","value"],"title":"EndpointPropertySchema"}}},"required":["@type","endpointType","endpoint"],"title":"DataAddressSchema"}]}},"required":["@type","providerPid","consumerPid"],"title":"TransferStartMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":"Transfer started successfully"}}}
+>
+  
+</StatusCodes>
+
+
+      

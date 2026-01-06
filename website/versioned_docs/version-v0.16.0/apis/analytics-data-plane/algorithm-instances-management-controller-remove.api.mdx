@@ -1,0 +1,72 @@
+---
+id: algorithm-instances-management-controller-remove
+title: "Delete an algorithm instance by ID"
+description: "Delete an algorithm instance by its ID"
+sidebar_label: "Delete an algorithm instance by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNVcFu4zYQ/RViTi3AtY00J9+CjVME2KbBJt1LYBhjcWxxK5FcziiOIejfC1Ky7E2cbH2xQPKN3jy+N2rBEBfRBrHewRyuqSIhhU5htfXRSlkr61jQFaTWe2WF1e01aPCBIibQrYE5XB0O3w5n+S90uKWanHz2TqKvKoqrSLV/JtAQMGJNQpFh/tSCw5pgDtaAhkg/GhvJwFxiQxpsohVQStDARUk1wrwF2YeEYInWbaHrlgnIwTsmTvsXs1n6+7m5x5LOtVUiqzWRU9wUBTFvmqraK5OVMNBpuJz98bbYjY9raww50FB4J+QkHcIQKltkZabfOZ1s39L26+9USNIhJh3F9qR7GV43p4FesA5VWvpK7JtY0J2XG9+4zI4FpeGPcZezS3XnRY2gwpvTV7mmXlM8hVzOLjsNNTHjls5RPxZPsqZbIxYyKg4UlfHEynlR9GJZJumtFKOPHzM9YdmdmuGpV2dsd2hhqUGsZOQiFb8WD136aWAqmmhlnx3msZHyIpUpejuGCh2tDArmJ1gmCwlukyGPdlajn9ObapLSJ7v33sg+lhLmMMVgp/Xo+Olosk8Hk/G0taZL9Ck+97ZfHik+JIP0HjgQPQreL2jYVH6XjwRk3vloemv50APRYbUXW/DY0wpNndPz7pY+t3XU5CzyuN3LvCaMFEebJ9SwdNi78bFGgTl8uwd9aKsUCaBfZeobRbuxuK5I3UdicpKDpByRIaPEq8LXdeNSwEitSXYptrLzY5hZ+Y2SktRwzSpTnWQzWbfxWdjBMI8Pf6qrQ4PqGgXVfW7sNa3H0rL6O5C7ur9VHKiwmyHiiku/4/xCciZ462RkcK70BDSk6+/rDpMDizQ5Og2VLcgxHUcBXAUsSlIXkxloaGI1CMfz6XS3200wb0983E4HLE+/3H5e3D0sPl1MZpNS6iq3HjxLje6k8q8GfR7yP8nQHsfc//9MDLct9CLTUKF1aQzkRtohPE+AwYKGY3ySLd8GCDTMrUkxLD1LwrXtGpn+iVXXpeUfDcV9n6tnjNlFOfrGcno2MN9gxfRBV799HcbN7+o96sMiun26Sawa6u/xX9r3H7Bu2WkoCU3KxFM7bFwVBQU5gbz5THSn8+V68WXxuEg6NEmit7NgHGfteUbvJV59GOhDG3moQKffKX6YP6sikiEnFisesduITlYZ1y27rvsPKOXqLg==
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete an algorithm instance by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/algorithm-instances/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete an algorithm instance by its ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"The algorithm instance has been successfully deleted"},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

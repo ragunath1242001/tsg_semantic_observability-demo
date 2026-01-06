@@ -1,0 +1,72 @@
+---
+id: project-agreements-controller-handle-signature-callback
+title: "Handle Signature Callback"
+description: "Receives a signature response callback from a participant at the callback URL."
+sidebar_label: "Handle Signature Callback"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVU1z2zYQ/SuYPdOS6yNvruO2nkkbjT9y8XgyK3AlIgEBGFiaUTT8750FKZGVlWkP1YUiwH3Yt/veYg8VJR1NYOMdlHBPmswbJYUqma1DbiOpSCl4l0hptHaN+pvaRN8oVAEjG20COlbIiuvZJ0/3HxdQgA8UUcDvKihhFf1X0ny9jUQNOU433nH01lL8UqOrLD0cTr0ZgaCAgBEbYooJyuc9OGwISrhuufbR/MjoUECk19ZEqqDk2FIBRvjUhBVFKCDpmhqEcg+8CxKeOBq3hb5/GUIp8a++2skXp0jaOybHsoUhWKPzkcuvSUq2fw/t10JSEo9Cnw0l2Z1VS4pxmklx0ooPpMlxRGt+UKVMRY7NxlBUfpMrPYODPp8lp/4X5CdnXls6BzlgKDz0R4CPOvh34GPzBOnNVFSp9e59sv28Wc8ndZkzmR/+UgAbtjQ/5n4U5p+UEm4J+n7AHlZz0a8uf5HHz/I8yjUOwq9UarWmlDattbucKuNWdHfQrprEKzk1xLUXaQefcsuRayhhicEsRyIXx3Km5ZHPhZ70nSi+DeJ+kRfdRsO7B1HVwMFjy/XVXGDDQgEb67tRWyl1PlaDHn0YAtGh3bHRqULGYNHRF6yabIyfbhXnto7/zkdO20MH1oSR4tEbEjUuHfZ+87FBhhI+r6A40KqZwztNfaZoNgbXltQqUiLH2X3KEYm+2Cvtm6Z14kpSa+KOyCnuvDIuMTpN6SBvPQwblVNd5OaKh+8n999+xyZYOuPWSfIzo02LM5McJ4uMoI3PbRuF+/jwu7o+lE99QEa1ymU7Jf1Ym6Q+BXLXqzuVAmmzGaeOSrXvUqZDrgreOD7yOwctM1jENeDCMMxQyzDrC7BGk0uZ72GqBtQ1qavFJRTQRju2JZXLZdd1C8zbCx+3yzE2LT/e3dz+9XB7cbW4XNTc2FxYsUODbob8R57vavLebML/g/1+Grj//300So3pOy+DReOkT5nnfvTuM2AwU59n7p33efLvSwG1eL98hv1+jYmeou17WX5tKe4GV79hzBqWt744XEtym32jHZRwMzC+eJT05HPbZq+dXjf9fOSsPj08iqPGa6vxlcRE7OQ2xG7ot89VzeMgr+3Botu2Mi5LGDDl9zfkYNlu
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Handle Signature Callback"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/project-agreements/signature-callback"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Receives a signature response callback from a participant at the callback URL.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"Authorization","required":true,"in":"header","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"participantId":{"type":"string","description":"Decentralized identifier of the participant"},"projectId":{"type":"string","description":"Unique identifier of the project agreement"},"signature":{"type":"string","description":"Signature provided by the participant"}},"required":["participantId","projectId","signature"],"title":"SignatureResponseMessage"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"description":"Signature callback received successfully"}}}
+>
+  
+</StatusCodes>
+
+
+      

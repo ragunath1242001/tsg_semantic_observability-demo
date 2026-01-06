@@ -1,0 +1,72 @@
+---
+id: issue-configuration-management-controller-delete-issue-configuration
+title: "Delete issue configuration"
+description: "Delete an existing issue configuration in this wallet"
+sidebar_label: "Delete issue configuration"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVktvGzcQ/iuDOSXBWhJcnxZFgSB2CgOpU8QuenANYbQcaRlzyQ05a1kQ9r8H5K6klWTp0FMPvejBeX0zQ843a1QcCq9r0c5ijtdsWBjIAr/qINouQIfQMBTOzvWi8RQVQVuQUgdYkjEsmKGruRPdKszxNpp8Glr8QZYWXLGVT86Kd8awn6oU7FgZM6zJU8XCPmD+uEZLFWOOWmGGnn802rPCXHzDGeqIuyYpMcNQlFwR5muUVR0tgnhtF9i2T9Ew1M4GDlF+OZnEr/3ssc3wavLLseCz8zOtFEdohbPCVqIS1bXRRcI8/h6i5voYgpt95yLWqPaxSqI7AF1Kh0Az5FeqahOPvnFwjS/4zsln11gV0QUhacJ5u6vJFdw5ga1R4dQwlG2qGfuhydXkqs2w4hBowW9B3zl/KBliBzgIK/A9RFCOA1gn3bUZxajsvfPnkQ5QtsPGPnbV2abbp/CUoWhJljfR+bU4bNs2Ne3quGmb+iVc8xTm/+7997oX68JF47Ws0lt31Eh5Gd1002X6onk5VVrhU3zFQos4E3A3USBNENgbISGGq1hKF+dRN2jSWJEScxxTrcfV1sE4jbiLvREXxmut2pgE+5duDD3tgN7Ha9LdhA3cXdm7gwznxi2TSk0hLJ1X3QVzdWd4mF1+dJJtTjqo02dehZ3a8HCr2YRDte1JtuffLe208KzYiiYTDqIfSvdtyZgztofSwyxORj4hP7Q/Gf2EfGufuvy26bFoP+Pac2Ar/dXKz8jiQyDlrFnFynvMD/73N17buUt3pn8RD/e/w98bMt0fY/HN7sSgAxDc39/23AtSkkBBtudpsgqCOM/wwl7PNc0MwyCxpFB4JmHYQw7iYMbQBFaw1FJqC4qEINRUcBj9OvMw/q37/McCAERcyx0mXbECEqgaI/pCNHtQXBu3ii8sZMknOMvwznmonOf3exlQIQEogPgmCJAtSudh7jzQAEYCr63SLw2Z3jwkLaaiBDcHKRlq8qILXZOV0G0qPPAxgq/98lLTgpOwYCt+67DDk6oZ9iq31MbEEhVRTSXLaxLqkPXdISOlaxYl6FSVOFM3g7HzKyV7BjJLWoWowa9UiFmlyqSYPqYxDKttX4MO/nEjptMPd074w3Saw0NM7GvN9uOft6B4rq3uFrYOi47kpyKW1GylPafoRtvnvu9AELRdmG1K2gYhGwuHGcZR2O9KHZdSEbm0zdDogm3gHTnix5qKkuFyNMEMG28wx1KkDvl4vFwuR5TEI+cX4942jL/cfrq5u7+5uBxNRqVUJjFL7YJUZAee+y31jc308PWsd4T/r3fbfq4Lv8q4NqRt5MeUz7onlEekWmOGO0rBDN8iFcwwj0SWYemCRMP1ekaB//KmbePxj4b9quOaF/Lp9SZSVDrE3wrzOZnAZ7J8962/b+/hFPb+kOwqdpRMw10/n3nVLdntU5thyaTiAHtc94KPRcG1DEyOFqh2SLrXN19uHm4ww8iHb/HjlujXbyM6oEM45j044Dg4w2FwhqPgLAPBWX6BUxQCJ0kC9ilhU/i0GmCbnSjHZos4oKnOduHJyjTZtU9t2/4EBdLrhQ==
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete issue configuration"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/issue-configurations/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete an existing issue configuration in this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

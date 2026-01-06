@@ -1,0 +1,72 @@
+---
+id: files-controller-get-csvw
+title: "Get CSVW"
+description: "Get the CSVW of a file."
+sidebar_label: "Get CSVW"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVk1v4zYQ/SvEnFqAlYw0J50aZJMgQJEGmzQ9GEZAi2OLW4nkkqM4hqD/Xgwly07ieFugJwskZ+bNx3vjDjTGMhhPxlko4AZJUIXi8uHpL+FWQomVqTEDCc5jUPzqVkMB16bGeOksBVfXGJ7XSGwCErwKqkHCEKGYd2BVg1CA0SAh4PfWBNRQUGhRguGIXlEFEmJZYaOg6IC2ni0iBWPX0PcLNoze2YiR789mM/55ixsklM4SWuI75X1tyoQ2/xb5QfcxgFt+w5IYceDcyAzuf0t+XpMffFWNrxGKOVREvsjz8SQrXZOX8WWTJfcLuXOqQlBbkGAIm3gsGwmkljXGHwNpQ/3RgdxjOgYp+c7K+AK7QA//Mu3S1W1j49usp/Z9FmrwPhSh/w9VYHSGUhY8No8HSHsJ2qiaMR4BPWHroEKlMQyzlDzux2ueirc4EgTeP5za/e41g+wlnM9+/Ths1y4sjdZo/7+pG+p8qttfMbo2lHjn6Nq1VnOhIilqjxT40O58di7uHInJqHT6MJRtmyWGQ5Pz2XkvocEY1RpPNgEeKxRcTYyEWoQRotAOo7COBL6aSBlHxRBcOI30AOW7JqXqTOmOKRw07IqdfyGXmsZ1wbINhrZphJ1qqTpjN+WgV75WFp+1IpW+YJEmV61ZsAZhY98NUuVY6taY2sUyVUCuvMlZEmPeGd0nDWBkGF4GxVvso6eBHtq7w7Cv5XAgYVW7TXriVYwbF/QwNc4PhsqqekumjBPcZ6WbJJyfXsljV/t0j1rur4cKLlEFDNMEs9V4tLu7dqFRBAU83cNEfNYJkO/o8oTBrAyzT9wHjGgpcURYRI1akBOla5rWMndQLJE2iFbQxgljIylbYuRVxGtp7KBIULM0J8auXCrsOAuPDzfiYpeg+KJIifuU2HtYj5WJ4g+P9uL+VkSPpVmN7BWxcpuYAqLV3hlLE4Jjrnk9cvvfrCKVBKyXUJsSbcQ9y+HCq7JCcZbNQA4ynwoXizzfbDaZSteZC+t8tI3577eXV3cPV7+cZbOsoqZOqXsXqVH2wDOv73EPv0m22+vUiRU/NpHlMPe1MpaJO66hYf7noLzhqU0skVCkvZ5IsJBQuUj8puuWKuKfoe57Pv7eYtgO1HhRIQ1CIqY2kb81FCtVRzwB+aevoxj8LD6Duds8lvfOi6pbHFrxN26Hvx/9opfTzph348VFWaKnA5MPIt4fasHN1SPTq+VafOTypDTdcTifMVacJOQuhyQK0MtPnO/047kMqNGSUXWcbNdBWXpOdv2i7/t/AL4wbNU=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get CSVW"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/files/{id}/csvw"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get the CSVW of a file.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"@context":{"example":["http://example.com/csvw.json"],"type":"array","items":{"type":"string"}},"tables":{"type":"object","properties":{"url":{"type":"string","example":"http://example.com/table.csv"},"tableSchema":{"type":"object","properties":{"columns":{"example":[{"name":"http://example.com/tableSchema.json"}],"type":"array","items":{"type":"string"}}},"title":"CSVWTableSchema"},"dialect":{"type":"object","example":{"header":true}}},"required":["url"],"title":"CSVWTable"}},"required":["@context"],"title":"CSVW"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

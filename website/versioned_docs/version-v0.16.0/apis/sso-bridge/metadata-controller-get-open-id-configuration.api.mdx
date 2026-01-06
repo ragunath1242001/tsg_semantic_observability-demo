@@ -1,0 +1,72 @@
+---
+id: metadata-controller-get-open-id-configuration
+title: "Open ID Configuration"
+description: "Find all the open ID metadata for the OAuth server"
+sidebar_label: "Open ID Configuration"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVl1P2zAU/SvWfQ5NhbSXvjHKpuyLaQXtoaoi41wSg2Mb+6Ydq/LfJzuBJXQwwlOr+J5zP32P91CgF05akkbDAj5IXTCuFKMKmbGoWbZkNRIvOHF2bVw8OD9pqGIe3RYdJGAsOh4IsgIW8LW3PjWanFEKXV4inVvU2fLU6GtZNp01JGC54zUSOg+L9SYBh94a7dHDYg/H83n4GQcICQijCTWFM26tkiKypTc+GOzBiwprHv7RvUVYgLm6QUHBmwuRkuzopfcNuoGdJyd1CckTj1m0Y+a6Sz3mwcQokTYB3lBlnPwdP+SoC2tkF+PL7CdDHHvEtQmQucUpTBfBfsTQeHRSX5sJJJc9ZMQjQyO9RTExt2yIGzEWuJUC87cWbRnhjD9bO4dbI6ay/ngEjbhudrc+b5z8P8Gnn59X7PJH1kXQTXIeID73jbXGERaHE716OGIPGBYxkDy4487xe0hAEtb+MIx26K42xWR3ETPJnSzybjy9LLXUZc5VmW+5al7rO1uySMB6AsZVaZykqp4WiBfm1eXtbCfRl45rmtLCCHhD/3wTl9QUVz3kDc6E4rJ+pZfOdgJ9HMa7RrrAu37Yss8uyIM9N7hwL9yi147g85XdJECSVIj9X9rUxkzezY//IUHhhHgZNAt+olJHt9rsBktjk0CNVJmghiVG5eFUwQJSbmU62z1C0qCwsjgST2SxU9ZeE8M6joXuo71YfWSr1Tl772RR4qEMjI7ZyfeMLY1oatTU7TZIIJCP5JSLsB/bBJQUqD0Gf5rXwd2J5aJCdjybQwKNU7CAisj6RZrudrsZj8cz48q0x/r0S3Z69m11dnQ8m88qqlUsmDWeaq4HzOf98+Lpo2CUz/6v3L/tcdLPJ+EvSq3iMqp1zGPft2UN3IZhGzSme9QctmaTQGU8Bcx+f8U9XjrVtuHzXYPuvmvYljvJr0Kv1ps2gQp5Ed4Z6z3c4n2oqBBow1TEaQ136ukrph1O0MezC2jbP52OcX4=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Open ID Configuration"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/.well-known/openid-configuration"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Find all the open ID metadata for the OAuth server
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"issuer":{"type":"string","description":"Issuer of the OpenID configuration"},"authorization_endpoint":{"type":"string","description":"Authorization endpoint"},"token_endpoint":{"type":"string","description":"Token endpoint"},"userinfo_endpoint":{"type":"string","description":"Userinfo endpoint"},"introspection_endpoint":{"type":"string","description":"Introspection endpoint"},"device_authorization_endpoint":{"type":"string","description":"Device authorization endpoint"},"revocation_endpoint":{"type":"string","description":"Revocation endpoint"},"jwks_uri":{"type":"string","description":"JWKS URI"},"response_types_supported":{"description":"Supported response types","type":"array","items":{"type":"string"}},"response_modes_supported":{"description":"Supported response modes","type":"array","items":{"type":"string"}},"id_token_signing_alg_values_supported":{"description":"Supported ID token signing algorithms","type":"array","items":{"type":"string"}},"scopes_supported":{"description":"Supported scopes","type":"array","items":{"type":"string"}},"grant_types_supported":{"description":"Supported grant types","type":"array","items":{"type":"string"}},"subject_types_supported":{"description":"Supported subject types","type":"array","items":{"type":"string"}},"claims_supported":{"description":"Supported claims","type":"array","items":{"type":"string"}}},"required":["issuer","authorization_endpoint","token_endpoint","jwks_uri","response_types_supported","id_token_signing_alg_values_supported","subject_types_supported"],"title":"OpenIDConfiguration"}}}},"502":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

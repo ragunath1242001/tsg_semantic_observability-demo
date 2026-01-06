@@ -1,0 +1,72 @@
+---
+id: config-controller-get-settings
+title: "Retrieve settings"
+description: "Retrieves the settings of the control plane."
+sidebar_label: "Retrieve settings"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVdtu2zgQ/RVi9lVrG2mwWOgtTZMiwCIbJNn2wQiCMTWW2EokS47iGIb+fTGULCvXxRZ9sszhGc7tnNlBQVEH49k4CzlcEwdDDxQVV6QiMRtbRuXW6b92loOrla/R0gwycJ4CCvSigBxOnV2b8rS/VFO4L4lvBheQgceADTGFCPnyLoNA0TsbKUK+g6PFQn6eRgMZyJNkWWzofW10em7+LcqFHURdUYPyxVtPkINbfSPN8lqQ4Nj07rWrXZhcixyMLSEDesTG13L024ePf348/wO6DAoM328rauifUL8Pqph9zOfz4WSmXTMXNAt65m0p7mpTVvzz/hL8icNAP1oT6Co4SfakDETNUKTB9cq5mtBC9qyiXyviioJC5Xuwwj1amagGx4XaVGSVDoTSPIVWYV26YLhqlLGR0Wqaxr3GOlJ3iKyAfDnU/C4DNpySu24tm4b6MfnEDrpOMMeLDy9bf+7CyhQF2V83AxYber/61xRdGzRdOj53rS2k1pGR2/g+7nhxrC4dqxGkXTF9yrbNisIUcrw47jJoKEYs6bXQD85vK0p9ochUqDCEqApHUVnHih5N5Jm8SiH815BPonzWrVSdMd0hhUnzzsT5vmlSF9JtMLyFfLkDhy1XR33TE/uTQtxj0RgLd524wVJoD6Me3En6XDkRjpJSt5AryGGO3szjQTYihYdRM/av3kjP+7bu3z7UsD/IYF27TbriMcaNC0U/Lc73QLRYb9noWCDjNOD8bVP2mmn8eh15MPeVWxEGCuPkJrr2R3vbuQsNMuTw5QqyfVoiDS/4/IWCWRtc1aSuAkWynLihLFFBhWKntGua1gpnSK2IN0RW8caNNH5L3CVSY9cuFXaYgdubz+pkn6D6hIzqKiX2PKzbykT1tyd7cnWhoidt1gNrVazcpt8uZAvvjOUxgtdcy5aR9j9ZCKhFDJKyarKRDuyGE4+6InU0W0AGrcjtqKmbzWaGyTxzoZwP2Dj/6+L07PLm7Pej2WJWcVOn1L2L3KCdeN6vRjWZzSdZ7w5C9X/36NBipkee+xqNFTq3/bLoabEE9Cax4cCfykUWy263wii7pevk+EdLYdvT5QFDGg7512VQERYyecsdfKetVEtr8sK9B6zbNL7P9bWb8vTz2a0woJWAXtJtFIHRhHY79f0GqdS7nMmGUBNvocvecL6n+L0OVJBlg3UcsWVAy/cJ1911XfcvHwAh5A==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve settings"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/settings"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the settings of the control plane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"color":{"type":"string","example":"#3B8BF6"},"darkThemeUrl":{"type":"string","example":"https://example.com/darktheme.png"},"lightThemeUrl":{"type":"string","example":"https://example.com/lighttheme.png"},"requireProjectAgreement":{"type":"boolean","description":"Whether a project agreement is required when creating an algorithm instance","example":false}},"required":["color"],"title":"RuntimeConfigDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

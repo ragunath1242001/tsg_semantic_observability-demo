@@ -1,0 +1,33 @@
+---
+id: orchestrationstatusdto
+title: "OrchestrationStatusDto"
+description: ""
+sidebar_label: "OrchestrationStatusDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"status":"accepted","pendingReason":"Waiting for participant data","interval":60}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"OrchestrationStatusDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"status":{"type":"string","description":"The status of the orchestration","example":"accepted","enum":["accepted","pending"]},"pendingReason":{"type":"string","description":"The reason for the pending status, if applicable","example":"Waiting for participant data"},"interval":{"type":"number","description":"The interval in seconds for the orchestration","example":60}},"required":["status"],"title":"OrchestrationStatusDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

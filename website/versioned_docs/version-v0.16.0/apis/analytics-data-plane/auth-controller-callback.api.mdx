@@ -1,0 +1,72 @@
+---
+id: auth-controller-callback
+title: "Login callback"
+description: "Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)"
+sidebar_label: "Login callback"
+hide_title: true
+hide_table_of_contents: true
+api: eJzNVU1v4zgM/SsCT7uANwk6wB5863a6gwLFbLFt5zIIMozMxEJlSSPRdbOB//tCspM4nSSDNpc5+UMk3yNF8q2hoCC9cqysgRweA/kg0JPwVChPkqkQC28rwSUJrLm0Xv2H0VoE8s/kBVvBpQqCTOGsMiyaUslSNErrbZDoXXWWFMMZJlOI377FgKON0eO/t99+hwysI58QbgrI4bLm8soa9lZr8jOJWs9RPkEGDj1WxOQD5F/XYLAiyCEwMkEGnr7XylMB+QJ1oAxUzO97TX4F2ausH0oSyU9sY0IGQZZUIeRroBesnI7RPZrCVvc9Bq9cB+mVWULbZlsW0hbvIbFf4D7IIR790XECKCWFMGP7ROY9RJK72LjvKBxHTLazdP52vOQseudDCf9F6NOtHCdAL055CjP1noQ7AilEV3wVG1xaU4TDjD78OZmcYqOKdxf/5uObCh97YfZMXi1UqtBb4aK/GPgf7/urErUms6QvO+vXvKaRQHDWBAoxxofJRXzsw0b+wLiMk5smnAwrmQoP0wwq4tLG4V8Sp0HnEnIYo1PjOCHjwRLollCMM40fsvaKV/cxgw7eRoeLQQH7HxkstG2SicMQGuuL+B6kdZ0jGtQrVjIUyOg0GpphUaVSHj3KDh1t3w577o7bNlZl3jV64hKzgHzza3P2t/UVMuTw5W5X/5LZ/XC73TXhXJO48xTIcNfbhqigIu5jaauqNrH0JObEDcUpbKxQJjAaSUHYRVraslvBIlEdpftTZmFTYRWnHnm4/yQuNwmKj8go7lJiPzadCuIfR+by7kYER1It+ssXobRNSIAbOdkyOBR6BBnE6++7KoNIEyVDvm4z0EqSCRQ59qNy6VCWJC5GE8ig9rovXMjH46ZpRpiOR9Yvx71vGN/eXF1/vr/+42I0GZVc6ZS6s4ErNIPIt3apjBg05l7K60SMDP8iEts3DdMLj51GZaDt67Hup+0roFOxoWsuY103iU0zKG3gaLBezzHQo9dtG393CyYqcaFC7LndAjpai8PCe5DdE60G6v6Muqa0SLK34h3U2BOQvcU5iPtiegLrlWqfgbknqCcQ91T7bLxj+nmCwJ5qn0FgIJon0AaqfAbWa8X8SfcMxXmHOo0fPm3nqF7tQPY+XT9A2/4Pkv0H9w==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Login callback"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/auth/callback"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"state","required":false,"in":"query","description":"The state parameter","schema":{"example":"randomState","type":"string"}},{"name":"code","required":false,"in":"query","description":"The authorization code","schema":{"example":"code","type":"string"}},{"name":"access_token","required":false,"in":"query","description":"The access token","schema":{"type":"string"}},{"name":"token_type","required":false,"in":"query","description":"The token type","schema":{"example":"Bearer","type":"string"}},{"name":"expires_in","required":false,"in":"query","description":"The token expiration in seconds","schema":{"example":3600,"type":"string"}},{"name":"id_token","required":false,"in":"query","description":"The ID token","schema":{"type":"string"}},{"name":"code_verifier","required":false,"in":"query","description":"The code verifier","schema":{"example":"randomChallengeVerifier","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"302":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

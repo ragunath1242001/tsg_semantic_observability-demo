@@ -1,0 +1,72 @@
+---
+id: files-controller-get-files
+title: "Get all files"
+description: "Get all files and their metadata."
+sidebar_label: "Get all files"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVtty4zYM/RUOn+VLbGez9VPTbLKTmWyaWafpQyaTgSnY4q5EakkojuvRv3dAybLiW9I+2SIJ4IAHOMRKxuiV0zlpa+RYfkUSkKZiplP0AkwsKEHtRIYEMRB0ZSRtjg74/HUsx/KKT15YQ86mKbrnOVJYkpHMwUGGhM7L8eNTJB363BqPXo5XctDv88/b8DKSyhpCQ7wHeZ5qFUL1fng+sJJeJZgB/6NljnIswTlYykhqwsy31u30BypiFI4Bk67C6hgN6ZlG1zrryWkzl5HEV8jylJdGp7PhZ5hOO3gWn3VGanbSAXXyWwfUaHQ2+vRp+nl2KstI8kVN9D94bf5YErYBmCKboms7Pen3+7XJLWR4HMDJ2WjUHw5Pzgaj4WmHbbrKv3BI6/RcG0ivPuSnbZlhrOE+HD1mQvhKvdokd+jR0LW5AU8XCaqfLduptSmCaRuTK7CMpPIvi/fJ+D2Q/RrIbjw8yoQoH/d69UpX2YzRLLqhBp6i95ivMyrLSBJMU/xAVRQuPX4leyAF3+ubDR+T7do8EE3ZtMiMf5v1SprA5cFQlffqEsr/cAuMTlPI4mLy8Pd9C2kZyVhDyhj3gG6wrWSCEHPHBHbZo8NfhXYYM118eU97gsjtgw3dW6cDDiDwSCwpx3ioj3VOBsOqoCtZmhBQsSf7SKIpMo6do4mrlTmaoF/hQ1l2TMgnnbOOoW2itXbf6lQVT9hZI4xi7dYaMbNOUKJ9UNE2zMsQ4miCV6BTjAXZtUMUNzffmjBjcX53LcJyqjNNAl8VYozxDsQQS2ToPcxR6ANIQ7QdoloiuatwLQHbo0VtkdmrHrU27HDXqgl29q3e/UKWa5gRjvrD3RfjyrqpjmM0/+PpONCe5l1N/Y7eFk7hraUrW5iYOfaHS3DzqPRH4taSaIyUjfHokzHqj0L9BBaPNqm8T1AwiegJY+FqiCK26IWxXCnaU5ej4vtl2EK5VRumYrlOt06hRV6ouxZrHlXhNC2DxFkoKBmwG1VNDHkKBp+Z6PBPPgVlgzlPDNVowb4zpMTysDHHQBdQIseyB7nuzepZw6N7aQaNdcwgcxWp68ibG6wWIjlL7SIcycH7hXVxVSs2rwzBQLokrXwD8hniTHPtHdyK9m1tktxrudmu7m2K4KohJdRteG6rpfXelXUZkBzLhzvZPAf8euxowQM6PdOsyeKu6siq/U2QDhYbZbOsMNwxKKZIC0QjaGGFNp7AKAxaRwmKmjcRoHZDdWgzs+Fi6wq4n3wV5+sExReWnLuQ2Dase9bIP3M0rGk+R6Vndc8Kn9iFDwHRxLnVhhoE+1zzWMr0v5kiITxrZSRTrdB43PS2PM9BJSgG3b6Mqsc/XJwf93qLxaILYbtr3bxX2/rezfXF5e3ksjPo9rsJZWlIPbeeMjAtz28G6O2MVxuJ+tCkXXMa5rE8BW24e+tZpWqCRwm5riU5tEpiPfHyajUFj3+5tCx5+VeBblk1xwu4UAr8VUbN0/64kj9xyXejFObcZi+QFqFYt7W0bLfk18t7rveC0ew2V9Pwm3ndLNu+D7SQONohUQ01dKksowPO1w39rByGFw1S39jOHRh6DnblU1mW/wLZd37S
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get all files"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/files"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get all files and their metadata.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"identifier":{"type":"string","example":"45f38abb-e7d7-4cf1-ac19-ac447466b8f5"},"fileSizeInBytes":{"type":"number","example":1000},"fileName":{"type":"string","example":"1744033172435-file.csv"},"originalFileName":{"type":"string","example":"file.csv"},"mediaType":{"type":"string","example":"text/csv"},"presentInLastCheck":{"type":"boolean","example":true},"csvw":{"type":"object","properties":{"@context":{"example":["http://example.com/csvw.json"],"type":"array","items":{"type":"string"}},"tables":{"type":"object","properties":{"url":{"type":"string","example":"http://example.com/table.csv"},"tableSchema":{"type":"object","properties":{"columns":{"example":[{"name":"http://example.com/tableSchema.json"}],"type":"array","items":{"type":"string"}}},"title":"CSVWTableSchema"},"dialect":{"type":"object","example":{"header":true}}},"required":["url"],"title":"CSVWTable"}},"required":["@context"],"title":"CSVW"},"datasetId":{"type":"string","example":"dataset-123"},"metadataStatus":{"type":"string","enum":["pending","generating","complete","error"],"example":"complete","description":"Status of metadata generation for this file"},"metadataError":{"type":"string","example":"Failed to generate LLM metadata: API rate limit exceeded","description":"Error message if metadata generation failed"}},"required":["identifier","fileSizeInBytes","fileName","originalFileName","mediaType","presentInLastCheck","csvw","metadataStatus"],"title":"FileMetadataDto"}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

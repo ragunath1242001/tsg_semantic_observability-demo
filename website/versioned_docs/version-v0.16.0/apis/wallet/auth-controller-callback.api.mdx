@@ -1,0 +1,72 @@
+---
+id: auth-controller-callback
+title: "Login callback"
+description: "Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)"
+sidebar_label: "Login callback"
+hide_title: true
+hide_table_of_contents: true
+api: eJzNVk1v20YQ/SuDPSUBIxkO0INQFHCTIDBgJEVtp4fUYMbLkbjwcpfZHZpWBf33Ypa0RCqSCtuX+mCbOx/vzezHvJUqKOpgajbeqZm6jhQiYCAIVJhAmqmAefAVcEmADZc+mH9QvCFSuKcA7IFLE4FcUXvjGNrS6BJaY+0miURXnSdJOsfkCnj1XRJOHp2u/7z4/lplytcUEsJ5oWbqrOHyvXccvLUUco3W3qK+U5mqMWBFTCGq2beVcliRmqnIyKQyFehHYwIVajZHGylTRur70VBYqmyn6quSIMXBJqfKVNQlVahmK0UPWNVWsgd0ha8uewxe1h1kMG6h1utsw0L74jkkxg3uk+zj0ZsOE0CtKcac/R255xBJ4fAYvqVwGDH55sn+dLwUDH3wvoJ/JwxpVw4ToIfaBIq5eU7BHYGUomu+kQOuvSvifkbvfjk5OcbGFM9u/vmHJzVezkJ+T8HMTerQU+EkHgbxh8/9+xKtJbegr1vvXV43QiDW3kWKkuPdyan8GcMKf8W4kJubbjg5Njo1Xt1kqiIuvVz+BXG66FyqmZpibaZyQ6aDR6B7hCTPjXzoJhheXkoFHbyXgNNBA/uFTM2tb5NLjTG2PhTyf9S+7gJbKZXze0NtXhghs7uSPa5U6HBB+R0t49ZtuLjxbOKu22YlG+X3rct1oEL6gjbuoO9ax7Fo7ZHYXetuFQeRD9h34w+iH7Bv4k2MDe0P/dk0rrgOFMlxOj+79Y5tcjix8M4upfNBTvboey0/cmPmPp0Zw+n4X11+gr9S0r03aGsGEwHh8vIcOg7AJTJodJBqAHQFRPbh8cLhrSUYFJYcdKA0i4bMZXjeEjSRCmgNl8ZBgYwQa9QUJ7/eBpj+1v3+2wEACK92y8lUVAAyVI1l85YNBSiotn5ZkeOYpZzgHcErH6DygV6PKkDNETAChyYyoNOlDzD3AXBAI5E3rjD3Ddo+PCYvQl2Cn6fxX2Ngo02NjqO8srK2zTGBL67TEzUuKBk1OQ6bhB2f1M046lwSHLcE8jhQkSI/IGPHrN8dtFz6ZlGCSV1xnuHxtezyckmBAG2Lyyge9ICa7TJ1JmEGKWMIa1zfg47+zxuR528+e6Y3eT6DKynsS03u7I9zKGhunOmGTcfFJF0kXNJmd7LILsEad9fvOyBE4xZ2U5JxkdFJ41Sm5CnsX9hMae8YNavZap0pazS5SHKo+7FxVqMuCU4nJypTTbBqpkrmOs6m07ZtJ5jMEx8W0z42Ti/O33/8fPnx7enkZFJyZdMzXvvIFbpB5gu/MA4Gj/ToxqwSMXL8P5Gb/VxgeuBpbdE4te77seonzzeFtVGZknDp62NhN5kqfWRxWK1uMdJ1sOu1LHfDVlRpYaLc8e0wPtiL/SJ0L7s7Wg6U7j3ahtJQzZ6Kt1dvHoHsPV6COBaWR7B2FOwLMEfi8gjiSMG+GO+QljxCYKRgX0BgICCPoA0U6guwdtXjf5yeoVDdot7IR0jTUJTceiABP328Uuv1v/zUKFk=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Login callback"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/auth/callback"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"state","required":false,"in":"query","description":"The state parameter","schema":{"example":"randomState","type":"string"}},{"name":"code","required":false,"in":"query","description":"The authorization code","schema":{"example":"code","type":"string"}},{"name":"access_token","required":false,"in":"query","description":"The access token","schema":{"type":"string"}},{"name":"token_type","required":false,"in":"query","description":"The token type","schema":{"example":"Bearer","type":"string"}},{"name":"expires_in","required":false,"in":"query","description":"The token expiration in seconds","schema":{"example":3600,"type":"string"}},{"name":"id_token","required":false,"in":"query","description":"The ID token","schema":{"type":"string"}},{"name":"code_verifier","required":false,"in":"query","description":"The code verifier","schema":{"example":"randomChallengeVerifier","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"302":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

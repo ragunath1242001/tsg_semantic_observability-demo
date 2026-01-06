@@ -1,0 +1,72 @@
+---
+id: proxy-controller-get-data-post
+title: "Proxy a request"
+description: "This endpoint is used if the HTTP Data Plane needs to serve as a proxy."
+sidebar_label: "Proxy a request"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVE1v3DgM/SsET11AOw5y9K3oZ4DFdrCZ7SUYBIxFj4W1JVWiMx24/u8Lyk6aJmm3KPY0GsrieyTf44SWc5NcFBc81rjrXAb2NgbnBVyGMbMF14J0DO93uy28JiHY9uQZPLPNIAEyp1sGykAQU/h82gAaDJETadoLizVuNf4qeEmh7zldH1g003UMWdBgpEQDC6eM9dWEngbGGp1Fg4k/jS6xxVrSyAad8owkHZrH5BP53HICZ9mLax0nNJibjgfCekI5Rc2aJTl/wHk290Brup+H2pJ0EFpI3LC7df4AFGPvmlLw90HhCyyHqz18gdFbbp1ni/O8V/Qcg8+c9dn52Zn+fIuqnFHooE1aOop7gwNLF7TH972UDmusKLqqjKOanJ2rSeOzctNplUbv9U8zJienSyW8QAcapTt/wH0NGGz7cCyfRMr5GJLVc25CXB52ItGSUFR1XJMdSv+ei5pH0fvTk++/3syzVn/DlDgtuMoY67vQ3d3bkAYSrPHjFs1dCZr0yRA/cnKto5ueYZs4s5cyvqJrtirsJgzD6HWsDDcsR2YPcgzgfBbyDWfVgFqjWZQNheqmzMn5NpQmOumVwu7y3WMHPVWw2u9DZP9yewE5cuPaVVOQu3DMBevOnvfgj7Ju0KAOeNWMQSVHjWA9zQZ717DPrMxW8b+M1HQM55szNDimfm1XrqvqeDxuqFxvQjpU69tc/XHx6s2fl29+P9+cbToZ+lKwym8g/yBzkSgQqK+4aPObcqfCjL38v4tnHbnwZ6liT87jvNY1rd64QopOnVIsZLAui6Yul3uDnfqovsJpuqHMf6d+njX8aeR0WlxzS6nopiwr67KeLdYt9Zl/UOSLv9YF8xs8v6uepb4GySvVW+pHXsb6D5+WHamL7JdI/NcW+wU6pYfzfn6wlrYfLnc4z/8CRc812w==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Proxy a request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/proxy/{id}/{path}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy. 
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}},{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{"type":"string | string[] | undefined"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      
