@@ -141,7 +141,7 @@ const handleRemoveCodingSystem = (index: number) => {
         <div class="flex gap-2">
           <InputText
             v-model="healthThemesInput"
-            placeholder="Add health themes (comma separated, use Wikidata URLs)"
+            placeholder="Add health themes (e.g., MENTAL_HEALTH, CANCER_DISEASE, CLIMATE_HEALTH)"
             class="flex-1"
             @keyup.enter="handleAddHealthThemes" />
           <Button
@@ -168,7 +168,7 @@ const handleRemoveCodingSystem = (index: number) => {
         <div class="flex gap-2">
           <InputText
             v-model="codingSystemsInput"
-            placeholder="Add coding systems (comma separated, use Wikidata URLs or system names)"
+            placeholder="Add coding systems (e.g., http://snomed.info/sct, http://loinc.org)"
             class="flex-1"
             @keyup.enter="handleAddCodingSystems" />
           <Button

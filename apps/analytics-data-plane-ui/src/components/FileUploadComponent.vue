@@ -26,9 +26,10 @@ const onAdvancedUpload = (event: FileUploadUploadEvent) => {
   console.log(event);
   toast.add({
     severity: "success",
-    summary: "Success",
-    detail: "Files Uploaded",
-    life: 3000
+    summary: "Files Uploaded",
+    detail:
+      "Your files have been uploaded. Metadata is being generated in the background.",
+    life: 5000
   });
   emit("uploaded", event.files);
   (fileUploadRef.value as any)?.clear();

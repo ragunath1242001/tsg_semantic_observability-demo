@@ -2927,6 +2927,19 @@ components:
         datasetId:
           type: string
           example: dataset-123
+        metadataStatus:
+          type: string
+          enum:
+            - pending
+            - generating
+            - complete
+            - error
+          example: complete
+          description: Status of metadata generation for this file
+        metadataError:
+          type: string
+          example: "Failed to generate LLM metadata: API rate limit exceeded"
+          description: Error message if metadata generation failed
       required:
         - identifier
         - fileSizeInBytes
@@ -2935,6 +2948,7 @@ components:
         - mediaType
         - presentInLastCheck
         - csvw
+        - metadataStatus
     FileUpdateDto:
       type: object
       properties:

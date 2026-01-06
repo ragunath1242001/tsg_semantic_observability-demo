@@ -12,7 +12,7 @@ import { splitModules } from "../utils/split-mode.js";
 import { FilesController } from "./files.controller.js";
 import { FilesService } from "./files.service.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
-
+import { MetadataGeneratorService } from "./metadata-generator.service.js";
 @Module({
   imports: [
     TypeOrmModule.forFeature([FileMetadataDao]),
@@ -33,7 +33,7 @@ import { FileMetadataDao } from "./filesMetadata.dao.js";
     })
   ],
   controllers: [FilesController],
-  providers: [FilesService],
-  exports: [FilesService]
+  providers: [FilesService, MetadataGeneratorService],
+  exports: [FilesService, MetadataGeneratorService]
 })
 export class FilesModule {}

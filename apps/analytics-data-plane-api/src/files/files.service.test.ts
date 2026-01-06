@@ -18,14 +18,22 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service.js";
-import { FilesConfig, RootConfig } from "../config.js";
+import { FilesConfig, LLMConfig, RootConfig } from "../config.js";
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { FilesService } from "./files.service.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
+import { MetadataGeneratorService } from "./metadata-generator.service.js";
 
 describe("FilesService", () => {
   let server: SetupServer;
   let filesService: FilesService;
+  let dataPlaneServiceMock: {
+    getControlPlaneCatalog: jest.Mock;
+    updateDatasets: jest.Mock;
+    addDataset: jest.Mock;
+    updateDataset: jest.Mock;
+    deleteDataset: jest.Mock;
+  };
   const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
   const __dirname = path.dirname(__filename); // get the name of the directory
   const testUploadDir = path.join(__dirname, "uploads_test"); // Temporary upload directory
@@ -61,24 +69,20 @@ describe("FilesService", () => {
         {
           provide: DataPlaneService,
           useValue: {
-            async getControlPlaneCatalog() {
+            getControlPlaneCatalog: jest.fn(async () => {
               return {
                 provider: "hello"
               };
-            },
-            async updateDatasets() {
-              return {};
-            },
-            async addDataset() {
-              return {};
-            },
-            async deleteDataset() {
-              return {};
-            }
+            }),
+            updateDatasets: jest.fn(async () => ({})),
+            addDataset: jest.fn(async () => ({})),
+            updateDataset: jest.fn(async () => ({})),
+            deleteDataset: jest.fn(async () => ({}))
           }
         },
         FilesService,
         AuthClientService,
+        MetadataGeneratorService,
         CatalogClientService,
         {
           provide: FilesConfig,
@@ -102,11 +106,18 @@ describe("FilesService", () => {
         {
           provide: AuthConfig,
           useValue: { enabled: false }
+        },
+        {
+          provide: LLMConfig,
+          useValue: { enabled: false }
         }
       ]
     }).compile();
 
     filesService = moduleRef.get(FilesService);
+    dataPlaneServiceMock = moduleRef.get(
+      DataPlaneService
+    ) as unknown as typeof dataPlaneServiceMock;
   });
   afterEach(async () => {
     await filesService["fileRepository"].clear();
@@ -221,7 +232,7 @@ describe("FilesService", () => {
       ]);
       await fs.rm(path.join(testUploadDir, mockFile.filename));
     });
-    it("should process a CSV file and return its first 10 lines", async () => {
+    it("should process a CSV file and return its first 10 lines when maxLines is specified", async () => {
       const mockFile = { filename: "test.csv" } as Express.Multer.File;
       const mockContent =
         "col1,col2\nval1,val2\nval3,val4\nval5,val6\nval7,val8\nval9,val10\nval11,val12\nval13,val14\nval15,val16\nval17,val18\nval19,val20\nval21,val22";
@@ -229,7 +240,7 @@ describe("FilesService", () => {
         path.join(testUploadDir, mockFile.filename),
         mockContent
       );
-      const records = await filesService.processFile(mockFile);
+      const records = await filesService.processFile(mockFile, 10);
       expect(records).toEqual([
         ["col1", "col2"],
         ["val1", "val2"],
@@ -272,6 +283,13 @@ describe("FilesService", () => {
 
       await filesService.uploadFiles(mockFiles);
       await filesService.createMetadata(mockFiles);
+
+      expect(dataPlaneServiceMock.addDataset).toHaveBeenCalledTimes(2);
+      for (const call of dataPlaneServiceMock.addDataset.mock.calls) {
+        const datasetDto = call[0] as Record<string, unknown>;
+        expect(datasetDto["healthdcatap:numberOfRecords"]).toBe(2);
+        expect(datasetDto["dqv:completeness"]).toBe("all-variables");
+      }
 
       const savedFiles = await filesService.getAllFileMetadata();
       expect(savedFiles.length).toBe(2);
