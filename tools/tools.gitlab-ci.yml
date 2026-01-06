@@ -21,8 +21,12 @@ cli-build:
 
 cli-package:
   extends: .npm-package
+  id_tokens:
+    NPM_ID_TOKEN:
+      aud: "npm:registry.npmjs.org"
+    SIGSTORE_ID_TOKEN:
+      aud: sigstore
   script:
-    - echo "//registry.npmjs.org/:_authToken=${NPMJS_TOKEN}" >> ./.npmrc
     - pnpm install --frozen-lockfile
     - pnpm --filter cli build
     - pnpm --filter cli publish --no-git-checks
