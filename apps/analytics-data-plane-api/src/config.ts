@@ -85,7 +85,7 @@ export class DockerConfig extends OrchestrationConfigBase {
   @Description("Docker socket path (e.g., /var/run/docker.sock)")
   @IsString()
   @IsOptional()
-  public readonly socketPath?: string;
+  public readonly socketPath: string = "/var/run/docker.sock";
 
   @Description("Docker network to use for containers")
   @IsString()
@@ -107,6 +107,30 @@ export class DockerConfig extends OrchestrationConfigBase {
 }
 
 export type OrchestrationConfig = KubernetesConfig | DockerConfig;
+
+export type AnalyticsDataPlaneMode = "standalone" | "client" | "server";
+
+export class SplitConfig {
+  @Description(
+    "Runtime mode: standalone (current behavior), client (network-constrained runner), or server (open-network exchanger)"
+  )
+  @IsString()
+  @IsOptional()
+  public readonly mode: AnalyticsDataPlaneMode = "standalone";
+
+  @Description(
+    "Peer WebSocket URL for bridge connection (Socket.IO server base URL)"
+  )
+  @IsString()
+  @IsOptional()
+  public readonly bridgePeerWsUrl?: string;
+
+  @Description(
+    "Chunk size in bytes for large event data transfers over WebSocket (default: 512KB)"
+  )
+  @IsOptional()
+  public readonly bridgeChunkSize?: number;
+}
 
 export class RootConfig {
   @Description("Database configuration")
@@ -180,4 +204,10 @@ export class RootConfig {
     }
   })
   public readonly orchestration: OrchestrationConfig = new KubernetesConfig();
+
+  @Description("Client/server split configuration")
+  @ValidateNested()
+  @Type(() => SplitConfig)
+  @IsOptional()
+  public readonly split: SplitConfig = new SplitConfig();
 }

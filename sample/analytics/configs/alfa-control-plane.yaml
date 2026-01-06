@@ -9,7 +9,13 @@ db:
   database: "alfa.db"
 
 auth:
-  enabled: false
+  enabled: true
+  openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
+  callbackURL: http://localhost:3551/api/auth/callback
+  clientId: alfa-control-plane
+  clientSecret: alfa-control-plane
+  rolePath: "$.roles[*]"
+  redirectURL: http://localhost:3551/
 
 runtime:
   controlPlaneInteractions: automatic

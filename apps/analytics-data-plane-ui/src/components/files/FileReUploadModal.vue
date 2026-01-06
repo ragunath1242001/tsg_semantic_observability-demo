@@ -4,7 +4,7 @@ import {
   FileUploadUploadEvent,
   useToast
 } from "primevue";
-import { DynamicDialogInstance } from "primevue/dynamicdialogoptions";
+import type { DynamicDialogInstance } from "primevue/dynamicdialogoptions";
 import { inject, Ref } from "vue";
 
 import { mimeToUrl } from "../../utils/mime";

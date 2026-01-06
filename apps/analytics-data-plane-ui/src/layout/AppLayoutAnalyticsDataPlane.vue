@@ -37,65 +37,88 @@ const containerClass = computed(() => {
     "layout-mobile-active": layoutState.staticMenuMobileActive
   };
 });
-const menuList: Menu[] = [
-  {
-    label: "Home",
-    items: [
-      {
-        label: "Dashboard",
-        icon: "pi pi-fw pi-id-card",
-        to: "/"
-      },
-      {
-        label: "Metadata",
-        icon: "pi pi-fw pi-file",
-        to: "/metadata"
-      }
-    ]
-  },
-  {
-    label: "Files",
-    items: [
-      {
-        label: "Files",
-        icon: "pi pi-fw pi-folder-open",
-        to: "/files"
-      }
-    ]
-  },
-  {
-    label: "Algorithms",
-    items: [
-      {
-        label: "Create instance",
-        icon: "pi pi-fw pi-sparkles",
-        to: "/algorithms/create-instance"
-      },
-      {
-        label: "Instances",
-        icon: "pi pi-fw pi-chart-line",
-        to: "/algorithms/instances"
-      }
-    ]
-  },
-  {
-    label: "Collaboration",
-    items: [
-      {
-        label: "Project Agreements",
-        icon: "pi pi-fw pi-file-edit",
-        to: "/project-agreements"
-      }
-    ]
+const menuList = computed<Menu[]>(() => {
+  const menus: Menu[] = [
+    {
+      label: "Home",
+      items: [
+        {
+          label: "Dashboard",
+          icon: "pi pi-fw pi-id-card",
+          to: "/"
+        },
+        ...(runtimeStore.isClientMode
+          ? []
+          : [
+              {
+                label: "Metadata",
+                icon: "pi pi-fw pi-file",
+                to: "/metadata"
+              }
+            ])
+      ]
+    }
+  ];
+
+  if (!runtimeStore.isServerMode) {
+    menus.push({
+      label: "Files",
+      items: [
+        {
+          label: "Files",
+          icon: "pi pi-fw pi-folder-open",
+          to: "/files"
+        }
+      ]
+    });
   }
-];
+
+  menus.push({
+    label: "Algorithms",
+    items: runtimeStore.isClientMode
+      ? [
+          {
+            label: "Instances",
+            icon: "pi pi-fw pi-chart-line",
+            to: "/algorithms/instances"
+          }
+        ]
+      : [
+          {
+            label: "Create instance",
+            icon: "pi pi-fw pi-sparkles",
+            to: "/algorithms/create-instance"
+          },
+          {
+            label: "Instances",
+            icon: "pi pi-fw pi-chart-line",
+            to: "/algorithms/instances"
+          }
+        ]
+  });
+
+  if (!runtimeStore.isClientMode) {
+    menus.push({
+      label: "Collaboration",
+      items: [
+        {
+          label: "Project Agreements",
+          icon: "pi pi-fw pi-file-edit",
+          to: "/project-agreements"
+        }
+      ]
+    });
+  }
+
+  return menus;
+});
 
 const route = useRoute();
 
-const sidebar: MenuProps = {
-  menu: menuList,
+const sidebar = computed<MenuProps>(() => ({
+  menu: menuList.value,
   route: route
-};
+}));
 
 onMounted(async () => {
   await catalogStore.getOwnCatalog();

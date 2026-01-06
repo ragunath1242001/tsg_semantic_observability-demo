@@ -15,6 +15,7 @@ import { useRoute, useRouter } from "vue-router";
 import AlgorithmUIComponent from "../../components/event-ui/AlgorithmUIComponent.vue";
 import JobComponent from "../../components/JobComponent.vue";
 import { useAlgorithmInstancesStore } from "../../stores/algorithm-instances";
+import { useRuntimeStore } from "../../stores/runtime";
 import { getStatusSeverity } from "../../utils/algorithm-instance-status";
 import { triggerBlobDownload } from "../../utils/downloadBlob";
 
@@ -22,6 +23,7 @@ const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 const algorithmInstancesStore = useAlgorithmInstancesStore();
+const runtimeStore = useRuntimeStore();
 
 const showAlgorithmEvents = ref(true);
 const showInternalEvents = ref(false);
@@ -392,6 +394,7 @@ onUnmounted(() => {
       </template>
     </Card>
     <JobComponent
+      v-if="!runtimeStore.isServerMode"
       class="col-span-12"
       :algorithm-instance-id="algorithmInstanceId"
       :debug="false" />

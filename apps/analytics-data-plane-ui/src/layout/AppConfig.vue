@@ -34,10 +34,12 @@ const updateSettings = async () => {
       :toast="toast"
       :runtime-store="runtimeStore" />
 
-    <div class="text-xl mt-2">Project Agreements</div>
-    <FormField label="Require agreement for analysis" :label-width="8">
-      <ToggleSwitch v-model="runtimeStore.requireProjectAgreement" />
-    </FormField>
+    <template v-if="!runtimeStore.isClientMode">
+      <div class="text-xl mt-2">Project Agreements</div>
+      <FormField label="Require agreement for analysis" :label-width="8">
+        <ToggleSwitch v-model="runtimeStore.requireProjectAgreement" />
+      </FormField>
+    </template>
     <Button label="Save Settings" class="mt-4" @click="updateSettings" />
   </Drawer>
 </template>

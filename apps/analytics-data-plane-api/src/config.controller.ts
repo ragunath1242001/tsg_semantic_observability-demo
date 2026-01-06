@@ -28,7 +28,7 @@ import {
   ApiForbiddenResponseDefault
 } from "@tsg-dsp/common-dtos";
 
-import { RuntimeConfig } from "./config.js";
+import { RootConfig, RuntimeConfig } from "./config.js";
 import { RuntimeConfigDto } from "./config.schemas.js";
 
 @Roles("controlplane_admin")
@@ -36,7 +36,10 @@ import { RuntimeConfigDto } from "./config.schemas.js";
 @ApiTags("Settings")
 @ApiOAuth2(["controlplane_admin"])
 export class ConfigController {
-  constructor(private readonly runtimeConfig: RuntimeConfig) {}
+  constructor(
+    private readonly runtimeConfig: RuntimeConfig,
+    private readonly rootConfig: RootConfig
+  ) {}
 
   @Get()
   @ApiOperation({
@@ -49,6 +52,25 @@ export class ConfigController {
   @DisableRolesGuard()
   async getSettings(): Promise<RuntimeConfig> {
     return this.runtimeConfig;
+  }
+
+  @Get("mode")
+  @ApiOperation({
+    summary: "Retrieve runtime mode",
+    description:
+      "Retrieves the analytics data plane runtime mode (standalone/client/server)."
+  })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { mode: { type: "string", example: "standalone" } }
+    }
+  })
+  @ApiForbiddenResponseDefault()
+  @DisableOAuthGuard()
+  @DisableRolesGuard()
+  async getMode(): Promise<{ mode: string }> {
+    return { mode: this.rootConfig.split.mode };
   }
 
   @Post("update")

@@ -1,6 +1,7 @@
 export * from "./algorithm-definition.dto.js";
 export * from "./algorithm-event.dto.js";
 export * from "./algorithm-instance.dto.js";
+export * from "./bridge.dto.js";
 export * from "./create-algorithm-event.dto.js";
 export * from "./create-internal-event.dto.js";
 export * from "./files.dto.js";

@@ -1,9 +1,12 @@
-import { Module } from "@nestjs/common";
+import { Module, OnModuleInit } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CommonDataPlaneModule } from "@tsg-dsp/common-data-plane-api";
 
 import { AlgorithmInstancesModule } from "../algorithm-instances/algorithm-instances.module.js";
+import { BridgeWsClientListeners } from "../bridge/client/bridge-ws-client.listeners.js";
+import { SplitModeModule } from "../bridge/split-mode/split-mode.module.js";
 import { DataPlaneModule } from "../dataplane/dataplane.module.js";
+import { splitModules } from "../utils/split-mode.js";
 import { AlgorithmEventDao } from "./algorithm-event.dao.js";
 import { EventsController } from "./events.controller.js";
 import { EventsManagementController } from "./events.management.controller.js";
@@ -12,12 +15,26 @@ import { InternalEventDao } from "./internal-event.dao.js";
 
 @Module({
   imports: [
-    DataPlaneModule,
+    ...splitModules([DataPlaneModule]),
     AlgorithmInstancesModule,
+    SplitModeModule,
     TypeOrmModule.forFeature([AlgorithmEventDao, InternalEventDao]),
     CommonDataPlaneModule
   ],
-  controllers: [EventsController, EventsManagementController],
-  providers: [EventsService]
+  controllers: splitModules(
+    [EventsController],
+    [EventsController, EventsManagementController]
+  ),
+  providers: [EventsService],
+  exports: [EventsService]
 })
-export class EventsModule {}
+export class EventsModule implements OnModuleInit {
+  constructor(
+    private readonly eventsService: EventsService,
+    private readonly bridgeWsClientListeners: BridgeWsClientListeners
+  ) {}
+
+  onModuleInit(): void {
+    this.bridgeWsClientListeners.setAlgorithmEventHandler(this.eventsService);
+  }
+}

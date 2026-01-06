@@ -12,7 +12,7 @@ export function setupApp(app: INestApplication) {
   }
   app.use(
     session({
-      name: "connect.sid.tsgcp",
+      name: process.env["SESSION_NAME"] || "connect.sid.tsgcp",
       secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
       resave: false,
       saveUninitialized: false

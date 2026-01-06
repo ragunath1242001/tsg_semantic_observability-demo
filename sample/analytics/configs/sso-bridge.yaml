@@ -1,0 +1,184 @@
+server:
+  port: 3700
+  listen: "0.0.0.0"
+  publicAddress: http://localhost:3750
+  publicDomain: localhost:3750
+
+db:
+  type: "sqlite"
+  database: "sso-bridge.db"
+
+initRoles:
+  - name: ssobridge_admin
+    description: SSO bridge administrator role with full access
+    isAdminRole: true
+  - name: ssobridge_user
+    description: SSO bridge regular user role with limited access
+  - name: wallet_view_did
+    description: View DID
+  - name: wallet_manage_keys
+    description: Manage keys
+  - name: wallet_use_keys
+    description: Use keys
+  - name: wallet_view_own_credentials
+    description: View own credentials
+  - name: wallet_view_all_credentials
+    description: View all credentials
+  - name: wallet_manage_own_credentials
+    description: Manage own credentials
+  - name: wallet_manage_all_credentials
+    description: Manage all credentials
+  - name: wallet_issue_credentials
+    description: Issue credentials
+  - name: wallet_view_presentations
+    description: View presentations
+  - name: wallet_manage_clients
+    description: Manage clients
+  - name: controlplane_admin
+    description: Control Plane Admin role
+    isAdminRole: true
+  - name: controlplane_dataplane
+    description: Control Plane Data Plane role
+
+initClients:
+  # Authority clients
+  - clientId: authority-wallet
+    clientSecret: authority-wallet
+    name: Authority Wallet
+    description: Authority Wallet
+    redirectUris:
+      - http://localhost:3450/.*
+    roles:
+      - wallet_view_did
+      - wallet_manage_keys
+      - wallet_use_keys
+      - wallet_view_own_credentials
+      - wallet_view_all_credentials
+      - wallet_manage_own_credentials
+      - wallet_manage_all_credentials
+      - wallet_issue_credentials
+      - wallet_view_presentations
+      - wallet_manage_clients
+    secretName: sso-authority-wallet-secret
+
+  # Alfa clients
+  - clientId: alfa-wallet
+    clientSecret: alfa-wallet
+    name: Alfa Wallet
+    description: Alfa Wallet
+    redirectUris:
+      - http://localhost:3550/.*
+    roles:
+      - wallet_view_did
+      - wallet_manage_keys
+      - wallet_use_keys
+      - wallet_view_own_credentials
+      - wallet_view_all_credentials
+      - wallet_manage_own_credentials
+      - wallet_manage_all_credentials
+      - wallet_issue_credentials
+      - wallet_view_presentations
+      - wallet_manage_clients
+    secretName: sso-alfa-wallet-secret
+
+  - clientId: alfa-control-plane
+    clientSecret: alfa-control-plane
+    name: Alfa Control Plane
+    description: Alfa Control Plane
+    redirectUris:
+      - http://localhost:3551/.*
+    roles:
+      - wallet_view_did
+      - wallet_issue_credentials
+      - wallet_use_keys
+      - wallet_view_all_credentials
+      - wallet_view_presentations
+      - controlplane_admin
+      - controlplane_dataplane
+    secretName: sso-alfa-control-plane-secret
+
+  - clientId: alfa-analytics-data-plane
+    clientSecret: alfa-analytics-data-plane
+    name: Alfa Analytics Data Plane
+    description: Alfa Analytics Data Plane
+    redirectUris:
+      - http://localhost:3552/.*
+    roles:
+      - controlplane_dataplane
+    secretName: sso-alfa-analytics-data-plane-secret
+
+  # Bravo clients
+  - clientId: bravo-wallet
+    clientSecret: bravo-wallet
+    name: Bravo Wallet
+    description: Bravo Wallet
+    redirectUris:
+      - http://localhost:3650/.*
+    roles:
+      - wallet_view_did
+      - wallet_manage_keys
+      - wallet_use_keys
+      - wallet_view_own_credentials
+      - wallet_view_all_credentials
+      - wallet_manage_own_credentials
+      - wallet_manage_all_credentials
+      - wallet_issue_credentials
+      - wallet_view_presentations
+      - wallet_manage_clients
+    secretName: sso-bravo-wallet-secret
+
+  - clientId: bravo-control-plane
+    clientSecret: bravo-control-plane
+    name: Bravo Control Plane
+    description: Bravo Control Plane
+    redirectUris:
+      - http://localhost:3651/.*
+    roles:
+      - wallet_view_did
+      - wallet_issue_credentials
+      - wallet_use_keys
+      - wallet_view_all_credentials
+      - wallet_view_presentations
+      - controlplane_admin
+      - controlplane_dataplane
+    secretName: sso-bravo-control-plane-secret
+
+  - clientId: bravo-analytics-data-plane-server
+    clientSecret: bravo-analytics-data-plane-server
+    name: Bravo Analytics Data Plane Server
+    description: Bravo Analytics Data Plane Server
+    redirectUris:
+      - http://localhost:3652/.*
+    roles:
+      - controlplane_dataplane
+    secretName: sso-bravo-analytics-data-plane-server-secret
+
+  - clientId: bravo-analytics-data-plane-client
+    clientSecret: bravo-analytics-data-plane-client
+    name: Bravo Analytics Data Plane Client
+    description: Bravo Analytics Data Plane Client
+    redirectUris:
+      - http://localhost:3653/.*
+    roles:
+      - controlplane_dataplane
+    secretName: sso-bravo-analytics-data-plane-client-secret
+
+initUsers:
+  - username: tsg
+    password: tsg
+    email: tsg@example.com
+    roles:
+      - ssobridge_admin
+      - ssobridge_user
+      - wallet_view_did
+      - wallet_manage_keys
+      - wallet_use_keys
+      - wallet_view_own_credentials
+      - wallet_view_all_credentials
+      - wallet_manage_own_credentials
+      - wallet_manage_all_credentials
+      - wallet_issue_credentials
+      - wallet_view_presentations
+      - wallet_manage_clients
+      - controlplane_admin
+      - controlplane_dataplane

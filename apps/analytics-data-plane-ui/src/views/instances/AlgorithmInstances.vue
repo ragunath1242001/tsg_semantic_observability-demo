@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { useToast } from "primevue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { useAlgorithmInstancesStore } from "../../stores/algorithm-instances";
+import { useRuntimeStore } from "../../stores/runtime";
 import { getStatusSeverity } from "../../utils/algorithm-instance-status";
 
 const algorithmStore = useAlgorithmInstancesStore();
+const runtimeStore = useRuntimeStore();
 const toast = useToast();
 const router = useRouter();
+
+const isReadOnly = computed(() => runtimeStore.isClientMode);
 
 const selectedAlgorithmInstance = ref();
 
@@ -158,7 +162,7 @@ onMounted(async () => {
             </template>
           </Column>
 
-          <Column header="Actions">
+          <Column v-if="!isReadOnly" header="Actions">
             <template #body="props">
               <div class="flex gap-2">
                 <Button
@@ -174,6 +178,7 @@ onMounted(async () => {
             <div class="text-center py-8">
               <p class="text-gray-500 mb-4">No algorithm instances found</p>
               <Button
+                v-if="!isReadOnly"
                 icon="pi pi-plus"
                 label="Create your first algorithm instance"
                 @click="router.push('/algorithms/create-instance')" />
