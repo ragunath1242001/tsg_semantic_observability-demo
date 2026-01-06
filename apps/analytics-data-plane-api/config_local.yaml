@@ -23,3 +23,7 @@ runtime:
 
 orchestration:
   type: docker
+
+split:
+  mode: standalone
+  # bridgePeerWsUrl: "ws://server:3003"

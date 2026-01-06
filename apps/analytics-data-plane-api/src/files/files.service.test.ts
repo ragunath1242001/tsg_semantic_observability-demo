@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -16,6 +17,7 @@ import { SetupServer, setupServer } from "msw/node";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service.js";
 import { FilesConfig, RootConfig } from "../config.js";
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { FilesService } from "./files.service.js";
@@ -89,6 +91,13 @@ describe("FilesService", () => {
         {
           provide: ControlPlaneConfig,
           useValue: config.controlPlane
+        },
+        {
+          provide: BridgeWsClientService,
+          useValue: {
+            emit: jest.fn(),
+            on: jest.fn()
+          }
         },
         {
           provide: AuthConfig,
@@ -255,12 +264,11 @@ describe("FilesService", () => {
       ] as Express.Multer.File[];
 
       const mockContent = "col1,col2\nval1,val2\nval3,val4";
-      mockFiles.forEach(async (mockFile) => {
-        await fs.writeFile(
-          path.join(testUploadDir, mockFile.filename),
-          mockContent
-        );
-      });
+      await Promise.all(
+        mockFiles.map((mockFile) =>
+          fs.writeFile(path.join(testUploadDir, mockFile.filename), mockContent)
+        )
+      );
 
       await filesService.uploadFiles(mockFiles);
       await filesService.createMetadata(mockFiles);

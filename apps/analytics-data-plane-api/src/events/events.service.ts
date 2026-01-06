@@ -3,7 +3,8 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  Logger
+  Logger,
+  Optional
 } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -25,8 +26,11 @@ import { MoreThan, Repository } from "typeorm";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
+import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service.js";
+import { SplitModeService } from "../bridge/split-mode/split-mode.service.js";
 import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
+import { INTERNAL_EVENTS } from "../internal-events/internal-events.js";
 import { getAxiosConfigFromDataAddress } from "../utils/axios.js";
 import { DataPlaneError } from "../utils/errors/error.js";
 import { parseToken } from "../utils/token.js";
@@ -38,14 +42,17 @@ export class EventsService {
   constructor(
     private readonly catalog: CatalogClientService,
     private readonly transfer: TransferClientService,
-    @Inject(ITransferHandler)
-    private readonly transferHandler: AnalyticsTransferHandler,
     private readonly algorithmInstancesService: AlgorithmInstancesService,
     private readonly eventEmitter: EventEmitter2,
     @InjectRepository(AlgorithmEventDao)
     private readonly algorithmEventsRepository: Repository<AlgorithmEventDao>,
     @InjectRepository(InternalEventDao)
-    private readonly internalEventsRepository: Repository<InternalEventDao>
+    private readonly internalEventsRepository: Repository<InternalEventDao>,
+    private readonly splitMode: SplitModeService,
+    private readonly bridgeWs: BridgeWsClientService,
+    @Optional()
+    @Inject(ITransferHandler)
+    private readonly transferHandler?: AnalyticsTransferHandler
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -76,6 +83,10 @@ export class EventsService {
     algorithmInstance: AlgorithmInstanceDao;
     createEvent: CreateAlgorithmEventDto;
   }) {
+    this.splitMode.requireTransferHandler(
+      this.transferHandler,
+      "Creating own algorithm events with forwarding"
+    );
     this.logger.log(
       `Creating own event for algorithm instance ${algorithmInstance.id} with event ID ${createEvent.eventId}`
     );
@@ -113,8 +124,9 @@ export class EventsService {
               recipientDetail.dataset,
               recipient
             );
+            // Safe: requireTransferHandler above ensures transferHandler is defined
             const transfer =
-              await this.transferHandler.requestTransferForParticipant(
+              await this.transferHandler!.requestTransferForParticipant(
                 recipientDetail,
                 dataset,
                 algorithmInstance.id,
@@ -232,13 +244,22 @@ export class EventsService {
         algorithmInstanceId
       )
     ) {
-      transferIds = await this.createOwnAlgorithmEvent({
-        algorithmInstance,
-        createEvent
-      });
+      // Job-originated events: in client mode we only persist locally (no transfer forwarding).
+      if (this.splitMode.hasTransferCapability) {
+        transferIds = await this.createOwnAlgorithmEvent({
+          algorithmInstance,
+          createEvent
+        });
+      }
       isOwnEvent = true;
       createdBy = await this.catalog.getParticipantId();
     } else {
+      if (!this.transferHandler) {
+        throw new DataPlaneError(
+          "Transfer-based event creation is not available in this runtime mode",
+          HttpStatus.NOT_IMPLEMENTED
+        ).andLog(this.logger);
+      }
       const transfer = await this.transferHandler.getTransferBySecret(token);
       await this.createRemoteAlgorithmEvent({
         algorithmInstance,
@@ -261,11 +282,75 @@ export class EventsService {
       recipients: createEvent.recipients
     });
 
+    if (
+      this.splitMode.isClientMode &&
+      this.algorithmInstancesService.isValidJobAccessToken(
+        token,
+        algorithmInstanceId
+      )
+    ) {
+      // Wait for server acknowledgment before returning - this ensures the event
+      // exists on the server before any subsequent data upload arrives
+      await this.bridgeWs.emitAlgorithmEventCreate({
+        algorithmInstanceId,
+        event: createEvent
+      });
+    }
+
     if (!isOwnEvent) {
       this.eventEmitter.emit(`event.created.${algorithmInstanceId}`);
+
+      // Emit internal event for bridge propagation to clients (server mode)
+      if (this.splitMode.isServerMode) {
+        this.eventEmitter.emit(INTERNAL_EVENTS.ALGORITHM_EVENTS_RECEIVED, {
+          algorithmInstanceId,
+          event: createEvent,
+          createdBy,
+          transferIds
+        });
+      }
     }
 
     return savedEvent;
+  }
+
+  async createAlgorithmEventFromBridge({
+    algorithmInstanceId,
+    createEvent
+  }: {
+    algorithmInstanceId: string;
+    createEvent: CreateAlgorithmEventDto;
+  }) {
+    this.splitMode.requireTransferHandler(
+      this.transferHandler,
+      "Creating bridged algorithm events"
+    );
+    this.logger.log(
+      `Creating bridged algorithm event for instance ${algorithmInstanceId} with event ID ${createEvent.eventId}`
+    );
+    const algorithmInstance =
+      await this.algorithmInstancesService.getAlgorithmInstance(
+        algorithmInstanceId
+      );
+
+    const transferIds = await this.createOwnAlgorithmEvent({
+      algorithmInstance,
+      createEvent
+    });
+
+    const createdBy = await this.catalog.getParticipantId();
+    return await this.algorithmEventsRepository.save({
+      id: `urn:uuid:${crypto.randomUUID()}`,
+      eventId: createEvent.eventId,
+      algorithmInstance: algorithmInstance,
+      name: createEvent.name,
+      number: createEvent.number,
+      timestamp: createEvent.timestamp,
+      createdBy,
+      isOwnEvent: true,
+      transferIds,
+      recipients: createEvent.recipients
+    });
   }
 
   async uploadAlgorithmEventData({
@@ -300,24 +385,41 @@ export class EventsService {
         token
       );
       event.data = eventData;
-      await Promise.all(
-        event.recipients?.map(async (recipient) => {
-          const recipientTransfer = algorithmInstance.transfers.find(
-            (transfer) =>
-              transfer.remoteParty === recipient && transfer.role === "consumer"
-          );
-          if (recipientTransfer) {
-            await this.forwardEventDataToParticipant(
-              recipientTransfer,
-              algorithmInstanceId,
-              eventId,
-              eventData
+      if (this.splitMode.hasTransferCapability) {
+        await Promise.all(
+          event.recipients?.map(async (recipient) => {
+            const recipientTransfer = algorithmInstance.transfers.find(
+              (transfer) =>
+                transfer.remoteParty === recipient &&
+                transfer.role === "consumer"
             );
-          }
-        }) ?? []
-      );
+            if (recipientTransfer) {
+              await this.forwardEventDataToParticipant(
+                recipientTransfer,
+                algorithmInstanceId,
+                eventId,
+                eventData
+              );
+            }
+          }) ?? []
+        );
+      }
+
+      if (this.splitMode.isClientMode) {
+        await this.bridgeWs.emitAlgorithmEventData({
+          algorithmInstanceId,
+          eventId,
+          eventData
+        });
+      }
       await this.algorithmEventsRepository.save(event);
     } else {
+      if (!this.transferHandler) {
+        throw new DataPlaneError(
+          "Transfer-based event data upload is not available in this runtime mode",
+          HttpStatus.NOT_IMPLEMENTED
+        ).andLog(this.logger);
+      }
       const transfer = await this.transferHandler.getTransferBySecret(token);
 
       if (
@@ -336,6 +438,18 @@ export class EventsService {
         }
         event.data = eventData;
         await this.algorithmEventsRepository.save(event);
+
+        // Emit internal event for bridge propagation to clients (server mode)
+        if (this.splitMode.isServerMode) {
+          this.eventEmitter.emit(
+            INTERNAL_EVENTS.ALGORITHM_EVENT_DATA_RECEIVED,
+            {
+              algorithmInstanceId,
+              eventId,
+              eventData
+            }
+          );
+        }
       } else {
         throw new DataPlaneError(
           `No transfer found or not linked to the algorithm instance`,
@@ -343,6 +457,60 @@ export class EventsService {
         ).andLog(this.logger);
       }
     }
+  }
+
+  async uploadAlgorithmEventDataFromBridge({
+    algorithmInstanceId,
+    eventId,
+    eventData
+  }: {
+    algorithmInstanceId: string;
+    eventId: string;
+    eventData?: Buffer;
+  }): Promise<void> {
+    this.splitMode.requireTransferHandler(
+      this.transferHandler,
+      "Uploading bridged algorithm event data"
+    );
+    if (!eventData) {
+      throw new DataPlaneError(
+        `No data provided for algorithm event ${eventId}`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+
+    const algorithmInstance =
+      await this.algorithmInstancesService.getAlgorithmInstance(
+        algorithmInstanceId
+      );
+    const event = await this.getAlgorithmEvent(algorithmInstanceId, eventId);
+
+    if (!event.isOwnEvent) {
+      throw new DataPlaneError(
+        `Refusing bridged data upload for non-own event ${eventId}`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+
+    event.data = eventData;
+    await Promise.all(
+      event.recipients?.map(async (recipient) => {
+        const recipientTransfer = algorithmInstance.transfers.find(
+          (transfer) =>
+            transfer.remoteParty === recipient && transfer.role === "consumer"
+        );
+        if (recipientTransfer) {
+          await this.forwardEventDataToParticipant(
+            recipientTransfer,
+            algorithmInstanceId,
+            eventId,
+            eventData
+          );
+        }
+      }) ?? []
+    );
+
+    await this.algorithmEventsRepository.save(event);
   }
 
   async getEventData({
@@ -384,6 +552,12 @@ export class EventsService {
       );
       return event.data;
     } else {
+      if (!this.transferHandler) {
+        throw new DataPlaneError(
+          "Transfer-based event retrieval is not available in this runtime mode",
+          HttpStatus.NOT_IMPLEMENTED
+        ).andLog(this.logger);
+      }
       const transfer = await this.transferHandler.getTransferBySecret(token);
 
       if (
@@ -612,5 +786,99 @@ export class EventsService {
         `forwarding event data to participant ${transfer.remoteParty}`
       ).andLog(this.logger);
     }
+  }
+
+  /**
+   * Upserts a remote algorithm event received from the bridge server.
+   * This is called on client mode when the server forwards events from other participants.
+   */
+  async upsertRemoteAlgorithmEventFromBridge(body: {
+    algorithmInstanceId: string;
+    event: {
+      eventId: string;
+      name?: string;
+      number?: number;
+      timestamp: string;
+      recipients?: string[];
+    };
+    createdBy: string;
+    transferIds?: string[];
+  }): Promise<void> {
+    this.logger.log(
+      `Upserting remote algorithm event ${body.event.eventId} for instance ${body.algorithmInstanceId} from bridge`
+    );
+
+    const algorithmInstance =
+      await this.algorithmInstancesService.getAlgorithmInstance(
+        body.algorithmInstanceId
+      );
+
+    // Check if event already exists
+    const existingEvent = await this.algorithmEventsRepository.findOne({
+      where: {
+        eventId: body.event.eventId,
+        algorithmInstance: { id: body.algorithmInstanceId }
+      }
+    });
+
+    if (existingEvent) {
+      this.logger.debug(
+        `Event ${body.event.eventId} already exists, skipping upsert`
+      );
+      return;
+    }
+
+    await this.algorithmEventsRepository.save({
+      id: `urn:uuid:${crypto.randomUUID()}`,
+      eventId: body.event.eventId,
+      algorithmInstance,
+      name: body.event.name,
+      number: body.event.number,
+      timestamp: body.event.timestamp,
+      createdBy: body.createdBy,
+      isOwnEvent: false,
+      transferIds: body.transferIds,
+      recipients: body.event.recipients
+    });
+
+    this.eventEmitter.emit(`event.created.${body.algorithmInstanceId}`);
+  }
+
+  /**
+   * Applies event data received from the bridge server.
+   * This is called on client mode when the server forwards event data from other participants.
+   */
+  async applyRemoteAlgorithmEventDataFromBridge(body: {
+    algorithmInstanceId: string;
+    eventId: string;
+    eventData?: Uint8Array;
+  }): Promise<void> {
+    this.logger.log(
+      `Applying remote algorithm event data for ${body.eventId} (instance ${body.algorithmInstanceId}) from bridge`
+    );
+
+    if (!body.eventData) {
+      this.logger.warn(
+        `No event data provided for event ${body.eventId}, skipping`
+      );
+      return;
+    }
+
+    const event = await this.algorithmEventsRepository.findOne({
+      where: {
+        eventId: body.eventId,
+        algorithmInstance: { id: body.algorithmInstanceId }
+      }
+    });
+
+    if (!event) {
+      throw new DataPlaneError(
+        `Algorithm event with ID ${body.eventId} not found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger);
+    }
+
+    event.data = Buffer.from(body.eventData);
+    await this.algorithmEventsRepository.save(event);
   }
 }

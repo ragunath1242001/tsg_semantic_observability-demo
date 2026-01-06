@@ -8,6 +8,7 @@ import { diskStorage } from "multer";
 
 import { RootConfig } from "../config.js";
 import { DataPlaneModule } from "../dataplane/dataplane.module.js";
+import { splitModules } from "../utils/split-mode.js";
 import { FilesController } from "./files.controller.js";
 import { FilesService } from "./files.service.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
@@ -15,7 +16,7 @@ import { FileMetadataDao } from "./filesMetadata.dao.js";
 @Module({
   imports: [
     TypeOrmModule.forFeature([FileMetadataDao]),
-    DataPlaneModule,
+    ...splitModules([DataPlaneModule]),
     CommonDataPlaneModule,
     MulterModule.register({
       storage: diskStorage({

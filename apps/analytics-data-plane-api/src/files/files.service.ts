@@ -1,4 +1,10 @@
-import { HttpStatus, Injectable, Logger, StreamableFile } from "@nestjs/common";
+import {
+  HttpStatus,
+  Injectable,
+  Logger,
+  Optional,
+  StreamableFile
+} from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CSVW, FileUpdateDto } from "@tsg-dsp/analytics-data-plane-dtos";
@@ -18,24 +24,88 @@ import * as fsPromises from "fs/promises";
 import { finished } from "stream/promises";
 import { Repository } from "typeorm";
 
+import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service.js";
 import { FilesConfig, RootConfig } from "../config.js";
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
+import { mergeFileDatasetUpdate } from "../utils/dataset-file-merge.js";
 import { DataPlaneError } from "../utils/errors/error.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
 
 @Injectable()
 export class FilesService {
   constructor(
-    private readonly dataplaneService: DataPlaneService,
     @InjectRepository(FileMetadataDao)
     private readonly fileRepository: Repository<FileMetadataDao>,
     private readonly filesConfig: FilesConfig,
     private readonly rootConfig: RootConfig,
-    private readonly catalog: CatalogClientService
+    private readonly catalog: CatalogClientService,
+    private readonly bridgeWs: BridgeWsClientService,
+    @Optional()
+    private readonly dataplaneService?: DataPlaneService
   ) {}
 
   private readonly logger = new Logger(this.constructor.name);
   private readonly accessTokens = new Map<string, string>();
+
+  private buildDatasetDto(params: {
+    datasetId: string;
+    title?: string;
+    fileSizeInBytes?: number;
+    mediaType?: string;
+    conformsTo?: string[];
+    includePolicy?: boolean;
+    policyAssigner?: string;
+  }): DatasetDto {
+    const {
+      datasetId,
+      title,
+      fileSizeInBytes,
+      mediaType,
+      conformsTo,
+      includePolicy,
+      policyAssigner
+    } = params;
+
+    const datasetDto = new Dataset({
+      id: datasetId,
+      distribution: [
+        new Distribution({
+          byteSize:
+            fileSizeInBytes !== undefined ? `${fileSizeInBytes}` : undefined,
+          conformsTo,
+          title,
+          issued: new Date().toISOString(),
+          accessService: new DataService({
+            endpointDescription: "Dataspace Protocol API",
+            endpointURL: this.rootConfig.controlPlane?.controlEndpoint
+          }),
+          format: "tsg:analytics",
+          mediaType,
+          description: title ? [`Data file ${title}`] : undefined
+        })
+      ],
+      title,
+      hasPolicy:
+        includePolicy && policyAssigner
+          ? [
+              new Offer({
+                assigner: policyAssigner,
+                permission: [
+                  new Permission({
+                    action: "odrl:use"
+                  })
+                ]
+              })
+            ]
+          : undefined
+    }).serialize();
+
+    return datasetDto as unknown as DatasetDto;
+  }
+
+  private get isClientMode(): boolean {
+    return this.rootConfig.split.mode === "client";
+  }
 
   async getAllFileMetadata(): Promise<FileMetadataDao[]> {
     return this.fileRepository.find({});
@@ -134,14 +204,14 @@ export class FilesService {
     return accessToken;
   }
 
-  async processFile(file: Express.Multer.File): Promise<any[]> {
-    const records: any[] = [];
+  async processFile(file: Express.Multer.File): Promise<string[][]> {
+    const records: string[][] = [];
     const parser = fs
       .createReadStream(this.filesConfig.path + "/" + file.filename)
       .pipe(parse({ delimiter: ",", to_line: 10 }));
     parser.on("readable", () => {
-      let record;
-      while ((record = parser.read()) !== null) {
+      let record: string[] | null;
+      while ((record = parser.read() as string[] | null) !== null) {
         records.push(record);
       }
     });
@@ -154,7 +224,7 @@ export class FilesService {
     dbentry: FileMetadataDao
   ): Promise<string> {
     const csv = await this.processFile(file);
-    const columns: { name: "string" }[] = csv[0].map((column: string) => {
+    const columns: { name: string }[] = csv[0].map((column: string) => {
       return { name: column };
     });
     const csvw = {
@@ -199,47 +269,64 @@ export class FilesService {
             );
           }
         }
-        const catalog = await this.catalog.getOwnCatalog();
         const datasetId = dbentry.datasetId ?? `urn:uuid:${dbentry.identifier}`;
-        const datasetDto = new Dataset({
-          id: datasetId,
-          distribution: [
-            new Distribution({
-              byteSize: `${file.size}`,
-              conformsTo: conformsTo,
-              title: file.originalname,
-              issued: new Date().toISOString(),
-              accessService: new DataService({
-                endpointDescription: "Dataspace Protocol API",
-                endpointURL: `${this.rootConfig.controlPlane?.controlEndpoint}`
-              }),
-              format: "tsg:analytics",
-              mediaType: file.mimetype,
-              description: [`Data file ${file.originalname}`]
-            })
-          ],
+
+        const datasetDtoNoPolicy = this.buildDatasetDto({
+          datasetId,
           title: file.originalname,
-          hasPolicy: [
-            new Offer({
-              assigner: catalog.publisher as string,
-              permission: [
-                new Permission({
-                  action: "odrl:use"
-                })
-              ]
-            })
-          ]
-        }).serialize();
-        if (dbentry.datasetId) {
-          await this.dataplaneService.updateDataset(
-            dbentry.datasetId,
-            datasetDto
-          );
+          fileSizeInBytes: file.size,
+          mediaType: file.mimetype,
+          conformsTo
+        });
+
+        // In client mode we only maintain local metadata; dataset publication happens server-side.
+        if (this.isClientMode || !this.dataplaneService) {
+          if (!dbentry.datasetId) {
+            await this.fileRepository.update(dbentry.identifier, {
+              datasetId
+            });
+          }
+
+          if (this.isClientMode) {
+            // In split.client mode, the server side of the bridge does not run a FilesService.
+            // Exchange dataset updates instead so the server can sync/publish datasets.
+            this.bridgeWs.emit("client.datasets.upsert", {
+              dataset: datasetDtoNoPolicy
+            });
+          }
+          return;
+        }
+
+        const catalog = await this.catalog.getOwnCatalog();
+        const datasetDto = this.buildDatasetDto({
+          datasetId,
+          title: file.originalname,
+          fileSizeInBytes: file.size,
+          mediaType: file.mimetype,
+          conformsTo,
+          includePolicy: true,
+          policyAssigner: catalog.publisher as string
+        });
+
+        let existingDataset: DatasetDto | undefined;
+        try {
+          existingDataset = await this.dataplaneService.getDataset(datasetId);
+        } catch (_err) {
+          // If it doesn't exist yet, we'll create it below.
+        }
+
+        const merged = mergeFileDatasetUpdate(existingDataset, datasetDto, {
+          policyAssigner: catalog.publisher as string
+        });
+
+        if (existingDataset) {
+          await this.dataplaneService.updateDataset(datasetId, merged);
         } else {
-          await this.dataplaneService.addDataset(datasetDto);
-          await this.fileRepository.update(dbentry.identifier, {
-            datasetId: datasetId
-          });
+          await this.dataplaneService.addDataset(merged);
+        }
+
+        if (!dbentry.datasetId) {
+          await this.fileRepository.update(dbentry.identifier, { datasetId });
         }
       })
     );
@@ -267,6 +354,12 @@ export class FilesService {
     }
     if (!file.datasetId) {
       throw new DataPlaneError("Dataset not found", HttpStatus.NOT_FOUND);
+    }
+    if (!this.dataplaneService) {
+      throw new DataPlaneError(
+        "Dataset access is not available in this runtime mode",
+        HttpStatus.NOT_IMPLEMENTED
+      );
     }
     return await this.dataplaneService.getDataset(file.datasetId);
   }
@@ -304,6 +397,68 @@ export class FilesService {
       dbentry.csvw = fileUpdateDto.csvw;
     }
     await this.fileRepository.save(dbentry);
+
+    const datasetId = dbentry.datasetId;
+    const conformsTo: string[] = [];
+    if (dbentry.csvw) {
+      conformsTo.push(
+        `${this.rootConfig.server.publicAddress}/files/${dbentry.identifier}/csvw`
+      );
+    }
+
+    if (this.isClientMode) {
+      const clientDatasetId = datasetId ?? `urn:uuid:${dbentry.identifier}`;
+
+      // Persist derived dataset id so later operations (e.g., delete) can reference it.
+      if (!dbentry.datasetId) {
+        await this.fileRepository.update(dbentry.identifier, {
+          datasetId: clientDatasetId
+        });
+      }
+      const datasetDto = this.buildDatasetDto({
+        datasetId: clientDatasetId,
+        title: dbentry.originalFileName,
+        fileSizeInBytes: dbentry.fileSizeInBytes,
+        mediaType: dbentry.mediaType,
+        conformsTo
+      });
+
+      this.bridgeWs.emit("client.datasets.upsert", {
+        dataset: datasetDto
+      });
+      return;
+    }
+
+    // Standalone/server: update the published dataset if it exists.
+    if (datasetId && this.dataplaneService) {
+      const catalog = await this.catalog.getOwnCatalog();
+      const datasetDto = this.buildDatasetDto({
+        datasetId,
+        title: dbentry.originalFileName,
+        fileSizeInBytes: dbentry.fileSizeInBytes,
+        mediaType: dbentry.mediaType,
+        conformsTo,
+        includePolicy: true,
+        policyAssigner: catalog.publisher as string
+      });
+
+      let existingDataset: DatasetDto | undefined;
+      try {
+        existingDataset = await this.dataplaneService.getDataset(datasetId);
+      } catch (_err) {
+        // If missing, we'll create it.
+      }
+
+      const merged = mergeFileDatasetUpdate(existingDataset, datasetDto, {
+        policyAssigner: catalog.publisher as string
+      });
+
+      if (existingDataset) {
+        await this.dataplaneService.updateDataset(datasetId, merged);
+      } else {
+        await this.dataplaneService.addDataset(merged);
+      }
+    }
   }
 
   async updateFile(identifier: string, file: Express.Multer.File) {
@@ -324,6 +479,75 @@ export class FilesService {
     dbentry.mediaType = file.mimetype;
     dbentry.presentInLastCheck = true;
     await this.fileRepository.save(dbentry);
+
+    const datasetId = dbentry.datasetId;
+    const conformsTo: string[] = [];
+    if (dbentry.csvw) {
+      conformsTo.push(
+        `${this.rootConfig.server.publicAddress}/files/${dbentry.identifier}/csvw`
+      );
+    }
+
+    if (this.isClientMode) {
+      // Client mode: publish dataset changes to the server side of the bridge.
+      const clientDatasetId = datasetId ?? `urn:uuid:${dbentry.identifier}`;
+      if (!dbentry.datasetId) {
+        await this.fileRepository.update(dbentry.identifier, {
+          datasetId: clientDatasetId
+        });
+      }
+
+      const datasetDto = this.buildDatasetDto({
+        datasetId: clientDatasetId,
+        title: dbentry.originalFileName,
+        fileSizeInBytes: dbentry.fileSizeInBytes,
+        mediaType: dbentry.mediaType,
+        conformsTo
+      });
+      this.bridgeWs.emit("client.datasets.upsert", {
+        dataset: datasetDto
+      });
+      return;
+    }
+
+    // Standalone/server: ensure the dataset is updated (not just file DB state).
+    if (this.dataplaneService) {
+      const publishedDatasetId = datasetId ?? `urn:uuid:${dbentry.identifier}`;
+      const catalog = await this.catalog.getOwnCatalog();
+      const datasetDto = this.buildDatasetDto({
+        datasetId: publishedDatasetId,
+        title: dbentry.originalFileName,
+        fileSizeInBytes: dbentry.fileSizeInBytes,
+        mediaType: dbentry.mediaType,
+        conformsTo,
+        includePolicy: true,
+        policyAssigner: catalog.publisher as string
+      });
+
+      let existingDataset: DatasetDto | undefined;
+      try {
+        existingDataset =
+          await this.dataplaneService.getDataset(publishedDatasetId);
+      } catch (_err) {
+        // If missing, we'll create it.
+      }
+
+      const merged = mergeFileDatasetUpdate(existingDataset, datasetDto, {
+        policyAssigner: catalog.publisher as string
+      });
+
+      if (existingDataset) {
+        await this.dataplaneService.updateDataset(publishedDatasetId, merged);
+      } else {
+        await this.dataplaneService.addDataset(merged);
+      }
+
+      if (!dbentry.datasetId) {
+        await this.fileRepository.update(dbentry.identifier, {
+          datasetId: publishedDatasetId
+        });
+      }
+    }
   }
 
   async removeFile(identifier: string) {
@@ -333,7 +557,14 @@ export class FilesService {
     if (!dbentry) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
     }
-    if (dbentry.datasetId) {
+    if (this.isClientMode) {
+      // Propagate dataset removal to the server-side dataplane (server mode has no FilesService).
+      if (dbentry.datasetId) {
+        this.bridgeWs.emit("client.datasets.delete", {
+          datasetId: dbentry.datasetId
+        });
+      }
+    } else if (dbentry.datasetId && this.dataplaneService) {
       this.logger.log(`Deleting dataset for file: ${identifier}`);
       await this.dataplaneService.deleteDataset(dbentry.datasetId);
     }

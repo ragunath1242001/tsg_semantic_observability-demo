@@ -1,8 +1,10 @@
 import { jest } from "@jest/globals";
 import { EventEmitterModule } from "@nestjs/event-emitter";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  AlgorithmInstanceDto,
   CreateAlgorithmInstanceDto,
   UIElementType
 } from "@tsg-dsp/analytics-data-plane-dtos";
@@ -31,6 +33,7 @@ import { plainToClass } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
+import { SplitModeService } from "../bridge/split-mode/split-mode.service.js";
 import { RootConfig } from "../config.js";
 import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
 import { DatasetDao } from "../dataplane/dataset.dao.js";
@@ -48,6 +51,7 @@ import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 describe("AlgorithmInstancesService", () => {
   let server: SetupServer;
   let algorithmInstancesService: AlgorithmInstancesService;
+  let eventEmitter: EventEmitter2;
 
   const sampleAlgorithmInstanceDto: CreateAlgorithmInstanceDto = {
     id: "test-instance-id",
@@ -193,11 +197,13 @@ describe("AlgorithmInstancesService", () => {
                 )
               )
           }
-        }
+        },
+        SplitModeService
       ]
     }).compile();
 
     algorithmInstancesService = module.get(AlgorithmInstancesService);
+    eventEmitter = module.get(EventEmitter2);
   });
 
   afterAll(() => {
@@ -250,6 +256,69 @@ describe("AlgorithmInstancesService", () => {
       algorithmInstancesService.removeAlgorithmInstance("unknown-id")
     ).rejects.toThrow("not found");
   });
+
+  it("emits algorithm-instances.updated on updateStatus in server mode", async () => {
+    const emitSpy = jest.spyOn(eventEmitter, "emit");
+
+    jest
+      .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
+      .mockResolvedValue();
+
+    const created = await algorithmInstancesService.createAlgorithmInstance(
+      sampleAlgorithmInstanceDto
+    );
+
+    await algorithmInstancesService.updateStatus(created.id, "completed");
+
+    expect(emitSpy).toHaveBeenCalledWith(
+      "algorithm-instances.updated",
+      expect.objectContaining({
+        algorithmInstance: expect.objectContaining({ id: created.id })
+      })
+    );
+  });
+
+  it("emits algorithm-instances.created on receiveAlgorithmInstanceFromPeer", async () => {
+    const emitSpy = jest.spyOn(eventEmitter, "emit");
+
+    const secret = "peer-transfer-secret";
+    await algorithmInstancesService["algorithmInstanceRepository"]["manager"]
+      ["getRepository"](TransferDao)
+      .save({
+        id: "peer-transfer-id",
+        role: "provider",
+        processId: "peer-process-id",
+        remoteParty: "did:web:initiator.example",
+        datasetId: "urn:uuid:peer-dataset-id",
+        secret,
+        state: TransferState.REQUESTED,
+        request: {} as TransferRequestMessageDto,
+        response: {} as DataPlaneRequestResponseDto
+      });
+
+    const incoming: AlgorithmInstanceDto = {
+      id: "peer-instance-id",
+      algorithmDefinition: sampleAlgorithmInstanceDto.algorithmDefinition,
+      participants: sampleAlgorithmInstanceDto.participants,
+      createdDate: new Date(),
+      status: "pending",
+      transfers: [],
+      algorithmEvents: [],
+      internalEvents: []
+    };
+
+    await algorithmInstancesService.receiveAlgorithmInstanceFromPeer({
+      createAlgorithmInstance: incoming,
+      authorizationHeader: `Bearer ${secret}`
+    });
+
+    expect(emitSpy).toHaveBeenCalledWith(
+      "algorithm-instances.created",
+      expect.objectContaining({
+        algorithmInstance: expect.objectContaining({ id: incoming.id })
+      })
+    );
+  });
   it("should link transfers to algorithm instance", async () => {
     jest
       .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
@@ -289,7 +358,7 @@ describe("AlgorithmInstancesService", () => {
     ).toHaveLength(1);
     const reloadedTransferDao = await algorithmInstancesService[
       "transferHandler"
-    ].getTransferById(transferDao.id);
+    ]!.getTransferById(transferDao.id);
     expect(reloadedTransferDao).toBeDefined();
     expect(
       await algorithmInstancesService.createAlgorithmInstance({
@@ -370,7 +439,7 @@ describe("AlgorithmInstancesService", () => {
     it("should throw error when project agreement is not finalized", async () => {
       jest
         .spyOn(
-          algorithmInstancesService["projectAgreementsService"],
+          algorithmInstancesService["projectAgreementsService"]!,
           "findById"
         )
         .mockResolvedValue({
@@ -416,7 +485,7 @@ describe("AlgorithmInstancesService", () => {
     it("should throw error when algorithm instance participants are not in project agreement", async () => {
       jest
         .spyOn(
-          algorithmInstancesService["projectAgreementsService"],
+          algorithmInstancesService["projectAgreementsService"]!,
           "findById"
         )
         .mockResolvedValue({
@@ -512,7 +581,7 @@ describe("AlgorithmInstancesService", () => {
       });
       jest
         .spyOn(
-          algorithmInstancesService["projectAgreementsService"],
+          algorithmInstancesService["projectAgreementsService"]!,
           "findById"
         )
         .mockResolvedValue(savedProjectAgreement);

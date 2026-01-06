@@ -29,6 +29,8 @@ import { SetupServer, setupServer } from "msw/node";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
+import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service.js";
+import { SplitModeService } from "../bridge/split-mode/split-mode.service.js";
 import { RootConfig } from "../config.js";
 import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
 import { DatasetDao } from "../dataplane/dataset.dao.js";
@@ -120,6 +122,13 @@ describe("EventsService", () => {
         NegotiationClientService,
         TransferClientService,
         {
+          provide: BridgeWsClientService,
+          useValue: {
+            emit: jest.fn(),
+            on: jest.fn()
+          }
+        },
+        {
           provide: RootConfig,
           useValue: config
         },
@@ -146,7 +155,8 @@ describe("EventsService", () => {
                 )
               )
           }
-        }
+        },
+        SplitModeService
       ]
     }).compile();
     await moduleRef.init();
@@ -265,7 +275,7 @@ describe("EventsService", () => {
     const authorizationHeader = `Bearer ${eventsAccessToken}`;
     await eventsService["algorithmInstancesService"].linkTransfer({
       algorithmInstanceId,
-      transfer: await eventsService["transferHandler"][
+      transfer: await eventsService["transferHandler"]![
         "transferRepository"
       ].save({
         id: TRANSFER_ID,
@@ -347,7 +357,7 @@ describe("EventsService", () => {
       } as any);
     await eventsService["algorithmInstancesService"].linkTransfer({
       algorithmInstanceId,
-      transfer: await eventsService["transferHandler"][
+      transfer: await eventsService["transferHandler"]![
         "transferRepository"
       ].save({
         id: "transfer-1",
@@ -373,7 +383,7 @@ describe("EventsService", () => {
     });
     await eventsService["algorithmInstancesService"].linkTransfer({
       algorithmInstanceId,
-      transfer: await eventsService["transferHandler"][
+      transfer: await eventsService["transferHandler"]![
         "transferRepository"
       ].save({
         id: "transfer-2",
@@ -474,7 +484,7 @@ describe("EventsService", () => {
     const authorizationHeader = `Bearer FAKE_TOKEN`;
     await eventsService["algorithmInstancesService"].linkTransfer({
       algorithmInstanceId,
-      transfer: await eventsService["transferHandler"][
+      transfer: await eventsService["transferHandler"]![
         "transferRepository"
       ].save({
         id: "transfer-1",

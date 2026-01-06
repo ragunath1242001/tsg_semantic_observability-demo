@@ -9,7 +9,13 @@ db:
   database: "alfa.db"
 
 auth:
-  enabled: false
+  enabled: true
+  openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
+  callbackURL: http://localhost:3550/api/auth/callback
+  clientId: alfa-wallet
+  clientSecret: alfa-wallet
+  rolePath: "$.roles[*]"
+  redirectURL: http://localhost:3550/
 
 initKeys:
   - id: key-0

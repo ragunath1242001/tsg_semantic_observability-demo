@@ -26,7 +26,7 @@ export function setupApp(app: INestApplication) {
   );
   app.use(
     session({
-      name: "connect.sid.tsgw",
+      name: process.env["SESSION_NAME"] || "connect.sid.tsgw",
       secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
       resave: false,
       saveUninitialized: false

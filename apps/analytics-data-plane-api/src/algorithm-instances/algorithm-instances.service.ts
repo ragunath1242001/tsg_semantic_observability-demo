@@ -1,9 +1,16 @@
-import { HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  Optional
+} from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   AlgorithmInstanceDto,
   AlgorithmParticipant,
+  BridgeAlgorithmInstanceMetadataDto,
   CreateAlgorithmInstanceDto,
   OrchestrationStatusDto,
   ProjectAgreementSummaryDto
@@ -19,9 +26,15 @@ import { plainToInstance } from "class-transformer";
 import { randomBytes } from "crypto";
 import { Repository } from "typeorm";
 
+import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service.js";
+import { SplitModeService } from "../bridge/split-mode/split-mode.service.js";
 import { RootConfig } from "../config.js";
 import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
+import {
+  emitInternalEvent,
+  INTERNAL_EVENTS
+} from "../internal-events/internal-events.js";
 import { ProjectAgreementDao } from "../project-agreements/project-agreement.dao.js";
 import { ProjectAgreementsService } from "../project-agreements/project-agreements.service.js";
 import { getAxiosConfigFromDataAddress } from "../utils/axios.js";
@@ -32,26 +45,67 @@ import { AlgorithmInstanceDao } from "./algorithm-instance.dao.js";
 
 @Injectable()
 export class AlgorithmInstancesService {
-  constructor(
-    @InjectRepository(AlgorithmInstanceDao)
-    private readonly algorithmInstanceRepository: Repository<AlgorithmInstanceDao>,
-    private readonly projectAgreementsService: ProjectAgreementsService,
-    private eventEmitter: EventEmitter2,
-    private readonly catalog: CatalogClientService,
-    @Inject(ITransferHandler)
-    private readonly transferHandler: AnalyticsTransferHandler,
-    private readonly config: RootConfig
-  ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   // Mapping from access token to algorithm instances id
   private readonly accessTokens = new Map<string, string>();
+
+  constructor(
+    @InjectRepository(AlgorithmInstanceDao)
+    private readonly algorithmInstanceRepository: Repository<AlgorithmInstanceDao>,
+    private eventEmitter: EventEmitter2,
+    private readonly catalog: CatalogClientService,
+    private readonly config: RootConfig,
+    private readonly splitMode: SplitModeService,
+    @Optional()
+    private readonly bridgeWs?: BridgeWsClientService,
+    @Optional()
+    private readonly projectAgreementsService?: ProjectAgreementsService,
+    @Optional()
+    @Inject(ITransferHandler)
+    private readonly transferHandler?: AnalyticsTransferHandler
+  ) {}
 
   async getAlgorithmInstances(): Promise<AlgorithmInstanceDto[]> {
     const result = await this.algorithmInstanceRepository.find({
       relations: ["transfers", "algorithmEvents", "internalEvents"]
     });
     return result.map((instance) => this.mapToDto(instance));
+  }
+
+  async upsertAlgorithmInstancesFromBridge(
+    algorithmInstances: BridgeAlgorithmInstanceMetadataDto[]
+  ): Promise<void> {
+    const mapped = await Promise.all(
+      algorithmInstances.map(async (instance) => {
+        const projectAgreementId = instance.projectAgreement?.id;
+        const projectAgreement =
+          projectAgreementId && this.projectAgreementsService
+            ? await this.projectAgreementsService
+                .findById(projectAgreementId)
+                .catch(() => undefined)
+            : undefined;
+
+        return {
+          id: instance.id,
+          algorithmDefinition: instance.algorithmDefinition,
+          participants: instance.participants,
+          createdDate: instance.createdDate,
+          status: instance.status,
+          startedAt: instance.startedAt,
+          finishedAt: instance.finishedAt,
+          projectAgreement
+        } as AlgorithmInstanceDao;
+      })
+    );
+
+    await this.algorithmInstanceRepository.save(mapped);
+  }
+
+  async handleAlgorithmInstancesFromBridge(
+    algorithmInstances: BridgeAlgorithmInstanceMetadataDto[]
+  ): Promise<void> {
+    await this.upsertAlgorithmInstancesFromBridge(algorithmInstances);
   }
 
   async getAlgorithmInstance(id: string): Promise<AlgorithmInstanceDao> {
@@ -82,6 +136,22 @@ export class AlgorithmInstancesService {
       );
     }
     return dto;
+  }
+
+  private mapToBridgeMetadata(
+    instance: AlgorithmInstanceDao
+  ): BridgeAlgorithmInstanceMetadataDto {
+    const dto = this.mapToDto(instance);
+    return {
+      id: dto.id,
+      algorithmDefinition: dto.algorithmDefinition,
+      participants: dto.participants,
+      createdDate: dto.createdDate,
+      status: dto.status,
+      startedAt: dto.startedAt,
+      finishedAt: dto.finishedAt,
+      projectAgreement: dto.projectAgreement
+    };
   }
 
   private mapProjectAgreementToSummary(
@@ -167,14 +237,52 @@ export class AlgorithmInstancesService {
 
   async updateStatus(
     algorithmInstanceId: string,
-    status: string
+    status: string,
+    options?: { observedAt?: Date; jobName?: string }
   ): Promise<AlgorithmInstanceDto> {
     const algorithmInstance =
       await this.getAlgorithmInstance(algorithmInstanceId);
     algorithmInstance.status = status;
+
+    const observedAt = options?.observedAt;
+    if (status === "running" && !algorithmInstance.startedAt) {
+      algorithmInstance.startedAt = observedAt ?? new Date();
+    }
+    if (
+      ["completed", "failed", "terminated", "cancelled"].includes(status) &&
+      !algorithmInstance.finishedAt
+    ) {
+      algorithmInstance.finishedAt = observedAt ?? new Date();
+    }
+
     const updatedInstance =
       await this.algorithmInstanceRepository.save(algorithmInstance);
+
+    this.notifyStatusChange(updatedInstance, options);
+
     return this.mapToDto(updatedInstance);
+  }
+
+  private notifyStatusChange(
+    instance: AlgorithmInstanceDao,
+    options?: { observedAt?: Date; jobName?: string }
+  ): void {
+    if (this.splitMode.shouldBridgeJobStatusToServer) {
+      this.bridgeWs?.emit("client.job.status", {
+        algorithmInstanceId: instance.id,
+        status: instance.status,
+        jobName: options?.jobName,
+        observedAt: options?.observedAt ?? new Date()
+      });
+    } else {
+      emitInternalEvent(
+        this.eventEmitter,
+        INTERNAL_EVENTS.ALGORITHM_INSTANCES_UPDATED,
+        {
+          algorithmInstance: this.mapToBridgeMetadata(instance)
+        }
+      );
+    }
   }
 
   async linkTransfer({
@@ -219,6 +327,10 @@ export class AlgorithmInstancesService {
     if (!createAlgorithmInstance.projectAgreementId) {
       return undefined;
     }
+
+    this.splitMode.requireProjectAgreementsService(
+      this.projectAgreementsService
+    );
 
     const projectAgreement = await this.projectAgreementsService.findById(
       createAlgorithmInstance.projectAgreementId
@@ -281,6 +393,8 @@ export class AlgorithmInstancesService {
   async createAlgorithmInstance(
     createAlgorithmInstance: CreateAlgorithmInstanceDto
   ): Promise<AlgorithmInstanceDto> {
+    this.splitMode.requireCanCreateAlgorithmInstances();
+
     const projectAgreement = await this.validateProjectAgreement(
       createAlgorithmInstance
     );
@@ -296,6 +410,14 @@ export class AlgorithmInstancesService {
       internalEvents: [],
       projectAgreement: projectAgreement
     });
+
+    emitInternalEvent(
+      this.eventEmitter,
+      INTERNAL_EVENTS.ALGORITHM_INSTANCES_CREATED,
+      {
+        algorithmInstance: this.mapToBridgeMetadata(algorithmInstance)
+      }
+    );
 
     setImmediate(() => {
       this.distributeAlgorithmInstance(algorithmInstance);
@@ -367,14 +489,36 @@ export class AlgorithmInstancesService {
   }
 
   async distributeAlgorithmInstance(algorithmInstance: AlgorithmInstanceDao) {
+    this.splitMode.requireTransferHandler(
+      this.transferHandler,
+      "Distributing algorithm instances"
+    );
     const transfers =
       await this.createTransfersForParticipants(algorithmInstance);
     await this.sendStartSignalsToParticipants(transfers, algorithmInstance.id);
+
+    if (this.splitMode.shouldDelegateStartToClientRunner) {
+      // Server mode delegates job execution to the client runner via the bridge.
+      this.delegateStartToClientRunner(algorithmInstance.id);
+      return;
+    }
+
     await this.startAlgorithmInstance({
       algorithmInstanceId: algorithmInstance.id,
       isInitiator: true,
       authorizationHeader: undefined
     });
+  }
+
+  private delegateStartToClientRunner(algorithmInstanceId: string): void {
+    emitInternalEvent(
+      this.eventEmitter,
+      INTERNAL_EVENTS.ALGORITHM_INSTANCES_START_REQUESTED,
+      {
+        algorithmInstanceId,
+        requestedAt: new Date()
+      }
+    );
   }
 
   private async createTransfersForParticipants(
@@ -397,6 +541,10 @@ export class AlgorithmInstancesService {
     participant: AlgorithmParticipant,
     algorithmInstance: AlgorithmInstanceDao
   ) {
+    this.splitMode.requireTransferHandler(
+      this.transferHandler,
+      "Initiating transfers for participants"
+    );
     const orchestrationDataset = await this.catalog.getDatasetConformingTo(
       "tsg:analytics-orchestration",
       participant.didId
@@ -415,7 +563,7 @@ export class AlgorithmInstancesService {
       }
     }
 
-    const transfer = await this.transferHandler.requestTransferForParticipant(
+    const transfer = await this.transferHandler!.requestTransferForParticipant(
       participant,
       orchestrationDataset,
       algorithmInstance.id,
@@ -479,13 +627,34 @@ export class AlgorithmInstancesService {
     createAlgorithmInstance: AlgorithmInstanceDto;
     authorizationHeader: string | undefined;
   }): Promise<OrchestrationStatusDto> {
+    this.splitMode.requireTransferHandler(
+      this.transferHandler,
+      "Receiving algorithm instances from peers"
+    );
     const token = parseToken(authorizationHeader);
-    const transfer = await this.transferHandler.getTransferBySecret(token);
+    const transfer = await this.transferHandler!.getTransferBySecret(token);
 
     await this.algorithmInstanceRepository.save({
       ...createAlgorithmInstance,
       transfers: [transfer]
     });
+
+    emitInternalEvent(
+      this.eventEmitter,
+      INTERNAL_EVENTS.ALGORITHM_INSTANCES_CREATED,
+      {
+        algorithmInstance: {
+          id: createAlgorithmInstance.id,
+          algorithmDefinition: createAlgorithmInstance.algorithmDefinition,
+          participants: createAlgorithmInstance.participants,
+          createdDate: createAlgorithmInstance.createdDate,
+          status: createAlgorithmInstance.status,
+          startedAt: createAlgorithmInstance.startedAt,
+          finishedAt: createAlgorithmInstance.finishedAt,
+          projectAgreement: createAlgorithmInstance.projectAgreement
+        }
+      }
+    );
 
     return { status: "accepted" };
   }
@@ -499,25 +668,69 @@ export class AlgorithmInstancesService {
     isInitiator: boolean;
     authorizationHeader: string | undefined;
   }): Promise<void> {
-    const algorithmInstance = isInitiator
+    const algorithmInstance = await this.resolveAlgorithmInstanceForStart(
+      algorithmInstanceId,
+      isInitiator,
+      authorizationHeader
+    );
+
+    // In split server mode, delegate to client runner.
+    if (this.splitMode.shouldDelegateStartToClientRunner) {
+      this.delegateStartToClientRunner(algorithmInstance.id);
+      return;
+    }
+
+    if (this.isAlreadyStarted(algorithmInstance)) {
+      return;
+    }
+
+    const updatedInstance = await this.markInstanceAsRunning(algorithmInstance);
+    this.notifyStatusChange(updatedInstance);
+    await this.spawnJob(algorithmInstance);
+  }
+
+  private async resolveAlgorithmInstanceForStart(
+    algorithmInstanceId: string,
+    isInitiator: boolean,
+    authorizationHeader: string | undefined
+  ): Promise<AlgorithmInstanceDao> {
+    return isInitiator
       ? await this.getAlgorithmInstanceForJob(algorithmInstanceId)
       : await this.getAlgorithmInstanceForPeer(
           algorithmInstanceId,
           authorizationHeader
         );
-    await this.algorithmInstanceRepository.save({
+  }
+
+  private isAlreadyStarted(algorithmInstance: AlgorithmInstanceDao): boolean {
+    return !!(
+      algorithmInstance.startedAt ||
+      algorithmInstance.finishedAt ||
+      algorithmInstance.status !== "pending"
+    );
+  }
+
+  private async markInstanceAsRunning(
+    algorithmInstance: AlgorithmInstanceDao
+  ): Promise<AlgorithmInstanceDao> {
+    return await this.algorithmInstanceRepository.save({
       ...algorithmInstance,
       startedAt: new Date(),
       status: "running"
     });
+  }
+
+  private async spawnJob(
+    algorithmInstance: AlgorithmInstanceDao
+  ): Promise<void> {
     const ownParticipantId = await this.catalog.getParticipantId();
     const participant = algorithmInstance.participants.find(
       (p) => p.didId === ownParticipantId
     );
 
-    this.eventEmitter.emit("job.spawn", {
+    emitInternalEvent(this.eventEmitter, INTERNAL_EVENTS.JOB_SPAWN, {
       algorithmInstanceId: algorithmInstance.id,
-      participantId: await this.catalog.getParticipantId(),
+      participantId: ownParticipantId,
       imageName: algorithmInstance.algorithmDefinition.image,
       command: undefined,
       datasetId: participant?.dataset

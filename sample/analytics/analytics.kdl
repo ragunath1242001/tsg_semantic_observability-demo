@@ -1,25 +1,30 @@
 layout {
     /**
-    /--------------------------------------------------------------\
-    | Service name             | Config                    | Port  |
-    | ============================================================ |
-    | Authority Wallet API     | authority-wallet.yaml     | 3400  |
-    | >         Wallet UI      | -                         | 3450  |
+    /-----------------------------------------------------------------\
+    | Service name             | Config                       | Port  |
+    | =============================================================== |
+    | SSO Bridge API           | sso-bridge.yaml              | 3700  |
+    | >        Bridge UI       | -                            | 3750  |
     | ------------------------------------------------------------ |
-    | Alfa Wallet API          | alfa-wallet.yaml          | 3500  |
-    | >    Wallet UI           | -                         | 3550  |
-    | >    Control Plane API   | alfa-control-plane.yaml   | 3501  |
-    | >    Control Plane UI    | -                         | 3551  |
-    | >    Data Plane API      | alfa-data-plane.yaml      | 3502  |
-    | >    Data Plane UI       | -                         | 3552  |
-    | ------------------------------------------------------------ |
-    | Bravo Wallet API         | bravo-wallet.yaml         | 3600  |
-    | >     Wallet UI          | -                         | 3650  |
-    | >     Control Plane API  | bravo-control-plane.yaml  | 3601  |
-    | >     Control Plane UI   | -                         | 3651  |
-    | >     Data Plane API     | bravo-data-plane.yaml     | 3602  |
-    | >     Data Plane UI      | -                         | 3652  |
-    \--------------------------------------------------------------/ 
+    | Authority Wallet API     | authority-wallet.yaml        | 3400  |
+    | >         Wallet UI      | -                            | 3450  |
+    | --------------------------------------------------------------- |
+    | Alfa Wallet API          | alfa-wallet.yaml             | 3500  |
+    | >    Wallet UI           | -                            | 3550  |
+    | >    Control Plane API   | alfa-control-plane.yaml      | 3501  |
+    | >    Control Plane UI    | -                            | 3551  |
+    | >    Data Plane API      | alfa-data-plane.yaml         | 3502  |
+    | >    Data Plane UI       | -                            | 3552  |
+    | --------------------------------------------------------------- |
+    | Bravo Wallet API         | bravo-wallet.yaml            | 3600  |
+    | >     Wallet UI          | -                            | 3650  |
+    | >     Control Plane API  | bravo-control-plane.yaml     | 3601  |
+    | >     Control Plane UI   | -                            | 3651  |
+    | >     Data Plane API     | bravo-data-plane-server.yaml | 3602  |
+    | >     Data Plane UI      | -                            | 3652  |
+    | >     Data Plane API     | bravo-data-plane-client.yaml | 3603  |
+    | >     Data Plane UI      | -                            | 3653  |
+    \-----------------------------------------------------------------/ 
     **/
     default_tab_template {
         pane size=1 borderless=true {
@@ -30,12 +35,24 @@ layout {
             plugin location="zellij:status-bar"
         }
     }
-    tab name="🕹️ alfa/control-plane" split_direction="vertical" {
+    tab name="� sso-bridge" split_direction="vertical" {
+        pane name="sso-bridge-api" command="bash" {
+            args "-c" "
+                cd $(git rev-parse --show-toplevel) &&
+                rm -f $(pwd)/apps/sso-bridge-api/sso-bridge.db &&
+                SESSION_NAME=connect.sid.tsgsb CONFIG_PATH=$(pwd)/sample/analytics/configs/sso-bridge.yaml pnpm --inspect-brk dev:sso-bridge-api
+            "
+        }
+        pane name="sso-bridge-ui" command="bash" {
+            args "-c" "BACKEND=http://localhost:3700 pnpm --inspect-brk dev:sso-bridge-ui --port 3750"
+        }
+    }
+    tab name="��️ alfa/control-plane" split_direction="vertical" {
         pane name="alfa/control-plane-api" command="bash" {
             args "-c" "
                 cd $(git rev-parse --show-toplevel) && 
                 rm -f $(pwd)/apps/control-plane-api/alfa.db &&
-                CONFIG_PATH=$(pwd)/sample/analytics/configs/alfa-control-plane.yaml pnpm --inspect-brk dev:control-plane-api
+                SESSION_NAME=connect.sid.tsgcpalfa CONFIG_PATH=$(pwd)/sample/analytics/configs/alfa-control-plane.yaml pnpm --inspect-brk dev:control-plane-api
             "
         }
         pane name="alfa/control-plane-ui" command="bash" {
@@ -47,7 +64,7 @@ layout {
             args "-c" "
                 cd $(git rev-parse --show-toplevel) && 
                 rm -f $(pwd)/apps/analytics-data-plane-api/alfa.db &&
-                CONFIG_PATH=$(pwd)/sample/analytics/configs/alfa-data-plane.yaml pnpm --inspect-brk dev:analytics-data-plane-api
+                SESSION_NAME=connect.sid.tsgadpalfa CONFIG_PATH=$(pwd)/sample/analytics/configs/alfa-data-plane.yaml pnpm --inspect-brk dev:analytics-data-plane-api
             "
         }
         pane name="alfa/date-plane-ui" command="bash" {
@@ -59,7 +76,7 @@ layout {
             args "-c" "
                 cd $(git rev-parse --show-toplevel) &&
                 rm -f $(pwd)/apps/control-plane-api/bravo.db &&
-                CONFIG_PATH=$(pwd)/sample/analytics/configs/bravo-control-plane.yaml pnpm --inspect-brk dev:control-plane-api
+                SESSION_NAME=connect.sid.tsgcpbravo CONFIG_PATH=$(pwd)/sample/analytics/configs/bravo-control-plane.yaml pnpm --inspect-brk dev:control-plane-api
             "
         }
         pane name="bravo/control-plane-ui" command="bash" {
@@ -67,15 +84,29 @@ layout {
         }
     }
     tab name="💾 bravo/data-plane" split_direction="vertical" {
-        pane name="bravo/data-plane-api" command="bash" {
-            args "-c" "
-                cd $(git rev-parse --show-toplevel) &&
-                rm -f $(pwd)/apps/analytics-data-plane-api/bravo.db &&
-                CONFIG_PATH=$(pwd)/sample/analytics/configs/bravo-data-plane.yaml pnpm --inspect-brk dev:analytics-data-plane-api
-            "
+        pane name="bravo/data-plane/server" split_direction="horizontal" {
+            pane name="bravo/data-plane-server-api" command="bash" {
+                args "-c" "
+                    cd $(git rev-parse --show-toplevel) &&
+                    rm -f $(pwd)/apps/analytics-data-plane-api/bravo-server.db &&
+                    SESSION_NAME=connect.sid.tsgadpbravoserver CONFIG_PATH=$(pwd)/sample/analytics/configs/bravo-data-plane-server.yaml pnpm --inspect-brk dev:analytics-data-plane-api
+                "
+            }
+            pane name="bravo/data-plane-server-ui" command="bash" {
+                args "-c" "BACKEND=http://localhost:3602 pnpm --inspect-brk dev:analytics-data-plane-ui --port 3652"
+            }
         }
-        pane name="bravo/date-plane-ui" command="bash" {
-            args "-c" "BACKEND=http://localhost:3602 pnpm --inspect-brk dev:analytics-data-plane-ui --port 3652"
+        pane name="bravo/data-plane/client" split_direction="horizontal" {
+            pane name="bravo/data-plane-client-api" command="bash" {
+                args "-c" "
+                    cd $(git rev-parse --show-toplevel) &&
+                    rm -f $(pwd)/apps/analytics-data-plane-api/bravo-client.db &&
+                    SESSION_NAME=connect.sid.tsgadpbravoclient CONFIG_PATH=$(pwd)/sample/analytics/configs/bravo-data-plane-client.yaml pnpm --inspect-brk dev:analytics-data-plane-api
+                "
+            }
+            pane name="bravo/data-plane-client-ui" command="bash" {
+                args "-c" "BACKEND=http://localhost:3603 pnpm --inspect-brk dev:analytics-data-plane-ui --port 3653"
+            }
         }
     }
     tab name="🔑 authority/wallet" split_direction="vertical" {
@@ -83,7 +114,7 @@ layout {
             args "-c" "
                 cd $(git rev-parse --show-toplevel) &&
                 rm -f $(pwd)/apps/wallet-api/authority.db &&
-                CONFIG_PATH=$(pwd)/sample/analytics/configs/authority-wallet.yaml pnpm --inspect-brk dev:wallet-api
+                SESSION_NAME=connect.sid.tsgwauthority CONFIG_PATH=$(pwd)/sample/analytics/configs/authority-wallet.yaml pnpm --inspect-brk dev:wallet-api
             "
         }
         pane name="authority/wallet-ui" command="bash" {
@@ -95,7 +126,7 @@ layout {
             args "-c" "
                 cd $(git rev-parse --show-toplevel) &&
                 rm -f $(pwd)/apps/wallet-api/alfa.db &&
-                CONFIG_PATH=$(pwd)/sample/analytics/configs/alfa-wallet.yaml pnpm --inspect-brk dev:wallet-api
+                SESSION_NAME=connect.sid.tsgwalfa CONFIG_PATH=$(pwd)/sample/analytics/configs/alfa-wallet.yaml pnpm --inspect-brk dev:wallet-api
             "
         }
         pane name="alfa/wallet-ui" command="bash" {
@@ -109,7 +140,7 @@ layout {
                 sleep 1 &&
                 cd $(git rev-parse --show-toplevel) && 
                 rm -f $(pwd)/apps/wallet-api/bravo.db &&
-                CONFIG_PATH=$(pwd)/sample/analytics/configs/bravo-wallet.yaml pnpm --inspect-brk dev:wallet-api
+                SESSION_NAME=connect.sid.tsgwbravo CONFIG_PATH=$(pwd)/sample/analytics/configs/bravo-wallet.yaml pnpm --inspect-brk dev:wallet-api
             "
         }
         pane name="bravo/wallet-ui" command="bash" {

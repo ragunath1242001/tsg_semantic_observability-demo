@@ -6,10 +6,16 @@ server:
 
 db:
   type: "sqlite"
-  database: "bravo.db"
+  database: "bravo-server.db"
 
 auth:
-  enabled: false
+  enabled: true
+  openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
+  callbackURL: http://localhost:3652/api/auth/callback
+  clientId: bravo-analytics-data-plane-server
+  clientSecret: bravo-analytics-data-plane-server
+  rolePath: "$.roles[*]"
+  redirectURL: http://localhost:3652/
 
 controlPlane:
   dataPlaneEndpoint: http://localhost:3601/data-plane
@@ -23,6 +29,5 @@ runtime:
 files:
   path: "./uploads"
 
-orchestration:
-  type: "docker"
-  mountFiles: false
+split:
+  mode: server

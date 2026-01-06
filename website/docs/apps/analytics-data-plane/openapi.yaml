@@ -24,6 +24,32 @@ paths:
       summary: Retrieve settings
       tags: &a2
         - Settings
+  /api/settings/mode:
+    get:
+      description: Retrieves the analytics data plane runtime mode
+        (standalone/client/server).
+      operationId: ConfigController_getMode
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mode:
+                    type: string
+                    example: standalone
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a1
+      summary: Retrieve runtime mode
+      tags: *a2
   /api/settings/update:
     post:
       description: Updates runtime settings for the control plane.
@@ -1645,43 +1671,6 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get all events for an algorithm instance
       tags: *a22
-  /api/management/algorithm-instances/{algorithmInstanceId}/events/{eventId}/data:
-    get:
-      description: Returns the raw binary data for the specified algorithm event.
-        Requires management access role.
-      operationId: EventsManagementController_getEventDataForManagement
-      parameters:
-        - name: algorithmInstanceId
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: eventId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Binary event data returned
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security:
-        - oauth2:
-            - controlplane_dataplane
-      summary: Download algorithm event data (management)
-      tags:
-        - Algorithm Instances
 info:
   title: TSG Analytics Data Plane
   description: This OpenAPI specification shows the endpoints of the Analytics Data Plane.

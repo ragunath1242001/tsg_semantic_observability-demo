@@ -24,3 +24,7 @@ files:
 
 orchestration:
   type: docker
+
+split:
+  mode: standalone
+  # bridgePeerWsUrl: "ws://server:3001"

@@ -10,9 +10,11 @@ import { computed, onMounted, ref } from "vue";
 
 import router from "../router";
 import { useK8sStore } from "../stores/k8s";
+import { useRuntimeStore } from "../stores/runtime";
 import { stateSeverity } from "../utils/stateseverity";
 
 const k8sStore = useK8sStore();
+const runtimeStore = useRuntimeStore();
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -160,121 +162,268 @@ const spawnK8sJob = async (_transfer: TransferDto) => {
 };
 
 onMounted(async () => {
-  await getState();
-  await getTransfers();
+  await runtimeStore.ensureLoaded();
+  if (!runtimeStore.isClientMode) {
+    await getState();
+    await getTransfers();
+  }
 });
 </script>
 
 <template>
-  <Card>
-    <template #title>State</template>
-    <template #subtitle>State of this HTTP data plane</template>
+  <Card v-if="runtimeStore.isClientMode">
+    <template #title>Runtime mode</template>
+    <template #subtitle>Client mode</template>
     <template #content>
-      <div v-if="state" class="flex flex-col gap-4">
-        <FormField label="Identifier">{{ state.identifier }}</FormField>
-        <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
-        <FormField label="Synchronization">{{
-          state.details.catalogSynchronization
-        }}</FormField>
-        <FormField label="Role">{{ state.details.role }}</FormField>
+      <div class="flex flex-col gap-4">
+        <FormField label="Mode">{{ runtimeStore.mode }}</FormField>
+        <div class="text-sm text-surface-600">
+          This Analytics Data Plane is running in client mode. Transfer and
+          registry management is handled server-side.
+        </div>
       </div>
     </template>
   </Card>
-  <Card v-if="showConsumer" class="mt-8">
-    <template #title>Initiated Transfers</template>
-    <template #subtitle
-      >Transfers executed by this data plane acting as consumer</template
-    >
-    <template #content>
-      <DataTable
-        v-model:selection="selectedTransfer"
-        :value="consumerTransfers"
-        selection-mode="single"
-        sort-field="createdDate"
-        :sort-order="-1"
-        paginator
-        :rows="10"
-        @row-select="onRowSelect">
-        <Column field="remoteId" header="Remote ID">
-          <template #body="props">
-            {{ props.data.remoteParty }}
+
+  <template v-else>
+    <Card>
+      <template #title>State</template>
+      <template #subtitle>State of this HTTP data plane</template>
+      <template #content>
+        <div v-if="state" class="flex flex-col gap-4">
+          <FormField label="Identifier">{{ state.identifier }}</FormField>
+          <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
+          <FormField label="Synchronization">{{
+            state.details.catalogSynchronization
+          }}</FormField>
+          <FormField label="Role">{{ state.details.role }}</FormField>
+        </div>
+      </template>
+    </Card>
+
+    <Card v-if="showConsumer" class="mt-8">
+      <template #title>Initiated Transfers</template>
+      <template #subtitle
+        >Transfers executed by this data plane acting as consumer</template
+      >
+      <template #content>
+        <DataTable
+          v-model:selection="selectedTransfer"
+          :value="consumerTransfers"
+          selection-mode="single"
+          sort-field="createdDate"
+          :sort-order="-1"
+          paginator
+          :rows="10"
+          @row-select="onRowSelect">
+          <Column field="remoteId" header="Remote ID">
+            <template #body="props">
+              {{ props.data.remoteParty }}
+            </template>
+          </Column>
+          <Column field="state" header="State">
+            <template #body="props">
+              <Tag
+                :severity="stateSeverity(props.data.state)"
+                :value="props.data.state" />
+            </template>
+          </Column>
+          <Column field="createdDate" header="Date">
+            <template #body="props">
+              {{ new Date(props.data.createdDate).toLocaleString() }}
+            </template>
+          </Column>
+          <Column header="Quick actions">
+            <template #body="props">
+              <Button
+                v-tooltip.bottom="'Terminate'"
+                icon="pi pi-times"
+                :disabled="
+                  ['COMPLETED', 'TERMINATED'].includes(props.data.state)
+                "
+                severity="danger"
+                aria-label="Stop"
+                outlined
+                @click="action($event, 'terminate', props.data)" />
+              <Button
+                v-if="props.data.state === 'STARTED'"
+                v-tooltip.bottom="'Suspend'"
+                class="ml-2"
+                icon="pi pi-pause"
+                severity="warn"
+                aria-label="Suspend"
+                outlined
+                @click="action($event, 'suspend', props.data)" />
+              <Button
+                v-else
+                v-tooltip.bottom="'Start'"
+                :disabled="props.data.state !== 'SUSPENDED'"
+                class="ml-2"
+                icon="pi pi-play"
+                severity="warn"
+                aria-label="Start"
+                outlined
+                @click="action($event, 'start', props.data)" />
+              <Button
+                v-tooltip.bottom="'Execute'"
+                class="ml-2"
+                :disabled="props.data.state !== 'STARTED'"
+                icon="pi pi-download"
+                severity="info"
+                aria-label="Execute"
+                outlined
+                @click="
+                  toast.add({
+                    severity: 'error',
+                    summary: 'Cannot execute transfer',
+                    detail:
+                      'Execution of transfers is not yet supported in this data plane',
+                    life: 10000
+                  })
+                " />
+              <Button
+                v-tooltip.bottom="'Complete'"
+                class="ml-2"
+                :disabled="props.data.state !== 'STARTED'"
+                icon="pi pi-check"
+                severity="success"
+                aria-label="Complete"
+                outlined
+                @click="action($event, 'complete', props.data)" />
+            </template>
+          </Column>
+          <template #expansion="props">
+            <div class="flex flex-col gap-4">
+              <FormField label="Local ID">{{ props.data.id }}</FormField>
+              <FormField label="Process ID">{{
+                props.data.processId
+              }}</FormField>
+              <FormField label="Date">{{
+                new Date(props.data.createdDate).toLocaleString()
+              }}</FormField>
+              <FormField label="State">
+                <Tag
+                  :severity="stateSeverity(props.data.state)"
+                  :value="props.data.state" />
+              </FormField>
+              <FormField label="Agreement">{{
+                props.data.request.agreementId
+              }}</FormField>
+              <FormField label="Dataset ID">{{
+                props.data.datasetId
+              }}</FormField>
+            </div>
+            <template v-if="props.data.state === 'STARTED'">
+              <div class="text-xl my-2">Data address</div>
+              <div class="flex flex-col gap-4">
+                <FormField label="Endpoint">{{
+                  props.data.dataAddress.endpoint
+                }}</FormField>
+                <FormField label="Properties">
+                  <div
+                    v-for="property in props.data.dataAddress
+                      .endpointProperties"
+                    :key="property.name">
+                    <strong>{{ property.name }}</strong
+                    >: {{ property.value }}
+                  </div>
+                </FormField>
+              </div>
+            </template>
           </template>
-        </Column>
-        <Column field="state" header="State">
-          <template #body="props">
-            <Tag
-              :severity="stateSeverity(props.data.state)"
-              :value="props.data.state" />
-          </template>
-        </Column>
-        <Column field="createdDate" header="Date">
-          <template #body="props">
-            {{ new Date(props.data.createdDate).toLocaleString() }}
-          </template>
-        </Column>
-        <Column header="Quick actions">
-          <template #body="props">
-            <Button
-              v-tooltip.bottom="'Terminate'"
-              icon="pi pi-times"
-              :disabled="['COMPLETED', 'TERMINATED'].includes(props.data.state)"
-              severity="danger"
-              aria-label="Stop"
-              outlined
-              @click="action($event, 'terminate', props.data)" />
-            <Button
-              v-if="props.data.state === 'STARTED'"
-              v-tooltip.bottom="'Suspend'"
-              class="ml-2"
-              icon="pi pi-pause"
-              severity="warn"
-              aria-label="Suspend"
-              outlined
-              @click="action($event, 'suspend', props.data)" />
-            <Button
-              v-else
-              v-tooltip.bottom="'Start'"
-              :disabled="props.data.state !== 'SUSPENDED'"
-              class="ml-2"
-              icon="pi pi-play"
-              severity="warn"
-              aria-label="Start"
-              outlined
-              @click="action($event, 'start', props.data)" />
-            <Button
-              v-tooltip.bottom="'Execute'"
-              class="ml-2"
-              :disabled="props.data.state !== 'STARTED'"
-              icon="pi pi-download"
-              severity="info"
-              aria-label="Execute"
-              outlined
-              @click="
-                toast.add({
-                  severity: 'error',
-                  summary: 'Cannot execute transfer',
-                  detail:
-                    'Execution of transfers is not yet supported in this data plane',
-                  life: 10000
-                })
-              " />
-            <Button
-              v-tooltip.bottom="'Complete'"
-              class="ml-2"
-              :disabled="props.data.state !== 'STARTED'"
-              icon="pi pi-check"
-              severity="success"
-              aria-label="Complete"
-              outlined
-              @click="action($event, 'complete', props.data)" />
-          </template>
-        </Column>
-        <template #expansion="props">
-          <div class="flex flex-col gap-4">
+        </DataTable>
+      </template>
+    </Card>
+    <Card v-if="showProvider" class="mt-8">
+      <template #title>Incoming Transfers</template>
+      <template #subtitle
+        >Transfers executed by this data plane acting as provider</template
+      >
+      <template #content>
+        <DataTable
+          v-model:selection="selectedTransfer"
+          selection-mode="single"
+          :value="providerTransfers"
+          sort-field="createdDate"
+          :sort-order="-1"
+          paginator
+          :rows="10"
+          @row-select="onRowSelect">
+          <Column field="remoteId" header="Remote ID">
+            <template #body="props">
+              {{ props.data.remoteParty }}
+            </template>
+          </Column>
+          <Column field="state" header="State">
+            <template #body="props">
+              <Tag
+                :severity="stateSeverity(props.data.state)"
+                :value="props.data.state" />
+            </template>
+          </Column>
+          <Column field="createdDate" header="Date">
+            <template #body="props">
+              {{ new Date(props.data.createdDate).toLocaleString() }}
+            </template>
+          </Column>
+          <Column header="Quick actions">
+            <template #body="props">
+              <Button
+                v-tooltip.bottom="'Terminate'"
+                icon="pi pi-times"
+                :disabled="
+                  ['COMPLETED', 'TERMINATED'].includes(props.data.state)
+                "
+                severity="danger"
+                aria-label="Terminate"
+                outlined
+                @click="action($event, 'terminate', props.data)" />
+              <Button
+                v-if="props.data.state === 'STARTED'"
+                v-tooltip.bottom="'Suspend'"
+                class="ml-2"
+                icon="pi pi-pause"
+                severity="warn"
+                aria-label="Suspend"
+                outlined
+                @click="action($event, 'suspend', props.data)" />
+              <Button
+                v-else
+                v-tooltip.bottom="'Start'"
+                :disabled="
+                  !['SUSPENDED', 'REQUESTED'].includes(props.data.state)
+                "
+                class="ml-2"
+                icon="pi pi-play"
+                severity="warn"
+                aria-label="Start"
+                outlined
+                @click="action($event, 'start', props.data)" />
+              <Button
+                v-tooltip.bottom="'Complete'"
+                class="ml-2"
+                :disabled="props.data.state !== 'STARTED'"
+                icon="pi pi-check"
+                severity="success"
+                aria-label="Complete"
+                outlined
+                @click="action($event, 'complete', props.data)" />
+              <Button
+                v-tooltip.bottom="'Execute'"
+                class="ml-2"
+                :disabled="props.data.state !== 'STARTED'"
+                icon="pi pi-play"
+                severity="info"
+                aria-label="Execute"
+                outlined
+                @click="spawnK8sJob(props.data)" />
+            </template>
+          </Column>
+          <template #expansion="props">
             <FormField label="Local ID">{{ props.data.id }}</FormField>
             <FormField label="Process ID">{{ props.data.processId }}</FormField>
             <FormField label="Date">{{
-              new Date(props.data.createdDate).toLocaleString()
+              formatDate(props.data.createdDate)
             }}</FormField>
             <FormField label="State">
               <Tag
@@ -285,127 +434,11 @@ onMounted(async () => {
               props.data.request.agreementId
             }}</FormField>
             <FormField label="Dataset ID">{{ props.data.datasetId }}</FormField>
-          </div>
-          <template v-if="props.data.state === 'STARTED'">
-            <div class="text-xl my-2">Data address</div>
-            <div class="flex flex-col gap-4">
-              <FormField label="Endpoint">{{
-                props.data.dataAddress.endpoint
-              }}</FormField>
-              <FormField label="Properties">
-                <div
-                  v-for="property in props.data.dataAddress.endpointProperties"
-                  :key="property.name">
-                  <strong>{{ property.name }}</strong
-                  >: {{ property.value }}
-                </div>
-              </FormField>
-            </div>
           </template>
-        </template>
-      </DataTable>
-    </template>
-  </Card>
-  <Card v-if="showProvider" class="mt-8">
-    <template #title>Incoming Transfers</template>
-    <template #subtitle
-      >Transfers executed by this data plane acting as provider</template
-    >
-    <template #content>
-      <DataTable
-        v-model:selection="selectedTransfer"
-        selection-mode="single"
-        :value="providerTransfers"
-        sort-field="createdDate"
-        :sort-order="-1"
-        paginator
-        :rows="10"
-        @row-select="onRowSelect">
-        <Column field="remoteId" header="Remote ID">
-          <template #body="props">
-            {{ props.data.remoteParty }}
-          </template>
-        </Column>
-        <Column field="state" header="State">
-          <template #body="props">
-            <Tag
-              :severity="stateSeverity(props.data.state)"
-              :value="props.data.state" />
-          </template>
-        </Column>
-        <Column field="createdDate" header="Date">
-          <template #body="props">
-            {{ new Date(props.data.createdDate).toLocaleString() }}
-          </template>
-        </Column>
-        <Column header="Quick actions">
-          <template #body="props">
-            <Button
-              v-tooltip.bottom="'Terminate'"
-              icon="pi pi-times"
-              :disabled="['COMPLETED', 'TERMINATED'].includes(props.data.state)"
-              severity="danger"
-              aria-label="Terminate"
-              outlined
-              @click="action($event, 'terminate', props.data)" />
-            <Button
-              v-if="props.data.state === 'STARTED'"
-              v-tooltip.bottom="'Suspend'"
-              class="ml-2"
-              icon="pi pi-pause"
-              severity="warn"
-              aria-label="Suspend"
-              outlined
-              @click="action($event, 'suspend', props.data)" />
-            <Button
-              v-else
-              v-tooltip.bottom="'Start'"
-              :disabled="!['SUSPENDED', 'REQUESTED'].includes(props.data.state)"
-              class="ml-2"
-              icon="pi pi-play"
-              severity="warn"
-              aria-label="Start"
-              outlined
-              @click="action($event, 'start', props.data)" />
-            <Button
-              v-tooltip.bottom="'Complete'"
-              class="ml-2"
-              :disabled="props.data.state !== 'STARTED'"
-              icon="pi pi-check"
-              severity="success"
-              aria-label="Complete"
-              outlined
-              @click="action($event, 'complete', props.data)" />
-            <Button
-              v-tooltip.bottom="'Execute'"
-              class="ml-2"
-              :disabled="props.data.state !== 'STARTED'"
-              icon="pi pi-play"
-              severity="info"
-              aria-label="Execute"
-              outlined
-              @click="spawnK8sJob(props.data)" />
-          </template>
-        </Column>
-        <template #expansion="props">
-          <FormField label="Local ID">{{ props.data.id }}</FormField>
-          <FormField label="Process ID">{{ props.data.processId }}</FormField>
-          <FormField label="Date">{{
-            formatDate(props.data.createdDate)
-          }}</FormField>
-          <FormField label="State">
-            <Tag
-              :severity="stateSeverity(props.data.state)"
-              :value="props.data.state" />
-          </FormField>
-          <FormField label="Agreement">{{
-            props.data.request.agreementId
-          }}</FormField>
-          <FormField label="Dataset ID">{{ props.data.datasetId }}</FormField>
-        </template>
-      </DataTable>
-    </template>
-  </Card>
+        </DataTable>
+      </template>
+    </Card>
+  </template>
 </template>
 <style scoped>
 .card-container {

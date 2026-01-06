@@ -15,7 +15,7 @@ export function setupApp(app: INestApplication) {
   }
   app.use(
     session({
-      name: "tsg.sso-bridge",
+      name: process.env["SESSION_NAME"] || "tsg.sso-bridge",
       secret: process.env["SESSION_SECRET"] || randomBytes(32).toString("hex"),
       resave: false,
       saveUninitialized: false,

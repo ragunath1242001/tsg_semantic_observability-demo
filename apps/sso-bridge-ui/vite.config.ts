@@ -44,8 +44,8 @@ export default defineConfig({
     proxy: devSessions.local
       ? {
           "/api": {
-            target: process.env.BACKEND ?? "http://localhost:3004/api",
-            rewrite: (path) => path.replace(/^\/api/, "")
+            target: process.env.BACKEND ?? "http://localhost:3004/api"
+            // rewrite: (path) => path.replace(/^\/api/, "")
           }
         }
       : {

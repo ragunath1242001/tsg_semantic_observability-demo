@@ -7,6 +7,8 @@ import {
 import http from "@tsg-dsp/common-ui/utils/http";
 import { defineStore } from "pinia";
 
+import { useRuntimeStore } from "./runtime";
+
 export interface AlgorithmInstanceEvents {
   algorithmEvents: AlgorithmEventDto[];
   internalEvents: InternalEventDto[];
@@ -92,6 +94,13 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
     async createAlgorithmInstance(
       createAlgorithmInstance: CreateAlgorithmInstanceDto
     ) {
+      const runtimeStore = useRuntimeStore();
+      if (runtimeStore.isClientMode) {
+        throw new Error(
+          "Creating algorithm instances is not available in client mode"
+        );
+      }
+
       this.loading = true;
       this.error = null;
 
@@ -120,6 +129,13 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
     },
 
     async deleteAlgorithmInstance(id: string) {
+      const runtimeStore = useRuntimeStore();
+      if (runtimeStore.isClientMode) {
+        throw new Error(
+          "Deleting algorithm instances is not available in client mode"
+        );
+      }
+
       this.loading = true;
       this.error = null;
 

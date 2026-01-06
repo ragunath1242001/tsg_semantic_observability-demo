@@ -4,4 +4,5 @@ export * from "./auth.dto.js";
 export * from "./auth.module.js";
 export * from "./client.info.js";
 export * from "./oauth.guard.js";
+export * from "./oauth.service.js";
 export * from "./roles.guard.js";

@@ -24,7 +24,7 @@ async function bootstrap() {
   }
   app.use(
     session({
-      name: "connect.sid.tsgadp",
+      name: process.env["SESSION_NAME"] || "connect.sid.tsgadp",
       secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
       resave: false,
       saveUninitialized: false

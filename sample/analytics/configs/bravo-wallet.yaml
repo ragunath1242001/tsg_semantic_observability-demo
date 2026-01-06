@@ -9,7 +9,13 @@ db:
   database: "bravo.db"
 
 auth:
-  enabled: false
+  enabled: true
+  openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
+  callbackURL: http://localhost:3650/api/auth/callback
+  clientId: bravo-wallet
+  clientSecret: bravo-wallet
+  rolePath: "$.roles[*]"
+  redirectURL: http://localhost:3650/
 
 initKeys:
   - id: key-0
