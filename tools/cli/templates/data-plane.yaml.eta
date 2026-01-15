@@ -54,9 +54,21 @@ configFromSecrets:
     clientID:
       name: sso-<%= it.participant.id %>-<%= it.id %>-secret
       key: clientId
+<% if (it.general.oauthClientAuthMethod === "client_secret_post") { %>
     clientSecret:
       name: sso-<%= it.participant.id %>-<%= it.id %>-secret
       key: clientSecret
+<% } %>
+
+<% if (it.general.oauthClientAuthMethod === "private_key_jwt") { %>
+secretMounts:
+  - name: oauth-private-key
+    secretName: sso-<%= it.participant.id %>-<%= it.id %>-secret
+    mountPath: "/var/secrets"
+    items:
+      - key: "private-key.jwk"
+        path: "private-key.jwk"
+<% } %>
 
 config:
   db:
@@ -73,6 +85,10 @@ config:
     openIdConfigurationURL: "{{ .Values.ssoBridgeEndpoint }}/.well-known/openid-configuration"
     callbackURL: "{{ .Values.endpoint }}/api/auth/callback"
     redirectURL: "{{ .Values.endpoint }}/"
+<% if (it.general.oauthClientAuthMethod === "private_key_jwt") { %>
+    tokenEndpointAuthMethod: private_key_jwt
+    privateKeyJwkFile: "/var/secrets/private-key.jwk"
+<% } %>
   
   controlPlane:
     dataPlaneEndpoint: "{{ .Values.controlPlaneEndpoint }}/data-plane"

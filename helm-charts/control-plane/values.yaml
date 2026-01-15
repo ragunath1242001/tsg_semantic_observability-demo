@@ -49,3 +49,16 @@ config:
     callbackURL: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}/api/auth/callback
     redirectURL: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}/
     rolePath: "$.roles[*]"
+    # For private_key_jwt authentication, use one of the following:
+    # Option 1: File-based private key (recommended)
+    # privateKeyJwkFile: "/var/secrets/private-key.jwk"
+    # Option 2: Inline private key (not recommended for production)
+    # privateKeyJwk: { ... }
+# Example secret mount configuration for private key
+# secretMounts:
+#   - name: oauth-private-key
+#     secretName: control-plane-oauth-private-key
+#     mountPath: "/var/secrets"
+#     items:
+#       - key: "private-key.jwk"
+#         path: "private-key.jwk"

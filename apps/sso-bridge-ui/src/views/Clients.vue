@@ -1,11 +1,27 @@
 <script setup lang="ts">
+import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
-import { ClientDto } from "@tsg-dsp/sso-bridge-dtos";
+import { ClientAuthMethod, ClientDto } from "@tsg-dsp/sso-bridge-dtos";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
+// Extended ClientDto with fields from API response
+interface ClientWithDates extends ClientDto {
+  createdDate?: Date;
+  modifiedDate?: Date;
+}
+
+import jwkSchema from "../assets/jwk.schema.json";
 import { injectStrict } from "../utils/injectTyped";
+import {
+  type ECCurve,
+  generateJwkKeyPair,
+  type KeyType,
+  parseJwkFromString,
+  type RSAKeySize,
+  stringifyJwk
+} from "../utils/jwk";
 import { AxiosKey } from "../utils/symbols";
 
 const http = injectStrict(AxiosKey);
@@ -14,13 +30,15 @@ const toast = useToast();
 
 const submitted = ref(false);
 
-const clientObj = {
+const clientObj: ClientDto = {
   id: undefined,
   name: undefined,
   secretName: undefined,
   description: undefined,
   clientId: undefined,
   clientSecret: undefined,
+  tokenEndpointAuthMethod: "client_secret_post",
+  jwk: undefined,
   roles: [],
   grants: [],
   redirectUris: []
@@ -37,6 +55,32 @@ const clientGrants = [
   label: grant,
   value: grant
 }));
+
+const authMethods: Array<{
+  label: string;
+  value: ClientAuthMethod;
+  icon: string;
+  description: string;
+}> = [
+  {
+    label: "Client Secret",
+    value: "client_secret_post",
+    icon: "pi pi-lock",
+    description: "Traditional secret-based authentication"
+  },
+  {
+    label: "Private Key JWT",
+    value: "private_key_jwt",
+    icon: "pi pi-key",
+    description: "Asymmetric key-based authentication"
+  },
+  {
+    label: "None (Public)",
+    value: "none",
+    icon: "pi pi-globe",
+    description: "For public clients like SPAs"
+  }
+];
 
 const clientRoles = ref<Array<{ label: string; value: string }>>([]);
 const loadRoles = async () => {
@@ -59,9 +103,103 @@ const loadRoles = async () => {
 
 const clientDialog = ref(false);
 const deleteClientDialog = ref(false);
+const keyGenPanelCollapsed = ref(true);
+
+// Computed property to check if client uses private_key_jwt
+const usesPrivateKeyJwt = computed(
+  () => client.value.tokenEndpointAuthMethod === "private_key_jwt"
+);
+
+// Computed property to check if client needs secret
+const needsClientSecret = computed(() => {
+  const method = client.value.tokenEndpointAuthMethod;
+  return !method || method === "client_secret_post";
+});
+
+// JWK JSON string for textarea binding
+const jwkJsonString = ref("");
+
+// JWK Generation
+const generatingKey = ref(false);
+const keyType = ref<KeyType>("EC");
+const ecCurve = ref<ECCurve>("P-256");
+const rsaKeySize = ref<RSAKeySize>(2048);
+
+// Generate JWK key pair in browser
+const generateJwk = async () => {
+  generatingKey.value = true;
+
+  try {
+    const result = await generateJwkKeyPair({
+      keyType: keyType.value,
+      ecCurve: ecCurve.value,
+      rsaKeySize: rsaKeySize.value
+    });
+
+    // Set the public key in the editor
+    jwkJsonString.value = stringifyJwk(result.publicKey);
+
+    // Copy private key to clipboard
+    await navigator.clipboard.writeText(stringifyJwk(result.privateKey));
+
+    toast.add({
+      severity: "success",
+      summary: "Key Pair Generated",
+      detail:
+        "Public key set in editor. Private key copied to clipboard - save it securely!",
+      life: 8000
+    });
+  } catch (error) {
+    console.error("Error generating key pair:", error);
+    toast.add({
+      severity: "error",
+      summary: "Generation Failed",
+      detail: "Could not generate key pair. Please try again.",
+      life: 5000
+    });
+  } finally {
+    generatingKey.value = false;
+  }
+};
+
+// Parse JWK from JSON string
+const parseJwk = () => {
+  try {
+    client.value.jwk = parseJwkFromString(jwkJsonString.value);
+    return true;
+  } catch (error) {
+    toast.add({
+      severity: "error",
+      summary: "Invalid JWK",
+      detail:
+        error instanceof Error
+          ? error.message
+          : "The JWK JSON is not valid. Please check the format.",
+      life: 5000
+    });
+    return false;
+  }
+};
+
+// Search/filter functionality
+const searchQuery = ref("");
+const filteredData = computed<ClientWithDates[]>(() => {
+  const clients = data.value as ClientWithDates[];
+  if (!searchQuery.value.trim()) {
+    return clients;
+  }
+  const query = searchQuery.value.toLowerCase();
+  return clients.filter(
+    (client) =>
+      client.name?.toLowerCase().includes(query) ||
+      client.clientId?.toLowerCase().includes(query) ||
+      client.description?.toLowerCase().includes(query)
+  );
+});
 
 const openNew = () => {
-  client.value = clientObj;
+  client.value = { ...clientObj };
+  jwkJsonString.value = "";
   submitted.value = false;
   clientDialog.value = true;
 };
@@ -73,6 +211,8 @@ const hideDialog = () => {
 
 const editClient = (data: ClientDto) => {
   client.value = { ...data };
+  // Initialize JWK JSON string if JWK exists
+  jwkJsonString.value = stringifyJwk(data.jwk);
   // @ts-expect-error Grants should be annotated with label and value
   client.value.grants = client.value.grants.map((grant) => ({
     label: grant,
@@ -129,12 +269,23 @@ const updateClient = async () => {
 const saveClient = async () => {
   submitted.value = true;
 
-  if (
+  // Parse JWK if using private_key_jwt
+  if (usesPrivateKeyJwt.value && !parseJwk()) {
+    return;
+  }
+
+  // Validate required fields based on auth method
+  const hasRequiredFields =
     client?.value.name?.trim() &&
-    client?.value.secretName?.trim() &&
     client?.value.clientId?.trim() &&
-    client?.value.roles?.length > 0
-  ) {
+    client?.value.roles?.length > 0;
+
+  const hasSecretIfNeeded =
+    !needsClientSecret.value || client?.value.clientSecret?.trim();
+
+  const hasKeyIfNeeded = !usesPrivateKeyJwt.value || client?.value.jwk;
+
+  if (hasRequiredFields && hasSecretIfNeeded && hasKeyIfNeeded) {
     if (client?.value.grants) {
       // @ts-expect-error Grants should be strings
       client.value.grants = client.value.grants.map((grant) => grant.value);
@@ -186,228 +337,653 @@ const { data, loading, total, perPage, load } = setupPagination({
   toast
 });
 
+// Helper to format auth method for display
+const formatAuthMethod = (method?: string) => {
+  const found = authMethods.find((m) => m.value === method);
+  return found?.label ?? method ?? "Client Secret";
+};
+
+// Helper to get auth method icon
+const getAuthMethodIcon = (method?: string) => {
+  const found = authMethods.find((m) => m.value === method);
+  return found?.icon ?? "pi pi-lock";
+};
+
+// Copy to clipboard helper
+const copyToClipboard = async (text: string, label: string) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.add({
+      severity: "success",
+      summary: "Copied",
+      detail: `${label} copied to clipboard`,
+      life: 2000
+    });
+  } catch {
+    toast.add({
+      severity: "error",
+      summary: "Failed",
+      detail: "Could not copy to clipboard",
+      life: 3000
+    });
+  }
+};
+
 onMounted(async () => {
   await Promise.all([load(), loadRoles()]);
 });
 </script>
 <template>
-  <div>
-    <Card>
-      <template #title>Client management</template>
-      <template #content>
-        <Toolbar class="mb-6">
-          <template #start>
-            <Button
-              label="New"
-              icon="pi pi-plus"
-              class="mr-2"
-              @click="openNew" />
-          </template>
-        </Toolbar>
-        <DataTable
-          :value="data"
-          lazy
-          :loading="loading"
-          paginator
-          :rows-per-page-options="[5, 10, 25, 50]"
-          :total-records="total"
-          :first="0"
-          :rows="perPage"
-          data-key="id"
-          sort-field="createdDate"
-          :sort-order="1"
-          @page="load"
-          @sort="load">
-          <template #empty>No clients added yet.</template>
-          <Column field="name" header="Name" />
-          <Column field="secretName" header="Secret Name" />
-          <Column field="description" header="Description" />
-          <Column field="clientId" header="Client ID" />
-          <Column field="clientSecret" header="Client Secret">
-            <template #body="slotProps">
-              <Inplace>
-                <template #display> Show secret </template>
-                <template #content>
-                  <p class="m-0">{{ slotProps.data.clientSecret }}</p>
-                </template>
-              </Inplace>
-            </template>
-          </Column>
-          <Column field="roles" class="break-all" header="Roles">
-            <template #body="slotProps">
-              <div class="flex flex-wrap gap-1">
-                <span
-                  v-for="(role, index) in slotProps.data.roles"
-                  :key="index"
-                  class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-                  {{ role }}
-                </span>
-              </div>
-              <span
-                v-if="
-                  !slotProps.data.roles || slotProps.data.roles.length === 0
-                "
-                class="text-gray-500 italic">
-                No roles
-              </span>
-            </template>
-          </Column>
-          <Column field="grants" header="Grants">
-            <template #body="slotProps">
-              {{ console.log(slotProps) }}
-              <span>{{ slotProps.data.grants.toString() }}</span>
-            </template></Column
-          >
-          <Column field="redirectUris" header="Redirect URIs">
-            <template #body="slotProps">
-              {{ console.log(slotProps) }}
-              <span>{{ slotProps.data.redirectUris.toString() }}</span>
-            </template>
-          </Column>
-          <Column field="createdDate" header="Created" sortable>
-            <template #body="props">
-              {{ formatRelative(props.data.createdDate) }}
-            </template>
-          </Column>
-          <Column field="actions" header="Actions">
-            <template #body="props">
-              <Button
-                outlined
-                rounded
-                icon="pi pi-pencil"
-                class="mr-2"
-                @click="editClient(props.data)" />
-              <Button
-                outlined
-                rounded
-                severity="danger"
-                icon="pi pi-times"
-                @click="openDeleteClientDialog(props.data)" />
-            </template>
-          </Column>
-        </DataTable>
+  <div class="clients-view">
+    <!-- Header Section -->
+    <div class="mb-6">
+      <div
+        class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1
+            class="text-2xl font-bold text-surface-900 dark:text-surface-0 m-0">
+            Client Management
+          </h1>
+          <p class="text-surface-500 dark:text-surface-400 mt-1 mb-0">
+            Manage OAuth2/OIDC client applications
+          </p>
+        </div>
+        <Button
+          label="Add Client"
+          icon="pi pi-plus"
+          class="w-full md:w-auto"
+          @click="openNew" />
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+      <IconField>
+        <InputIcon class="pi pi-search" />
+        <InputText
+          v-model="searchQuery"
+          placeholder="Search clients by name, ID, or description..."
+          class="w-full" />
+      </IconField>
+    </div>
+
+    <!-- DataView -->
+    <DataView
+      :value="filteredData"
+      :rows="perPage"
+      :total-records="total"
+      :lazy="false"
+      paginator
+      layout="list"
+      class="client-dataview"
+      :rows-per-page-options="[6, 12, 24, 48]">
+      <template #empty>
+        <div class="flex flex-col items-center justify-center py-16 px-4">
+          <i
+            class="pi pi-inbox text-6xl text-surface-300 dark:text-surface-600 mb-4" />
+          <h3
+            class="text-xl font-semibold text-surface-700 dark:text-surface-300 mb-2">
+            {{ searchQuery ? "No clients found" : "No clients yet" }}
+          </h3>
+          <p class="text-surface-500 dark:text-surface-400 text-center mb-4">
+            {{
+              searchQuery
+                ? "Try adjusting your search criteria"
+                : "Get started by creating your first OAuth2 client"
+            }}
+          </p>
+          <Button
+            v-if="!searchQuery"
+            label="Create Client"
+            icon="pi pi-plus"
+            @click="openNew" />
+        </div>
       </template>
-    </Card>
+
+      <template #list="slotProps">
+        <div v-if="loading" class="space-y-4">
+          <div
+            v-for="i in 6"
+            :key="i"
+            class="p-4 border border-surface-200 dark:border-surface-700 rounded-lg bg-surface-0 dark:bg-surface-900">
+            <div class="flex items-start gap-4">
+              <Skeleton shape="circle" size="3rem" />
+              <div class="flex-1">
+                <Skeleton width="60%" height="1.25rem" class="mb-2" />
+                <Skeleton width="40%" height="1rem" class="mb-4" />
+                <Skeleton width="100%" height="0.75rem" class="mb-2" />
+                <Skeleton width="80%" height="0.75rem" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="">
+          <div
+            v-for="item in slotProps.items"
+            :key="item.id"
+            class="border-b-1 border-b-surface-200 dark:border-b-surface-700">
+            <div class="flex flex-col lg:flex-row">
+              <!-- Left Section: Main Info -->
+              <div class="flex-1 p-5">
+                <div class="flex items-start gap-4">
+                  <!-- Icon -->
+                  <div
+                    class="w-11 h-11 rounded-xl bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center flex-shrink-0">
+                    <i
+                      :class="getAuthMethodIcon(item.tokenEndpointAuthMethod)"
+                      class="text-lg text-primary-600 dark:text-primary-400" />
+                  </div>
+
+                  <!-- Info -->
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-4 mb-3">
+                      <div class="min-w-0 flex-1">
+                        <h3
+                          class="text-base font-semibold text-surface-900 dark:text-surface-0 mb-1.5">
+                          {{ item.name }}
+                        </h3>
+                        <div
+                          class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
+                          <span class="font-mono text-xs">{{
+                            item.clientId
+                          }}</span>
+                          <Button
+                            icon="pi pi-copy"
+                            text
+                            rounded
+                            severity="secondary"
+                            size="small"
+                            class="!p-1 !w-5 !h-5"
+                            @click.stop="
+                              copyToClipboard(item.clientId, 'Client ID')
+                            " />
+                        </div>
+                      </div>
+
+                      <!-- Auth Method Badge -->
+                      <Tag
+                        :value="formatAuthMethod(item.tokenEndpointAuthMethod)"
+                        :severity="
+                          item.tokenEndpointAuthMethod === 'private_key_jwt'
+                            ? 'success'
+                            : item.tokenEndpointAuthMethod === 'none'
+                              ? 'warn'
+                              : 'info'
+                        " />
+                    </div>
+
+                    <p
+                      v-if="item.description"
+                      class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed mb-3 line-clamp-2">
+                      {{ item.description }}
+                    </p>
+
+                    <!-- Metadata Row -->
+                    <div
+                      class="flex flex-wrap items-center gap-4 text-xs text-surface-500 dark:text-surface-400">
+                      <span>
+                        <i class="pi pi-clock mr-1" />
+                        {{ formatRelative(item.createdDate) }}
+                      </span>
+                      <span>
+                        <i class="pi pi-database mr-1" />
+                        {{ item.secretName }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Section: Roles, Grants & Actions -->
+              <div
+                class="border-t lg:border-t-0 lg:border-l border-surface-200/60 dark:border-surface-700/60 p-5 lg:w-96 xl:w-120 2xl:w-144 bg-surface-50/30 dark:bg-surface-800/20">
+                <div class="space-y-4">
+                  <!-- Roles -->
+                  <div v-if="item.roles && item.roles.length > 0">
+                    <span
+                      class="text-xs font-semibold text-surface-600 dark:text-surface-300 uppercase tracking-wider block mb-2"
+                      >Roles</span
+                    >
+                    <div class="flex flex-wrap gap-1.5">
+                      <Tag
+                        v-for="role in item.roles.slice(0, 5)"
+                        :key="role"
+                        :value="role"
+                        severity="secondary"
+                        class="text-xs" />
+                      <Tag
+                        v-if="item.roles.length > 5"
+                        v-tooltip.left="{
+                          value: item.roles.slice(5).join('<br />'),
+                          escape: false,
+                          hideDelay: 500,
+                          pt: {
+                            root: {
+                              style: { '--p-tooltip-max-width': '400px' }
+                            }
+                          }
+                        }"
+                        :value="`+${item.roles.length - 5}`"
+                        severity="secondary"
+                        class="text-xs cursor-help" />
+                    </div>
+                  </div>
+
+                  <!-- Grants -->
+                  <div v-if="item.grants && item.grants.length > 0">
+                    <span
+                      class="text-xs font-semibold text-surface-600 dark:text-surface-300 uppercase tracking-wider block mb-2"
+                      >Grants</span
+                    >
+                    <div class="flex flex-wrap gap-1.5">
+                      <Tag
+                        v-for="grant in item.grants"
+                        :key="grant"
+                        :value="grant"
+                        severity="contrast"
+                        class="text-xs" />
+                    </div>
+                  </div>
+
+                  <!-- Actions -->
+                  <div
+                    class="flex items-center gap-2 pt-3 border-t border-surface-200/60 dark:border-surface-700/60">
+                    <Button
+                      label="Edit"
+                      icon="pi pi-pencil"
+                      size="small"
+                      outlined
+                      class="flex-1"
+                      @click="editClient(item)" />
+                    <Button
+                      icon="pi pi-trash"
+                      size="small"
+                      severity="danger"
+                      outlined
+                      @click="openDeleteClientDialog(item)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </DataView>
+
+    <!-- Create/Edit Dialog -->
     <Dialog
       v-model:visible="clientDialog"
-      :style="{ width: '450px' }"
-      header="Client Details"
-      :modal="true">
-      <div class="flex flex-col gap-6">
-        <div>
-          <label for="name" class="block font-bold mb-3">Name</label>
-          <InputText
-            id="name"
-            v-model.trim="client.name"
-            required="true"
-            autofocus
-            :invalid="submitted && !client.name"
-            fluid />
-          <small v-if="submitted && !client.name" class="text-red-500"
-            >Name is required.</small
-          >
+      :style="{ width: '48rem' }"
+      :breakpoints="{ '1199px': '75vw', '575px': '95vw' }"
+      :header="client.id ? 'Edit Client' : 'Create New Client'"
+      :modal="true"
+      :dismissable-mask="true"
+      class="client-dialog">
+      <div class="space-y-6">
+        <!-- Section: Basic Information -->
+        <div
+          class="space-y-4 pb-6 border-b border-surface-200/40 dark:border-surface-700/40">
+          <h3
+            class="text-sm font-semibold text-surface-700 dark:text-surface-300 tracking-wider">
+            Basic Information
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="field">
+              <label for="name" class="block text-sm font-medium mb-2">
+                Name <span class="text-red-500">*</span>
+              </label>
+              <InputText
+                id="name"
+                v-model.trim="client.name"
+                placeholder="My Application"
+                :invalid="submitted && !client.name"
+                class="w-full" />
+              <small v-if="submitted && !client.name" class="text-red-500">
+                Name is required
+              </small>
+            </div>
+
+            <div class="field">
+              <label for="clientId" class="block text-sm font-medium mb-2">
+                Client ID <span class="text-red-500">*</span>
+              </label>
+              <InputText
+                id="clientId"
+                v-model.trim="client.clientId"
+                placeholder="my-application"
+                :invalid="submitted && !client.clientId"
+                class="w-full" />
+              <small v-if="submitted && !client.clientId" class="text-red-500">
+                Client ID is required
+              </small>
+            </div>
+
+            <div class="field md:col-span-2">
+              <label for="description" class="block text-sm font-medium mb-2">
+                Description
+              </label>
+              <Textarea
+                id="description"
+                v-model.trim="client.description"
+                placeholder="Brief description of the client application"
+                rows="2"
+                class="w-full" />
+            </div>
+          </div>
         </div>
-        <div>
-          <label for="name" class="block font-bold mb-3">Secret Name</label>
-          <InputText
-            id="secretName"
-            v-model.trim="client.secretName"
-            required="true"
-            autofocus
-            :invalid="submitted && !client.secretName"
-            fluid />
-          <small v-if="submitted && !client.secretName" class="text-red-500"
-            >Secret Name is required.</small
-          >
+
+        <!-- Section: Authentication -->
+        <div
+          class="space-y-4 pb-6 border-b border-surface-200/40 dark:border-surface-700/40">
+          <h3
+            class="text-sm font-semibold text-surface-700 dark:text-surface-300 tracking-wider">
+            Authentication
+          </h3>
+          <div class="space-y-4">
+            <div class="field">
+              <label class="block text-sm font-medium mb-3">
+                Authentication Method
+              </label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div
+                  v-for="method in authMethods"
+                  :key="method.value"
+                  :class="[
+                    'p-3 rounded-lg cursor-pointer transition-all',
+                    client.tokenEndpointAuthMethod === method.value
+                      ? 'bg-primary-50 dark:bg-primary-900/20 ring-2 ring-primary-500'
+                      : 'bg-surface-50 dark:bg-surface-800 hover:bg-surface-100 dark:hover:bg-surface-700'
+                  ]"
+                  @click="client.tokenEndpointAuthMethod = method.value">
+                  <div class="flex items-center gap-3">
+                    <RadioButton
+                      :model-value="client.tokenEndpointAuthMethod"
+                      :value="method.value"
+                      :input-id="method.value" />
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <i :class="method.icon" class="text-sm" />
+                        <span class="font-medium text-sm">{{
+                          method.label
+                        }}</span>
+                      </div>
+                      <span
+                        class="text-xs text-surface-500 dark:text-surface-400">
+                        {{ method.description }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Client Secret Input -->
+            <div v-if="needsClientSecret" class="field">
+              <label for="secret" class="block text-sm font-medium mb-2">
+                Client Secret <span class="text-red-500">*</span>
+              </label>
+              <Password
+                id="secret"
+                v-model="client.clientSecret"
+                :invalid="
+                  submitted && needsClientSecret && !client.clientSecret
+                "
+                :feedback="false"
+                toggle-mask
+                class="w-full"
+                input-class="w-full" />
+              <small
+                v-if="submitted && needsClientSecret && !client.clientSecret"
+                class="text-red-500">
+                Client secret is required
+              </small>
+            </div>
+
+            <div v-if="needsClientSecret" class="field">
+              <label for="secretName" class="block text-sm font-medium mb-2">
+                Secret Name <span class="text-red-500">*</span>
+              </label>
+              <InputText
+                id="secretName"
+                v-model.trim="client.secretName"
+                placeholder="my-app-secret"
+                :invalid="submitted && !client.secretName"
+                class="w-full" />
+              <small class="text-surface-500 block mt-1">
+                Kubernetes secret name for storing credentials
+              </small>
+              <small
+                v-if="submitted && !client.secretName"
+                class="text-red-500">
+                Secret name is required
+              </small>
+            </div>
+
+            <!-- JWK Input -->
+            <div v-if="usesPrivateKeyJwt" class="field">
+              <div class="flex items-center justify-between mb-2">
+                <label for="jwk" class="block text-sm font-medium">
+                  Public Key (JWK) <span class="text-red-500">*</span>
+                </label>
+              </div>
+
+              <!-- Key Generation Panel -->
+              <div
+                class="bg-surface-50 dark:bg-surface-800 rounded-lg p-4 mb-3">
+                <button
+                  type="button"
+                  class="flex items-center justify-between w-full text-left text-sm font-medium text-surface-900 dark:text-surface-0"
+                  @click="keyGenPanelCollapsed = !keyGenPanelCollapsed">
+                  <span>Generate Key Pair</span>
+                  <i
+                    :class="[
+                      'pi transition-transform',
+                      keyGenPanelCollapsed ? 'pi-chevron-down' : 'pi-chevron-up'
+                    ]" />
+                </button>
+
+                <div v-show="!keyGenPanelCollapsed" class="mt-4 space-y-4">
+                  <p class="text-sm text-surface-600 dark:text-surface-400 m-0">
+                    Generate a new key pair in your browser. The public key will
+                    be added to the editor below, and the private key will be
+                    copied to your clipboard.
+                  </p>
+
+                  <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1">
+                      <label class="block text-sm font-medium mb-2"
+                        >Key Type</label
+                      >
+                      <SelectButton
+                        v-model="keyType"
+                        :options="[
+                          { label: 'Elliptic Curve', value: 'EC' },
+                          { label: 'RSA', value: 'RSA' }
+                        ]"
+                        option-label="label"
+                        option-value="value"
+                        class="w-full" />
+                    </div>
+
+                    <div v-if="keyType === 'EC'" class="flex-1">
+                      <label class="block text-sm font-medium mb-2"
+                        >Curve</label
+                      >
+                      <Select
+                        v-model="ecCurve"
+                        :options="[
+                          { label: 'P-256', value: 'P-256' },
+                          { label: 'P-384', value: 'P-384' },
+                          { label: 'P-521', value: 'P-521' }
+                        ]"
+                        option-label="label"
+                        option-value="value"
+                        class="w-full" />
+                    </div>
+
+                    <div v-if="keyType === 'RSA'" class="flex-1">
+                      <label class="block text-sm font-medium mb-2"
+                        >Key Size</label
+                      >
+                      <Select
+                        v-model="rsaKeySize"
+                        :options="[
+                          { label: '2048 bits', value: 2048 },
+                          { label: '4096 bits', value: 4096 }
+                        ]"
+                        option-label="label"
+                        option-value="value"
+                        class="w-full" />
+                    </div>
+                  </div>
+
+                  <Button
+                    label="Generate Key Pair"
+                    icon="pi pi-key"
+                    :loading="generatingKey"
+                    class="w-full sm:w-auto"
+                    @click="generateJwk" />
+
+                  <Message severity="warn" :closable="false" class="mt-2">
+                    <span class="text-sm">
+                      <strong>Important:</strong> The private key will only be
+                      put in your clipboard.
+                    </span>
+                  </Message>
+                </div>
+              </div>
+
+              <MonacoEditor
+                v-model="jwkJsonString"
+                :schema="jwkSchema"
+                schema-warning
+                :min-lines="8"
+                :max-lines="12"
+                language="json" />
+              <small class="text-surface-500 block mt-1">
+                Paste the client's public key in JWK format, or generate one
+                above
+              </small>
+              <small
+                v-if="submitted && usesPrivateKeyJwt && !jwkJsonString"
+                class="text-red-500">
+                Public key is required
+              </small>
+            </div>
+          </div>
         </div>
-        <div>
-          <label for="description" class="block font-bold mb-3"
-            >Description</label
-          >
-          <InputText
-            id="description"
-            v-model.trim="client.description"
-            autofocus
-            fluid />
-        </div>
-        <div>
-          <label for="clientId" class="block font-bold mb-3">Client ID</label>
-          <InputText
-            id="clientId"
-            v-model.trim="client.clientId"
-            required="true"
-            autofocus
-            :invalid="submitted && !client.clientId"
-            fluid />
-          <small v-if="submitted && !client.clientId" class="text-red-500"
-            >Client ID is required.</small
-          >
-        </div>
-        <div>
-          <label for="secret" class="block font-bold mb-3">Client Secret</label>
-          <Password
-            id="secret"
-            v-model="client.clientSecret"
-            :required="true"
-            rows="3"
-            cols="20"
-            fluid />
-        </div>
-        <div>
-          <label for="roles" class="block font-bold mb-3">Roles</label>
-          <MultiSelect
-            id="roles"
-            v-model="client.roles"
-            :options="clientRoles"
-            required="true"
-            :invalid="submitted && !client.roles"
-            option-label="label"
-            placeholder="Select Roles"
-            fluid>
-          </MultiSelect>
-          <small
-            v-if="submitted && client.roles.length == 0"
-            class="text-red-500"
-            >You must select at least one role.</small
-          >
-        </div>
-        <div>
-          <label for="grants" class="block font-bold mb-3">Grants</label>
-          <MultiSelect
-            id="grants"
-            v-model="client.grants"
-            :options="clientGrants"
-            option-label="label"
-            placeholder="Select Grants"
-            fluid>
-          </MultiSelect>
+
+        <!-- Section: Authorization -->
+        <div class="space-y-4">
+          <h3
+            class="text-sm font-semibold text-surface-700 dark:text-surface-300 tracking-wider">
+            Authorization
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="field">
+              <label for="roles" class="block text-sm font-medium mb-2">
+                Roles <span class="text-red-500">*</span>
+              </label>
+              <MultiSelect
+                id="roles"
+                v-model="client.roles"
+                :options="clientRoles"
+                option-label="label"
+                placeholder="Select roles"
+                :invalid="submitted && client.roles.length === 0"
+                display="chip"
+                class="w-full" />
+              <small
+                v-if="submitted && client.roles.length === 0"
+                class="text-red-500">
+                At least one role is required
+              </small>
+            </div>
+
+            <div class="field">
+              <label for="grants" class="block text-sm font-medium mb-2">
+                Grant Types
+              </label>
+              <MultiSelect
+                id="grants"
+                v-model="client.grants"
+                :options="clientGrants"
+                option-label="label"
+                placeholder="Select grants"
+                display="chip"
+                class="w-full" />
+            </div>
+
+            <div class="field md:col-span-2">
+              <label for="redirectUris" class="block text-sm font-medium mb-2">
+                Redirect URIs
+              </label>
+              <InputChips
+                v-model="client.redirectUris"
+                separator=","
+                placeholder="Enter URIs and press Enter"
+                class="w-full" />
+              <small class="text-surface-500 block mt-1">
+                Allowed callback URLs for OAuth2 flows
+              </small>
+            </div>
+          </div>
         </div>
       </div>
 
       <template #footer>
-        <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-        <Button label="Save" icon="pi pi-check" @click="saveClient" />
+        <div class="flex justify-end gap-2">
+          <Button
+            label="Cancel"
+            severity="secondary"
+            text
+            @click="hideDialog" />
+          <Button
+            :label="client.id ? 'Update' : 'Create'"
+            icon="pi pi-check"
+            @click="saveClient" />
+        </div>
       </template>
     </Dialog>
+
+    <!-- Delete Confirmation Dialog -->
     <Dialog
       v-model:visible="deleteClientDialog"
-      :style="{ width: '450px' }"
-      header="Confirm"
-      :modal="true">
-      <div class="flex items-center gap-4">
-        <i class="pi pi-exclamation-triangle !text-3xl" />
-        <span v-if="client"
-          >Are you sure you want to delete <b>{{ client.name }}</b
-          >?</span
-        >
+      :style="{ width: '28rem' }"
+      header="Delete Client"
+      :modal="true"
+      :dismissable-mask="true">
+      <div class="flex items-start gap-4">
+        <div
+          class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
+          <i
+            class="pi pi-exclamation-triangle text-xl text-red-600 dark:text-red-400" />
+        </div>
+        <div>
+          <p class="m-0 text-surface-700 dark:text-surface-300">
+            Are you sure you want to delete <strong>{{ client.name }}</strong
+            >?
+          </p>
+          <p class="mt-2 mb-0 text-sm text-surface-500 dark:text-surface-400">
+            This action cannot be undone. All associated configurations will be
+            permanently removed.
+          </p>
+        </div>
       </div>
       <template #footer>
-        <Button
-          label="No"
-          icon="pi pi-times"
-          text
-          @click="deleteClientDialog = false" />
-        <Button label="Yes" icon="pi pi-check" @click="deleteClient" />
+        <div class="flex justify-end gap-2">
+          <Button
+            label="Cancel"
+            severity="secondary"
+            text
+            @click="deleteClientDialog = false" />
+          <Button
+            label="Delete"
+            severity="danger"
+            icon="pi pi-trash"
+            @click="deleteClient" />
+        </div>
       </template>
     </Dialog>
   </div>

@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JSON Web Key (JWK)",
+  "type": "object",
+  "required": ["kty"],
+  "properties": {
+    "kty": {
+      "type": "string",
+      "enum": ["RSA", "EC"],
+      "description": "Key Type"
+    },
+    "use": {
+      "type": "string",
+      "enum": ["sig", "enc"],
+      "description": "Public Key Use"
+    },
+    "key_ops": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["sign", "verify", "encrypt", "decrypt", "wrapKey", "unwrapKey"]
+      },
+      "description": "Key Operations"
+    },
+    "alg": {
+      "type": "string",
+      "enum": ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
+      "description": "Algorithm"
+    },
+    "kid": {
+      "type": "string",
+      "description": "Key ID"
+    }
+  },
+  "oneOf": [
+    {
+      "title": "RSA Public Key",
+      "required": ["kty", "n", "e"],
+      "properties": {
+        "kty": {
+          "const": "RSA"
+        },
+        "n": {
+          "type": "string",
+          "description": "Modulus (Base64url encoded)"
+        },
+        "e": {
+          "type": "string",
+          "description": "Exponent (Base64url encoded)"
+        }
+      }
+    },
+    {
+      "title": "EC Public Key",
+      "required": ["kty", "crv", "x", "y"],
+      "properties": {
+        "kty": {
+          "const": "EC"
+        },
+        "crv": {
+          "type": "string",
+          "enum": ["P-256", "P-384", "P-521"],
+          "description": "Curve"
+        },
+        "x": {
+          "type": "string",
+          "description": "X Coordinate (Base64url encoded)"
+        },
+        "y": {
+          "type": "string",
+          "description": "Y Coordinate (Base64url encoded)"
+        }
+      }
+    }
+  ]
+}

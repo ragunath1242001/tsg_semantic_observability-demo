@@ -1,9 +1,9 @@
-import { REQUEST } from "@nestjs/core";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { UserDto } from "@tsg-dsp/sso-bridge-dtos/dist/users.dto.js";
 import { plainToInstance } from "class-transformer";
+import { Request } from "express";
 
 import { RootConfig } from "../config.js";
 import { OauthClient } from "../model/client.dao.js";
@@ -30,14 +30,6 @@ describe("UsersService Tests", () => {
         {
           provide: RootConfig,
           useValue: plainToInstance(RootConfig, {})
-        },
-        {
-          provide: REQUEST,
-          useValue: {
-            session: {
-              user: null
-            }
-          }
         }
       ]
     }).compile();
@@ -114,12 +106,17 @@ describe("UsersService Tests", () => {
         roles: [userRole.name],
         grants: ["authorization_code"]
       });
-      const result = await usersService.deleteUser(user.id);
+      const result = await usersService.deleteUser(
+        user.id,
+        {} as unknown as Request
+      );
       expect(result.deleted).toEqual(true);
     });
 
     it("should throw error when deleting non-existent user", async () => {
-      await expect(usersService.deleteUser(9999)).rejects.toThrow("not found");
+      await expect(
+        usersService.deleteUser(9999, {} as unknown as Request)
+      ).rejects.toThrow("not found");
     });
   });
 });

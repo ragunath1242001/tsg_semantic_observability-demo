@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards
 } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -15,6 +16,7 @@ import {
   UsePagination
 } from "@tsg-dsp/common-api";
 import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
+import { Request } from "express";
 
 import { AuthGuard, ManagementRoles } from "../auth/auth.guard.js";
 import { UsersService } from "./users.service.js";
@@ -53,8 +55,8 @@ export class UsersController {
   @ApiOperation({ summary: "Delete a user" })
   @ApiParam({ name: "id", type: Number, description: "User id" })
   @ApiResponse({ status: 200, description: "User successfully deleted." })
-  async deleteUser(@Param("id") id: number) {
-    return this.usersService.deleteUser(id);
+  async deleteUser(@Param("id") id: number, @Req() request: Request) {
+    return this.usersService.deleteUser(id, request);
   }
 
   @Patch("update/:id")

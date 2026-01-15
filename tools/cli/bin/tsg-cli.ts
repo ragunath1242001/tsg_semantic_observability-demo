@@ -3,6 +3,7 @@ import { Argument, Command } from "@commander-js/extra-typings";
 
 import { Deploy } from "../lib/deploy.js";
 import { Generate } from "../lib/generate.js";
+import { interactiveGenerateKeys } from "../lib/keys.js";
 import { log } from "../lib/utils.js";
 import { getCliVersion, getLatestRelease } from "../lib/validate.js";
 
@@ -101,6 +102,31 @@ program
       } else {
         process.exit(1);
       }
+    }
+  });
+
+const keysCommand = program
+  .command("keys")
+  .description("Manage cryptographic keys for client authentication");
+
+keysCommand
+  .command("generate")
+  .description(
+    "Generate a new key pair for private_key_jwt client authentication"
+  )
+  .option("-o, --output <dir>", "output directory for generated keys")
+  .option(
+    "-a, --algorithm <algorithm>",
+    "key algorithm (RS256, RS384, RS512, ES256, ES384, ES512)"
+  )
+  .option("-k, --key-id <keyId>", "key ID (kid)")
+  .option("-y, --yes", "assume yes for all prompts", false)
+  .action(async (options) => {
+    try {
+      await interactiveGenerateKeys(options);
+    } catch (e) {
+      log("error", `Error during key generation!\n${e}`);
+      process.exit(1);
     }
   });
 

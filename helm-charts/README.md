@@ -98,4 +98,45 @@ Each chart has its own `README.md` with component‑specific notes:
 
 ---
 
+## OAuth Private Key Configuration
+
+For applications using `private_key_jwt` authentication, you have two options to provide the private key:
+
+### Option 1: File-based configuration (Recommended)
+
+1. Create a Kubernetes secret with your private key:
+
+```bash
+kubectl create secret generic my-app-oauth-key \
+  --from-file=private-key.jwk=./path/to/private-key.jwk
+```
+
+2. Configure the Helm chart to mount the secret:
+
+```yaml
+config:
+  auth:
+    privateKeyJwkFile: "/var/secrets/private-key.jwk"
+
+secretMounts:
+  - name: oauth-private-key
+    secretName: my-app-oauth-key
+    mountPath: "/var/secrets"
+    items:
+      - key: "private-key.jwk"
+        path: "private-key.jwk"
+```
+
+### Option 2: Inline configuration (Development only)
+
+```yaml
+config:
+  auth:
+    privateKeyJwk:
+      kty: "RSA"
+      # ... rest of JWK
+```
+
+---
+
 For deeper template details refer to the `core` chart documentation.

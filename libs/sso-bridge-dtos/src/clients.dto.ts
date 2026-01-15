@@ -1,13 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsArray,
+  IsIn,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString
 } from "class-validator";
 
-import { GrantType } from "./grants.js";
+import { ClientAuthMethod, GrantType } from "./grants.js";
 
 export class ClientDto {
   @ApiPropertyOptional({ example: 1 })
@@ -35,10 +37,39 @@ export class ClientDto {
   @IsNotEmpty()
   clientId!: string;
 
-  @ApiProperty({ example: "client-secret-abc" })
+  @ApiPropertyOptional({
+    example: "client-secret-abc",
+    description:
+      "Client secret for symmetric authentication. Required when tokenEndpointAuthMethod is client_secret_post."
+  })
   @IsString()
-  @IsNotEmpty()
-  clientSecret!: string;
+  @IsOptional()
+  clientSecret?: string;
+
+  @ApiPropertyOptional({
+    example: "client_secret_post",
+    description:
+      "Authentication method used at the token endpoint. Defaults to client_secret_post.",
+    enum: ["client_secret_post", "private_key_jwt", "none"]
+  })
+  @IsString()
+  @IsIn(["client_secret_post", "private_key_jwt", "none"])
+  @IsOptional()
+  tokenEndpointAuthMethod?: ClientAuthMethod;
+
+  @ApiPropertyOptional({
+    example: {
+      kty: "RSA",
+      n: "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw",
+      e: "AQAB",
+      kid: "client-key-1"
+    },
+    description:
+      "Public key in JWK format for asymmetric authentication. Required when tokenEndpointAuthMethod is private_key_jwt."
+  })
+  @IsObject()
+  @IsOptional()
+  jwk?: Record<string, any>;
 
   @ApiProperty({ example: ["admin", "user"] })
   @IsArray()

@@ -96,18 +96,23 @@ export class OAuthService {
           HttpStatus.BAD_REQUEST
         );
       }
+
+      // Only use basic auth if clientSecret is available
+      const axiosConfig: { auth?: { username: string; password: string } } = {};
+      if (this.authConfig.clientSecret) {
+        axiosConfig.auth = {
+          username: this.authConfig.clientId,
+          password: this.authConfig.clientSecret
+        };
+      }
+
       const response = await axios.post(
         metadata.introspection_endpoint,
         {
           token: token,
           token_type_hint: "access_token"
         },
-        {
-          auth: {
-            username: this.authConfig.clientId,
-            password: this.authConfig.clientSecret
-          }
-        }
+        axiosConfig
       );
       const { active, ...user } = response.data;
       if (active) {

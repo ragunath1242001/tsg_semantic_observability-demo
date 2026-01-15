@@ -1,4 +1,4 @@
-import { GrantType } from "@tsg-dsp/sso-bridge-dtos";
+import { ClientAuthMethod, GrantType } from "@tsg-dsp/sso-bridge-dtos";
 import { Transform } from "class-transformer";
 import {
   Column,
@@ -22,8 +22,14 @@ export class OauthClient extends MetaEntity {
   @Column({ type: String })
   clientId!: string;
 
-  @Column({ type: String })
-  clientSecret!: string;
+  @Column({ type: String, nullable: true })
+  clientSecret?: string;
+
+  @Column({ type: String, default: "client_secret_post" })
+  tokenEndpointAuthMethod: ClientAuthMethod = "client_secret_post";
+
+  @Column({ type: "simple-json", nullable: true })
+  jwk?: Record<string, any>;
 
   @ManyToMany(() => OauthRole, { eager: true })
   @JoinTable()

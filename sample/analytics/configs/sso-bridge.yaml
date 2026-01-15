@@ -2,7 +2,7 @@ server:
   port: 3700
   listen: "0.0.0.0"
   publicAddress: http://localhost:3750
-  publicDomain: localhost:3750
+  publicDomain: localhost
 
 db:
   type: "sqlite"
@@ -43,9 +43,17 @@ initRoles:
 initClients:
   # Authority clients
   - clientId: authority-wallet
-    clientSecret: authority-wallet
     name: Authority Wallet
     description: Authority Wallet
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: 7s2R3zVi4FI8BRZ0979i-NGrmA13xGk1eOoYo5Gy2Tc
+      y: 3bMs_vp_cJKOI4nFVhGQywMvJDveGblOYpQd4uMAXDk
+      crv: P-256
+      kid: authority-wallet-key-1767782795718
+      alg: ES256
+      use: sig
     redirectUris:
       - http://localhost:3450/.*
     roles:
@@ -63,9 +71,17 @@ initClients:
 
   # Alfa clients
   - clientId: alfa-wallet
-    clientSecret: alfa-wallet
     name: Alfa Wallet
     description: Alfa Wallet
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: TNroQXAH5gSedz9Wh5Gwb36PqPbQcUUhDjoaOkuOVP4
+      y: oxlGyXlgptnf93RBtGOG1TXBo3_xC8nJyNXMylJ3CHs
+      crv: P-256
+      kid: alfa-wallet-key-1767782612424
+      alg: ES256
+      use: sig
     redirectUris:
       - http://localhost:3550/.*
     roles:
@@ -82,9 +98,17 @@ initClients:
     secretName: sso-alfa-wallet-secret
 
   - clientId: alfa-control-plane
-    clientSecret: alfa-control-plane
     name: Alfa Control Plane
     description: Alfa Control Plane
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: RWgYhy6g8MKdk4lVK8JmPn1h4qLmeCDCXDoO1scOz3k
+      y: e8kOUNmcJTBNrI3XZxWL2BGcsPLogFZ8XCVTS7jk3mI
+      crv: P-256
+      kid: alfa-control-plane-key-1767782613388
+      alg: ES256
+      use: sig
     redirectUris:
       - http://localhost:3551/.*
     roles:
@@ -98,9 +122,17 @@ initClients:
     secretName: sso-alfa-control-plane-secret
 
   - clientId: alfa-analytics-data-plane
-    clientSecret: alfa-analytics-data-plane
     name: Alfa Analytics Data Plane
     description: Alfa Analytics Data Plane
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: nitXhI3Q5PC_K2drfQNG84l5XZw4l3nOcd3flYhHZYs
+      y: 38vpVbroACnmdS0KHhlRc582dHxzVj-JxrMuZ1zCtX8
+      crv: P-256
+      kid: alfa-analytics-data-plane-key-1767782614226
+      alg: ES256
+      use: sig
     redirectUris:
       - http://localhost:3552/.*
     roles:
@@ -109,9 +141,17 @@ initClients:
 
   # Bravo clients
   - clientId: bravo-wallet
-    clientSecret: bravo-wallet
     name: Bravo Wallet
     description: Bravo Wallet
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: 8tZ2ZIxxOfe49RD0Xma_K4YsssSCaIOc9mnxIhlNukA
+      y: pOvBaPMO85dDDANercNoIlczmSlOQ90cO1fZWLM9YCI
+      crv: P-256
+      kid: bravo-wallet-key-1767782796583
+      alg: ES256
+      use: sig
     redirectUris:
       - http://localhost:3650/.*
     roles:
@@ -128,9 +168,17 @@ initClients:
     secretName: sso-bravo-wallet-secret
 
   - clientId: bravo-control-plane
-    clientSecret: bravo-control-plane
     name: Bravo Control Plane
     description: Bravo Control Plane
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: FEoIkUEOd9kvrv62_5ZSHPuMZyeAsgqJjPtmUiB_CyM
+      y: 8rQTOzJT6PnvTyw-GWz6DGAF_S3oMgFGiE-MjBloppg
+      crv: P-256
+      kid: bravo-control-plane-key-1767782797384
+      alg: ES256
+      use: sig
     redirectUris:
       - http://localhost:3651/.*
     roles:
@@ -144,9 +192,17 @@ initClients:
     secretName: sso-bravo-control-plane-secret
 
   - clientId: bravo-analytics-data-plane-server
-    clientSecret: bravo-analytics-data-plane-server
     name: Bravo Analytics Data Plane Server
     description: Bravo Analytics Data Plane Server
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: h2V8SQaqwbOPjp-R3bAQ6bIxb5-q4LmU2-BVD8xYlOk
+      y: 54GSDze4fi58vjse6tqXXqWbJrCfZ7hBazU_hrQtfTo
+      crv: P-256
+      kid: bravo-analytics-data-plane-server-key-1767782798211
+      alg: ES256
+      use: sig
     redirectUris:
       - http://localhost:3652/.*
     roles:
@@ -154,9 +210,17 @@ initClients:
     secretName: sso-bravo-analytics-data-plane-server-secret
 
   - clientId: bravo-analytics-data-plane-client
-    clientSecret: bravo-analytics-data-plane-client
     name: Bravo Analytics Data Plane Client
     description: Bravo Analytics Data Plane Client
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: 9E4CHxBJfmYzq-40kbSNCu_xkrs9u1_rG3dw-QiwA28
+      y: eZh4c5Y1978C4CsH6uJM-eq1CeGGy_hPm2fFWZX_hfU
+      crv: P-256
+      kid: bravo-analytics-data-plane-client-key-1767782798995
+      alg: ES256
+      use: sig
     redirectUris:
       - http://localhost:3653/.*
     roles:

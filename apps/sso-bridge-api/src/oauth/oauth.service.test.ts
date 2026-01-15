@@ -1,5 +1,4 @@
 import { jest } from "@jest/globals";
-import { REQUEST } from "@nestjs/core";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -73,14 +72,6 @@ describe("Oauth", () => {
         {
           provide: ServerConfig,
           useValue: config
-        },
-        {
-          provide: REQUEST,
-          useValue: {
-            session: {
-              user: null
-            }
-          }
         }
       ]
     }).compile();
@@ -438,6 +429,16 @@ describe("Oauth", () => {
     await oauth.revocation(token.access_token);
     const introspectionRevoked = await oauth.introspect(token.access_token);
     expect(introspectionRevoked.active).toBeFalsy();
+  });
+  it("Client credentials with missing authentication should fail", async () => {
+    const tokenRequest = plainToInstance(ClientCredentialsTokenRequest, {
+      grant_type: "client_credentials",
+      client_id: "test-client"
+      // No client_secret or client_assertion provided
+    });
+    await expect(oauth.token(tokenRequest)).rejects.toThrow(
+      "Either client_secret or client_assertion must be provided"
+    );
   });
   it("Local token verification", async () => {
     const tokenRequest = plainToInstance(ClientCredentialsTokenRequest, {

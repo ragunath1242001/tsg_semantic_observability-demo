@@ -1,5 +1,4 @@
-import { HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
-import { REQUEST } from "@nestjs/core";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AppError, PaginationOptionsDto } from "@tsg-dsp/common-api";
 import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
@@ -18,8 +17,7 @@ export class UsersService {
     private readonly rootConfig: RootConfig,
     @InjectRepository(OauthUser)
     private readonly userRepository: Repository<OauthUser>,
-    private readonly rolesService: RolesService,
-    @Inject(REQUEST) private readonly request: Request
+    private readonly rolesService: RolesService
   ) {
     this.initialized = this.init();
   }
@@ -110,8 +108,11 @@ export class UsersService {
     } as OauthUser;
   }
 
-  async deleteUser(id: number): Promise<{ deleted: boolean }> {
-    const currentUser = getUser(this.request);
+  async deleteUser(
+    id: number,
+    request: Request
+  ): Promise<{ deleted: boolean }> {
+    const currentUser = getUser(request);
     if (currentUser && +id === +currentUser.id) {
       throw new AppError(
         "You cannot delete your own account",

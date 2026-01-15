@@ -13,7 +13,16 @@ auth:
   openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
   callbackURL: http://localhost:3651/api/auth/callback
   clientId: bravo-control-plane
-  clientSecret: bravo-control-plane
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: FEoIkUEOd9kvrv62_5ZSHPuMZyeAsgqJjPtmUiB_CyM
+    y: 8rQTOzJT6PnvTyw-GWz6DGAF_S3oMgFGiE-MjBloppg
+    crv: P-256
+    d: 48etwEPjYNSkChrRAZgZr9BvTleF217LXBmyk7oOPgs
+    kid: bravo-control-plane-key-1767782797384
+    alg: ES256
+    use: sig
   rolePath: "$.roles[*]"
   redirectURL: http://localhost:3651/
 

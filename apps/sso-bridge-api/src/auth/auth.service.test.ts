@@ -1,4 +1,3 @@
-import { REQUEST } from "@nestjs/core";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
@@ -37,14 +36,6 @@ describe("AuthService", () => {
         {
           provide: ServerConfig,
           useValue: config
-        },
-        {
-          provide: REQUEST,
-          useValue: {
-            session: {
-              user: null
-            }
-          }
         }
       ]
     }).compile();

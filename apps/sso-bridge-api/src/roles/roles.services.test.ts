@@ -1,5 +1,4 @@
 import { jest } from "@jest/globals";
-import { REQUEST } from "@nestjs/core";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
@@ -41,14 +40,6 @@ describe("RolesService Tests", () => {
         {
           provide: RootConfig,
           useValue: plainToInstance(RootConfig, {})
-        },
-        {
-          provide: REQUEST,
-          useValue: {
-            session: {
-              user: null
-            }
-          }
         }
       ]
     }).compile();

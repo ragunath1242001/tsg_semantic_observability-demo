@@ -33,6 +33,7 @@
     "dayjs": "^1.11.19"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@types/node": "^24.0.0"
   }
 }
