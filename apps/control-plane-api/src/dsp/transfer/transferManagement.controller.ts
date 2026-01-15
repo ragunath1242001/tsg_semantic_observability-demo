@@ -24,7 +24,8 @@ import {
   PaginationOptionsDto,
   PaginationQuery,
   Roles,
-  UsePagination
+  UsePagination,
+  validateOrRejectSync
 } from "@tsg-dsp/common-api";
 import {
   DataPlaneAddressDto,
@@ -130,13 +131,18 @@ export class TransferManagementController {
     @Param("processId") processId: string,
     @Body() body?: DataPlaneAddressDto
   ): Promise<{ status: string }> {
-    // TODO: Validate body
+    let dataPlaneAddress: DataPlaneAddressDto | undefined = undefined;
+    if (body) {
+      dataPlaneAddress = validateOrRejectSync(body);
+    }
     this.logger.log(
-      `Received transfer start for processId ${processId} with message ${JSON.stringify(
-        body
-      )}`
+      `Received transfer start for processId ${processId} with message ${
+        dataPlaneAddress
+          ? JSON.stringify(dataPlaneAddress)
+          : '"no dataPlaneAddress provided"'
+      }`
     );
-    return await this.transferService.start(processId, body, false);
+    return await this.transferService.start(processId, dataPlaneAddress, false);
   }
 
   @Post(":processId/completion")
@@ -180,18 +186,13 @@ export class TransferManagementController {
   })
   async terminateTransfer(
     @Param("processId") processId: string,
-    @Body() body: { code: string; reason: string }
+    @Body("code", nonEmptyStringPipe) code: string,
+    @Body("reason", nonEmptyStringPipe) reason: string
   ): Promise<{ status: string }> {
-    // TODO: Validate body
     this.logger.log(
-      `Received transfer terminate for processId ${processId} with code ${body.code} and reason ${body.reason}`
+      `Received transfer terminate for processId ${processId} with code ${code} and reason ${reason}`
     );
-    return await this.transferService.terminate(
-      processId,
-      body.code,
-      body.reason,
-      false
-    );
+    return await this.transferService.terminate(processId, code, reason, false);
   }
 
   @Post(":processId/suspension")
@@ -216,12 +217,12 @@ export class TransferManagementController {
   })
   async suspendTransfer(
     @Param("processId") processId: string,
-    @Body() body: { reason: string }
+    @Body("reason", nonEmptyStringPipe) reason: string
   ): Promise<{ status: string }> {
     // TODO: Validate body
     this.logger.log(
-      `Received transfer suspend for processId ${processId} with reason ${body.reason}`
+      `Received transfer suspend for processId ${processId} with reason ${reason}`
     );
-    return await this.transferService.suspend(processId, body.reason, false);
+    return await this.transferService.suspend(processId, reason, false);
   }
 }

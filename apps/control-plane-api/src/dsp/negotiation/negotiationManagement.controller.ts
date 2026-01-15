@@ -330,13 +330,14 @@ export class NegotiationManagementController {
   })
   async terminate(
     @Param("processId") processId: string,
-    @Body() body: { code: string; reason: string }
+    @Body("code", nonEmptyStringPipe) code: string,
+    @Body("reason", nonEmptyStringPipe) reason: string
   ): Promise<{ status: string }> {
     this.logger.log(`Received negotiation termination for ${processId}`);
     const negotiationProcess = await this.negotiationService.terminate(
       processId,
-      body.code,
-      body.reason
+      code,
+      reason
     );
     return negotiationProcess;
   }

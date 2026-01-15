@@ -96,7 +96,7 @@ export class TransferClientService {
   async transferComplete(transfer: ITransferIdentifier): Promise<unknown> {
     try {
       const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/complete`
+        `/transfers/${transfer.processId}/completion`
       );
       this.logger.log(`Completed transfer ${transfer.id}`);
       return response.data;

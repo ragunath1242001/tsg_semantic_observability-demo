@@ -657,7 +657,7 @@ paths:
           description: Transfer identifier
           schema:
             type: string
-        - name: code
+        - name: reason
           required: true
           in: query
           schema:

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { TransferDetailDto } from "@tsg-dsp/common-dsp";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
+import { endpointFor, TransferAction } from "@tsg-dsp/common-ui/utils/transfer";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
@@ -19,7 +21,9 @@ const confirm = useConfirm();
 
 const toast = useToast();
 
-const determineNextHappyState = (transfer: TransferDetailDto) => {
+const determineNextHappyState = (
+  transfer: TransferDetailDto
+): TransferAction | undefined => {
   switch (transfer.state) {
     case "REQUESTED":
       return "start";
@@ -55,10 +59,14 @@ const determineTooltip = (transfer: TransferDetailDto) => {
   }
 };
 
-const sendTransfer = async (transfer: TransferDetailDto, nextState: string) => {
+const sendTransfer = async (
+  transfer: TransferDetailDto,
+  nextState: TransferAction
+) => {
   try {
     close();
-    await http.post(`management/transfers/${transfer.localId}/${nextState}`);
+    const endpoint = endpointFor(nextState);
+    await http.post(`management/transfers/${transfer.localId}/${endpoint}`);
     toast.add({
       severity: "success",
       summary: "Success",
@@ -98,7 +106,14 @@ const proceedTransfer = async (transfer: TransferDetailDto) => {
   }
 };
 
-const openDialog = (next: string) => {
+const openDialog = (next: "terminate" | "suspend") => {
+  if (next === "terminate") {
+    code.value = "USER_TERMINATED";
+    reason.value = "Terminated by user";
+  } else {
+    code.value = "USER_SUSPENDED";
+    reason.value = "Suspended by user";
+  }
   nextState.value = next;
   display.value = true;
 };
@@ -107,9 +122,9 @@ const close = () => {
   display.value = false;
 };
 
-const terminateTransfer = async (transfer) => {
+const terminateTransfer = async (transfer: TransferDetailDto) => {
   try {
-    const word = nextState.value;
+    const word = nextState.value as TransferAction;
     if (word !== "suspend" && word !== "terminate") {
       console.error(`Word is not set correctly. value: ${word}`);
       toast.add(
@@ -125,7 +140,11 @@ const terminateTransfer = async (transfer) => {
       code: code.value,
       reason: reason.value
     };
-    await http.post(`management/transfers/${transfer.localId}/${word}`, body);
+    const endpoint = endpointFor(word);
+    await http.post(
+      `management/transfers/${transfer.localId}/${endpoint}`,
+      body
+    );
     toast.add({
       severity: "success",
       summary: "Success",
@@ -207,23 +226,16 @@ const terminateTransfer = async (transfer) => {
               border: 1px solid var(--surface-border);
             ">
             <template #content>
-              <div class="field grid grid-cols-12 gap-4">
-                <label for="code" class="col-span-12 mb-2 md:col-span-2 md:mb-0"
-                  >Code</label
-                >
-                <div class="col-span-12 md:col-span-10">
-                  <InputText id="code" v-model="code" type="text" />
-                </div>
-              </div>
-              <div class="field grid grid-cols-12 gap-4">
-                <label
-                  for="reason"
-                  class="col-span-12 mb-2 md:col-span-2 md:mb-0"
-                  >Reason</label
-                >
-                <div class="col-span-12 md:col-span-10">
-                  <InputText id="reason" v-model="reason" type="text" />
-                </div>
+              <div class="flex flex-col gap-4">
+                <FormField label="Code">
+                  <InputText v-model="code" class="w-full" placeholder="Code" />
+                </FormField>
+                <FormField label="Reason">
+                  <InputText
+                    v-model="reason"
+                    class="w-full"
+                    placeholder="Reason" />
+                </FormField>
               </div>
             </template>
           </Card>

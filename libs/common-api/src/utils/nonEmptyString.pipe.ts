@@ -7,7 +7,10 @@ export class NonEmptyStringPipe implements PipeTransform {
     if (typeof value !== "string" || value.length === 0) {
       let message = "Value must be a non-empty string";
       if (metadata.type === "query" && metadata.data) {
-        message = `Query parameter ${metadata.data} must be a non-empty string`;
+        message = `Query parameter "${metadata.data}" must be a non-empty string`;
+      }
+      if (metadata.type === "body" && metadata.data) {
+        message = `Body property "${metadata.data}" must be a non-empty string`;
       }
       throw new AppError(message, HttpStatus.BAD_REQUEST);
     }

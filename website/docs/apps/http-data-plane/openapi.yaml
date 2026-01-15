@@ -782,6 +782,11 @@ paths:
           description: Transfer identifier
           schema:
             type: string
+        - name: reason
+          required: true
+          in: query
+          schema:
+            type: string
         - name: code
           required: true
           in: query
