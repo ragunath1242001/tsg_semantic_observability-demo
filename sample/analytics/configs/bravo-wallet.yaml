@@ -13,7 +13,16 @@ auth:
   openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
   callbackURL: http://localhost:3650/api/auth/callback
   clientId: bravo-wallet
-  clientSecret: bravo-wallet
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: 8tZ2ZIxxOfe49RD0Xma_K4YsssSCaIOc9mnxIhlNukA
+    y: pOvBaPMO85dDDANercNoIlczmSlOQ90cO1fZWLM9YCI
+    crv: P-256
+    d: kXM88XSMtWoJ_BQph5iICC59znUIrvGdmKpuQ7DPfaI
+    kid: bravo-wallet-key-1767782796583
+    alg: ES256
+    use: sig
   rolePath: "$.roles[*]"
   redirectURL: http://localhost:3650/
 

@@ -220,13 +220,12 @@ onMounted(async () => {
           <Column field="username" header="Username" sortable />
           <Column field="roles" class="break-all" header="Roles">
             <template #body="slotProps">
-              <div class="flex flex-wrap gap-1">
-                <span
+              <div class="flex flex-wrap gap-1 text-xs">
+                <Tag
                   v-for="(role, index) in slotProps.data.roles"
                   :key="index"
-                  class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-                  {{ role }}
-                </span>
+                  severity="info"
+                  :value="role" />
               </div>
               <span
                 v-if="

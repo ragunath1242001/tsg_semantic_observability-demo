@@ -40,17 +40,18 @@ export const execPromise = (
   cwd?: string,
   confirmOnError: boolean = true,
   onEmptyResponse?: string,
-  logStdout: boolean = true
-): Promise<string> => {
+  logStdout: boolean = true,
+  logCommand: boolean = logStdout
+): Promise<[string, string]> => {
   const cmd = typeof command === "string" ? command : command.join(" ");
-  if (logStdout) {
+  if (logCommand) {
     log(
       "log",
       chalk.green(dryRun ? `Dry-run: ` : `Executing: `) + chalk.yellow(cmd)
     );
   }
   if (dryRun) {
-    return Promise.resolve("");
+    return Promise.resolve(["", ""]);
   }
   return new Promise(function (resolve, reject) {
     exec(
@@ -82,13 +83,13 @@ export const execPromise = (
               )
             ]).then((result) => {
               if (result) {
-                resolve(stderr);
+                resolve([stderr, ""]);
               } else {
                 reject(error);
               }
             });
           } else {
-            resolve(stderr);
+            resolve([stderr, stdout]);
           }
           return;
         }
@@ -99,10 +100,54 @@ export const execPromise = (
             console.log(stdout);
           }
         }
-        resolve(stdout);
+        resolve([stdout, stderr]);
       }
     );
   });
+};
+
+export const colorizeDiff = (diff: string): string => {
+  return diff
+    .split("\n")
+    .map((line: string) => {
+      if (line.startsWith("+++") || line.startsWith("---")) {
+        return chalk.bold(line);
+      }
+      if (line.startsWith("@@")) {
+        return chalk.cyan(line);
+      }
+      if (line.startsWith("+") && !line.startsWith("+++")) {
+        return chalk.green(line);
+      }
+      if (line.startsWith("-") && !line.startsWith("---")) {
+        return chalk.red(line);
+      }
+      if (line.endsWith(" has been added:")) {
+        return chalk.green(line);
+      }
+      if (line.endsWith(" has changed:")) {
+        return chalk.yellow(line);
+      }
+      if (line.endsWith(" has been removed:")) {
+        return chalk.red(line);
+      }
+      if (line.endsWith(" changed ownership:")) {
+        return chalk.magenta(line);
+      }
+      if (line.endsWith("has changed, but diff is empty after suppression.")) {
+        return chalk.blue(line);
+      }
+      return line;
+    })
+    .join("\n");
+};
+
+export const escapeYamlYKeys = (yamlString: string): string => {
+  // Match keys that are exactly 'y', 'Y', 'yes', 'YES', 'n', 'N', 'no', 'NO', 'true', 'TRUE', 'false', 'FALSE', 'on', 'OFF', etc.
+  return yamlString.replace(
+    /^(\s*)(y|Y|n|N|yes|YES|no|NO|true|TRUE|false|FALSE|on|ON|off|OFF)(:)/gm,
+    '$1"$2"$3'
+  );
 };
 
 export const validateAndCreate = async <

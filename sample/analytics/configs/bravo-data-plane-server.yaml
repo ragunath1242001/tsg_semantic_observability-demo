@@ -13,7 +13,16 @@ auth:
   openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
   callbackURL: http://localhost:3652/api/auth/callback
   clientId: bravo-analytics-data-plane-server
-  clientSecret: bravo-analytics-data-plane-server
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: h2V8SQaqwbOPjp-R3bAQ6bIxb5-q4LmU2-BVD8xYlOk
+    y: 54GSDze4fi58vjse6tqXXqWbJrCfZ7hBazU_hrQtfTo
+    crv: P-256
+    d: xgxkMiYE-T-01-zrpEpSHzZ9iJ6ENpq6tGVZlqvR3gU
+    kid: bravo-analytics-data-plane-server-key-1767782798211
+    alg: ES256
+    use: sig
   rolePath: "$.roles[*]"
   redirectURL: http://localhost:3652/
 

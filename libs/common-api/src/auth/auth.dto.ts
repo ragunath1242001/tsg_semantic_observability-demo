@@ -203,12 +203,33 @@ export class ClientCredentialsTokenRequest extends TokenRequest {
   @IsString()
   client_id!: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: "client-secret",
-    description: "The client secret"
+    description:
+      "The client secret. Required for client_secret_post authentication."
   })
   @IsString()
-  client_secret!: string;
+  @IsOptional()
+  client_secret?: string;
+
+  @ApiPropertyOptional({
+    example:
+      "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjbGllbnQtaWQiLCJzdWIiOiJjbGllbnQtaWQiLCJhdWQiOiJodHRwczovL2F1dGguc2VydmVyLmNvbS90b2tlbiIsImV4cCI6MTcwMDA4ODAwMCwianRpIjoicmFuZG9tLWlkIn0.signature",
+    description:
+      "A JWT assertion signed with the client's private key. Required for private_key_jwt authentication (RFC 7523)."
+  })
+  @IsString()
+  @IsOptional()
+  client_assertion?: string;
+
+  @ApiPropertyOptional({
+    example: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+    description:
+      "The type of client assertion. Must be 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer' for private_key_jwt."
+  })
+  @IsString()
+  @IsOptional()
+  client_assertion_type?: string;
 }
 
 export class TokenRequestWrapper {
@@ -371,6 +392,25 @@ export class OpenIDConfiguration {
   @IsString({ each: true })
   @IsOptional()
   claims_supported?: string[];
+
+  @ApiPropertyOptional({
+    description: "Supported token endpoint authentication methods",
+    type: [String],
+    example: ["client_secret_post", "private_key_jwt"]
+  })
+  @IsString({ each: true })
+  @IsOptional()
+  token_endpoint_auth_methods_supported?: string[];
+
+  @ApiPropertyOptional({
+    description:
+      "Supported signing algorithms for token endpoint authentication with private_key_jwt",
+    type: [String],
+    example: ["RS256", "ES256"]
+  })
+  @IsString({ each: true })
+  @IsOptional()
+  token_endpoint_auth_signing_alg_values_supported?: string[];
 }
 
 export interface Redirect {

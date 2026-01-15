@@ -13,7 +13,16 @@ auth:
   openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
   callbackURL: http://localhost:3450/api/auth/callback
   clientId: authority-wallet
-  clientSecret: authority-wallet
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: 7s2R3zVi4FI8BRZ0979i-NGrmA13xGk1eOoYo5Gy2Tc
+    y: 3bMs_vp_cJKOI4nFVhGQywMvJDveGblOYpQd4uMAXDk
+    crv: P-256
+    d: Q-nUTwREIejptb2666S14jv67CQcL4lBSArPXMVkyao
+    kid: authority-wallet-key-1767782795718
+    alg: ES256
+    use: sig
   rolePath: "$.roles[*]"
   redirectURL: http://localhost:3450/
 

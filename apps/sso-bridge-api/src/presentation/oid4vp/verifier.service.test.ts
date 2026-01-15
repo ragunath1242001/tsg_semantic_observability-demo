@@ -1,6 +1,5 @@
 import { jest } from "@jest/globals";
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
-import { REQUEST } from "@nestjs/core";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -131,14 +130,6 @@ describe("OID4VPVerifierService", () => {
           useValue: plainToInstance(ServerConfig, {
             publicAddress: "http://localhost"
           })
-        },
-        {
-          provide: REQUEST,
-          useValue: {
-            session: {
-              user: null
-            }
-          }
         }
       ]
     }).compile();

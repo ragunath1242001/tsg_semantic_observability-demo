@@ -97,10 +97,16 @@ config:
         - controlplane_dataplane
   initClients:
     - clientId: wallet
+<% if (it.general.oauthClientAuthMethod === "client_secret_post") { %>
       clientSecret: wallet
+<% } %>
       name: <%= it.participant.name %> Wallet
       description: <%= it.participant.name %> Wallet
       secretName: sso-<%= it.participant.id %>-wallet-secret
+      tokenEndpointAuthMethod: <%= it.general.oauthClientAuthMethod %>
+<% if (it.general.oauthClientAuthMethod === "private_key_jwt" && it.oauthPublicKeys?.wallet) { %>
+      jwk: <%= JSON.stringify(it.oauthPublicKeys.wallet) %>
+<% } %>
       redirectUris:
         - https://.*<%= it.participant.host %>/.*
       roles:
@@ -114,11 +120,18 @@ config:
         - wallet_issue_credentials
         - wallet_view_presentations
         - wallet_manage_clients
+<% if (it.participant.hasControlPlane) { %>
     - clientId: control-plane
+<% if (it.general.oauthClientAuthMethod === "client_secret_post") { %>
       clientSecret: control-plane
+<% } %>
       name: <%= it.participant.name %> Control Plane
       description: <%= it.participant.name %> Control Plane
       secretName: sso-<%= it.participant.id %>-control-plane-secret
+      tokenEndpointAuthMethod: <%= it.general.oauthClientAuthMethod %>
+<% if (it.general.oauthClientAuthMethod === "private_key_jwt" && it.oauthPublicKeys?.["control-plane"]) { %>
+      jwk: <%= JSON.stringify(it.oauthPublicKeys["control-plane"]) %>
+<% } %>
       redirectUris:
         - https://.*<%= it.participant.host %>/.*
       roles:
@@ -129,12 +142,19 @@ config:
         - wallet_view_presentations
         - controlplane_admin
         - controlplane_dataplane
+<% } %>
 <%- it.participant.dataPlanes.forEach((value, id) => { %>
     - clientId: <%= id %>
+<% if (it.general.oauthClientAuthMethod === "client_secret_post") { %>
       clientSecret: <%= id %>
+<% } %>
       name: <%= it.participant.name %> Data Plane <%= id %>
       description: <%= it.participant.name %> Data Plane <%= id %>
       secretName: sso-<%= it.participant.id %>-<%= id %>-secret
+      tokenEndpointAuthMethod: <%= it.general.oauthClientAuthMethod %>
+<% if (it.general.oauthClientAuthMethod === "private_key_jwt" && it.oauthPublicKeys?.[id]) { %>
+      jwk: <%= JSON.stringify(it.oauthPublicKeys[id]) %>
+<% } %>
       redirectUris:
         - https://.*<%= it.participant.host %>/.*
       roles:

@@ -203,6 +203,24 @@ export class General {
   @IsString()
   @IsOptional()
   public readonly postgresStorageSize: string = "1Gi";
+
+  @IsString()
+  @IsIn(["client_secret_post", "private_key_jwt"])
+  @IsOptional()
+  public readonly oauthClientAuthMethod:
+    | "client_secret_post"
+    | "private_key_jwt" = "client_secret_post";
+
+  @IsString()
+  @IsIn(["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"])
+  @IsOptional()
+  public readonly oauthPrivateKeyAlgorithm:
+    | "RS256"
+    | "RS384"
+    | "RS512"
+    | "ES256"
+    | "ES384"
+    | "ES512" = "ES256";
 }
 
 export class Application {

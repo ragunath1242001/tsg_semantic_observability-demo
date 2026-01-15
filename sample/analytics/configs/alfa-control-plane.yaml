@@ -13,7 +13,16 @@ auth:
   openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
   callbackURL: http://localhost:3551/api/auth/callback
   clientId: alfa-control-plane
-  clientSecret: alfa-control-plane
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: RWgYhy6g8MKdk4lVK8JmPn1h4qLmeCDCXDoO1scOz3k
+    y: e8kOUNmcJTBNrI3XZxWL2BGcsPLogFZ8XCVTS7jk3mI
+    crv: P-256
+    d: j6gN5EMxjTlLs40asYnybT7d9PhYPAOSeu5dAoPNdkc
+    kid: alfa-control-plane-key-1767782613388
+    alg: ES256
+    use: sig
   rolePath: "$.roles[*]"
   redirectURL: http://localhost:3551/
 

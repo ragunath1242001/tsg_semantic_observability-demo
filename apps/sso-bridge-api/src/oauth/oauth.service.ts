@@ -205,13 +205,32 @@ export class OauthService {
     await this.tokenService.revokeToken(token.accessToken, "access_token");
     return tokenResponse;
   }
+
   private async clientCredentialsTokenRequest(
     request: ClientCredentialsTokenRequest
   ): Promise<TokenResponse> {
-    const client = await this.clientsService.validateClient(
-      request.client_id,
-      request.client_secret
-    );
+    let client;
+
+    if (request.client_assertion && request.client_assertion_type) {
+      const tokenEndpoint = `${this.serverConfig.publicAddress}/api/oauth/token`;
+      client = await this.clientsService.validateClientAssertion(
+        request.client_id,
+        request.client_assertion,
+        request.client_assertion_type,
+        tokenEndpoint
+      );
+    } else if (request.client_secret) {
+      client = await this.clientsService.validateClient(
+        request.client_id,
+        request.client_secret
+      );
+    } else {
+      throw new AppError(
+        "Either client_secret or client_assertion must be provided",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
     return await this.tokenService.createToken(
       request.client_id,
       client,
@@ -302,7 +321,12 @@ export class OauthService {
         "username",
         "email",
         "roles"
-      ]
+      ],
+      token_endpoint_auth_methods_supported: [
+        "client_secret_post",
+        "private_key_jwt"
+      ],
+      token_endpoint_auth_signing_alg_values_supported: ["RS256", "ES256"]
     };
   }
 }

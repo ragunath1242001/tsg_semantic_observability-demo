@@ -13,7 +13,16 @@ auth:
   openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
   callbackURL: http://localhost:3552/api/auth/callback
   clientId: alfa-analytics-data-plane
-  clientSecret: alfa-analytics-data-plane
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: nitXhI3Q5PC_K2drfQNG84l5XZw4l3nOcd3flYhHZYs
+    y: 38vpVbroACnmdS0KHhlRc582dHxzVj-JxrMuZ1zCtX8
+    crv: P-256
+    d: eXdxjToDkX6-jJgnN4gWA4jriuzOoOdWkJor5c9TqAk
+    kid: alfa-analytics-data-plane-key-1767782614226
+    alg: ES256
+    use: sig
   rolePath: "$.roles[*]"
   redirectURL: http://localhost:3552/
 

@@ -8,6 +8,7 @@ import process from "process";
 import { fileURLToPath } from "url";
 import { parse, stringify } from "yaml";
 
+import { generateKeyPair } from "./keys.js";
 import {
   Applications,
   DataPlane,
@@ -17,7 +18,13 @@ import {
   ParticipantOverrides,
   SingleParticipant
 } from "./model.js";
-import { log, validateAndCreate } from "./utils.js";
+import {
+  colorizeDiff,
+  escapeYamlYKeys,
+  execPromise,
+  log,
+  validateAndCreate
+} from "./utils.js";
 import { getCliVersion } from "./validate.js";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
@@ -28,6 +35,7 @@ interface Options {
   output: string;
   stdout: boolean;
   yes: boolean;
+  cwd?: string;
 }
 
 // New state model written next to the input YAML (ecosystem/participant)
@@ -73,6 +81,8 @@ export class Generate {
   participants!: Participant[];
   applications?: Applications;
   yes?: boolean;
+  cwd?: string;
+  updateSecrets?: boolean = undefined;
   private pendingWrites!: Map<string, string>;
   private statePath?: string;
   private scope!: "ecosystem" | "participant";
@@ -90,9 +100,17 @@ export class Generate {
     this.applications = applications;
     this.participants = participants;
     this.yes = options.yes;
+    this.cwd = options.cwd;
     this.pendingWrites = new Map();
     this.scope = "ecosystem";
     this.statePath = this.getStatePath(options.file, "ecosystem.yaml");
+    this.updateSecrets =
+      this.general.oauthClientAuthMethod === "private_key_jwt"
+        ? await confirm({
+            message: `Do you want to create/update Kubernetes secrets for OAuth private keys?\n  (If you choose 'no', existing secrets will be reused if found, but new keys won't be generated)`,
+            default: true
+          })
+        : false;
     if (general.postgresDeploymentMode === "per-namespace") {
       await this.writeConfig(
         "postgres",
@@ -129,9 +147,17 @@ export class Generate {
     this.applications = applications;
     this.participants = [];
     this.yes = options.yes;
+    this.cwd = options.cwd;
     this.pendingWrites = new Map();
     this.scope = "participant";
     this.statePath = this.getStatePath(options.file, "participant.yaml");
+    this.updateSecrets =
+      this.general.oauthClientAuthMethod === "private_key_jwt"
+        ? await confirm({
+            message: `Do you want to create/update Kubernetes secrets for OAuth private keys?\n  (If you choose 'no', existing secrets will be reused if found, but new keys won't be generated)`,
+            default: true
+          })
+        : false;
     await this.writeParticipant(participant, options, true);
     await this.finalizeWrites(options);
   };
@@ -142,10 +168,121 @@ export class Generate {
     database: boolean
   ) => {
     log("log", `Creating configuration for participant ${participant.name}`);
+
+    // Generate OAuth keys if using private_key_jwt
+    const oauthPublicKeys: Record<string, any> = {};
+    if (this.general.oauthClientAuthMethod === "private_key_jwt") {
+      log(
+        "log",
+        chalk.cyan(
+          "Configuring OAuth private keys for private_key_jwt authentication..."
+        )
+      );
+
+      const clientIds = ["wallet"];
+      if (participant.hasControlPlane) {
+        clientIds.push("control-plane");
+      }
+      participant.dataPlanes.forEach((_dp, id) => clientIds.push(id));
+
+      for (const clientId of clientIds) {
+        const secretName = `sso-${participant.id}-${clientId}-secret`;
+
+        // Check if secret already exists
+        const checkCommand = `kubectl get secret ${secretName} -n ${this.general.namespace} --ignore-not-found=true -o jsonpath='{.data.private-key\\.jwk}'`;
+
+        let publicKey;
+        let existingSecret = false;
+
+        try {
+          const [result] = await execPromise(
+            checkCommand,
+            false,
+            this.cwd,
+            false,
+            undefined,
+            false
+          );
+
+          if (result && result.trim()) {
+            // Secret exists, extract public key from it
+            existingSecret = true;
+            try {
+              const privateKeyJson = Buffer.from(
+                result.trim(),
+                "base64"
+              ).toString("utf8");
+              const privateKey = JSON.parse(privateKeyJson);
+
+              // Derive public key by removing private components from JWK
+              // For RSA: remove d, p, q, dp, dq, qi
+              // For EC: remove d
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const { d, p, q, dp, dq, qi, ...publicKeyOnly } = privateKey;
+              publicKey = publicKeyOnly;
+
+              log(
+                "log",
+                `  ✓ Reusing existing key pair for ${participant.name} ${clientId} (kid: ${publicKey.kid || "none"})`
+              );
+            } catch (e) {
+              log(
+                "warn",
+                `  Failed to extract public key from secret ${secretName}, ${this.updateSecrets ? "will generate new key" : "no key will be configured"}: ${e}`
+              );
+              existingSecret = false;
+            }
+          }
+        } catch (_e) {
+          // Secret doesn't exist or error checking, will create new one
+        }
+
+        // If secret doesn't exist or we couldn't extract the key, generate new one
+        if (!existingSecret) {
+          if (!this.updateSecrets) {
+            log(
+              "warn",
+              `  Skipping key generation for ${participant.name} ${clientId} as no existing secret found and no new secrets are to be created.`
+            );
+          } else {
+            const keyPair = await generateKeyPair({
+              algorithm: this.general.oauthPrivateKeyAlgorithm || "ES256"
+            });
+            publicKey = keyPair.publicKey;
+
+            log(
+              "log",
+              `  ✓ Generated ${keyPair.algorithm} key pair for ${clientId} (kid: ${keyPair.keyId})`
+            );
+
+            // Store private key in Kubernetes secret
+            const privateKeyJson = JSON.stringify(keyPair.privateKey);
+            const createCommand = `kubectl create secret generic ${secretName} -n ${this.general.namespace} --from-literal=clientId='${clientId}'  --from-literal=private-key.jwk='${privateKeyJson.replace(/'/g, "\\'")}' --dry-run=client -o yaml | kubectl apply -f -`;
+
+            try {
+              await execPromise(
+                createCommand,
+                false,
+                this.cwd,
+                false,
+                undefined,
+                false
+              );
+              log("log", `  ✓ Stored private key in secret: ${secretName}`);
+            } catch (e) {
+              log("warn", `  Failed to create secret ${secretName}: ${e}`);
+            }
+          }
+        }
+
+        oauthPublicKeys[clientId] = publicKey;
+      }
+    }
+
     await this.writeConfig(
       "sso-bridge",
       `${options.output}/${participant.id}/values.sso-bridge.yaml`,
-      { participant },
+      { participant, oauthPublicKeys },
       !options.stdout
     );
 
@@ -223,6 +360,7 @@ export class Generate {
 
     // Special handling for templates that contain multiple YAML documents (CRDs)
     // These should be written as-is without parsing/merging
+    // Also skip parsing for sso-bridge to preserve JWK inline JSON format
     if (templateFile === "postgres") {
       if (writeFile) {
         this.pendingWrites.set(outfile, rendered);
@@ -256,7 +394,8 @@ export class Generate {
     );
     if (overridesInline) obj = deepMerge(obj, overridesInline);
 
-    const yaml = stringify(obj);
+    const yaml = escapeYamlYKeys(stringify(obj));
+
     if (writeFile) {
       // Collect planned writes for finalize phase
       this.pendingWrites.set(outfile, yaml);
@@ -265,26 +404,6 @@ export class Generate {
     }
   };
 
-  private colorizeDiff(diff: string): string {
-    return diff
-      .split("\n")
-      .map((line: string) => {
-        if (line.startsWith("+++") || line.startsWith("---")) {
-          return chalk.bold(line);
-        }
-        if (line.startsWith("@@")) {
-          return chalk.cyan(line);
-        }
-        if (line.startsWith("+") && !line.startsWith("+++")) {
-          return chalk.green(line);
-        }
-        if (line.startsWith("-") && !line.startsWith("---")) {
-          return chalk.red(line);
-        }
-        return line;
-      })
-      .join("\n");
-  }
   private async finalizeWrites(options: Options) {
     if (options.stdout) {
       return; // nothing to write when outputting to stdout
@@ -388,7 +507,7 @@ export class Generate {
         `\n--- Preview of changes (${diffs.length} file(s)) ---\n`
       );
       for (const { patch } of diffs) {
-        process.stdout.write(`\n${this.colorizeDiff(patch)}\n`);
+        process.stdout.write(`\n${colorizeDiff(patch)}\n`);
       }
       if (toRemoveKnown.length > 0) {
         process.stdout.write(

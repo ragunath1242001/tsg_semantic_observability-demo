@@ -93,7 +93,6 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
   <vue-monaco-editor
     v-model:value="model"
     theme="transparant"
-    class="surface-border border-1"
     :path="`/models/${uuid}.json`"
     :options="{
       automaticLayout: true,

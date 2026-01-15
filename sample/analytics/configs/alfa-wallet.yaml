@@ -13,7 +13,16 @@ auth:
   openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
   callbackURL: http://localhost:3550/api/auth/callback
   clientId: alfa-wallet
-  clientSecret: alfa-wallet
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: TNroQXAH5gSedz9Wh5Gwb36PqPbQcUUhDjoaOkuOVP4
+    y: oxlGyXlgptnf93RBtGOG1TXBo3_xC8nJyNXMylJ3CHs
+    crv: P-256
+    d: wTwrfUl_atP34TR61hOAjreRQwxfISFic13zvVzkvT8
+    kid: alfa-wallet-key-1767782612424
+    alg: ES256
+    use: sig
   rolePath: "$.roles[*]"
   redirectURL: http://localhost:3550/
 

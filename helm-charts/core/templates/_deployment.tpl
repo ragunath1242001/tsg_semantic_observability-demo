@@ -71,6 +71,13 @@ spec:
             mountPath: {{ .mountPath }}
             {{- end }}
           {{- end }}
+          {{- if .Values.secretMounts }}
+          {{- range .Values.secretMounts }}
+          - name: {{ .name }}
+            mountPath: {{ .mountPath }}
+            readOnly: {{ .readOnly | default true }}
+          {{- end }}
+          {{- end }}
       volumes:
       - name: {{ template "tsg-core.name" . }}-config
         configMap:
@@ -79,5 +86,19 @@ spec:
       - name: {{ template "tsg-core.name" . }}-pvc
         persistentVolumeClaim:
           claimName: {{ template "tsg-core.fullname" . }}-pvc
+      {{- end }}
+      {{- if .Values.secretMounts }}
+      {{- range .Values.secretMounts }}
+      - name: {{ .name }}
+        secret:
+          secretName: {{ .secretName }}
+          {{- if .items }}
+          items:
+          {{- range .items }}
+          - key: {{ .key }}
+            path: {{ .path }}
+          {{- end }}
+          {{- end }}
+      {{- end }}
       {{- end }}
 {{- end }}

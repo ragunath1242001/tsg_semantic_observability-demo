@@ -11,7 +11,7 @@ import {
   Participant,
   SingleParticipant
 } from "./model.js";
-import { execPromise, log, validateAndCreate } from "./utils.js";
+import { colorizeDiff, execPromise, log, validateAndCreate } from "./utils.js";
 import { getCliVersion, getLatestRelease } from "./validate.js";
 
 interface Options {
@@ -498,7 +498,7 @@ export class Deploy {
     this.currentCliVersion = await getCliVersion();
 
     if (!options.yes) {
-      const currentContext: string = await execPromise(
+      const [currentContext] = await execPromise(
         "kubectl config current-context",
         false,
         undefined,
@@ -709,7 +709,7 @@ export class Deploy {
 
   private async checkCloudNativePGOperator(): Promise<boolean> {
     try {
-      const result = await execPromise(
+      const [result] = await execPromise(
         "kubectl get pods -n cnpg-system -l app.kubernetes.io/name=cloudnative-pg -o jsonpath='{.items[*].status.phase}'",
         false,
         this.cwd,
@@ -812,12 +812,20 @@ export class Deploy {
     const postgresFile = `${config}/postgres.yaml`;
     if (fs.existsSync(postgresFile)) {
       if (diff) {
-        await execPromise(
+        const [_output, diff] = await execPromise(
           [`kubectl diff -f ${postgresFile} -n ${this.general.namespace}`],
           dryRun,
           this.cwd,
-          !yes
+          false
         );
+        if (diff.includes("---")) {
+          log(
+            "log",
+            `Differences for shared PostgreSQL cluster:\n${colorizeDiff(diff)}`
+          );
+        } else {
+          log("log", "No changes to shared PostgreSQL cluster");
+        }
       } else {
         await execPromise(
           [`kubectl apply -f ${postgresFile} -n ${this.general.namespace}`],
@@ -893,7 +901,7 @@ export class Deploy {
       try {
         // Get deployment status using kubectl
         const statusCmd = `kubectl get deployment -n ${namespace} ${deployment} -o jsonpath='{.status.conditions[?(@.type=="Available")].status}'`;
-        const status = await execPromise(
+        const [status] = await execPromise(
           statusCmd,
           false,
           this.cwd,
@@ -909,7 +917,7 @@ export class Deploy {
 
         // Check if pods are in error state
         const podsCmd = `kubectl get pods -n ${namespace} -l app=${deployment} -o jsonpath='{.items[*].status.phase}'`;
-        const podStatus = await execPromise(
+        const [podStatus] = await execPromise(
           podsCmd,
           false,
           this.cwd,
@@ -984,8 +992,23 @@ export class Deploy {
         dryRun,
         this.cwd,
         !yes,
-        chalk.green("No changes")
-      );
+        chalk.green("No changes"),
+        !diff,
+        true
+      ).then(([output]) => {
+        if (diff) {
+          if (output.includes("No changes")) {
+            log("log", `No changes for participant ${participant.id}`);
+          } else {
+            log(
+              "log",
+              `Differences for participant ${participant.id}:\n${colorizeDiff(
+                output
+              )}`
+            );
+          }
+        }
+      });
 
     // Apply PostgreSQL Cluster and Database CRDs (per-participant mode)
     const shouldDeployDatabase =
@@ -999,12 +1022,20 @@ export class Deploy {
           `Applying PostgreSQL Cluster and Database CRDs for participant ${participant.id}`
         );
         if (diff) {
-          await execPromise(
+          const [_output, diff] = await execPromise(
             [`kubectl diff -f ${postgresFile} -n ${this.general.namespace}`],
             dryRun,
             this.cwd,
-            !yes
+            false
           );
+          if (diff.includes("---")) {
+            log(
+              "log",
+              `Differences for shared PostgreSQL cluster:\n${colorizeDiff(diff)}`
+            );
+          } else {
+            log("log", "No changes to shared PostgreSQL cluster");
+          }
         } else {
           await execPromise(
             [`kubectl apply -f ${postgresFile} -n ${this.general.namespace}`],
@@ -1034,6 +1065,46 @@ export class Deploy {
             dryRun,
             this.cwd,
             !yes
+          );
+        }
+      }
+    }
+
+    // Verify OAuth private key secrets exist if using private_key_jwt
+    if (this.general.oauthClientAuthMethod === "private_key_jwt" && !dryRun) {
+      log("log", chalk.bold("\nVerifying OAuth private key secrets..."));
+
+      const secretsToCheck = [`sso-${participant.id}-wallet-secret`];
+      if (participant.hasControlPlane) {
+        secretsToCheck.push(`sso-${participant.id}-control-plane-secret`);
+      }
+      for (const [id] of participant.dataPlanes) {
+        secretsToCheck.push(`sso-${participant.id}-${id}-secret`);
+      }
+
+      for (const secretName of secretsToCheck) {
+        const checkCommand = `kubectl get secret ${secretName} -n ${this.general.namespace} --ignore-not-found=true -o name`;
+        try {
+          const [result] = await execPromise(
+            checkCommand,
+            false,
+            this.cwd,
+            false
+          );
+          if (result && result.trim()) {
+            log("log", `✓ Secret ${secretName} exists`);
+          } else {
+            log(
+              "warn",
+              chalk.yellow(
+                `⚠️  Secret ${secretName} not found! Run bootstrap again to create it.`
+              )
+            );
+          }
+        } catch (_e) {
+          log(
+            "warn",
+            chalk.yellow(`⚠️  Could not verify secret ${secretName}`)
           );
         }
       }

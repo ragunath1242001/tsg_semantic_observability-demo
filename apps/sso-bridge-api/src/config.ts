@@ -6,12 +6,14 @@ import {
   SQLiteConfig
 } from "@tsg-dsp/common-api";
 import { DcqlQuery } from "@tsg-dsp/common-dtos";
-import { GrantType } from "@tsg-dsp/sso-bridge-dtos";
+import { ClientAuthMethod, GrantType } from "@tsg-dsp/sso-bridge-dtos";
 import { Type } from "class-transformer";
 import {
   ArrayNotEmpty,
   IsDefined,
   IsEmail,
+  IsIn,
+  IsObject,
   IsOptional,
   IsString,
   ValidateNested
@@ -123,9 +125,23 @@ export class InitClient {
   @Description("Client ID")
   @IsString()
   clientId!: string;
-  @Description("Client secret")
+  @Description("Client secret (required for client_secret_post authentication)")
   @IsString()
-  clientSecret!: string;
+  @IsOptional()
+  clientSecret?: string;
+  @Description(
+    "Token endpoint authentication method: client_secret_post, private_key_jwt, or none"
+  )
+  @IsString()
+  @IsIn(["client_secret_post", "private_key_jwt", "none"])
+  @IsOptional()
+  tokenEndpointAuthMethod?: ClientAuthMethod = "client_secret_post";
+  @Description(
+    "Public key in JWK format (required for private_key_jwt authentication)"
+  )
+  @IsObject()
+  @IsOptional()
+  jwk?: Record<string, any>;
   @Description("Kubernetes secret name")
   @IsString()
   secretName!: string;
