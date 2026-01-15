@@ -5,6 +5,7 @@ import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { formatDate } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
+import { endpointFor, TransferAction } from "@tsg-dsp/common-ui/utils/transfer";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
@@ -90,7 +91,7 @@ const stateSeverity = (state: string) => {
 
 const action = async (
   event: Event,
-  action: "start" | "complete" | "terminate" | "suspend",
+  action: TransferAction,
   transfer: TransferDto
 ) => {
   const target = event.currentTarget as HTMLElement;
@@ -117,8 +118,9 @@ const action = async (
             reason: "Manual user intervention"
           };
         }
+        const endpointAction = endpointFor(action);
         await http.post(
-          `management/transfers/${transfer.id}/${action}`,
+          `management/transfers/${transfer.id}/${endpointAction}`,
           undefined,
           {
             params

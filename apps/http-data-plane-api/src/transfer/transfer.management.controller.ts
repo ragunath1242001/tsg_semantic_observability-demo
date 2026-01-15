@@ -131,7 +131,7 @@ export class TransferManagementController {
   @HttpCode(HttpStatus.ACCEPTED)
   async suspendTransfer(
     @Param("id") id: string,
-    @Query("code", nonEmptyStringPipe) reason: string
+    @Query("reason", nonEmptyStringPipe) reason: string
   ): Promise<void> {
     const transfer = await this.transferHandler.getTransferById(id);
     await this.transferClientService.transferSuspend(transfer, reason);

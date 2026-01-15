@@ -4,6 +4,7 @@ import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { formatDate } from "@tsg-dsp/common-ui/utils/date.js";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http.js";
+import { endpointFor, TransferAction } from "@tsg-dsp/common-ui/utils/transfer";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
@@ -84,7 +85,7 @@ const getTransfers = async () => {
 
 const action = async (
   event: Event,
-  action: "start" | "complete" | "terminate" | "suspend",
+  action: TransferAction,
   transfer: TransferDto
 ) => {
   const target = event.currentTarget as HTMLElement;
@@ -111,8 +112,9 @@ const action = async (
             reason: "Manual user intervention"
           };
         }
+        const endpointAction = endpointFor(action);
         await http.post(
-          `management/transfers/${transfer.id}/${action}`,
+          `management/transfers/${transfer.id}/${endpointAction}`,
           undefined,
           {
             params

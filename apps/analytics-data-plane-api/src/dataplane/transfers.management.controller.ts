@@ -107,7 +107,7 @@ export class TransfersManagementController {
   async terminateTransfer(
     @Param("id") id: string,
     @Query("code", nonEmptyStringPipe) code: string,
-    @Query("code", nonEmptyStringPipe) reason: string
+    @Query("reason", nonEmptyStringPipe) reason: string
   ): Promise<void> {
     const transfer = await this.transferHandler.getTransferById(id);
     await this.transferClientService.transferTerminate(transfer, code, reason);
@@ -116,13 +116,13 @@ export class TransfersManagementController {
   @Post(":id/suspension")
   @ApiOperation({ summary: "Suspend a transfer by ID" })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiQuery({ name: "code", type: String })
+  @ApiQuery({ name: "reason", type: String })
   @ApiResponse({ status: HttpStatus.ACCEPTED })
   @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.ACCEPTED)
   async suspendTransfer(
     @Param("id") id: string,
-    @Query("code", nonEmptyStringPipe) reason: string
+    @Query("reason", nonEmptyStringPipe) reason: string
   ): Promise<void> {
     const transfer = await this.transferHandler.getTransferById(id);
     await this.transferClientService.transferSuspend(transfer, reason);
