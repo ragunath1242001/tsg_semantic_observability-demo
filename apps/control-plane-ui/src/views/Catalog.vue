@@ -76,10 +76,7 @@ onMounted(async () => await initialize());
 </script>
 <template>
   <div>
-    <Card
-      v-if="!userStore.isReadOnly"
-      style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      class="mb-8">
+    <Card v-if="!userStore.isReadOnly" class="mb-8">
       <template #title>Catalog Request</template>
       <template #subtitle
         >Use this page to find other catalogs. You can search for other Control
@@ -128,7 +125,6 @@ onMounted(async () => await initialize());
         height="150px" />
       <div v-else class="col-span-12">
         <Card
-          style="border-radius: 12px; border: 1px solid var(--surface-border)"
           ><template #title><h5>Find others</h5></template>
           <template #content>
             <Button

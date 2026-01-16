@@ -80,7 +80,7 @@ const initialize = async () => {
 onMounted(async () => await initialize());
 </script>
 <template>
-  <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+  <Card>
     <template #title>Registry</template>
     <template #content
       >Use this page to find other participants in the dataspace. It sets you up
@@ -88,9 +88,7 @@ onMounted(async () => await initialize());
       Protocol.
     </template>
   </Card>
-  <Card
-    style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mt-8">
+  <Card class="mt-8">
     <template #title>Addresses</template>
     <template #subtitle
       >Overview of all participants in the dataspace. The DID and addresses are
@@ -119,9 +117,7 @@ onMounted(async () => await initialize());
       </DataTable>
     </template>
   </Card>
-  <Card
-    style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="my-8">
+  <Card class="my-8">
     <template #title>Browse Datasets</template>
     <template #content
       >In this view, all the datasets of the dataspace are shown.</template

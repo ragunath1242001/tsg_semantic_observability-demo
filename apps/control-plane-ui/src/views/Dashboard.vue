@@ -30,17 +30,14 @@ onMounted(async () => await initialize());
 </script>
 <template>
   <div class="grid grid-cols-12 gap-8">
-    <Card
-      class="col-span-12"
-      style="border-radius: 12px; border: 1px solid var(--surface-border)">
+    <Card class="col-span-12">
       <template #title>Control Plane Dashboard</template>
       <template #content>
         <p>This page displays the overview of the current control plane.</p>
       </template>
     </Card>
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-      <Card
-        style="border-radius: 12px; border: 1px solid var(--surface-border)">
+      <Card>
         <template #content>
           <div class="flex justify-between mb-6">
             <div>
@@ -62,8 +59,7 @@ onMounted(async () => await initialize());
       </Card>
     </div>
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-      <Card
-        style="border-radius: 12px; border: 1px solid var(--surface-border)">
+      <Card>
         <template #content>
           <div class="flex justify-between mb-6">
             <div>
@@ -85,8 +81,7 @@ onMounted(async () => await initialize());
       </Card>
     </div>
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-      <Card
-        style="border-radius: 12px; border: 1px solid var(--surface-border)">
+      <Card>
         <template #content>
           <div class="flex justify-between mb-6">
             <div>
@@ -108,8 +103,7 @@ onMounted(async () => await initialize());
       </Card>
     </div>
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-      <Card
-        style="border-radius: 12px; border: 1px solid var(--surface-border)">
+      <Card>
         <template #content>
           <div class="flex justify-between mb-6">
             <div>

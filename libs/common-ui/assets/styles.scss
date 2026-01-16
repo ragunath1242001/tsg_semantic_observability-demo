@@ -1,3 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 @use "layout/layout.scss";
 @import "primeicons/primeicons.css";
+
+/* Ensure all PrimeVue Card components use the same rounded border across TSG */
+.p-card {
+  border-radius: 12px;
+  border: 1px solid var(--surface-border);
+}

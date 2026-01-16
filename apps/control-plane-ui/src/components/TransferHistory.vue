@@ -62,9 +62,7 @@ const getTransfer = async (uuid: string) => {
 };
 </script>
 <template>
-  <Card
-    style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mt-4">
+  <Card class="mt-4">
     <template #title><h5>Transfer History</h5></template>
     <template #subtitle
       >Here you can find the history of the transfers.</template

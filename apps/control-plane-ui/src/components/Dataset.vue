@@ -162,7 +162,7 @@ const sendNegotiation = async (
 </script>
 <template>
   <div class="col-span-12">
-    <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+    <Card>
       <template #title
         ><div class="flex items-center">
           <Button icon="pi pi-chevron-left" rounded @click="goBack()"></Button>
