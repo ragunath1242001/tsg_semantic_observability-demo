@@ -145,7 +145,7 @@ const getFormatInfo = (dataset: DatasetDto) => {
 </script>
 <template>
   <div v-if="!datasetView && singleCatalog" class="col-span-12">
-    <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+    <Card>
       <template #title>{{ catalog.title }}</template>
       <template #subtitle>{{
         obtainValues(catalog.description).join("\r\n")
@@ -181,9 +181,7 @@ const getFormatInfo = (dataset: DatasetDto) => {
       v-for="dataset in datasetVersionList"
       :key="dataset.root['@id']"
       class="col-span-12 lg:col-span-6 xl:col-span-3">
-      <Card
-        class="flex flex-col h-full"
-        style="border-radius: 12px; border: 1px solid var(--surface-border)">
+      <Card class="flex flex-col h-full">
         <template #title>
           <div class="flex items-center">
             <span class="mr-2">
@@ -338,8 +336,7 @@ const getFormatInfo = (dataset: DatasetDto) => {
 
   <template v-else-if="parsedView && !datasetList && singleCatalog">
     <div class="col-span-12 lg:col-span-6 xl:col-span-3 mt-8">
-      <Card
-        style="border-radius: 12px; border: 1px solid var(--surface-border)">
+      <Card>
         <template #title>Empty Catalog.</template>
         <template #content>
           <p>No datasets were found in this catalog.</p>

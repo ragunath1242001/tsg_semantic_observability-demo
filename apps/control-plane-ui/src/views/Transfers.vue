@@ -16,9 +16,7 @@ onMounted(async () => {
 </script>
 <template>
   <div>
-    <Card
-      style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      class="mb-8">
+    <Card class="mb-8">
       <template #title>Transfers</template>
       <template #content>
         <p>

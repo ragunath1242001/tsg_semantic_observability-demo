@@ -90,7 +90,7 @@ const declineNegotiation = async (negotiation) => {
 };
 </script>
 <template>
-  <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+  <Card>
     <template #title
       ><div class="flex justify-between mb-4">
         <div>

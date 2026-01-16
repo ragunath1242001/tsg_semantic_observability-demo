@@ -124,9 +124,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <Card
-    style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mb-8">
+  <Card class="mb-8">
     <template #title>Dataplanes</template>
     <template #content
       >On this page you can find the dataplanes that are linked to this Control
@@ -137,8 +135,7 @@ onMounted(async () => {
   <Card
     v-for="dataplane in dataPlanes"
     :key="dataplane.identifier"
-    class="mb-8"
-    style="border-radius: 12px; border: 1px solid var(--surface-border)">
+    class="mb-8">
     <template #title>
       <div class="grid grid-cols-12 gap-4 mb-0">
         <div class="col-span-11 lg:col-span-8 mb-0">
@@ -190,9 +187,7 @@ onMounted(async () => {
       </div>
     </template>
   </Card>
-  <Card
-    v-if="!userStore.isReadOnly"
-    style="border-radius: 12px; border: 1px solid var(--surface-border)">
+  <Card v-if="!userStore.isReadOnly">
     <template #title>Add Data Plane</template>
     <template #subtitle> Link a data plane to this Control Plane </template>
     <template #content>
