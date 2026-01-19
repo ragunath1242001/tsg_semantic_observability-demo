@@ -27,6 +27,9 @@ try {
 export default defineConfig({
   base: "",
   envPrefix: "TSG_STATIC_",
+  define: {
+    "process.env": {}
+  },
   optimizeDeps: {
     exclude: ["class-transformer/storage"]
   },

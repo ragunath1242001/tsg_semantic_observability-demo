@@ -11,21 +11,21 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "@guolao/vue-monaco-editor": "^1.5.4",
+    "@guolao/vue-monaco-editor": "^1.6.0",
     "@tsconfig/node22": "^22.0.0",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@types/dom-view-transitions": "^1.0.5",
-    "@vitejs/plugin-vue": "^6.0.0",
-    "@vue/tsconfig": "^0.7.0 || ^0.8.0",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/tsconfig": "^0.8.0",
     "pinia": "^3.0.4",
     "primeicons": "^7.0.0",
     "primevue": "^4.3.7",
-    "tailwindcss": "^4.1.11",
+    "tailwindcss": "^4.1.17",
     "tailwindcss-primeui": "^0.6.1",
     "tslib": "^2.8.1",
-    "vite": "^7.1.1",
-    "vue": "^3.5.25",
-    "vue-router": "^4.6.3"
+    "vite": "^7.2.4",
+    "vue": "^3.5.26",
+    "vue-router": "^4.6.4"
   },
   "dependencies": {
     "@primevue/themes": "^4.3.7",
