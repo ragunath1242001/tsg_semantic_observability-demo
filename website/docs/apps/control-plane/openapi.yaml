@@ -3212,6 +3212,24 @@ paths:
       security: *a26
       summary: Get catalog by participant ID
       tags: *a27
+  /api/management/registry/refresh:
+    post:
+      description: Force refresh the registry by re-crawling all participant addresses
+        and catalogs.
+      operationId: RegistryManagementController_refreshRegistry
+      parameters: []
+      responses:
+        "200":
+          description: Registry refresh initiated successfully
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a26
+      summary: Refresh registry
+      tags: *a27
   /api/registry:
     get:
       operationId: RegistryController_getCatalogs

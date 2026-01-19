@@ -15,9 +15,10 @@ import { useCatalogStore } from "../stores/catalog";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 
-const addresses = ref<string[]>();
+const addresses = ref<CredentialAddress[]>();
 const selection = ref<CredentialAddress>(null);
 const assigner = ref("");
+const refreshing = ref(false);
 
 const catalogs = ref<CatalogDto[]>();
 
@@ -73,15 +74,51 @@ const getCatalogs = async () => {
 };
 
 const initialize = async () => {
-  getCatalogs();
-  queryAddresses();
+  await Promise.all([getCatalogs(), queryAddresses()]);
+};
+
+const refreshRegistry = async () => {
+  refreshing.value = true;
+  try {
+    await http.post("management/registry/refresh");
+    toast.add({
+      severity: "success",
+      summary: "Registry Refreshed",
+      detail: "The registry has been refreshed successfully",
+      life: 3000
+    });
+    // Reload data after refresh
+    await initialize();
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to refresh registry",
+        defaultMessage: "Could not refresh the registry"
+      })
+    );
+    console.error("Error:", error);
+  } finally {
+    refreshing.value = false;
+  }
 };
 
 onMounted(async () => await initialize());
 </script>
 <template>
   <Card>
-    <template #title>Registry</template>
+    <template #title>
+      <div class="flex justify-between items-center">
+        <span>Registry</span>
+        <Button
+          v-if="!userStore.isReadOnly"
+          icon="pi pi-refresh"
+          label="Refresh Registry"
+          :loading="refreshing"
+          severity="secondary"
+          @click="refreshRegistry" />
+      </div>
+    </template>
     <template #content
       >Use this page to find other participants in the dataspace. It sets you up
       for the browsing of the catalog and start the processes of the Dataspace
@@ -125,7 +162,7 @@ onMounted(async () => await initialize());
   </Card>
   <div v-for="catalog in catalogs" :key="catalog['@id']">
     <!-- TODO get catalogs and make sure the component supports merging data sets. -->
-    <div class="grid grid-cols-12 gap-8 card-container mb-4">
+    <div class="grid grid-cols-12 gap-8 card-container mb-8">
       <Catalog
         :url="catalog.service[0].endpointURL"
         :catalog="catalog"

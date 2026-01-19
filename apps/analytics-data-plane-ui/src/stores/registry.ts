@@ -94,6 +94,22 @@ export const useRegistryStore = defineStore("registry", {
       }
     },
 
+    async refreshRegistry() {
+      this.loading = true;
+      this.error = null;
+
+      try {
+        await http.post("management/registry/refresh");
+        await this.fetchParticipants();
+      } catch (error) {
+        this.error = "Failed to refresh registry";
+        console.error("Error refreshing registry:", error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     clearError() {
       this.error = null;
     }

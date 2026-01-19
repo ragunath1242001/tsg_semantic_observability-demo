@@ -229,6 +229,24 @@ paths:
       security: *a5
       summary: Get catalog by participant ID
       tags: *a6
+  /api/management/registry/refresh:
+    post:
+      description: Force refresh the registry by triggering a re-crawl of all
+        participant addresses and catalogs on the Control Plane.
+      operationId: DataPlaneManagementController_refreshRegistry
+      parameters: []
+      responses:
+        "200":
+          description: Registry refresh initiated successfully
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a5
+      summary: Refresh registry
+      tags: *a6
   /api/management/participant-id:
     get:
       description: Get the ID of the current participant from the Control Plane catalog.
