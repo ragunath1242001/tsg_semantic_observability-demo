@@ -1,0 +1,72 @@
+---
+id: project-agreements-management-controller-link-dataset-to-project-agreement
+title: "Link Dataset to Project Agreement"
+description: "Links a dataset to the specified project agreement."
+sidebar_label: "Link Dataset to Project Agreement"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVU1v2zgQ/SvEnHYB1jKyOekWNMkiQDc1mmwvgRHQ4thiI5EsOapjCPrvi6FkybWdAJtcIpOc7/fetKAxFsF4Ms5CDl+MfYlCCa1IRSRBTlCJInoszNqgFj64H1iQUJuAWKOlGUhwHoNiD3caclj0T672L+I/yqpN+vzsLAVXVRieK2Nfrvsoj+7YBCR4FVSNhCFC/tSCVTVCDkaDhIA/GxNQQ06hQQmGM/eKSpBH5Qx+xehY3F2DhFiUWCvIW6CdZ7e2qVcYoOvkGGnowN3/CzhU9EaYSMHYDXTdkn1G72zEyPcX8zn/O++LO4WaR3HSfBGbosAY101V7aCTcDn/69TRrQsrozVakFA4S9zgvAXlfWWKNLfsR+SX7WnKbsUReR6Bp0ymT7hv0nFhEvBV1b7io28YXRMKvHd06xqrObtIipr4vt3l/FLcOxKjUeE0no7qwORyftlJqDFGtcFzqU/OH0sUPEyMhFqEIUWhHUZhHQl8NZFmHBVDcOH9TA+y7A4x8tR3Zyx3KGEpgQwlyxt2fk0OOv6TELFogqFdQrpTDZUX7Kbo2eIrZfGZ8Zi+YMnwIbVhYpwiPHKgGql0zEXvYk8mKiGHTHmT1SMbswFPn0Y8xaw1ussYcVk7MqDjWjD86rm4nPJ9YLT0gNhnPXW/P5Cwrtw2PfEqxq0LuseZ872hsqrakSniWOCz0nVi2JtX8tzV1KCzltN13/MVqoBhxDxbDUf7u1sXakWQw/cFyH1ZJZE/Yf13DGZt1KpCsQgY0VJilbCIumdu4eq6scw2FCukLaIVtHXC2EjKFhiFWyelHWYuUqqzhCxj1y41dkDP48Pf4mpfoGCVEItU2HFaj6WJ4qtHe7W420t4z3cRS7eNKSBa7Z2xNGZwzjWLPI+/9zvIiCpYRjoJlSnQRpx0Aa68KkoUF7M5SGhCNTQu5lm23W5nKl3PXNhkg23Mvtx9vrl/uPl0MZvPSqqrVDrDt1b2wDMvKHE9bacT/B93oZ0k74PbbZg84StlvlLGsj6kotqBWE+gvAEJE7V6wTwiF0jI0wJjfvGPaccsJZRM1fwJ2nalIv4bqq7j458Nhl1Pu18qJJAlmdAm8reGfK2qiO9U/ce3QZr+PO1Wv6jOVjgcKrvj4auqwX70L7jrFzEvyw9l8duS/EDsqW3dspNQotLM5Kd2uL8qCvR0YHmy6bpDjVx8fXhkSWl4lKf6Nepxez6tt1RKvCtC+1qSEKZWnnW+18znIqBGS0ZVcbTdBGXpOdl1y67r/gPlHGh0
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Link Dataset to Project Agreement"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/project-agreements/{id}/link/{datasetId}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Links a dataset to the specified project agreement.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Project Agreement ID","schema":{"type":"number"}},{"name":"datasetId","required":true,"in":"path","description":"Dataset ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Dataset linked to project agreement successfully"},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

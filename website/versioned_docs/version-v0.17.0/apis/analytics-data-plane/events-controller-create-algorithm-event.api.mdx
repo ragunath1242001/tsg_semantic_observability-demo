@@ -1,0 +1,72 @@
+---
+id: events-controller-create-algorithm-event
+title: "Create an algorithm event"
+description: "Creates an algorithm event for the specified algorithm instance."
+sidebar_label: "Create an algorithm event"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVktv4zgM/isCT7uAmwTdnnzL9jEIMOgUbXcuRTFgbCbWjC1pJLppNsh/X1BWEjdxe5rDHDanWBQpPj5+5AZKCoXXjrU1kMOlJ2QKCo3Cemm95qpR9EKG1cJ6xRWp4KjQC01l74Y2gdEUNIIMrCOPYm5WQg7XohsurWFv65r8tyK+MN2pRjlk4NBjQ0w+QP60AYMNQQ77F2bpgVkJGXj62WpPJeTsW8pAi+cOuYIMQlFRg5BvgNdOTAT22ixhu832VqctV9brf6OX79mrCEvyH1p87lQp8N+2XMuNY0uFNSzx5RtA52pdxCfH34Mke3Nq2s6/UxHT4SWNrCmINBZA0nniQ5ZiGhK0zZx8T5QOthmwbigwNm5Q0VOhnZayifgtPj7rwMoulEPPutAODavZVVBsBR8r9KXiSocEGbaQ7eyj97iGDDRTE4ayue0X4mkfc4pwH0/f+2f54Jr2wH0Lqyu2YjcaDs6a0GXzfDI5DeyxohPEVxjUnMio0BYFhbBo63qtOgCXAvX/y/t7lPdi8tdpLDfWz3VZkvl1hRouRgb0io2Lft5TsK0v6NbyjW1NKQkPjNwO5KSvdzG5ULeW1V6psCWdFrencjG52GbQUAi4pCHXD8YF24moqFQ+uahKS0EZy4pedeCRvEreW/+xpz0vj0qaCpnCTSH0angtxndFE5jiUsg+jQi52RBXVqaGs6EbClxBDmN0ehwBE8abgZGwHe8PzyjNk0D+pRsmz/JRtF7z+kHq3JXSYsvVeT9v3UEGi9qu4hWHIaysLzuEWNcposF6zboIJTK6Gg19w7KJI+NdUTYk2v8b1jyIu2zNCX3X7xGtopWOdrIb6xtkyOHr3aEvK2YH2VFrfCWvFxrnNak7T4EMx35QhqikUrq9sE3TGukTUnPilbAgr+x+0AdhCdkGim6yq+jqKGJCuur+MBevd9DpEd0BWGkkH74TrU3e0NhB3mevp93x81aG9sLGcia0PT58UtNdWtUVMqq7mM7jZDwKoX1xZKZ3s91y0/GDCpVdhRgmmdJZbXgf95BpGQkCus5uoh0shHa2GdS6IBPowCMwdVhUpM5HE8ig9XUqV8jH49VqNcIoHlm/HCfdMP48u7y+fbg+Ox9NRhU3dUy4dEuDpme5o8uBLe44+s2BGn/F7pdAx/TKY1ejNkIqMbJNauYnQKeFULqmzyAf3vGOO/o5g0pIIX+CzWaOgf7x9XYrxz9b8uuuz1/QR1THFbLUQf6XkC+wDvRB4H/cJxb7U70Xw27KGZlxL1i31FX4B63fWVO3Asq0RIo73c3L7tGzR7F3sHQylGRb7TSmRUGOP7zbZ867Lw+PwghpIW3iGAGPK+kdXHVe25iESGfxbAM1mmUbBwl0NuX3H3YGOjQ=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Create an algorithm event"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/events/{algorithmInstanceId}/algorithm-event"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Creates an algorithm event for the specified algorithm instance.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"algorithmInstanceId","required":true,"in":"path","schema":{"type":"string"}},{"name":"Authorization","required":true,"in":"header","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"eventId":{"type":"string"},"name":{"type":"string"},"number":{"type":"number"},"timestamp":{"type":"string"},"recipients":{"description":"List of participant IDs to forward this event to","type":"array","items":{"type":"string"}}},"required":["eventId","name","number","timestamp"],"title":"CreateAlgorithmEventDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"The algorithm event has been successfully created.","content":{"application/json":{"schema":{"type":"object","properties":{"eventId":{"type":"string"},"name":{"type":"string"},"number":{"type":"number"},"timestamp":{"type":"string"},"recipients":{"description":"List of participant IDs to forward this event to","type":"array","items":{"type":"string"}}},"required":["eventId","name","number","timestamp"],"title":"CreateAlgorithmEventDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

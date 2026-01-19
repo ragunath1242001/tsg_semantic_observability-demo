@@ -1,0 +1,72 @@
+---
+id: keys-management-controller-delete-key
+title: "Delete key"
+description: "Deletes an existing key within this wallet"
+sidebar_label: "Delete key"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVk1vGzcQ/SuDOSXBRjJcnxZFgSB2CiOpU8QuenAFYbQcaRlzyQ05a1kQ9r8H5K6+VpaA3nroRR8czvDNDPnerFFxKLyuRTuLOV6zYeEAZIFfdBBtF/DEK1hqKbUFKXWAJRnDghm6mj1Fx1uFOX7mVfiDLC24YisfnRXvjGE/VSnmZ15hhjV5qljYB8wf12ipYszxiVe3CjP0/KPRnhXm4hvOUEdINUmJGYai5IowX6Os6ugUxGu7wLadRMdQOxs4RPvlxUX8OkwM2wyvLn45NnxyfqaVYosZFs4KW4mbqK6NLlJ24+8h7lwfQ3Cz71zEStQ+1kJ0B6DLagg0Q36hqjZx6RsH1/iC75x8co1VEV0Qkiac97u6uII7J7B1KpzaP8o21Yz9vsvVxVWbYcUh0IJfg74L/lAyxA5wEFbge4igHAewTroLMYqnsvfOn0e6h7Ldb+xjV51tun0KkwxFS/K8icGvxWHbtqlpV8dN29Qv4ZqnY/7v3n+ve7EuXDReyyo9d0eNlJcxTMch0yrxxfSJVyE9f1LOmtW0CexxEh+20CIyBe6IBSLPxBMrltJF4un4JZGLlJjjmGo9rrYO4xh9vE4c00bo7J87/pns4N3Hy9H1fwNyV+xuIcO5ccu0paYQls6r7lq5unPsc3rWvJwqHZENV7LX8s5fL0a/2IThtu1KdhDfLe208KzYiiYTBqcPrYe+ZMwZ36F1mMXJk0/Yh/4nTz9h3/rrEBp+3fXYdJhx7TmwlcQQw3wPbcNrmQ/+9/dc27lLd6Z/Bw/3v8PfG6E8JK/4Undm0AEI7u9ve10FKUmgIAspByCrIIjzDM/s9VzTzDDsJZY2FJ5JGA6QgziYMTSB1Ua+FQlBqKngMPp15mH8W/f5jwUAiLiWO0y6YgUkUDVG9HvR7EFxbdwqPqqQpZjgLMMb56Fynt8eZECFBKAA4psgQLYonYe580B7MBJ4bZV+bsj07iHtYipKcHOQkqEmL7rQNVkJkKYQ3osxgq/9YFLTgpOxYCt+G7DDk6oZDiq31MbEEhVxm0qe1yTUIeu7Q0ZK1yxK0KkqkUk3dNjFlZI9A5klrULcwS9UiFmlyqQzfUxj/1ht+xp08I8bMZ2+u3PC76bTHB5iYl9rth/+vAXFc2117O4Gi46SpyKW1GylPafTjbZPfd+BIGi7MNuUtA1CNhYOM4xU2E9InYJSERW0zdDogm3gnSTih5qKkuFydIEZNt5gjqVIHfLxeLlcjiiZR84vxr1vGH+5/Xhzd3/z/nJ0MSqlMklPahekIrsXuRs746Q5fC3rnaz/u+G0J2/hFxnXhrSN0pdAr3uheESqNWa4kwrMsGfWvBtJJxmWLkjcu17PKPBf3rRtXP7RsF91GvJMPr3KJHFKh/hbYT4nE/hMNm++9ffoLZyC2y+SjWV5JtNw16dYp83U3E7aDEsmFbnpcd3bPhQF17LndTQRtfsSen3z5ebhBjOMUvea9G2Ve/06qIHSwbGkwUC+4Iw8wRn5gbPiAmelA06pA5zkfzhk+03tk+pjm50ox2ZAGChQ57vwZGWa/NpJ27Y/AW3qyOU=
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete key"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/keys/{keyId}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Deletes an existing key within this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"keyId","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

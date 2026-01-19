@@ -1,0 +1,72 @@
+---
+id: totp-controller-verify-2-fa-setup
+title: "Verify TOTP Setup"
+description: "Verify and complete TOTP two-factor authentication setup"
+sidebar_label: "Verify TOTP Setup"
+hide_title: true
+hide_table_of_contents: true
+api: eJylU8tu2zAQ/BVhz4zluo8Db06aFgaKOqjdXgyjWEsbi4lEMuTKjiHo34ul5CRuj9VBDy5nOTM76qCkWATj2TgLGn5RMPenDG2ZFa7xNTFl6+X6LuOju7rHgl3IsOWKLJsCBZRF4taDAucppJVFCRrWjv2NsxxcXVP4fUh9Z1/mq3G3x4ANMYUIerNVEOippcjXrjyB7tKnCVSC5tCSgsJZJstSQu/r8ez8IQrrDmJRUYPyxidPoMHtHqhgOScILzYUU9U9UgLQM4o60PBu9v7Dx0+gzsjIwdg99L16Q2IzIrd9PxSidzYOPWfTqTwufUx4xr2oAzEQtgoa4sqJOd7FxA25Ag05epOLqTk79vnZz0jh8GKPCP3xatHtmf6LpLOOXoGx9y5VDCeF69XXbLVaZtfBlHsC9RfVy3I2v1tkn13RNmR5GDAoECKjsGEWWMgsegW1KcjGxMRiI8fNPRYVZbPJFBS0oQYNFbOPOs+Px+MEU3niwj4fsTH/tri5/b66vZpNppOKmzq5JyY1aN90HsOZ8njO0YWW7jUn/5PkMQlMz5z7Go0VV5OSbpzZBtAbUCANBOB4mJjgtwoqma/eQNftMNLPUPe9LD+1FE7DPA8YDO5kPJttr6AiLCmA3nTwSCfQcDPouFoLFdlet0Lpn+z3b2N1t1ytQcFu/IcaVwom4BFUuqfpueRVSm5a66BGu29xL3uHnnL9ARGKZHk=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Verify TOTP Setup"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/auth/totp/setup"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Verify and complete TOTP two-factor authentication setup
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"token":{"example":"123456","type":"string"}},"required":["token"]}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

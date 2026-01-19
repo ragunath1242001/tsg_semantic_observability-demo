@@ -1,0 +1,72 @@
+---
+id: web-authn-controller-complete-web-authn-registration
+title: "Complete WebAuthn Registration"
+description: "Complete the registration of a new WebAuthn credential"
+sidebar_label: "Complete WebAuthn Registration"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVEtvnDAQ/ivWnFrJXVY5ckvSqIrUJlE2VQ+rVTULE3AKNrGHJSvEf6/GwD6SnsoFzIyH72V6yClk3jRsnIUUrl3dVMSkuCTlqTCBPUpNuWeFylKnftH2suXSqsxTTpYNVqDBNTQ23uaQwtxz7Sx7V1Xkf2fT5Ln0eDIcNDTosSYmHyBdbzR4em0p8JXL95D2cWk85ZCyb0lD5iyTZSlh01Qmi3OSlyAseghZSTXKE+8bghTc9oUylu94QcqGwjg2NM4G+lfnuTAH1meizPvVs3e1srgzBbLzi6M0QZ6R6dNnGGTmzmR0h3X8Ir2haAIp/Nirh9JZAj3DCOyNLWAY9An39RHwZhjG2riObC6WS7mdA48jGAvR9cACNhpq4tKJWY0LURnkElJIsDEJtlwmHW3lbpORMvlk9hA0BPK7g1ki++PRsJuZ15nA7+gfOQ8ajH120QPDUY+n1Te1Wt2rK2/ygj6YcV5Wlw+36qvL2posj76ABkE3KTDGBTMeUVQmo8lzO0K5bDArSV0slqCh9RWkUDI3IU2SrusWGMsL54tk2huS77fXN3ermy8Xi+Wi5LqKMouSNdqTyYfzdMjPu9yfEeuPuf7/kzgFiOmNk6ZCY0XgSKqfPF4DNgY0iLugYfYZJE6j01GyyeuNhlISkq6h77cY6KevhkFev7bk92MCdugNbsW79WbQUBLm5CFd9/CH9pFN5PXlScBJe9UKyA9ndzgN5sP96gk0bKd/QO1y2eOxE6TYjda6qN14muVdDxXaosVCeseZcv0FlRi0rQ==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Complete WebAuthn Registration"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/auth/webauthn/register/complete"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Complete the registration of a new WebAuthn credential
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"response":{"type":"object","description":"WebAuthn registration response from navigator.credentials.create()"},"deviceName":{"example":"My Phone","type":"string"}},"required":["response"]}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

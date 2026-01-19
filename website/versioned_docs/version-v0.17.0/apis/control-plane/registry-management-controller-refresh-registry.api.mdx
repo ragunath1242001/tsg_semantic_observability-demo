@@ -1,0 +1,72 @@
+---
+id: registry-management-controller-refresh-registry
+title: "Refresh registry"
+description: "Force refresh the registry by re-crawling all participant addresses and catalogs."
+sidebar_label: "Refresh registry"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1VU1v2zgQ/SuDORaqbGRz0q1okyLANgmatHsIAmNMjS02FMmQo7iGof++IC3JzleBPWwukTlfb4ZvHndYc1RBe9HOYoXnLiiGwKvAsQFp0vdaRwlbWG4h8EcVaGO0XQMZA56CaKU9WQGq68AxcgSyNSgSMm4dSyzQeQ6U8l/UWOH3Id83srTmlq18dlaCM4bDYig8+mCBngK1LBwiVnf3BQaO3tnIEasdnszn6d/zFsbgqQtttWgSriF2SnGMq86YLfYFns7/eh1/7sJS1zVbLFA5K2wlOZH3Rqvcx+xXTJ47jKrhltKXbD1jhW75i5Uk2CF1LXqP01LLR15RgrZrLJB/U+sNZ9DRdUHxpZNz19k6oYtC0sU/x53OT+HSCUxBytXHpWzXLjkch5zOT/sCW46R1vwW9EPy23z9jx3HNLwwQITacQTrBPi3jlKmqhyCC39GeoSyT9f42OnANVZ3++lM7Q4t3BcoWnLkWUr+RRz26a/AyKoLWrZY3e3QUSfNSUqj9jTyhiwvqG71eIHTYU1C+Qvv+5Sf1olUB8IcKJnKtyyNS4z1LuYrJWmwwhl5PWsnz9m4H7OBbqkTDk8TYUe0N4krezqMmA+z3x8UuDJuk108xbhxod6zzPl94BstVv+p7+o9w36yS6bAYWJ28h+ORtu5Cy0JVvjzGosRfiPisXixRj856JWmpWG4DhzZSt4dsMw11yAOlGvbzqadYliybJgtyMaBtlHIKo7gVlmCBsyQoZaZP9quXB7gwJHbm68w6Ahc545e4rltdIQrz/bT9QVEz0qvhnWG2LhNzJXY1t5pK1PpZzlL+OaijKaDL4W0JyZLjLhs/EJC0ZNKzTtxypkCKI51uU5qmvzOlNE+MvzjwkNS1a/Bdf4QHUu4kobDi2Kx894F0U/HKMRBSw/JGDjnTrcLiiwsOanzAdwgzkVW6hdhJPDjArQVDqTSdGJOIcnFG1JcAiwWHy6d8IfFooJnY615lcXWWdB7iUiJ7FB6yVDrwErMFoy2D1zDRksDBFHbtXkx7IkGJWCBaZ/29ziQm1RS5b5AoxXbyAeZxU+eVMNwUs6xwC6YgaGxms02m01J2Vy6sJ4NsXH298Xns8ubs48n5bxspDWZY2nvW7JHmb8PL0o4vE/PSLY7PBj/y0s67Jvwb5l5Q9om7c0d7gZ5ukPyGgs8CBQmsZ3gjiJ1X2CTZK26w91uSZF/BNP36fix47DdS9cThbzA6VdfYMNUJ3W42+EDb9OglWKfCjyR6RKwV29kf6yj11c3t1hg0rq3tG9S8slEdnuU/LXOwTtiVgz4snBiX7yTcNTYhQpcsxVNJk6x60BWFjmuv+/7/l9Wlzng
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Refresh registry"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/registry/refresh"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Force refresh the registry by re-crawling all participant addresses and catalogs.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Registry refresh initiated successfully"},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

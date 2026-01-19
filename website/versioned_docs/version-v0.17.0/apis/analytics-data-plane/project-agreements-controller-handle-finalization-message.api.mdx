@@ -1,0 +1,72 @@
+---
+id: project-agreements-controller-handle-finalization-message
+title: "Handle Finalization Message"
+description: "Receives a finalization message with all signatures via transfer."
+sidebar_label: "Handle Finalization Message"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVktv4zYQ/isEj61sB7lVtzSbdAO0jZFk92K4i4k0srilSIYcRfEa/u/FkFLkh5pe6pPF4by/+YY7WWIovHKkrJG5fMAC1SsGAaJSBrT6ASwRDYYAGxSdolqA1iKojQFqPQbxqkCQBxMq9HOZSevQR627UuZy6e13LOhq4xEbNBSurSFvtUb/rQZTarw9cPRH8iMz6cBDg4Q+yHy1kwYalLm8aqm2vr8sM+nxpVUeS5mTbzGTipOoEUr0MpOhqLEBme8kbR2rB/LKbOR+v06qGOhXW275xqmlwhpCQywC57QqosvF98B12p2bts+cJgfuuQCkMLDUpfS5FKdRZCe1/2LUS4tClWhIVQq9sJWgGkVvQ8BQQ7nPZA2h/m+bnyHUg5m+oVhOGxw7OpXVsdnHsfuVt01EhANPqlAODAW2Z6sKPZs6Vr32GBMELeINUVk/naUo3q/KTILW91WEwscFVyG06KfrjW/QOM1HpSrzDp/zdHs+CBh2ROg50L/4zgpmPy5mv6x/zuc/cVLO4wBBLK9tiR+7cR5n0FI9K2yJs7ftD7YxpvUUFXejwkrepL9jleQ6GxyA97CVmVSETZhC9f5wIFZjKabiPouD/SiKYX+6Xo4BPKQ5uTOKVBq7/frU04jyHphHcBqwcODhlBWmOGDfJxScNSE19/Li4hxRt1NE5RORlSK0RYEhVK3WW8kGCTZMKUMIYmQmDrBBqi3zlrOBEh5qmcsFOLXos5y9IzQsDkmSk0b/mhhrzR9F6xVtH5kqUvyWwXB5OF/pIJOVtl0iDAihs75MJGNdUgQDekuqCCUQOA0Gv0HZRLb7V1E2JXr/N605ilP1nxF8muJIeKzVHw2yW+sbIJnLr0v5jtSayJ2Rxlf0qlLwrFEsPQY0lFpmEEssBVlR2KZpDVMtimekDtEI6qxQJhCYAsNAZUXaISKGOo9tZWJ+GCn9ZhipIwoeZzTR5/h9xH6H7DXyyQekcc4KE6N/PvmT487JKFPZiJJ+XJ4efxNXQ7fEJyAQy9il0xo/1SqIe4fmankngsNCVf3mEqG2XYjVQ1M6qwy9l3PKNG9yxnKyK9NChIJSebQq0IRY3mEzOyhqFJfzC5nJ1useBSFfLLqum0MUz63fLHrdsPj97vrmz8eb2eX8Yl5To2Mfee4aMAeWP8dXgjga8/GdcJT/blzb/8tTpocz4RstnAZlmL9jcrueGVYSnEpL6IQbeKgP2WGdyZo5JV/J3e4ZAn7xer/n45cW/TZxxiv4OCH8xUs+vWR46/2NW96eKb1ZxA9f122c5NMXyv6Qypb3j088r/1Lp0kA9dDxAwq61F4bSxjJJp7tpAazabnIuUw2+fcPwgCc2g==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Handle Finalization Message"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/project-agreements/finalization"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Receives a finalization message with all signatures via transfer.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"Authorization","required":true,"in":"header","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"projectId":{"type":"string","description":"Unique identifier of the project agreement"},"hash":{"type":"string","description":"Hash of the finalized project agreement"},"signatures":{"type":"object","description":"Signatures from all participants"},"offer":{"description":"Credential offer for the project agreement credential","allOf":[{"type":"object","properties":{"issuerId":{"type":"string","example":"did:web:issuer.example","pattern":"^did:[a-z0-9]+:.*"},"preAuthorizedCode":{"type":"string","example":"pre-auth-code-xyz"},"credentialType":{"example":["ExampleCredential"],"type":"array","items":{"type":"string"}}},"required":["issuerId","preAuthorizedCode","credentialType"],"title":"DCPCredentialRequestInitiation"}]}},"required":["projectId","hash","signatures","offer"],"title":"ProjectAgreementFinalizationMessage"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Finalization message received successfully"}}}
+>
+  
+</StatusCodes>
+
+
+      

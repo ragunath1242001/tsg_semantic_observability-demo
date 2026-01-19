@@ -1,0 +1,72 @@
+---
+id: totp-controller-verify-2-fa-setup-for-profile
+title: "Verify 2FA Setup for Profile"
+description: "Verify and complete TOTP setup in profile settings"
+sidebar_label: "Verify 2FA Setup for Profile"
+hide_title: true
+hide_table_of_contents: true
+api: eJydU0uP2jAQ/ivWnL2E0sfBN5ZChVR1UaG9IFSZZEi8m9hee7IsivLfq3GyD9Rbc8jD4xl/r3RQYMyD8WScBQW/MZjTRWhbiNw1vkZCsbvbbUREar0wVvjgTqZGXiBjywgSnMegecC6AAU7R37hLAVX1xj+PKWJs9V8yxNWLmyGASDB66AbJAwR1P4gIeBji5FuXXEB1aVPE7AARaFFCbmzhJa4pL2vTZ7OzO4jI+8g5hU2mt/o4hEUuOM95sTnBEZIBmOqugdMDfismSEo+DD7+OnzF5AvnZGCsSX0vXwHYj92Hvp+KETvbBxmzqZTflxrmfpJl8wOWEQ4SGiQKscyeRcTNk0VKMi0N5luqcrIkc9GkbNBPJAQMTy96sSMf75ptXzh8crthVAvwdiTSxVDiepu+01st3fiNpiiZBOuMV+XxXyzFl9d3jZoKaktQAIDGRkOpuicTekl1CZHGxMSqxs+bu51XqGYTaYgoQ01KKiIfFRZdj6fJzqVJy6U2dgbs+/rxfLHdnkzm0wnFTV1kpHVarR9N3lM6mw1FylZ4uSCeMvWFa3uLTv/l/AxF4TPlPlaG8vSJjrd6OAetDcggT3kBkd+SN6IZ3TyIKFi49Ueuu6oI/4Kdd/z8mOL4TL4+6SD0Ue2a3/oJVSoCwyg9h084AUULAYyNztGxdvrltH981P07/O2udvuQMJx/LkaV3BP0GeQ6Z7cdEmwFOm01kGtbdnqkvcOM/n6CxKfbmo=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Verify 2FA Setup for Profile"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/auth/totp/profile/verify"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Verify and complete TOTP setup in profile settings
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"token":{"example":"123456","type":"string"}},"required":["token"]}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

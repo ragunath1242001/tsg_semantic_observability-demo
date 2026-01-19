@@ -1,0 +1,33 @@
+---
+id: presentationsubmission
+title: "PresentationSubmission"
+description: ""
+sidebar_label: "PresentationSubmission"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"id":"submission-id","definition_id":"definition-id","descriptor_map":[{"id":"desc1","format":"jwt","path":"$.credential"}]}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"PresentationSubmission"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"id":{"type":"string","example":"submission-id"},"definition_id":{"type":"string","example":"definition-id"},"descriptor_map":{"example":[{"id":"desc1","format":"jwt","path":"$.credential"}],"type":"array","items":{"type":"object","properties":{"id":{"type":"string","example":"desc1"},"format":{"type":"string","example":"jwt"},"path":{"type":"string","example":"$.credential"},"path_nested":{"example":{"id":"desc-nested","format":"jwt","path":"$.nested"},"allOf":["circular(DescriptorMap)"]}},"required":["id","format","path"],"title":"DescriptorMap"}}},"required":["id","definition_id","descriptor_map"],"title":"PresentationSubmission"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

@@ -1,0 +1,33 @@
+---
+id: algorithmdefinitiondto
+title: "AlgorithmDefinitionDto"
+description: ""
+sidebar_label: "AlgorithmDefinitionDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"title":"string","description":"string","keywords":["string"],"image":"string","algorithmEvents":["string"],"roleDefinitions":["string"],"internalEvents":["string"],"uiTemplate":["string"]}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"AlgorithmDefinitionDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"title":{"type":"string","description":"Title of the algorithm"},"description":{"type":"string","description":"Description of the algorithm"},"keywords":{"description":"Keywords associated with the algorithm","type":"array","items":{"type":"string"}},"image":{"type":"string","description":"Public image URL of the algorithm"},"algorithmEvents":{"description":"Algorithm event structure of the algorithm","type":"array","items":{"type":"string"}},"roleDefinitions":{"description":"Role definitions for the algorithm","type":"array","items":{"type":"string"}},"internalEvents":{"description":"Internal event structure of the algorithm","type":"array","items":{"type":"string"}},"uiTemplate":{"description":"UI template for visualizing internal events","type":"array","items":{"type":"string"}}},"required":["title","description","keywords","image","algorithmEvents","roleDefinitions","internalEvents","uiTemplate"],"title":"AlgorithmDefinitionDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

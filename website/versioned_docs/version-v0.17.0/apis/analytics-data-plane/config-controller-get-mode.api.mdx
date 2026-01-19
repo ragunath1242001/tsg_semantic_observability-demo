@@ -1,0 +1,72 @@
+---
+id: config-controller-get-mode
+title: "Retrieve runtime mode"
+description: "Retrieves the analytics data plane runtime mode (standalone/client/server)."
+sidebar_label: "Retrieve runtime mode"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVcFu2zgQ/RViTrsA1zKyPukWpEkRYJsNmmwvhhGMybHFViIZchTHEPTvC1Ky7KRJeqkukjmc4Zvhe88daIoqGM/GWSjhK3Ew9ERRcEUCLdZ7NioKjYzC12hJhNayaUg0TpP4IzJajbWzVKjakOUiUnii8OcMJDhPAVPlaw0lXDi7MdsLZzm4uqbwsCX+4jSBBI8BG2IKEcrlSkKg6J2NFKHs4Gw+T6+XQEGCcpbJcoqh97VR+ajie0wbOoiqogbTF+89QQlu/Z0Up9NCAsZmKJ/6ONkVORi7BQn0jI2vh6VDj9DnR8Ji/vfPmK5cWButyf4+cBabX4D7StG1QdGN4yvXWg29TIC5jR/nLeYLceNYTEnq5Rxs26wpnKYs5oteQkMx4pbegn4sfl+RCPTYUmTSIowQhXYUhXUs6NlEnqVTKQQXPkZ6grJP1HhsTSAN5XKYztTu2MJKAhvOmZep+Cd2MN5aJNUGw3solx04bLk6S2XUQMlM7wfUjbGw6lMZ3CY+wh0xG7uNqXRDXLnE5i3l20KuoIQCvSniuK1oBlIPQhgZfTj6Ll38cLcHAMdBDgsSNrXb5S0eY9y5oAfKOD8kTrJMqjxFXb4fkm+Fpq+3M4/hYXxrwkBhom/KGpcOsSsXGmQo4dstyENbFbMH+Uor3yiYjcF1TeI2UCTLWSDCEmnSgp1Qrmlam4RDYk28I7KCd04Ym/SoKAq3yS41Xt9gT7NMEmM3Lg92JML93WdxPpnZp2Rmt7mx17DuKxPFv57s+e21iJ6U2YzSFbFyu8EWyWrvjOUJwVulk/+l639hV6iSI/QSaqPIRjpKHM49qorE2WwOEtpQj4OLZVHsdrsZ5vDMhW0x5sbin+uLy5u7y7/OZvNZxU2dW/cucoP2pPLB01849+vOu6Nj/eY/gZEFTM9c+BqNTbLPDXajfJaA3mTBjDqTgymvJFQuctrQdWuM9F+o+z4tP7YU9oOwnjBkGqVfvYSKUCeOLjv4Qfs0V6XIJ6k+Yd1mor+24/5U1p8v75NW2oTrZ2FOnjGF0O5Pa78jP/GhuuQINSscevlO8YMZPKhAmiwbrOOUuw1o+SHn9au+7/8HvYS9Yw==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve runtime mode"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/settings/mode"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the analytics data plane runtime mode (standalone/client/server).
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"mode":{"type":"string","example":"standalone"}}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

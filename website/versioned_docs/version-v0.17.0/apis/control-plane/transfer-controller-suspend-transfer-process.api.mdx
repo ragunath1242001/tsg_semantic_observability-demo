@@ -1,0 +1,72 @@
+---
+id: transfer-controller-suspend-transfer-process
+title: "Suspend transfer process"
+description: "Suspend transfer process"
+sidebar_label: "Suspend transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVktvGzcQ/isET22wllz30HZPdR03MNAkQuykB0EQRuRIy5hLMpxZK4Kw/70gd1fvGj30ZJnz/mbmm91KHzACG+8etCzlUwRHS4x33nH01mKcU0MBnR4kk+gVEslCBohQI2MkWU630kGNspRGy0JG/NaYiFqWHBsspHGylAG4koXUSCqakEIeBBQPb2UhSVVYgyy3kjcheSOOxq1k2846p0j8h9ebpHEaQ3nH6DiJIARrVK5q/JVSnO25a7/4iopTHTFhwAYpSX/vxKcZFBK/Qx0sHuT8mJEh4917JIIVyjZ7ezEa48To170MilfB6Ktffv0tGSvvqKn/g/GgmI1/uvk5GUeEvtad3lQ+oaqcUWCFIWpQzorBK8QIG1lIw1jTJcjbwz5Oe2COCzzOOPk2/DpEj10b2t49Be+oA/7m+jr9+Zfx6KcQtaBGpQFcNtZu5P/WdmLg5iIMB7Dv1WSfRS4k6RCqJhre5FVYIESMspzO0twyrCi3oq+FElDHZXYwacFDuWG3ZTVy5dNqBk857bRFpRxDMONBncZbo9sx7cBOq4TxpVvN2T67jH5XsIeGq5tDYLqHQi6tX2eVAERrH3WHow+doeqoIVhwOAdd592+8FgcP2pgyL9OtfeCDskBvL53Sb9/GmR/+lgDy1J+mcjdOFfM4YxdvmA0SwMLi2ISkdBxng7hENMosRfK13WTFoRRLJDXiE7w2gvjiMEpJOGXgisUfc4ipzrKc5Fm7NOelO73Y9KTyCtMcUIU52xwQgbnG79f+Atb3ibOXfrc3mElH9+JntbFJON9xsWVIfExoLudPAgKqMyyXydBlV9TxgGdDt443gFz5HMk3nviQbTXhYgiogXuUE/Ct8BAAVRqjWevvC0E0BAXtVhsst69siYQir99fDZuJd5F34S9NY3ER64wngSjJgQf2bwcZsFe1PCchBGz7zR7QoETCxSg9T45BQzWrwoBTp+aAYvPD8I4xggqoUPZBSeVYEHhSIj5/M0Hz/hmPi/FEawal8aZjKkh4TxnR64PvUChTUTFdiOscc+oxdpwJUCQcSt7AvZuSEdCFjJte9fHfvVAJVZsC2mNQkd5MPsjfRtAVShuRteykE20/f5QOR6v1+sRZPHIx9W4t6XxXw939x8e769uRtejimubNyBxUg3uwPMrTHY0bDvaYfzO42DBuHTDci7bnuSmEoJJG74jzkKW+eocMN2skFVixnIqt9sFEH6Otm3T87cG46bjvxeImQUyO2tD6beW5RIs4Vliu4sif/jU378fxfF3ysXch7vq0ll6Adtg14tn3HTfRW1aywpB59uw7QV3Xbirp+68DoZnx6wtBotbpTDwq7qzg8Mx+fj4lLiz/26qvU42EdaJQmDdJelz+Zng89tWWnCrJlFVKTufqeHpRhw074SYc1UXYdhuO40n/4yubXeocPo/AdO2/wDeQ7Hv
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Suspend transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/{id}/suspension"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Suspend transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"TransferSuspensionMessage"},"providerPid":{"type":"string","example":"provider-pid-789"},"consumerPid":{"type":"string","example":"consumer-pid-123"},"reason":{"example":["Technical issue"],"type":"array","items":{"type":"string"}}},"required":["@type","providerPid","consumerPid"],"title":"TransferSuspensionMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Transfer suspended successfully","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"success"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

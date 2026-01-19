@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-get-state
+title: "Get Data Plane state"
+description: "Get the state of the data plane, consisting of the id, details and the dataset."
+sidebar_label: "Get Data Plane state"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1VttuIzcM/RVBz2OP4zjp1m/B5oIAbRo07r4EQUCPaI92NdKsxInjGvPvC2outtdOUhTtk8eSeEiR55DaSIUh87ok7aycyhskQTmKQEAo3CL+UUAgSgMWE5E5G3QgbZfdrlaJUEigTRBgVW8RkIYyka5ED4x+q+RUXgLBPSP9DhaWWKClz86Sd8agf14iPbBjmcgSPBRI6IOcPj4l0mMonQ0Y5HQjx6MR/+yHLhOZOUtoifegLI3OouP0a+ADGxmyHAvgL1qXKKfSzb9iRuzNc5ikG3it0JJeaPQ7ZwN5bZcykfgKRWl4aTJRJ4tTdT5YnJ+pwQR+yQafJmo+WPw6nsOn8fnp6Axlncg2Ox875rTFPM/isfd8t1/xYJ1I0mQ+sLjswMVMExq2QqtKpy3de1zo1/fNUyh1+nKS9jEyQAbGzCH7dqGUxxDeR8iJymmaGpeByV2gtLNmpKLnw7/DauybmAiMWz6sbZZ7Z/Xf0BDkCJytCjl9lGUVcq5FZYx82vUSN+pEevdGclsAFkVVoG8K+qJV/Jw7yvfx+nN18o9JpsrByfh0ciZrDgS/V9qjYqf7ZOkocFDUwyIdS/abaWsvvxfvU8+3rZ4vG45fkjsIdMdyq4VjGFH7DQJjTEanhyq/dn6ulUL738ndQvGBdP7E4Cqf4Z2ja1dZxfXjDll9wNLJaCLuHIneKHNq15WtinnMSm8yGU1YDBgCs/lI6FvwWY6C04yBUAnfhiiUwyCsI4GvOtAwytx79wHLdqL8qXoxO/112yvsVO+KwbuicV4wq7ymtZw+bqSDivJxKxHu8pGwz9se8lQzFCy5y0ciiMgEsR0P7KtAyh2PjyXG8gHlXUfaUjkN7egI6F/6udGF88BkaOrdBbVNbrOQyIVxq3ikhBBWzquGRq5sDMGCWZPOQh//M6hCMy3f3EqObW3vf9Ryp8XGlM4RfNMmIqXZql3q9q6dL4DkVH65507QXIt7ZFTcrn6+oNcLDXOD4t5jQEtRNMIiKlSCnMhcUVSWxYRijrRCtIJWTmgbCGyGoRv8bUmbl8EwEkfbhYuJbckxe7gRF90Fxba+B2HNch3EHyXai/tbEUrM9KKVswi5W4XosOtsfQTHoPnNweXfexRAxl2iTqTRGdqAW9nLixKyHMV4OJKJrLxpExemabparYYQt4fOL9PWNqS/3X6+unu4GoyHo2FOhYlXL12gAuwOMr+ldijd0XPv4pttE/sf3l4tEQhfKS0NaMvdIN5x04roUUKp9yZCq/WocZ6sfGazmUPAv7ypa17+XqFfN/J6AR/JxP/qROYIPPtY+t9wzdnNMiwZ8wVMFen+c6Oud/V9czVjxVQc2qE8+27Sb4Fd72K/IULxrsaSNtSoc1knb4B3LeE58xgHGpjQ2y49WHqOdvVTXdc/AI/17ls=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get Data Plane state"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/state"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get the state of the data plane, consisting of the id, details and the dataset.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"identifier":{"type":"string","example":"44d1f3d6-f65d-4a7c-84db-f92ba826305e"},"details":{"type":"object","properties":{"dataplaneType":{"type":"string","example":"exampleType"},"title":{"type":"string","example":"Dataplane Titel"},"endpointPrefix":{"type":"string","example":"/api/v1/dataplane"},"callbackAddress":{"type":"string","example":"http://localhost/callback"},"managementAddress":{"type":"string","example":"http://localhost/manage"},"catalogSynchronization":{"type":"string","enum":["push","pull"],"example":"push"},"role":{"type":"string","enum":["consumer","provider","both"],"example":"consumer"},"identifier":{"type":"string","example":"dp-12345"}},"required":["dataplaneType","title","endpointPrefix","callbackAddress","managementAddress","catalogSynchronization","role","identifier"],"title":"DataPlaneDetailsDto"}},"required":["identifier","details"],"title":"DataPlaneStateDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

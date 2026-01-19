@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-refresh-registry
+title: "Refresh registry"
+description: "Force refresh the registry by triggering a re-crawl of all participant addresses and catalogs on the Control Plane."
+sidebar_label: "Refresh registry"
+hide_title: true
+hide_table_of_contents: true
+api: eJzFVMFu2zgQ/RVizqptZH3SrWiTboDd1Gi8vRiGMabGFrsSyQxHcQxD/74YSZbdJO11fTFFcoZvZt57JygoWXZRXPCQw11gS4Zpx5RKI6Wu9y4JH832aITdfk/s/N6gYfpgGQ+VCTuDVWUisjjrInoxWBRMKVEy6AtjUbAK+2SC71J+Cl44VGZRoacJZBAiMSqC+wJy+IyC3dHf6HFPNXkZIirizYDt2wALMojIWJMQJ8hX6wyYUgw+UYL8BDezmf79XOU5eCzUeScOhQqTGmsppV1TVUdoM5jP/ngbfxd464qCPGRggxfyopcwxsrZrpDpj6Q3T5BsSTXqSo6RIIew/UFWFDZr2eJ6nB5rurqVRLsMGdAL1rGiDnQKDVt6CHIXGl8ouiQoTfp93Hw2Nw9BzBhkQ3H9lG/qLfF1yHw2bzOoKSXc03vQL8mXHUOeGkraPB4gmiJQMj6IoReXZKKvEnPg3yO9QtnqGJ8ax1RAvuq7M5Y7lLDOQJx0kbea/LMEaPWXQSLbsJMj5KsTBGykvNE0tqdRVHJtChTsVrBuNRXulT8d+3pmmgv/9K2apAzKzxhSNz+UEnKYYnTTerw5PetlOnBLYRM/j+w8Q3tUYvSzPwO8NLrfyGBXhUN3JWJKh8BFT6kQ+8BSJI5lbLConbLzvd3s1e6l+Nf3Lyd9K7eETDxSWQOGrfPZXeAaBXL4voDsXIImheyVbr4Tu53DbUVmwZTISycW44kKKowEY0NdN15FRGZLciDyRg7BOJ8EvaWkbqMeMozSxN5DFKnzu9A1cSDF8vGL+XO5XJjLSN8gWpYuma+R/MfFvUmRrNsNCjapDIfUvUW+iMF5GR9/lVUtTAfcpxw8Aa16QptB5Sz5RBeRw8eItiRzM5lBBg1XQ7tSPp0eDocJdseTwPvpEJumf91/un14vP1wM5lNSqmrrmAlYo3+KvO3wc/44o4/1Xu62NX/ZPUDPYReZBordF69oevBaVDUCjA6yOCiKVAzGAs662qdQalKzFdwOm0x0T9cta1uPzXEx15tz8gd3/SrzaAkLJTMqxP8S0cdhbUU9YFnrBoF9sbD22vpL74+LiEDled7ch2dZjxCf7xK/o4yza/Ulw0IO7VDm/0i5dkYNpapIC8OqzTG7hm9bLq4dt227X+138X0
+sidebar_class_name: "post api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Refresh registry"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/registry/refresh"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Force refresh the registry by triggering a re-crawl of all participant addresses and catalogs on the Control Plane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Registry refresh initiated successfully"},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

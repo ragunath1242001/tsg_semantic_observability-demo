@@ -1,0 +1,72 @@
+---
+id: metadata-controller-get-open-id-configuration
+title: "Open ID Configuration"
+description: "Find all the open ID metadata for the OAuth server"
+sidebar_label: "Open ID Configuration"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVlFv4zYM/isCn90kCHB78FvXdAffbevQtLiHIDBUmbXV2JJOopPLAv/3QbLb2cm1i7MnBxH5kZ9Ikd8BMnTCSkNSK4jhN6kyxsuSUYFMG1QsWbAKiWecOHvWNhzcXddUMId2ixYi0AYt9wBJBjH80VnfaEVWlyXaNEe6M6iSxY1WzzKvW2uIwHDLKyS0DuLVOgKLzmjl0EF8gPls5j/DBCECoRWhIn/GjSmlCGjTF+cNDuBEgRX3v2hvEGLQTy8oyEezPlOSLbx0rkbbs3NkpcohOoqYBDumn1vqgQcTAyJNBLymQlv5d/gjRZUZLdscP0a/7vuxN78mAtIbHIP04O0HCLVDK9WzHgHy2LkMcKQvpDMoRnJL+n4DxAy3UmB66aUtgjvj796dxa0WY1Hv35wGWC+7jUtrK/8b4Mu3r0v2eJ+0GbSdnHoXl7raGG0Js9OOXr4esVcfFnwgeg3HreV7iEASVu40jaYfrtLZ6HDBZ1Q4maVtezqZK6nylJd5uuVlfW7sZMECAOsAGC9zbSUV1bhEnNBnX29rOwo+t1zRmBIGhwvq5+owpMaE6lwuCCZKLqszo7S2o+CHgys88rRCKnR2ZkwaTLLwzFFRN+dZBwUR4A9emRIhXoEoJSpKHQqLlBrt2nkvt5ww3eA+fdkRrP8vi0u7/bTJ21X6Ic+dpIIdUxiQvl/OP/0CEdyG7wh2YWB8r6X1aa9eN+G7S+xkF/WG4geT7twx8X73e0qSPFn4mX5oApNPs/lPZEIoIc+9roBvWJZXG6V3vcG+jqBtJIghx9AtnAqIYcqNnE52by5Tr4JkdiWOpEurfjrd4ldmuOgu24flZ7Zc3rFfrcxyPF3Vg2N2/VfCFlrUFSpqaw8RePCB5OHC77AmglIKVA59PMUrH+7acFEgm09mEEFtS4ihIDIunk53u92Eh+OJtvm083XT35Ob2z+Xt1fzyWxSUFWGC/PvpuKqh3zXScBj4Tbgc/hXkl0mILv+JPxBU1NyGRRV4HHoyrICbnyz9QrTCs/T0qwjKPz7j1dwODxxh4+2bBr/9/ca7b4t2JZbyZ/CM1o3ERTIM68FVwfY4N7fqBBofFeEbvVv6lhpNv0O+nz7AE3zD+M4DCw=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Open ID Configuration"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/.well-known/openid-configuration"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Find all the open ID metadata for the OAuth server
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"issuer":{"type":"string","description":"Issuer of the OpenID configuration"},"authorization_endpoint":{"type":"string","description":"Authorization endpoint"},"token_endpoint":{"type":"string","description":"Token endpoint"},"userinfo_endpoint":{"type":"string","description":"Userinfo endpoint"},"introspection_endpoint":{"type":"string","description":"Introspection endpoint"},"device_authorization_endpoint":{"type":"string","description":"Device authorization endpoint"},"revocation_endpoint":{"type":"string","description":"Revocation endpoint"},"jwks_uri":{"type":"string","description":"JWKS URI"},"response_types_supported":{"description":"Supported response types","type":"array","items":{"type":"string"}},"response_modes_supported":{"description":"Supported response modes","type":"array","items":{"type":"string"}},"id_token_signing_alg_values_supported":{"description":"Supported ID token signing algorithms","type":"array","items":{"type":"string"}},"scopes_supported":{"description":"Supported scopes","type":"array","items":{"type":"string"}},"grant_types_supported":{"description":"Supported grant types","type":"array","items":{"type":"string"}},"subject_types_supported":{"description":"Supported subject types","type":"array","items":{"type":"string"}},"claims_supported":{"description":"Supported claims","type":"array","items":{"type":"string"}},"token_endpoint_auth_methods_supported":{"description":"Supported token endpoint authentication methods","example":["client_secret_post","private_key_jwt"],"type":"array","items":{"type":"string"}},"token_endpoint_auth_signing_alg_values_supported":{"description":"Supported signing algorithms for token endpoint authentication with private_key_jwt","example":["RS256","ES256"],"type":"array","items":{"type":"string"}}},"required":["issuer","authorization_endpoint","token_endpoint","jwks_uri","response_types_supported","id_token_signing_alg_values_supported","subject_types_supported"],"title":"OpenIDConfiguration"}}}},"502":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

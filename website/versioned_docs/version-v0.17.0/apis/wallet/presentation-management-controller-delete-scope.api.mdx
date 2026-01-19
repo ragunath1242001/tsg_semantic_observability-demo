@@ -1,0 +1,72 @@
+---
+id: presentation-management-controller-delete-scope
+title: "Delete scope"
+description: "Delete an existing scope definition from the wallet"
+sidebar_label: "Delete scope"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVk1vGzcQ/SuDObXBRjJSnxZFgSB2CgOpE9QuenANYUSOtIy55JqctSwI+98DclfSSo50qA+yNJ9vhsN53KDmqIJpxHiHJV6xZWEgB/xqohi3hKh8w6B5YZxJVrAIvgapGFZkLQsW6BsOlHQ3Gkv8Fjiykyz4ixwtuWYnn7yT4K3lMNM5yV2KiwU2FKhm4RCxfHgsMHBsvIscsdzg5cVv6d8hyM8+zI3W7LBA5Z2wk2RETWONymmn32Oy3GBUFdeUvsm6YSzRz7+zSpibkFCL6fM4qnlkFSUYt8QC+ZXqxibR3xx9GxTfevnsW6exKzAKSRvP+11eXMKtF9g5Ka/HqVxbzzmMXS4vLrsCa46Rlvwz6Pvg9xVD4OeWo7CGMEAE7TmC89If4iRl5RB8OI90hLJLx/DcmsAay4e+O7tyhxIeCxQj2fM6Bb8Sj136KzCyaoORNZYPG/TUSvUhhennZfZieDVrRkMS8bFL0WiZRgD3MwPjUUoJa5bKpxnrRyhPj1RY4pQaM613jtNx+Gme4DjdGN2lKji87IZti/QuzUk/Clu8+773ggIX1q+ySUMxrnzQ/YSl4OnbuDxtEspjSbGV9EhnT7yOe7OxcGfZxmOznaQ4iO9XbqYCa3ZiyMaj7MfaQ1+y9ozvsfa4ipOZT+iP/U9mP6Hf+ZsYW/6561tVcWb8yjO6dBNIe2fXqfMBy6Pfw8gbt/B5ZoYrcX/3J/y73Y+H6ytd2r0aTASCu7ubYZ2CVCSgyEGuAchpiOIDwwsHszA0twyjwrKBCkzCcIAcxMOcoY2sYWWkMg40CUFsSHGc/D4PMP2j//zPAQDc71Z6xmRq1kACdWvFvBfDATQ31q/TBYtFjgneMfziA9Q+8K8HFZCSCBRBQhsFyKnKB1j4ADSCkcEbp81LS3Zwj9mKSVXgF5lnGgpilGnISQTjsmwfYwJfk8hEaGjJWanYSdgF7PHkbsaDzq2MtalFKpnp7HlFQj2y4XTISuXbZQUmdyUt1e1m7ONKxYGB7IrWMVnwKymx69yZnDOkMsZpjRt60MN/exCz2btbL/xuNivhPhX2tWH38dvNmIQHLCaxn05Y8mFrEzhnt8Y9DecOBNG4pd2VZFwUcqlxWGBahf1YDmRKKpFpV6A1il3kPTvix4ZUxfBhcoEFtsFiiZVIE8vpdLVaTSirJz4sp4NvnH65+XR9e3f9/sPkYlJJbTO1ND5KTW4UeXh2xOFJcHBfNnuO/5/Pk2GPC7/KtLFkXCLEjH8z8McDUmOwwD2D5BfCiHyK7aIvsDQ6cVHloyTPzWZOkf8JtuuS+LnlsO7J5YVCvq7pV1dgxaTTAnnY4BOvUz+V4iZleiHbJoRvXjDdmPOurr9c319jgYmPfsZPO6bdqcitR+GP6Aje8g4ccQyc4RA4wxFwlgHg7H6HUyscTi5pOFzJxdDffpy64kQ7tix+RBO97zKQk1n26x67rvsBhOQBqg==
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete scope"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/presentation/scopes/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete an existing scope definition from the wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

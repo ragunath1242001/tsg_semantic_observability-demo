@@ -1,0 +1,72 @@
+---
+id: users-controller-reset-user-2-fa
+title: "Reset 2FA for a user"
+description: "Admin endpoint to reset two-factor authentication for a user. Deletes all TOTP credentials, WebAuthn credentials, and recovery codes."
+sidebar_label: "Reset 2FA for a user"
+hide_title: true
+hide_table_of_contents: true
+api: eJzNU8tu2zAQ/BViTy3ASIaPvLl5FAGKJogd9GAYBU2uI6IUqZCruIbAfy9WUpE4LXruScIudzgzOxzAYjbJdeRiAAUr27ogMNguukCCokiYkQQd48VBG4pJ6J4aDOSM5hlx4JLoM6ZKXKFHwiy092Jzt7kXJqHls9pnKb7hftVTE86rOliR0MQXTCdhosVcgYTYYRrxby0oeMyY8mUMlKL3mL6PnLi4vFmBhE4n3SJhyqC2AwTdIihwFiQkfO5dQguKUo8SHIvsNDUg3ylnODHOZNNgq0ENQKeOkULf7jFBKTsGzF0MGTP3l4sFf86BljcrkXtjMOdD7/1pdpB9ogYnp6AUCaSfmPCkDnYSWqQmst4uZhp1UQMKat25msdyPThb6hHvYnnQzBXTy6R7x+IOcaTtyDPvzfqzWK/vxKfk7BP+ofi8LVb3t+Iqmr7FQNNqQQKDT6dBgomBtCFQQ5HgncGQke+bDV912jQoltUCJPTJg4KGqMuqro/HY6XHdhXTUz3P5vrL7eX11/X1xbJaVA21fvSF1bc6vEF+GB1kY1/T9l7OMNLDQP9Riuf8EP6kuvPaBSizM8O83C3ozrFdYwYkqDm1vze8k9BwGNQWhmGvMz4mXwqXn3tMp2nvLzo5veeVbwewLvO/BXXQPuM/XPrwMD+Oj+I1/H+lPBd1OHEktO9xCsQPPE0PrezKm/je3603UMovLEJ8BQ==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Reset 2FA for a user"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/users/{id}/reset-2fa"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Admin endpoint to reset two-factor authentication for a user. Deletes all TOTP credentials, WebAuthn credentials, and recovery codes.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"User id","schema":{"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"2FA successfully reset for the user."}}}
+>
+  
+</StatusCodes>
+
+
+      

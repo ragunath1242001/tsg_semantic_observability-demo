@@ -1,0 +1,72 @@
+---
+id: totp-controller-reset-2-fa
+title: "Reset 2FA for current user"
+description: "Reset two-factor authentication (requires password confirmation)"
+sidebar_label: "Reset 2FA for current user"
+hide_title: true
+hide_table_of_contents: true
+api: eJytU0tvm0AQ/itoTq20MZaP3Jw0qSJVTRQ7J8uqxjA2m8LuZnYIsRD/vRqgtZ1cy4XHzM58LzooKOZsg1jvIIMniiSJtP5qj7l4TrCRkpzYHLUj+cL02limmASMsfVcJLl3e8v1UP8KBnwgHl7uC8hg7SXceCfsq4r4F+v8xd0SDARkrEmII2SbrQGdTFGufXGErINpUQGZcEMGcu+EnGgJQ6gmQOlLVNwdxLykGvVJjoEgA797oVx0DysisRS1+hf2WWcUtu4A5oMUz5H4xHLv+YIp9L05w7g5Dd72/ViLwbs4bl3M53q7XDCMEDwof1g/rB9ha6AmKb0KF3wc0KOUkEGKwabqRSpeQjrICAYi8ds/AVWKp5OIt+9Yh4ouSf8l2xuwbu8HFaxoF6xX35PV6iG5Zlsc6JMcl+Vk+XiffPN5U5OTMRpgQLFM3EbDMFfDegOVzcnFAYzDWtctA+YlJYvZHAw0XEEGpUiIWZq2bTvDoTzzfEinszH9cX9z+3N1e7WYzWel1NUgoOpUozubPGZ4cbccTWuYyUnSROKPpLpTqv5H8qc8Cb1LGiq0TmUeqHWTjxvAYMGAztYDXgIMUSFR80v1PNtA1+0w0jNXfa+fXxvi4+jxG7LFnfq12fYGSsKCGLJNB7/pCBncjHyu1gpF26tGIX36Y/rzqD0+rNZgYDf9ebUv9Axjq9iwHe30g2ZDmodvHVToDg0etHecqdcfyUV9/Q==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Reset 2FA for current user"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/auth/totp/reset"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Reset two-factor authentication (requires password confirmation)
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"password":{"type":"string","description":"User password for confirmation"}},"required":["password"]}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

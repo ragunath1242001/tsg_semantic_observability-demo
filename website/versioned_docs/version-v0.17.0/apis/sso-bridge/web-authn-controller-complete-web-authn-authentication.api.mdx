@@ -1,0 +1,72 @@
+---
+id: web-authn-controller-complete-web-authn-authentication
+title: "Complete WebAuthn Authentication"
+description: "Complete WebAuthn authentication for 2FA"
+sidebar_label: "Complete WebAuthn Authentication"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVU8Fu2zAM/RWDpw1Q7SBH39KuGwoMa7Fk2CEIBsZmbXW2pEp00sDwvw+UnTZptsN8sC2Renp8j+yhpFB47VhbAznc2NY1xJT8pO2i49ok2HFNhnWBkpI8Wp/MPy9AgXXk495dCTkc82+sYW+bhvyvYsI6hhZnSKDAoceWmHyAfL1R4Om5o8DXtjxA3sel9lRCzr4jBYU1TIYlhM41E072FIR5D6GoqUX544MjyMFun6hguccLV9YURtjgrAn0t8xzMf6lwREhefS2TQzudIVsfVp4KiUNm5BWxB8+wjCokzLWb3dvhmGMjetIbD6byeecQ4RgrESiV0KwUdAS11aUdzbEIpFryCFDpzPhm+1pK1+TnbCn7GgKKAjkd6/ai4rf3/S/fUHJe6eXcNHm0UbpNEscVssvyXJ5n1x7XVZ0oeF5OFk83CWfbNG1ZHgUExQIi6na0WUsxOVBQaMLmqwy2Mp1C4dFTck8nYGCzjeQQ83sQp5l+/0+xRhOra+y6WzIvt7d3H5b3l7N01lac9tESUW1Fs0J8mXrXzTsWWn9W0P+z9hMLcf0wplrUBsYpkL6ycM1oNOgQCBAwdHHaefoZJRq8nKjoJYuyNfQ91sM9MM3wyDbzx35w+jwDr3GrXi23gwKasKSPOTrHn7TIdYQq7laCUFJbzohejFqw2nzPdwvV6BgO41sa0s543EPKr6jpTYqNg6f7PXQoKk6rCR3xJTnD7r/lOc=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Complete WebAuthn Authentication"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/auth/webauthn/authenticate/complete"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Complete WebAuthn authentication for 2FA
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"response":{"type":"object","description":"WebAuthn authentication response from navigator.credentials.get()"}},"required":["response"]}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

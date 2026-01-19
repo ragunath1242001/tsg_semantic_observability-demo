@@ -1,0 +1,72 @@
+---
+id: totp-controller-disable-2-fa
+title: "Disable 2FA for current user"
+description: "Disable two-factor authentication (requires password confirmation)"
+sidebar_label: "Disable 2FA for current user"
+hide_title: true
+hide_table_of_contents: true
+api: eJytU81u2zAMfhWDpw1Q4yBH39I2HQoUa7GkpyAYFJuJ1cmSStFNA8PvPlB2l6S9zgdbFiny+6E6qDCWZAIb76CAWxP11mLGB3+10yV7ynTLNTo2pZac7Bvha2sIYxZ0jAdPVVZ6tzPUpPh3UOADUvq5r6CAledw4x2TtxbpdzV0mN3NQUHQpBtkpAjFeqNAamPka18doehgbFVBwdSigtI7RscS0iHYEVL+EgV7B7GssdGy4mNAKMBvX7Bk6UOCiQ1GiX4AP8uMTMbtQX2S4zkinXjuPF1whb5XZxjXp8Kbvh9iMXgXh66z6VQ+lw1SCdZ74Q+rx9UTbBQ0yLUX6Sq0yJh04hoKyHUwufiRs+eQj1KCgoj09k9EkePXScjFu26CxUviH4R7BcbtfFLCsGTBavkjWy4fs2sy1R6/SHIZzuZP99mtL9sGHQ8DAgoEy8hvME2XYlqvwJoSXUxgnG6k3TzossZsNpmCgpYsFFAzh1jk+eFwmOgUnnja5+PZmD/c3yx+LhdXs8l0UnNjk4jBR260O6v8Mcuzu/lgXUuEjrM2In2m1Z1m6//cgXGuGN85D1YbJ1Inet3o5hp0MKBAassBz0FQjZ5uFNQ+sqR13VZHfCbb97L92iIdB6ffNJmUXaw3vYIadYUExbqDP3iEAm4GTlcrASPpthVQX+5Ofz50t4uHxWoBCrbjLWx8JadIH0Cld7LVJ+XSZKe9Dqx2+1bvJXeoKs9f4daDPQ==
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Disable 2FA for current user"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/auth/totp/disable"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Disable two-factor authentication (requires password confirmation)
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"password":{"type":"string","description":"User password for confirmation"}},"required":["password"]}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,33 @@
+---
+id: contractnegotiationterminationmessageschema
+title: "ContractNegotiationTerminationMessageSchema"
+description: ""
+sidebar_label: "ContractNegotiationTerminationMessageSchema"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@type":"ContractNegotiationTerminationMessage","consumerPid":"urn:example:consumerPid","providerPid":"urn:example:providerPid","code":"USER_CANCELLED","reason":[{"language":"en","text":"User cancelled negotiation."},{"language":"nl","text":"Gebruiker heeft de onderhandeling geannuleerd."}]}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ContractNegotiationTerminationMessageSchema"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@type":{"type":"string","example":"ContractNegotiationTerminationMessage"},"consumerPid":{"type":"string","example":"urn:example:consumerPid"},"providerPid":{"type":"string","example":"urn:example:providerPid"},"code":{"type":"string","example":"USER_CANCELLED"},"reason":{"example":[{"language":"en","text":"User cancelled negotiation."},{"language":"nl","text":"Gebruiker heeft de onderhandeling geannuleerd."}],"type":"array","items":{"type":"object","properties":{"@value":{"type":"string","example":"This is a sentence."},"@language":{"type":"string","example":"en"}},"required":["@value","@language"],"title":"MultilanguageSchema"}}},"required":["@type","consumerPid","providerPid","reason"],"title":"ContractNegotiationTerminationMessageSchema"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

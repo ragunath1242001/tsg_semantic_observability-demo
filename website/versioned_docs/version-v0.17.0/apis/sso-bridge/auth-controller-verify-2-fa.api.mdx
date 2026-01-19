@@ -1,0 +1,72 @@
+---
+id: auth-controller-verify-2-fa
+title: "Verify 2FA Token"
+description: "Verify two-factor authentication token for login"
+sidebar_label: "Verify 2FA Token"
+hide_title: true
+hide_table_of_contents: true
+api: eJydU0tv2zAM/isGz2qceY+Db2nXDgGGtViyXYJgYGzGVmtLqkQ3DQz/94Gy06bdbT7YsvjQ96B6KCkUXjvW1kAOv8nr/THhg73YY8HWJ9hxTYZ1gZKSsH0gk+ytTxpbaQMKrCMfY8sSclh0XF9Zw942Dfk/T7FfdrMABQ49tsTkA+SbrQJPjx0FvrTlEfI+/mpPJeTsO1JQWMNkWELoXDMBSO+DAO0hFDW1KCs+OoIc7O6eCpZzvEBiTSFGBbAs6Blb10jmh+zjp89fQJ0qA3ttKhgGdQZiM1Vuh2EMBGdNGHtm87l83koX6xkrYRdlgK2Clri2oouzIWJDriGHFJ1ORdk022M6igQKAvmnF3mE6M9Xia5P8F8onXgMCrTZ2xjRHBmuV9+S1eo2ufS6rAjUO6hvw8nibpl8tUXXkuHRZVAgQCZioxdYiBeDgkYXZEJEYrCV4xYOi5qSbDYHBZ1vIIea2YU8TQ+HwwxjeGZ9lU61If2+vLr+sbq+yGbzWc1tE9UTkVo0Z52necxuFsk6sn5HpX8dk/+Z3WkAmJ45dQ1qI2JGAv1k1QbQaVAgrUBBtsdRGzFsq6AWW/MN9P0OA/3yzTDI9mNH/jja+IRe405c2WwHBTVhSR7yTQ8PdIQcrkb8F2uBIulNJ5D+GfnhfJrubldrULCbrk5rS6nxeAAV39E0GzWKAxv3emjQVB1Wkjv2lOcvgfVb5g==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Verify 2FA Token"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/auth/2fa/verify"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Verify two-factor authentication token for login
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"token":{"example":"123456","type":"string"}},"required":["token"]}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

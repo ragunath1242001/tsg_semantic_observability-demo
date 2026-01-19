@@ -1,0 +1,72 @@
+---
+id: clients-controller-create-user
+title: "Create a new client"
+description: "Create a new client"
+sidebar_label: "Create a new client"
+hide_title: true
+hide_table_of_contents: true
+api: eJztl0lT4zoQx7+Kq8/OSgjgW1YmEJgsMAFSVEqWlViJLTmSnJCk8t1fSXaYbLNQ9Q7v8DiAsbvVrVb3729vgEdEIEU5a3ngQC2ghClZ40wJHgREjLAgSJFnSQTYECGBQqKIkOAM320QZB4TqarcW4GzMf9SQTxwlIiJDR6RWNBIrw4O1JFC1pgLS/nEYmRpYRMMbMCcKX3lbABFUUCxSSg3ldpvAxL7JET6Sq0iAg5wd0qwdoyETl9RIvVT6u3ZsDh0Tc7kA4VRQMApbG1gKCR7RlIJyib7RtBIrqykErC1QRIsiHr8o2ff2KX+2vFg+7/zrFgyCZpUxIol8UylPBJyJlVyQFYUi4hLIrN68cS05f1+5cQqQ71MoXjx0y1J9a9ck91nkIvh+ECTElmJhclXrsKQKEGxhWLlE6bSo8xavbQ1rKVPmKX4jLAG8yJOmarEyn8gyueeRWVaglGy6CjiUpnt/sLjb7awv9bJHioHeVphkoc5AKRMp5rIFklDZ606GaM4UNJS/GyyNhAWh+AMz4ePBF0gRUYzshpNl/oO44zA+9aG6XJ2rsk/97OBmVqBA71+RbuBA/nFxxWacOLe4m4/jju0fffyFqnHG8Y80Q3dl0Yki4hWmu7Af7i6bvuDjxJ23XGlon48XZfXy7jQu79CnWbzI/brvUK7rPocj6p3jVqHuIP73su0+lajzR8ldsFnbOo/SMXKJfU2Kg4yl3fy9rX0DV+ym1X1pSKWwc1FMFdXo97j5bJcG+f9UnfVvVxkypevt9NuLz9q1gfF7mI9f70oX3e7DxRXFOrP1/L6/u5twl7dG3zl5dcTr/L2bR2X5w/dRa996aOpYAV2U6i53yO31a/nr+eP7ZXwZirjNp8GfqVVWjx0m355QN7i/PihFDS94iPuLcXFS2cmW4/fUDdzO/qoMtqau8t8WxamzVIpg2WzFovMrDF5vkZLFN2t79m8fj9Z6prr1uhWqmDDTGNlNw0zssoUTmYbOrEbUGzNyMqizLob3OtpCFEyFOhfmIqjrjEjIXiQcO+zQYaAvJAysCHWvH63d72EhEArsIEqEsrTmdlubZgIxNTJcrHyuaBrk+4Ic4/ADiFaGDy9FxTIr0USxKOCYPUs6HE8X6lIOrlceiuLeZjDKAhchGdfCbK197RomFD/AOSHB7hH011ZPwtylK9OgipDlwR/dcV1QBNRRpzJ5EyK+YL+cxaYiaR6lowxJlKO4yBYZU1pFJpoZd3JsI52tIJxtdChfoYpC2HHGKR8cCCHIppLjGQuCWqqIBafAq4ltvdTxBs/UaO7vrATzGNVPBTFI+U7QexX1W1f3I4U7FjAzqrUL7XiPJFT7P7P1v8KW1OwndJsx6gvgekQN39izNYGysbcQCWd86f+rdXvf7eqgnqT0/Y+fGxVOi2rznEcEqaSxgYb9MAl1unbLsL67WtrQ0AxYdJMXDpqlQhhn1jFbF7vXATgfKa8XC6zyDzOcjHJpb4y127VGo/9RqaYzWd9FQaGJbq7Q8T2Vj4Pj/NvqYp8qFwUIMr0iZg0NilXhoAi+lluTciULe82+HqknCFsNi6S5FkE262+PY+JWCXEWSBBkWtwr4vtE+QRAc5wAzOiB7CWfAtknnQe2jyIDfKPvwu273vc63zvP4ENbvodEup+cEAg3W76t6k7N3s0dDb3NhAgNonRRNsma+qffwC0goCN
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Create a new client"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/clients/create"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Create a new client
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"description":"Data for the new client","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"number","example":1},"name":{"type":"string","example":"Example Client"},"secretName":{"type":"string","example":"SecretExample"},"description":{"type":"string","example":"A sample client used for demonstration purposes."},"clientId":{"type":"string","example":"client-id-123"},"clientSecret":{"type":"string","example":"client-secret-abc","description":"Client secret for symmetric authentication. Required when tokenEndpointAuthMethod is client_secret_post."},"tokenEndpointAuthMethod":{"type":"string","example":"client_secret_post","description":"Authentication method used at the token endpoint. Defaults to client_secret_post.","enum":["client_secret_post","private_key_jwt","none"]},"jwk":{"type":"object","example":{"kty":"RSA","n":"0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw","e":"AQAB","kid":"client-key-1"},"description":"Public key in JWK format for asymmetric authentication. Required when tokenEndpointAuthMethod is private_key_jwt."},"roles":{"example":["admin","user"],"type":"array","items":{"type":"string"}},"grants":{"example":["authorization_code","client_credentials"],"type":"array","items":{"type":"string"}},"redirectUris":{"example":["https://example.com/callback"],"type":"array","items":{"type":"string"}}},"required":["name","secretName","description","clientId","roles","grants","redirectUris"],"title":"ClientDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"description":"Client created successfully."}}}
+>
+  
+</StatusCodes>
+
+
+      
