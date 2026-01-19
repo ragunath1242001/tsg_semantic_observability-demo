@@ -14,6 +14,7 @@ The TNO Security Gateway allows users to participate in data spaces, bridging th
 - **[System Overview](./system-overview.md)** - High-level architecture and component interactions
 - **[Components](./components.md)** - Detailed breakdown of TSG components and their responsibilities  
 - **[Standards and Protocols](./standards-protocols.md)** - Technical specifications and protocol implementations
+- **[DCAT Metadata Structure](./dcat-structure.md)** - DCAT vocabulary structure for catalogs, datasets, and distributions
 - **[Design Decisions](./design-decisions.md)** - Key architectural choices and rationale
 
 ## Quick Navigation
