@@ -135,6 +135,341 @@ paths:
           description: ""
       summary: Logout
       tags: *a3
+  /api/auth/2fa/verify:
+    post:
+      description: Verify two-factor authentication token for login
+      operationId: AuthController_verify2FA
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  example: "123456"
+                  type: string
+              required:
+                - token
+      responses:
+        "200":
+          description: ""
+      summary: Verify 2FA Token
+      tags: *a3
+  /api/auth/totp/qr:
+    get:
+      description: Get QR code for setting up TOTP two-factor authentication
+      operationId: TotpController_get2FAQRCode
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Get TOTP Setup QR Code
+      tags: &a4
+        - TOTP
+  /api/auth/totp/secret:
+    get:
+      description: Get the raw secret for manual entry into authenticator apps
+      operationId: TotpController_get2FASecret
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Get TOTP Setup Secret
+      tags: *a4
+  /api/auth/totp/setup:
+    post:
+      description: Verify and complete TOTP two-factor authentication setup
+      operationId: TotpController_verify2FASetup
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  example: "123456"
+                  type: string
+              required:
+                - token
+      responses:
+        "200":
+          description: ""
+      summary: Verify TOTP Setup
+      tags: *a4
+  /api/auth/totp/register/initiate:
+    post:
+      description: Start the process of registering a new TOTP credential
+      operationId: TotpController_initiateTotpRegistration
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Initiate TOTP Registration
+      tags: *a4
+  /api/auth/totp/register/complete:
+    post:
+      description: Complete the registration of a new TOTP credential
+      operationId: TotpController_completeTotpRegistration
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  example: "123456"
+                  type: string
+                deviceName:
+                  example: My Phone
+                  type: string
+              required:
+                - token
+      responses:
+        "200":
+          description: ""
+      summary: Complete TOTP Registration
+      tags: *a4
+  /api/auth/totp/credentials:
+    get:
+      description: Get all registered TOTP credentials for the current user
+      operationId: TotpController_listTotpCredentials
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: List TOTP Credentials
+      tags: *a4
+  /api/auth/totp/credentials/{id}/delete:
+    post:
+      description: Remove a registered TOTP credential
+      operationId: TotpController_deleteTotpCredential
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Delete TOTP Credential
+      tags: *a4
+  /api/auth/totp/enable:
+    post:
+      description: Enable two-factor authentication for the current user profile
+      operationId: TotpController_enable2FA
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Enable 2FA for current user
+      tags: *a4
+  /api/auth/totp/disable:
+    delete:
+      description: Disable two-factor authentication (requires password confirmation)
+      operationId: TotpController_disable2FA
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: User password for confirmation
+              required:
+                - password
+      responses:
+        "200":
+          description: ""
+      summary: Disable 2FA for current user
+      tags: *a4
+  /api/auth/totp/reset:
+    post:
+      description: Reset two-factor authentication (requires password confirmation)
+      operationId: TotpController_reset2FA
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: User password for confirmation
+              required:
+                - password
+      responses:
+        "200":
+          description: ""
+      summary: Reset 2FA for current user
+      tags: *a4
+  /api/auth/totp/profile/qr:
+    get:
+      description: Get QR code for the current user's TOTP setup in profile settings
+      operationId: TotpController_get2FAQRCodeForProfile
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Get 2FA QR Code for Profile
+      tags: *a4
+  /api/auth/totp/profile/secret:
+    get:
+      description: Get the raw secret for the current user's TOTP setup in profile settings
+      operationId: TotpController_get2FASecretForProfile
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Get 2FA Secret for Profile
+      tags: *a4
+  /api/auth/totp/profile/verify:
+    post:
+      description: Verify and complete TOTP setup in profile settings
+      operationId: TotpController_verify2FASetupForProfile
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  example: "123456"
+                  type: string
+              required:
+                - token
+      responses:
+        "200":
+          description: ""
+      summary: Verify 2FA Setup for Profile
+      tags: *a4
+  /api/auth/webauthn/register/initiate:
+    post:
+      description: Start the process of registering a new WebAuthn credential (passkey)
+      operationId: WebAuthnController_initiateWebAuthnRegistration
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Initiate WebAuthn Registration
+      tags: &a5
+        - WebAuthn
+  /api/auth/webauthn/register/complete:
+    post:
+      description: Complete the registration of a new WebAuthn credential
+      operationId: WebAuthnController_completeWebAuthnRegistration
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                response:
+                  type: object
+                  description: WebAuthn registration response from navigator.credentials.create()
+                deviceName:
+                  example: My Phone
+                  type: string
+              required:
+                - response
+      responses:
+        "200":
+          description: ""
+      summary: Complete WebAuthn Registration
+      tags: *a5
+  /api/auth/webauthn/authenticate/initiate:
+    post:
+      description: Start WebAuthn authentication as a second factor
+      operationId: WebAuthnController_initiateWebAuthnAuthentication
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Initiate WebAuthn Authentication
+      tags: *a5
+  /api/auth/webauthn/authenticate/complete:
+    post:
+      description: Complete WebAuthn authentication for 2FA
+      operationId: WebAuthnController_completeWebAuthnAuthentication
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                response:
+                  type: object
+                  description: WebAuthn authentication response from navigator.credentials.get()
+              required:
+                - response
+      responses:
+        "200":
+          description: ""
+      summary: Complete WebAuthn Authentication
+      tags: *a5
+  /api/auth/webauthn/credentials:
+    get:
+      description: Get all registered WebAuthn credentials for the current user
+      operationId: WebAuthnController_listWebAuthnCredentials
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: List WebAuthn Credentials
+      tags: *a5
+  /api/auth/webauthn/credentials/{id}/delete:
+    post:
+      description: Remove a registered WebAuthn credential
+      operationId: WebAuthnController_deleteWebAuthnCredential
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Delete WebAuthn Credential
+      tags: *a5
+  /api/auth/recovery-codes/regenerate:
+    post:
+      description: Generate new recovery codes (requires authentication and 2FA enabled)
+      operationId: RecoveryCodeController_regenerateRecoveryCodes
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Regenerate Recovery Codes
+      tags: &a6
+        - Recovery Codes
+  /api/auth/recovery-codes/status:
+    get:
+      description: Get the count of remaining recovery codes
+      operationId: RecoveryCodeController_getRecoveryCodesStatus
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Get Recovery Codes Status
+      tags: *a6
+  /api/auth/recovery-codes/acknowledge:
+    post:
+      description: Confirm that recovery codes have been saved and complete login
+      operationId: RecoveryCodeController_acknowledgeRecoveryCodes
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      summary: Acknowledge Recovery Codes
+      tags: *a6
   /api/users:
     get:
       operationId: UsersController_getUsers
@@ -204,7 +539,7 @@ paths:
               schema:
                 type: string
       summary: Get all users
-      tags: &a4
+      tags: &a7
         - Users
   /api/users/create:
     post:
@@ -214,7 +549,7 @@ paths:
         "201":
           description: The user has been successfully created.
       summary: Create a new user
-      tags: *a4
+      tags: *a7
   /api/users/{id}:
     delete:
       operationId: UsersController_deleteUser
@@ -229,7 +564,7 @@ paths:
         "200":
           description: User successfully deleted.
       summary: Delete a user
-      tags: *a4
+      tags: *a7
   /api/users/update/{id}:
     patch:
       operationId: UsersController_updateUser
@@ -244,7 +579,43 @@ paths:
         "200":
           description: User successfully updated.
       summary: Update an existing user
-      tags: *a4
+      tags: *a7
+  /api/users/{id}/reset-2fa:
+    post:
+      description: Admin endpoint to reset two-factor authentication for a user.
+        Deletes all TOTP credentials, WebAuthn credentials, and recovery codes.
+      operationId: UsersController_resetUser2FA
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: User id
+          schema:
+            type: number
+      responses:
+        "200":
+          description: 2FA successfully reset for the user.
+      summary: Reset 2FA for a user
+      tags: *a7
+  /api/profile:
+    get:
+      operationId: ProfileController_getProfile
+      parameters: []
+      responses:
+        "200":
+          description: Current user profile returned.
+      summary: Get current user profile
+      tags: &a8
+        - Profile
+  /api/profile/password:
+    patch:
+      operationId: ProfileController_changePassword
+      parameters: []
+      responses:
+        "200":
+          description: Password successfully updated.
+      summary: Change current user password
+      tags: *a8
   /api/roles:
     get:
       operationId: RolesController_getRoles
@@ -314,7 +685,7 @@ paths:
               schema:
                 type: string
       summary: Get all roles
-      tags: &a5
+      tags: &a9
         - Roles
   /api/roles/create:
     post:
@@ -324,7 +695,7 @@ paths:
         "201":
           description: The role has been successfully created.
       summary: Create a new role
-      tags: *a5
+      tags: *a9
   /api/roles/{id}:
     delete:
       operationId: RolesController_deleteRole
@@ -339,7 +710,7 @@ paths:
         "200":
           description: Role successfully deleted.
       summary: Delete a role
-      tags: *a5
+      tags: *a9
   /api/roles/update/{id}:
     patch:
       operationId: RolesController_updateRole
@@ -354,7 +725,7 @@ paths:
         "200":
           description: Role successfully updated.
       summary: Update an existing role
-      tags: *a5
+      tags: *a9
   /api/oauth/authorize:
     get:
       description: Authorize a client and redirect to the client's redirect_uri.
@@ -433,7 +804,7 @@ paths:
         "200":
           description: ""
       summary: Authorize
-      tags: &a6
+      tags: &a10
         - Oauth
   /api/oauth/login:
     post:
@@ -518,7 +889,7 @@ paths:
         "201":
           description: ""
       summary: Login
-      tags: *a6
+      tags: *a10
   /api/oauth/token:
     post:
       description: Get a token for the client.
@@ -528,7 +899,7 @@ paths:
         "200":
           description: ""
       summary: Token
-      tags: *a6
+      tags: *a10
   /api/oauth/userinfo:
     get:
       description: Get the userinfo for the token.
@@ -543,7 +914,7 @@ paths:
         "200":
           description: ""
       summary: Get Userinfo
-      tags: *a6
+      tags: *a10
     post:
       description: Get the userinfo for the token.
       operationId: OauthController_userinfoPost
@@ -552,7 +923,7 @@ paths:
         "200":
           description: ""
       summary: Get Userinfo
-      tags: *a6
+      tags: *a10
   /api/oauth/introspect:
     post:
       description: Introspect the token.
@@ -562,7 +933,7 @@ paths:
         "200":
           description: ""
       summary: Introspect
-      tags: *a6
+      tags: *a10
   /api/oauth/device_authorization:
     post:
       description: Device Authorization
@@ -572,7 +943,7 @@ paths:
         "200":
           description: ""
       summary: Device Authorization
-      tags: *a6
+      tags: *a10
   /api/oauth/revocation:
     post:
       description: Revocation of the token.
@@ -582,7 +953,7 @@ paths:
         "200":
           description: ""
       summary: Revocation
-      tags: *a6
+      tags: *a10
   /api/oauth/jwks:
     get:
       description: Get the JWKS for the OAuth server
@@ -598,7 +969,7 @@ paths:
         "502":
           description: ""
       summary: Get JWKS
-      tags: *a6
+      tags: *a10
   /api/.well-known/openid-configuration:
     get:
       description: Find all the open ID metadata for the OAuth server
@@ -623,7 +994,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: &a7
+      tags: &a11
         - IngressAuth
   /api/ingress-auth/auth-signin:
     get:
@@ -642,7 +1013,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a7
+      tags: *a11
   /api/ingress-auth/auth-logout:
     post:
       operationId: IngressAuthController_authLogout
@@ -650,7 +1021,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a7
+      tags: *a11
   /api/ingress-auth/callback:
     get:
       operationId: IngressAuthController_authCallback
@@ -705,7 +1076,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a7
+      tags: *a11
   /api/clients:
     get:
       operationId: ClientsController_getClients
@@ -775,7 +1146,7 @@ paths:
               schema:
                 type: string
       summary: Retrieve all clients
-      tags: &a8
+      tags: &a12
         - Clients
   /api/clients/create:
     post:
@@ -792,7 +1163,7 @@ paths:
         "201":
           description: Client created successfully.
       summary: Create a new client
-      tags: *a8
+      tags: *a12
   /api/clients/{id}:
     delete:
       operationId: ClientsController_deleteClient
@@ -806,7 +1177,7 @@ paths:
         "200":
           description: Client deleted successfully.
       summary: Delete a client by id
-      tags: *a8
+      tags: *a12
   /api/clients/update/{id}:
     patch:
       operationId: ClientsController_updateClient
@@ -827,7 +1198,7 @@ paths:
         "200":
           description: Client updated successfully.
       summary: Update an existing client
-      tags: *a8
+      tags: *a12
   /api/oid4vp/ar/{id}:
     get:
       description: Get the Authorization Request according to the OID4VP specification.
@@ -848,7 +1219,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get the Authorization Request
-      tags: &a9
+      tags: &a13
         - OID4VP
   /api/oid4vp/status/{id}:
     get:
@@ -870,7 +1241,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get the Authorization Request Status
-      tags: *a9
+      tags: *a13
   /api/oid4vp/redirect/{id}:
     get:
       description: Redirect to the Authorization Request.
@@ -885,7 +1256,7 @@ paths:
         "200":
           description: ""
       summary: Redirect to the Authorization Request
-      tags: *a9
+      tags: *a13
   /api/oid4vp/authorize:
     post:
       description: Add an Authorization Request according to the OID4VP specification.
@@ -901,7 +1272,7 @@ paths:
         "200":
           description: ""
       summary: Add an Authorization Request
-      tags: *a9
+      tags: *a13
   /api/management/oid4vp/verifier/{id}:
     get:
       description: Obtain an Authorization Request according to the OID4VP

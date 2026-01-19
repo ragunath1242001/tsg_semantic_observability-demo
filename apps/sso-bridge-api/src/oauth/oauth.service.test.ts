@@ -15,14 +15,21 @@ import { plainToInstance } from "class-transformer";
 import { Request, Response } from "express";
 import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
 
+import { RecoveryCodeService } from "../auth/recovery-code.service.js";
+import { TotpService } from "../auth/totp.service.js";
+import { TwoFactorHelper } from "../auth/two-factor.helper.js";
+import { WebAuthnService } from "../auth/webauthn.service.js";
 import { ClientsService } from "../clients/clients.service.js";
 import { RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
 import { OauthClient } from "../model/client.dao.js";
 import { KeyDao } from "../model/keys.dao.js";
+import { RecoveryCode } from "../model/recovery-code.dao.js";
 import { OauthRole } from "../model/role.dao.js";
 import { TokenDao } from "../model/token.dao.js";
+import { TotpCredential } from "../model/totp-credential.dao.js";
 import { OauthUser } from "../model/user.dao.js";
+import { WebAuthnCredential } from "../model/webauthn-credential.dao.js";
 import { RolesService } from "../roles/roles.service.js";
 import { UsersService } from "../users/users.service.js";
 import { OauthService } from "./oauth.service.js";
@@ -43,20 +50,30 @@ describe("Oauth", () => {
           OauthClient,
           OauthRole,
           TokenDao,
-          KeyDao
+          KeyDao,
+          TotpCredential,
+          WebAuthnCredential,
+          RecoveryCode
         ]),
         TypeOrmModule.forFeature([
           OauthUser,
           OauthClient,
           OauthRole,
           TokenDao,
-          KeyDao
+          KeyDao,
+          TotpCredential,
+          WebAuthnCredential,
+          RecoveryCode
         ])
       ],
       providers: [
         OauthService,
         UsersService,
         RolesService,
+        TotpService,
+        WebAuthnService,
+        RecoveryCodeService,
+        TwoFactorHelper,
         {
           provide: KubernetesService,
           useValue: {

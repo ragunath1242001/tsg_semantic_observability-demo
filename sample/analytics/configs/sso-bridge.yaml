@@ -8,6 +8,8 @@ db:
   type: "sqlite"
   database: "sso-bridge.db"
 
+twoFactorIssuerName: "TSG Local SSO Bridge"
+
 initRoles:
   - name: ssobridge_admin
     description: SSO bridge administrator role with full access
@@ -231,6 +233,7 @@ initUsers:
   - username: tsg
     password: tsg
     email: tsg@example.com
+    require2FA: false
     roles:
       - ssobridge_admin
       - ssobridge_user

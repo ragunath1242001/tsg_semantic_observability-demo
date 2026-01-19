@@ -6,11 +6,19 @@ import { Request } from "express";
 
 import { RootConfig } from "../config.js";
 import { OauthClient } from "../model/client.dao.js";
+import { RecoveryCode } from "../model/recovery-code.dao.js";
 import { OauthRole } from "../model/role.dao.js";
+import { TotpCredential } from "../model/totp-credential.dao.js";
 import { OauthUser } from "../model/user.dao.js";
+import { WebAuthnCredential } from "../model/webauthn-credential.dao.js";
 import { RolesService } from "../roles/roles.service.js";
 import { UsersService } from "../users/users.service.js";
+import { getSession } from "../utils/session.js";
 import { AuthService } from "./auth.service.js";
+import { RecoveryCodeService } from "./recovery-code.service.js";
+import { TotpService } from "./totp.service.js";
+import { TwoFactorHelper } from "./two-factor.helper.js";
+import { WebAuthnService } from "./webauthn.service.js";
 
 describe("AuthService", () => {
   let authService: AuthService;
@@ -22,13 +30,31 @@ describe("AuthService", () => {
     const config = plainToInstance(ServerConfig, {});
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([OauthUser, OauthRole, OauthClient]),
-        TypeOrmModule.forFeature([OauthUser, OauthRole, OauthClient])
+        TypeOrmTestHelper.instance.module([
+          OauthUser,
+          OauthRole,
+          OauthClient,
+          RecoveryCode,
+          TotpCredential,
+          WebAuthnCredential
+        ]),
+        TypeOrmModule.forFeature([
+          OauthUser,
+          OauthRole,
+          OauthClient,
+          RecoveryCode,
+          TotpCredential,
+          WebAuthnCredential
+        ])
       ],
       providers: [
         AuthService,
         RolesService,
         UsersService,
+        TotpService,
+        RecoveryCodeService,
+        WebAuthnService,
+        TwoFactorHelper,
         {
           provide: RootConfig,
           useValue: plainToInstance(RootConfig, {})
@@ -70,7 +96,14 @@ describe("AuthService", () => {
 
       const loginResult = await authService.login("Alice", "password", request);
 
-      expect(loginResult).toEqual(user);
+      expect(loginResult).toEqual({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        require2FA: false,
+        roles: ["user"],
+        grants: ["authorization_code"]
+      });
       expect(request.session).toBeUndefined();
       await authService.logout(request);
     });
@@ -81,12 +114,21 @@ describe("AuthService", () => {
       } as unknown as Request;
       const loginResult = await authService.login("Alice", "password", request);
 
-      expect(loginResult).toEqual(user);
+      const expectedDto = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        require2FA: false,
+        roles: ["user"],
+        grants: ["authorization_code"]
+      };
+
+      expect(loginResult).toEqual(expectedDto);
       expect(request.session).toBeDefined();
-      expect((request.session as any).user).toEqual(user);
+      expect(getSession(request)?.user).toEqual(user);
 
       await authService.logout(request);
-      expect((request.session as any).user).toBeUndefined();
+      expect(getSession(request)?.user).toBeUndefined();
     });
     it("Session with user", async () => {
       const user = await usersService.getUser(1);
@@ -103,43 +145,165 @@ describe("AuthService", () => {
         requestWithUserSession
       );
 
-      expect(loginResult3).toEqual(user);
-      expect(requestWithUserSession.session).toBeDefined();
-      expect((requestWithUserSession.session as any).user).toEqual(user);
-    });
-  });
-  it("getUser", async () => {
-    const user = await usersService.getUser(1);
-    const request = {
-      session: {
-        user: user
-      }
-    } as unknown as Request;
-
-    const result = await authService.getUser(request);
-
-    expect(result).toEqual({
-      state: "authenticated",
-      user: {
+      const expectedDto = {
         id: user.id,
         username: user.username,
         email: user.email,
-        roles: user.roles.map((role) =>
-          expect.objectContaining({
-            id: role.id,
-            name: role.name
-          })
-        ),
-        grants: user.grants
-      }
+        require2FA: false,
+        roles: ["user"],
+        grants: ["authorization_code"]
+      };
+
+      expect(loginResult3).toEqual(expectedDto);
+      expect(requestWithUserSession.session).toBeDefined();
+      expect(getSession(requestWithUserSession)?.user).toEqual(user);
+    });
+  });
+
+  describe("2FA login and verification", () => {
+    let user2FA: OauthUser;
+    let totpService: TotpService;
+    let recoveryCodeService: RecoveryCodeService;
+
+    beforeAll(async () => {
+      totpService = authService["totpService"];
+      recoveryCodeService = authService["recoveryCodeService"];
+
+      // Create a user with 2FA enabled
+      user2FA = await usersService.createUser({
+        username: "User2FA",
+        password: "password",
+        email: "user2fa@example.com",
+        roles: ["user"],
+        grants: ["authorization_code"],
+        require2FA: true
+      });
     });
 
-    const request2 = {
-      session: {}
-    } as unknown as Request;
-    const result2 = await authService.getUser(request2);
-    expect(result2).toEqual({
-      state: "unauthenticated"
+    beforeEach(async () => {
+      // Clean up credentials and recovery codes before each test
+      await totpService.credentialRepository.delete({ userId: user2FA.id });
+      await recoveryCodeService["recoveryCodeRepository"].delete({
+        userId: user2FA.id
+      });
+    });
+
+    it("should require 2FA setup when user has 2FA enabled but no credentials", async () => {
+      const request = {
+        session: {}
+      } as unknown as Request;
+
+      const loginResult = await authService.login(
+        "User2FA",
+        "password",
+        request
+      );
+
+      expect(loginResult).toMatchObject({
+        status: "2fa_setup_required",
+        user: {
+          id: user2FA.id,
+          username: user2FA.username,
+          email: user2FA.email
+        }
+      });
+      expect(getSession(request)?.pendingTwoFactor).toMatchObject({
+        userId: user2FA.id,
+        username: user2FA.username,
+        passwordVerified: true
+      });
+    });
+
+    it("should require 2FA verification when user has credentials", async () => {
+      // Setup TOTP credential
+      const secret = totpService["generateSecret"]();
+      const credential = await totpService["createCredential"](
+        user2FA.id,
+        secret,
+        "Test Device"
+      );
+      credential.isVerified = true;
+      await totpService.credentialRepository.save(credential);
+
+      const request = {
+        session: {}
+      } as unknown as Request;
+
+      const loginResult = await authService.login(
+        "User2FA",
+        "password",
+        request
+      );
+
+      expect(loginResult).toMatchObject({
+        status: "2fa_required",
+        user: {
+          id: user2FA.id,
+          username: user2FA.username,
+          email: user2FA.email
+        },
+        hasTotpCredentials: true,
+        hasWebAuthnCredentials: false
+      });
+    });
+
+    it("should verify 2FA with valid TOTP token", async () => {
+      const secret = totpService["generateSecret"]();
+      const credential = await totpService["createCredential"](
+        user2FA.id,
+        secret,
+        "Test Device"
+      );
+      credential.isVerified = true;
+      await totpService.credentialRepository.save(credential);
+
+      const token = (await import("otplib")).authenticator.generate(secret);
+
+      const request = {
+        session: {
+          pendingTwoFactor: {
+            userId: user2FA.id,
+            username: user2FA.username,
+            passwordVerified: true
+          }
+        }
+      } as unknown as Request;
+
+      const result = await authService.verify2FA(token, request);
+
+      expect(result).toMatchObject({
+        id: user2FA.id,
+        username: user2FA.username,
+        email: user2FA.email
+      });
+      expect(getSession(request)?.user).toBeDefined();
+      expect(getSession(request)?.pendingTwoFactor).toBeUndefined();
+    });
+
+    it("should throw error when verifying 2FA without pending session", async () => {
+      const request = {
+        session: {}
+      } as unknown as Request;
+
+      await expect(authService.verify2FA("123456", request)).rejects.toThrow(
+        "No pending 2FA verification"
+      );
+    });
+
+    it("should throw error with invalid 2FA token and recovery code", async () => {
+      const request = {
+        session: {
+          pendingTwoFactor: {
+            userId: user2FA.id,
+            username: user2FA.username,
+            passwordVerified: true
+          }
+        }
+      } as unknown as Request;
+
+      await expect(
+        authService.verify2FA("invalid-token", request)
+      ).rejects.toThrow("Invalid 2FA or recovery code");
     });
   });
 });

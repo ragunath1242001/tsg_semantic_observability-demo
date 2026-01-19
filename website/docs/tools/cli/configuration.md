@@ -34,17 +34,20 @@ Configuration for the CLI tool starts either at [Ecosystem](#ecosystem-ecosystem
 | `participant`  | [Participant](#participant)   | Yes      | Participant configuration            |         |
 
 ### General
-
-| Name                      | Data Type                                | Required | Explanation                                                                                                                                             | Default              |
-| ------------------------- | ---------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| `namespace`               | String                                   | Yes      | Kubernetes namespace used for deployments. Must match pattern `[a-zA-Z-]+` (alphanumeric with hyphens)                                                  |                      |
-| `username`                | String                                   | Yes      | Default admin username                                                                                                                                  |                      |
-| `password`                | String                                   | Yes      | Default admin password                                                                                                                                  |                      |
-| `authorityDomain`         | String                                   | Yes      | Domain name of the authority, either the one deployed as participant or an external dataspace authority                                                 |                      |
-| `credentialType`          | String                                   | Yes      | Credential type name                                                                                                                                    |                      |
-| `postgresDeploymentMode`  | `"per-participant"` \| `"per-namespace"` |          | PostgreSQL deployment strategy. `per-participant` deploys a database per participant, `per-namespace` deploys a single shared cluster for the namespace | `"per-namespace"`    |
-| `postgresInstances`       | Number                                   |          | Number of PostgreSQL instances for shared cluster (per-namespace mode only). Higher values provide better high availability                             | `1`                  |
-| `postgresStorageSize`     | String                                   |          | Storage size for shared PostgreSQL cluster (per-namespace mode only). Examples: `"1Gi"`, `"5Gi"`, `"10Gi"`                                            | `"1Gi"`              |
+     
+| Name                       | Data Type                                                                  | Required | Explanation                                                                                                                                                  | Default                |
+| -------------------------- | -------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| `namespace`                | String                                                                     | Yes      | Kubernetes namespace used for deployments. Must match pattern `[a-zA-Z-]+` (alphanumeric with hyphens)                                                       |                        |
+| `username`                 | String                                                                     | Yes      | Default admin username                                                                                                                                       |                        |
+| `password`                 | String                                                                     | Yes      | Default admin password                                                                                                                                       |                        |
+| `authorityDomain`          | String                                                                     | Yes      | Domain name of the authority, either the one deployed as participant or an external dataspace authority                                                      |                        |
+| `credentialType`           | String                                                                     | Yes      | Credential type name                                                                                                                                         |                        |
+| `postgresDeploymentMode`   | `"per-participant"` \| `"per-namespace"`                                   |          | PostgreSQL deployment strategy. `per-participant` deploys a database per participant, `per-namespace` deploys a single shared cluster for the namespace      | `"per-namespace"`      |
+| `postgresInstances`        | Number                                                                     |          | Number of PostgreSQL instances for shared cluster (per-namespace mode only). Higher values provide better high availability                                  | `1`                    |
+| `postgresStorageSize`      | String                                                                     |          | Storage size for shared PostgreSQL cluster (per-namespace mode only). Examples: `"1Gi"`, `"5Gi"`, `"10Gi"`                                                   | `"1Gi"`                |
+| `oauthClientAuthMethod`    | `"client_secret_post"` \| `"private_key_jwt"`                              |          | OAuth client authentication method for securing communication between TSG components. Use `private_key_jwt` for enhanced security in production environments | `"client_secret_post"` |
+| `oauthPrivateKeyAlgorithm` | `"RS256"` \| `"RS384"` \| `"RS512"` \| `"ES256"` \| `"ES384"` \| `"ES512"` |          | Algorithm for OAuth private key generation when using `private_key_jwt` authentication. ECDSA algorithms (ES*) offer better performance                      | `"ES256"`              |
+| `require2FA`               | Boolean                                                                    |          | Require two-factor authentication for the default admin user.                                                                                                | `false`                |
 
 ### Applications
 
@@ -190,6 +193,109 @@ The CloudNativePG operator must be installed in your cluster. The CLI will autom
 helm repo add cnpg https://cloudnative-pg.github.io/charts
 helm upgrade --install cnpg cnpg/cloudnative-pg --namespace cnpg-system --create-namespace
 ```
+
+## Security Features for Production
+
+TSG provides enhanced security features designed for production deployments. These features strengthen authentication and authorization across all components.
+
+### OAuth Client Authentication Methods
+
+TSG components (Control Plane, Wallet, Data Planes) authenticate with the SSO Bridge using OAuth 2.0. You can configure the authentication method using the `oauthClientAuthMethod` setting:
+
+**`client_secret_post` (default)**:
+- Simplest authentication method using shared secrets
+- Suitable for development and testing environments
+- Secrets are automatically generated by the CLI
+
+**`private_key_jwt` (recommended for production)**:
+- Uses asymmetric cryptography with public/private key pairs
+- Provides stronger security as private keys never leave the component
+- Conforms to RFC 7523 (JSON Web Token Profile for OAuth 2.0 Client Authentication)
+- The CLI automatically generates key pairs and configures all components
+
+**Configuration Example**:
+```yaml
+general:
+  namespace: my-dataspace
+  oauthClientAuthMethod: private_key_jwt          # Use private_key_jwt for production
+  oauthPrivateKeyAlgorithm: ES256                 # Algorithm: RS256, RS384, RS512, ES256, ES384, ES512
+  # ... other settings
+```
+
+**Supported Algorithms**:
+- **RSA** (`RS256`, `RS384`, `RS512`): Industry standard, widely supported
+- **ECDSA** (`ES256`, `ES384`, `ES512`): More efficient and secure, recommended for new deployments
+
+The CLI handles all key generation, distribution, and configuration automatically when you run `tsg bootstrap`.
+
+### Two-Factor Authentication (2FA)
+
+Enhance account security by requiring two-factor authentication for the default admin user accessing the SSO Bridge web interface:
+
+**Configuration Example**:
+```yaml
+general:
+  namespace: my-dataspace
+  require2FA: true                                # Require 2FA for the default admin user
+  # ... other settings
+```
+
+**How it works**:
+1. Admin users log in with username and password
+2. On first login, users are prompted to set up 2FA using:
+   - **TOTP (Time-based One-Time Password)**: Compatible with Google Authenticator, Microsoft Authenticator, Authy, etc.
+   - **WebAuthn**: Hardware security keys (YubiKey, etc.) or platform authenticators (TouchID, Windows Hello)
+3. Recovery codes are generated for account recovery
+4. Subsequent logins require the second factor
+
+**Administrative Controls**:
+- Administrators can reset 2FA for users via the SSO Bridge API
+- Users can manage their own 2FA settings through the SSO Bridge profile interface
+- The `twoFactorIssuerName` can be customized to show your organization name in authenticator apps
+
+**Per-User 2FA Configuration**:
+You can also require 2FA for specific users:
+```yaml
+general:
+  require2FA: false                               # Don't require 2FA for the default admin user
+  
+participant:
+  config:
+    ssoBridge:
+      initUsers:
+        - username: admin
+          password: secure-password
+          email: admin@example.com
+          roles: []
+          require2FA: true                        # Require 2FA only for this user
+```
+
+### Production Security Recommendations
+
+For production deployments, we recommend:
+
+1. **Enable `private_key_jwt` authentication**:
+   ```yaml
+   general:
+     oauthClientAuthMethod: private_key_jwt
+     oauthPrivateKeyAlgorithm: ES256
+   ```
+
+2. **Require 2FA for administrative access**:
+   ```yaml
+   general:
+     require2FA: true
+   ```
+
+3. **Use strong passwords** and store credentials securely (e.g., using Kubernetes secrets or a secrets management solution)
+
+4. **Customize the 2FA issuer name** for your organization:
+   ```yaml
+   participant:
+     config:
+       ssoBridge:
+         twoFactorIssuerName: "My Organization TSG"
+   ```
 
 ## Providing Custom Configuration
 

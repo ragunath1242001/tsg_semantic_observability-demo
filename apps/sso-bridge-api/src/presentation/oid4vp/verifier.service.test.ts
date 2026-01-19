@@ -16,15 +16,22 @@ import { plainToInstance } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
+import { RecoveryCodeService } from "../../auth/recovery-code.service.js";
+import { TotpService } from "../../auth/totp.service.js";
+import { TwoFactorHelper } from "../../auth/two-factor.helper.js";
+import { WebAuthnService } from "../../auth/webauthn.service.js";
 import { ClientsService } from "../../clients/clients.service.js";
 import { RootConfig } from "../../config.js";
 import { KubernetesService } from "../../k8s/kubernetes.service.js";
 import { OauthClient } from "../../model/client.dao.js";
 import { KeyDao } from "../../model/keys.dao.js";
 import { AuthorizationRequestDao } from "../../model/oid4vp.dao.js";
+import { RecoveryCode } from "../../model/recovery-code.dao.js";
 import { OauthRole } from "../../model/role.dao.js";
 import { TokenDao } from "../../model/token.dao.js";
+import { TotpCredential } from "../../model/totp-credential.dao.js";
 import { OauthUser } from "../../model/user.dao.js";
+import { WebAuthnCredential } from "../../model/webauthn-credential.dao.js";
 import { OauthService } from "../../oauth/oauth.service.js";
 import { TokenService } from "../../oauth/token.service.js";
 import { RolesService } from "../../roles/roles.service.js";
@@ -45,7 +52,10 @@ describe("OID4VPVerifierService", () => {
           OauthRole,
           OauthClient,
           TokenDao,
-          KeyDao
+          KeyDao,
+          TotpCredential,
+          WebAuthnCredential,
+          RecoveryCode
         ]),
         TypeOrmModule.forFeature([
           AuthorizationRequestDao,
@@ -53,7 +63,10 @@ describe("OID4VPVerifierService", () => {
           OauthRole,
           OauthClient,
           TokenDao,
-          KeyDao
+          KeyDao,
+          TotpCredential,
+          WebAuthnCredential,
+          RecoveryCode
         ])
       ],
       providers: [
@@ -63,6 +76,10 @@ describe("OID4VPVerifierService", () => {
         RolesService,
         TokenService,
         UsersService,
+        TotpService,
+        WebAuthnService,
+        RecoveryCodeService,
+        TwoFactorHelper,
         {
           provide: KubernetesService,
           useValue: {

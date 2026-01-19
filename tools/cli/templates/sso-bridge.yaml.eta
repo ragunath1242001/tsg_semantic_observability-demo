@@ -80,6 +80,7 @@ config:
     - username: <%= it.general.username %>
       password: <%= it.general.password %>
       email: <%= it.general.username %>@example.com
+      require2FA: <%= it.general.require2FA %>
       roles:
         - ssobridge_admin
         - ssobridge_user

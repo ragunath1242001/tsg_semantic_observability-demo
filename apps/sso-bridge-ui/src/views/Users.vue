@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
-import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
+import { UserDto, UserWithPasswordDto } from "@tsg-dsp/sso-bridge-dtos";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 
+import { useRoles } from "../composables/useRoles";
+import { OAUTH_GRANTS } from "../utils/constants";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 
@@ -20,39 +23,13 @@ const userObj = {
   password: undefined,
   email: undefined,
   roles: [],
-  grants: []
-};
+  grants: [],
+  require2FA: false
+} as Partial<UserWithPasswordDto>;
 
-const user = ref<UserDto>(userObj);
+const user = ref<Partial<UserWithPasswordDto>>(userObj);
 
-const userGrants = [
-  "authorization_code",
-  "client_credentials",
-  "password",
-  "refresh_token"
-].map((grant) => ({
-  label: grant,
-  value: grant
-}));
-
-const userRoles = ref<Array<{ label: string; value: string }>>([]);
-const loadRoles = async () => {
-  try {
-    const response = await http.get("/roles");
-    userRoles.value = response.data.map((role) => ({
-      label: role.name,
-      value: role.name
-    }));
-  } catch (error) {
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "Failed to load roles",
-      life: 3000
-    });
-    console.error("Error loading roles:", error);
-  }
-};
+const { roles: userRoles, loadRoles } = useRoles(http);
 
 const userDialog = ref(false);
 const deleteUserDialog = ref(false);
@@ -68,7 +45,7 @@ const hideDialog = () => {
   submitted.value = false;
 };
 
-const editUser = (data: UserDto) => {
+const editUser = (data: UserWithPasswordDto) => {
   user.value = { ...data };
   // @ts-expect-error Grants should be annotated with label and value
   user.value.grants = user.value.grants.map((grant) => ({
@@ -93,13 +70,14 @@ const createUser = async () => {
       life: 3000
     });
     hideDialog();
-  } catch (_) {
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "User not created",
-      life: 3000
-    });
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Error",
+        defaultMessage: "User not created"
+      })
+    );
   }
 };
 
@@ -113,13 +91,14 @@ const updateUser = async () => {
       life: 3000
     });
     hideDialog();
-  } catch (_) {
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "User not updated",
-      life: 3000
-    });
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Error",
+        defaultMessage: "User not updated"
+      })
+    );
   }
 };
 
@@ -128,9 +107,9 @@ const saveUser = async () => {
 
   if (
     user?.value.username?.trim() &&
-    user?.value.password?.trim() &&
     user?.value.email?.trim() &&
-    user?.value.roles?.length > 0
+    user?.value.roles?.length > 0 &&
+    (user?.value.id || (user?.value.password?.trim() ?? "") !== "")
   ) {
     if (user?.value.grants) {
       // @ts-expect-error Grants should be annotated with label and value
@@ -139,12 +118,15 @@ const saveUser = async () => {
     // @ts-expect-error Roles should be annotated with label and value
     user.value.roles = user.value.roles.map((role) => role.value);
     if (user.value.id) {
+      if (user?.value.password?.trim() === "") {
+        user.value.password = undefined;
+      }
       await updateUser();
     } else {
       await createUser();
     }
+    await load();
   }
-  await load();
 };
 
 const deleteUser = async () => {
@@ -158,19 +140,49 @@ const deleteUser = async () => {
     });
     deleteUserDialog.value = false;
     await load();
-  } catch (_) {
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "User not deleted",
-      life: 3000
-    });
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Error",
+        defaultMessage: "User not deleted"
+      })
+    );
   }
 };
 
-const openDeleteUserDialog = (data) => {
+const openDeleteUserDialog = (data: UserWithPasswordDto) => {
   user.value = data;
   deleteUserDialog.value = true;
+};
+
+const reset2FADialog = ref(false);
+
+const openReset2FADialog = (data: UserWithPasswordDto) => {
+  user.value = data;
+  reset2FADialog.value = true;
+};
+
+const resetUser2FA = async () => {
+  try {
+    await http.post(`/users/${user.value.id}/reset-2fa`);
+    toast.add({
+      severity: "success",
+      summary: "Success",
+      detail: "2FA has been reset for this user",
+      life: 3000
+    });
+    reset2FADialog.value = false;
+    await load();
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Error",
+        defaultMessage: error?.response?.data?.message || "Failed to reset 2FA"
+      })
+    );
+  }
 };
 
 const { data, loading, total, perPage, load } = setupPagination({
@@ -222,10 +234,25 @@ onMounted(async () => {
             <template #body="slotProps">
               <div class="flex flex-wrap gap-1 text-xs">
                 <Tag
-                  v-for="(role, index) in slotProps.data.roles"
+                  v-for="(role, index) in slotProps.data.roles.slice(0, 5)"
                   :key="index"
                   severity="info"
                   :value="role" />
+                <Tag
+                  v-if="slotProps.data.roles.length > 5"
+                  v-tooltip.left="{
+                    value: slotProps.data.roles.slice(5).join('<br />'),
+                    escape: false,
+                    hideDelay: 500,
+                    pt: {
+                      root: {
+                        style: { '--p-tooltip-max-width': '400px' }
+                      }
+                    }
+                  }"
+                  :value="`+${slotProps.data.roles.length - 5}`"
+                  severity="secondary"
+                  class="text-xs cursor-help" />
               </div>
               <span
                 v-if="
@@ -238,10 +265,25 @@ onMounted(async () => {
           </Column>
           <Column field="grants" header="Grants">
             <template #body="slotProps">
-              {{ console.log(slotProps) }}
-              <span>{{ slotProps.data.grants.toString() }}</span>
-            </template></Column
-          >
+              <div class="flex flex-wrap gap-1.5">
+                <Tag
+                  v-for="grant in slotProps.data.grants"
+                  :key="grant"
+                  :value="grant"
+                  severity="contrast"
+                  class="text-xs" />
+              </div> </template
+          ></Column>
+          <Column field="require2FA" header="2FA" sortable>
+            <template #body="slotProps">
+              <Tag
+                v-if="slotProps.data.require2FA"
+                severity="success"
+                value="Required"
+                icon="pi pi-shield" />
+              <Tag v-else severity="secondary" value="Optional" />
+            </template>
+          </Column>
           <Column field="createdDate" header="Created" sortable>
             <template #body="props">
               {{ formatRelative(props.data.createdDate) }}
@@ -249,18 +291,27 @@ onMounted(async () => {
           </Column>
           <Column field="actions" header="Actions">
             <template #body="props">
-              <Button
-                outlined
-                rounded
-                icon="pi pi-pencil"
-                class="mr-2"
-                @click="editUser(props.data)" />
-              <Button
-                outlined
-                rounded
-                severity="danger"
-                icon="pi pi-times"
-                @click="openDeleteUserDialog(props.data)" />
+              <div class="flex flex-wrap gap-1.5">
+                <Button
+                  outlined
+                  rounded
+                  icon="pi pi-pencil"
+                  @click="editUser(props.data)" />
+                <Button
+                  v-if="props.data.require2FA"
+                  v-tooltip.top="'Reset 2FA'"
+                  outlined
+                  rounded
+                  severity="warning"
+                  icon="pi pi-shield"
+                  @click="openReset2FADialog(props.data)" />
+                <Button
+                  outlined
+                  rounded
+                  severity="danger"
+                  icon="pi pi-times"
+                  @click="openDeleteUserDialog(props.data)" />
+              </div>
             </template>
           </Column>
         </DataTable>
@@ -288,16 +339,26 @@ onMounted(async () => {
         <div>
           <label for="password" class="block font-bold mb-3">Password</label>
           <Password
+            v-if="user.id"
             id="password"
             v-model="user.password"
-            :required="true"
-            :invalid="submitted && !user.password"
+            placeholder="Leave empty to not change password"
             rows="3"
             cols="20"
             fluid />
-          <small v-if="submitted && !user.password" class="text-red-500"
-            >Password is required.</small
-          >
+          <template v-else>
+            <Password
+              id="password"
+              v-model="user.password"
+              :required="true"
+              :invalid="submitted && !user.password"
+              rows="3"
+              cols="20"
+              fluid />
+            <small v-if="submitted && !user.password" class="text-red-500"
+              >Password is required.</small
+            >
+          </template>
         </div>
         <div>
           <label for="email" class="block font-bold mb-3">Email</label>
@@ -333,12 +394,22 @@ onMounted(async () => {
           <MultiSelect
             id="grants"
             v-model="user.grants"
-            :options="userGrants"
+            :options="OAUTH_GRANTS"
             option-label="label"
             placeholder="Select Grants"
             fluid>
           </MultiSelect>
         </div>
+        <div class="flex items-center gap-2">
+          <Checkbox id="require2FA" v-model="user.require2FA" :binary="true" />
+          <label for="require2FA" class="font-bold"
+            >Require Two-Factor Authentication</label
+          >
+        </div>
+        <small class="text-muted-color">
+          When enabled, this user will be required to set up two-factor
+          authentication on their first login.
+        </small>
       </div>
 
       <template #footer>
@@ -365,6 +436,38 @@ onMounted(async () => {
           text
           @click="deleteUserDialog = false" />
         <Button label="Yes" icon="pi pi-check" @click="deleteUser" />
+      </template>
+    </Dialog>
+    <Dialog
+      v-model:visible="reset2FADialog"
+      :style="{ width: '450px' }"
+      header="Reset Two-Factor Authentication"
+      :modal="true">
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-4">
+          <i class="pi pi-exclamation-triangle !text-3xl text-yellow-500" />
+          <span v-if="user">
+            Are you sure you want to reset 2FA for
+            <b>{{ user.username }}</b
+            >?
+          </span>
+        </div>
+        <p class="text-muted-color text-sm">
+          This will delete all their TOTP authenticators, passkeys, and recovery
+          codes. The user will need to set up 2FA again on their next login.
+        </p>
+      </div>
+      <template #footer>
+        <Button
+          label="Cancel"
+          icon="pi pi-times"
+          text
+          @click="reset2FADialog = false" />
+        <Button
+          label="Reset 2FA"
+          icon="pi pi-check"
+          severity="warning"
+          @click="resetUser2FA" />
       </template>
     </Dialog>
   </div>

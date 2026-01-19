@@ -108,12 +108,14 @@ Node.js with NestJS provides the event orchestration platform, with specialized 
 ## SSO Bridge
 
 ### Purpose
-The SSO Bridge provides authentication and authorization services for TSG components and external integrations.
+The SSO Bridge provides authentication and authorization services for TSG components and external integrations, with support for both traditional OAuth/OIDC flows and modern security enhancements like two-factor authentication and advanced client authentication methods.
 
 ### Architecture and Key Modules
-The **OAuth implementation** provides a complete OAuth 2.0 and OpenID Connect server that handles various authentication flows. This includes support for web applications, mobile clients, and service-to-service authentication scenarios. The implementation follows security best practices and supports modern extensions like PKCE for enhanced security.
+The **OAuth implementation** provides a complete OAuth 2.0 and OpenID Connect server that handles various authentication flows. This includes support for web applications, mobile clients, and service-to-service authentication scenarios. The implementation follows security best practices and supports modern extensions like PKCE for enhanced security. For client authentication, it supports both `client_secret_post` and `private_key_jwt` methods (RFC 7523), with the latter providing enhanced security for production environments.
 
 **User management** handles user profiles, preferences, and basic identity information. The module provides user administration capabilities while maintaining secure user account management within the TSG ecosystem.
+
+**Two-Factor Authentication** provides enhanced account security through TOTP (Time-based One-Time Password) and WebAuthn support. Users can enable 2FA using authenticator apps (Google Authenticator, Microsoft Authenticator, etc.) or hardware security keys (YubiKey, etc.). The module includes recovery code generation for account recovery scenarios.
 
 **Session management** provides secure, scalable session handling across the entire TSG ecosystem. This includes token lifecycle management, refresh token rotation, and session security features like concurrent session limits and automatic timeout handling.
 
@@ -121,6 +123,10 @@ The **OAuth implementation** provides a complete OAuth 2.0 and OpenID Connect se
 
 ### Responsibilities
 The SSO Bridge provides OAuth 2.0 and OpenID Connect authentication services for all TSG components, ensuring that users can access multiple systems with a single authentication. It manages the complete lifecycle of user sessions, from initial login through token refresh and eventual logout.
+
+For inter-component communication, the SSO Bridge supports advanced client authentication methods including `private_key_jwt` (RFC 7523), which uses asymmetric cryptography to provide stronger security than traditional shared secrets. This is particularly important for production deployments where component-to-component authentication security is critical.
+
+Two-factor authentication capabilities enhance account security for users accessing the SSO Bridge and connected applications. Users can enable TOTP-based 2FA using authenticator apps or WebAuthn-based authentication using hardware security keys or platform authenticators (TouchID, Windows Hello).
 
 Mobile SSI wallet authentication enables users to authenticate using their mobile Self-Sovereign Identity wallets, providing a bridge between mobile identity management and the TSG ecosystem. This includes support for the TSG Mobile Wallet and compatible SSI wallet implementations.
 
@@ -134,7 +140,11 @@ Built on Node.js with NestJS, the SSO Bridge uses PostgreSQL for user and sessio
 ## Component Communication
 
 ### Inter-Component APIs
-All TSG components communicate via REST APIs with OAuth based communication. Each component exposes a well-defined set of APIs that allow other components to interact with it securely. Especially the management endpoints are of interest for the inter-component APIs, where the integration with the SSO Bridge plays an important role.
+All TSG components communicate via REST APIs with OAuth-based authentication. Each component exposes a well-defined set of APIs that allow other components to interact with it securely. The SSO Bridge serves as the central authentication authority, with components authenticating using OAuth 2.0 client credentials flow.
+
+For production deployments, components can use the `private_key_jwt` authentication method (RFC 7523) instead of shared secrets, providing enhanced security through asymmetric cryptography. This method ensures that private keys never leave the component, reducing the risk of credential compromise.
+
+Management endpoints are of particular interest for inter-component APIs, where integration with the SSO Bridge plays an important role in ensuring proper authentication and authorization.
 
 ### Database Architecture
 Each component maintains its own database for:

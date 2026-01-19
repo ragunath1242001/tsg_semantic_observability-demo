@@ -2,16 +2,23 @@ import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
-import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
+import { UserWithPasswordDto } from "@tsg-dsp/sso-bridge-dtos";
 import { ClientDto } from "@tsg-dsp/sso-bridge-dtos/dist/clients.dto.js";
 import { plainToInstance } from "class-transformer";
 
+import { RecoveryCodeService } from "../auth/recovery-code.service.js";
+import { TotpService } from "../auth/totp.service.js";
+import { TwoFactorHelper } from "../auth/two-factor.helper.js";
+import { WebAuthnService } from "../auth/webauthn.service.js";
 import { ClientsService } from "../clients/clients.service.js";
 import { RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
 import { OauthClient } from "../model/client.dao.js";
+import { RecoveryCode } from "../model/recovery-code.dao.js";
 import { OauthRole } from "../model/role.dao.js";
+import { TotpCredential } from "../model/totp-credential.dao.js";
 import { OauthUser } from "../model/user.dao.js";
+import { WebAuthnCredential } from "../model/webauthn-credential.dao.js";
 import { UsersService } from "../users/users.service.js";
 import { RolesService } from "./roles.service.js";
 
@@ -24,13 +31,31 @@ describe("RolesService Tests", () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([OauthRole, OauthClient, OauthUser]),
-        TypeOrmModule.forFeature([OauthRole, OauthClient, OauthUser])
+        TypeOrmTestHelper.instance.module([
+          OauthRole,
+          OauthClient,
+          OauthUser,
+          TotpCredential,
+          WebAuthnCredential,
+          RecoveryCode
+        ]),
+        TypeOrmModule.forFeature([
+          OauthRole,
+          OauthClient,
+          OauthUser,
+          TotpCredential,
+          WebAuthnCredential,
+          RecoveryCode
+        ])
       ],
       providers: [
         RolesService,
         ClientsService,
         UsersService,
+        TotpService,
+        WebAuthnService,
+        RecoveryCodeService,
+        TwoFactorHelper,
         {
           provide: KubernetesService,
           useValue: {
@@ -134,7 +159,7 @@ describe("RolesService Tests", () => {
         name: "user",
         description: "Regular user"
       });
-      const userData: Partial<UserDto> = {
+      const userData: Partial<UserWithPasswordDto> = {
         username: "Alice",
         password: "password",
         email: "alice@example.com",

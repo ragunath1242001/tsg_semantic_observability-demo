@@ -21,17 +21,25 @@ const router = createRouter({
         {
           path: "/clients",
           name: "clients",
-          component: () => import("../views/Clients.vue")
+          component: () => import("../views/Clients.vue"),
+          meta: { requiresAdmin: true }
         },
         {
           path: "/users",
           name: "users",
-          component: () => import("../views/Users.vue")
+          component: () => import("../views/Users.vue"),
+          meta: { requiresAdmin: true }
         },
         {
           path: "/roles",
           name: "roles",
-          component: () => import("../views/Roles.vue")
+          component: () => import("../views/Roles.vue"),
+          meta: { requiresAdmin: true }
+        },
+        {
+          path: "/profile",
+          name: "profile",
+          component: () => import("../views/Profile.vue")
         }
       ]
     },
@@ -58,6 +66,17 @@ router.beforeEach(async (to) => {
   if (authRequired && !store.user) {
     store.returnUrl = to.fullPath;
     return "/login";
+  }
+
+  // Check if route requires admin role
+  if (to.meta.requiresAdmin) {
+    if (typeof store.user === "object" && store.user) {
+      const isAdmin = store.user.roles?.includes("ssobridge_admin") || false;
+      if (!isAdmin) {
+        // Redirect non-admin users to dashboard
+        return "/";
+      }
+    }
   }
 });
 export default router;

@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsNumber,
@@ -21,11 +22,6 @@ export class UserDto {
   @IsNotEmpty()
   username!: string;
 
-  @ApiProperty({ example: "secretpassword" })
-  @IsString()
-  @IsNotEmpty()
-  password!: string;
-
   @ApiProperty({ example: "johndoe@example.com" })
   @IsEmail()
   @IsNotEmpty()
@@ -40,4 +36,16 @@ export class UserDto {
   @IsArray()
   @IsNotEmpty()
   grants!: GrantType[];
+
+  @ApiProperty({ example: false })
+  @IsBoolean()
+  @IsOptional()
+  require2FA?: boolean;
+}
+
+export class UserWithPasswordDto extends UserDto {
+  @ApiProperty({ example: "strongpassword123" })
+  @IsString()
+  @IsOptional()
+  password?: string;
 }

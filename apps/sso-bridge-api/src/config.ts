@@ -10,6 +10,7 @@ import { ClientAuthMethod, GrantType } from "@tsg-dsp/sso-bridge-dtos";
 import { Type } from "class-transformer";
 import {
   ArrayNotEmpty,
+  IsBoolean,
   IsDefined,
   IsEmail,
   IsIn,
@@ -63,6 +64,13 @@ export class RootConfig {
   @Description("Kubernetes namespace")
   @IsString()
   public readonly kubernetesNamespace: string = "default";
+
+  @Description(
+    "Issuer name for Two-Factor Authentication (shown in authenticator apps)"
+  )
+  @IsString()
+  @IsOptional()
+  public readonly twoFactorIssuerName: string = "SSO Bridge";
 
   @Description("DCQL Query map for OID4VP")
   @IsOptional()
@@ -185,4 +193,10 @@ export class InitUser {
   @ArrayNotEmpty()
   @IsOptional()
   grants: GrantType[] = ["authorization_code", "refresh_token"];
+  @Description(
+    "Require two-factor authentication for this user. User will be prompted to set up 2FA on first login."
+  )
+  @IsBoolean()
+  @IsOptional()
+  require2FA?: boolean = false;
 }
