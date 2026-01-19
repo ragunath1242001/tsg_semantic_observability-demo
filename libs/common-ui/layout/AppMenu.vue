@@ -28,7 +28,7 @@ const model = toRef(props.menu);
 
 <template>
   <ul class="layout-menu">
-    <template v-for="(item, i) in model" :key="item">
+    <template v-for="(item, i) in model" :key="`item-${i}-${item.label}`">
       <app-menu-item :item="item" :index="i" :route="route"></app-menu-item>
     </template>
   </ul>

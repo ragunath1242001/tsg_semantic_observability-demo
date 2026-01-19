@@ -28,6 +28,9 @@ export default defineConfig({
   plugins: [tailwindcss(), vue()],
   base: "",
   envPrefix: "TSG_STATIC_",
+  define: {
+    "process.env": {}
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

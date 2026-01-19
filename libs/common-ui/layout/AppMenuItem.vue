@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, watch } from "vue";
+import { computed, onBeforeMount, ref, watch } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 
 import { useLayout } from "./composables/layout";
@@ -39,6 +39,12 @@ watch(
       newVal === itemKey.value || newVal.startsWith(itemKey.value + "-");
   }
 );
+
+const childItems = computed<any[] | null>(() => {
+  return props.item && props.item.items && Array.isArray(props.item.items)
+    ? props.item.items
+    : null;
+});
 
 function itemClick(event, item) {
   if (item.disabled) {
@@ -83,7 +89,7 @@ function checkActiveRoute(item) {
       {{ item.label }}
     </div>
     <a
-      v-if="(!item.to || item.items) && item.visible !== false"
+      v-if="(!item.to || childItems) && item.visible !== false"
       :href="item.url"
       :class="item.class"
       :target="item.target"
@@ -92,11 +98,11 @@ function checkActiveRoute(item) {
       <i :class="item.icon" class="layout-menuitem-icon"></i>
       <span class="layout-menuitem-text">{{ item.label }}</span>
       <i
-        v-if="item.items"
+        v-if="childItems"
         class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
     </a>
     <router-link
-      v-if="item.to && !item.items && item.visible !== false"
+      v-if="item.to && !childItems && item.visible !== false"
       :class="[item.class, { 'active-route': checkActiveRoute(item) }]"
       tabindex="0"
       :to="item.to"
@@ -111,16 +117,16 @@ function checkActiveRoute(item) {
         severity="danger">
       </Badge>
       <i
-        v-if="item.items"
+        v-if="childItems"
         class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
     </router-link>
     <Transition
-      v-if="item.items && item.visible !== false"
+      v-if="childItems && item.visible !== false"
       name="layout-submenu">
       <ul v-show="!child ? true : isActiveMenu" class="layout-submenu">
         <app-menu-item
-          v-for="(child, i) in item.items"
-          :key="child"
+          v-for="(child, i) in childItems"
+          :key="`item-${i}-${child.label}`"
           :index="i"
           :item="child"
           :parent-item-key="itemKey"
