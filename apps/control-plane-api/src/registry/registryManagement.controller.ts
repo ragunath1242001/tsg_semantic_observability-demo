@@ -4,7 +4,8 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
-  Param
+  Param,
+  Post
 } from "@nestjs/common";
 import {
   ApiOAuth2,
@@ -112,5 +113,22 @@ export class RegistryManagementController {
       `Received request for catalog with participant ID: ${participantId}`
     );
     return await this.registryService.getCatalogByParticipantId(participantId);
+  }
+
+  @Post("refresh")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Refresh registry",
+    description:
+      "Force refresh the registry by re-crawling all participant addresses and catalogs."
+  })
+  @ApiOkResponse({
+    description: "Registry refresh initiated successfully"
+  })
+  @ApiForbiddenResponseDefault()
+  async refreshRegistry(): Promise<{ message: string }> {
+    this.logger.log("Received request to refresh registry");
+    await this.registryService.crawl();
+    return { message: "Registry refresh completed successfully" };
   }
 }

@@ -113,6 +113,18 @@ export class CatalogClientService {
     }
   }
 
+  async refreshRegistry(): Promise<{ message: string }> {
+    try {
+      const response = await this.axiosManagement.post<{ message: string }>(
+        "/registry/refresh"
+      );
+      this.logger.debug("Triggered registry refresh on control plane");
+      return response.data;
+    } catch (err) {
+      throw parseNetworkError(err, "refreshing registry on control plane");
+    }
+  }
+
   /**
    * Get a dataset conforming to a specific standard from a participant's catalog
    * @param conformsTo - Conformance standard URI

@@ -28,6 +28,7 @@ const algorithmStore = useAlgorithmInstancesStore();
 const runtimeStore = useRuntimeStore();
 
 const algorithmId = crypto.randomUUID();
+const refreshingRegistry = ref(false);
 
 let participantId = "";
 const participantOptions = computed(() => {
@@ -425,6 +426,38 @@ const getParticipantId = async () => {
   }
 };
 
+const refreshRegistry = async () => {
+  refreshingRegistry.value = true;
+  try {
+    await registryStore.refreshRegistry();
+
+    const participantDids = participants.value
+      .map((p) => p.didId)
+      .filter((didId) => didId && didId.trim() !== "");
+
+    await Promise.all(
+      participantDids.map((didId) => getParticipantCatalog(didId))
+    );
+
+    toast.add({
+      severity: "success",
+      summary: "Registry Refreshed",
+      detail: "The registry has been refreshed successfully",
+      life: 3000
+    });
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to refresh registry",
+        defaultMessage: "Could not refresh the registry"
+      })
+    );
+  } finally {
+    refreshingRegistry.value = false;
+  }
+};
+
 onMounted(async () => {
   await Promise.allSettled([
     getParticipantId(),
@@ -585,16 +618,25 @@ onMounted(async () => {
             </template>
           </StepPanel>
           <StepPanel v-slot="{ activateCallback }" value="3">
-            <p class="mb-4">
-              Add participants to the algorithm instance below.
-              <template v-if="selectedProjectAgreement">
-                Only participants from the selected project agreement are
-                available.
-              </template>
-              <template v-else>
-                All registered participants are available for selection.
-              </template>
-            </p>
+            <div class="flex justify-between items-center mb-4">
+              <p class="mb-0">
+                Add participants to the algorithm instance below.
+                <template v-if="selectedProjectAgreement">
+                  Only participants from the selected project agreement are
+                  available.
+                </template>
+                <template v-else>
+                  All registered participants are available for selection.
+                </template>
+              </p>
+              <Button
+                icon="pi pi-refresh"
+                label="Refresh Registry"
+                :loading="refreshingRegistry"
+                severity="secondary"
+                size="small"
+                @click="refreshRegistry" />
+            </div>
             <div class="mt-4">
               <div
                 v-for="(participant, index) in participants"

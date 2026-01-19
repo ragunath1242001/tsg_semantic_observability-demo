@@ -19,6 +19,7 @@ const toast = useToast();
 const registryStore = useRegistryStore();
 const loading = ref(false);
 const submitted = ref(false);
+const refreshingRegistry = ref(false);
 
 const validFromDate = ref<Date>(new Date());
 const validUntilDate = ref<Date>(
@@ -177,6 +178,29 @@ onMounted(async () => {
   formData.value.id = crypto.randomUUID();
   await registryStore.initialize();
 });
+
+const refreshRegistry = async () => {
+  refreshingRegistry.value = true;
+  try {
+    await registryStore.refreshRegistry();
+    toast.add({
+      severity: "success",
+      summary: "Registry Refreshed",
+      detail: "The registry has been refreshed successfully",
+      life: 3000
+    });
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to refresh registry",
+        defaultMessage: "Could not refresh the registry"
+      })
+    );
+  } finally {
+    refreshingRegistry.value = false;
+  }
+};
 </script>
 
 <template>
@@ -279,7 +303,16 @@ onMounted(async () => {
       </div>
 
       <Divider />
-      <h3 class="text-xl font-semibold">Participants</h3>
+      <div class="flex justify-between items-center">
+        <h3 class="text-xl font-semibold">Participants</h3>
+        <Button
+          icon="pi pi-refresh"
+          label="Refresh Registry"
+          :loading="refreshingRegistry"
+          severity="secondary"
+          size="small"
+          @click="refreshRegistry" />
+      </div>
       <p class="text-color-secondary">
         Select participants from the registry to include in this project
         agreement.

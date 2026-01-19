@@ -92,6 +92,22 @@ export class DataPlaneManagementController {
     return await this.catalog.getParticipantCatalog(participantId);
   }
 
+  @Post("/registry/refresh")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Refresh registry",
+    description:
+      "Force refresh the registry by triggering a re-crawl of all participant addresses and catalogs on the Control Plane."
+  })
+  @ApiOkResponse({
+    description: "Registry refresh initiated successfully"
+  })
+  @ApiForbiddenResponseDefault()
+  async refreshRegistry(): Promise<{ message: string }> {
+    this.logger.log("Triggering registry refresh on Control Plane");
+    return await this.catalog.refreshRegistry();
+  }
+
   @Get("/participant-id")
   @ApiOperation({
     summary: "Get current participant ID",

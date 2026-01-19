@@ -32,7 +32,7 @@ const datasetView = ref(false);
 const datasetData = ref<DatasetDto>();
 
 const { catalog, url } = toRefs(props);
-const datasetList = ref(catalog.value.dataset);
+const datasetList = computed(() => catalog.value.dataset || []);
 const datasetVersionList = computed(() => {
   return datasetList.value
     .filter((dataset) => !dataset.isVersionOf)
@@ -82,17 +82,27 @@ const getDataset = async (datasetId: string) => {
 };
 
 const updateDatasets = (dataset: DatasetDto) => {
-  const indexToBeReplaced = datasetList.value.findIndex(
+  const indexToBeReplaced = catalog.value.dataset?.findIndex(
     (ds) => ds["@id"] === dataset["@id"]
   );
-  datasetList.value[indexToBeReplaced] = dataset;
+  if (
+    indexToBeReplaced !== undefined &&
+    indexToBeReplaced >= 0 &&
+    catalog.value.dataset
+  ) {
+    catalog.value.dataset[indexToBeReplaced] = dataset;
+  }
   return;
 };
 
 const deleteDataset = async (datasetId: string) => {
   try {
     await http.delete(`management/catalog/dataset/${datasetId}`);
-    datasetList.value = datasetList.value.filter((d) => d["@id"] !== datasetId);
+    if (catalog.value.dataset) {
+      catalog.value.dataset = catalog.value.dataset.filter(
+        (d) => d["@id"] !== datasetId
+      );
+    }
   } catch (error) {
     toast.add(
       toastError({

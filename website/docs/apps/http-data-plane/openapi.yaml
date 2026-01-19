@@ -204,6 +204,24 @@ paths:
       security: *a5
       summary: Get participant catalog
       tags: *a6
+  /api/management/registry/refresh:
+    post:
+      description: Force refresh the registry by triggering a re-crawl of all
+        participant addresses and catalogs on the Control Plane.
+      operationId: DataPlaneManagementController_refreshRegistry
+      parameters: []
+      responses:
+        "200":
+          description: Registry refresh initiated successfully
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a5
+      summary: Refresh registry
+      tags: *a6
   /api/management/refresh:
     post:
       description: Use this endpoint to (re)register your data plane. Currently it
