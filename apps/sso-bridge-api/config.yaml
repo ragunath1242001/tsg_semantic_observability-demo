@@ -7,6 +7,9 @@ db:
   type: "sqlite"
   database: "sso-bridge-db.sqlite"
 
+# Optional: Customize the issuer name shown in authenticator apps for 2FA
+# twoFactorIssuerName: "My Organization SSO"
+
 initRoles:
   - name: "ssobridge_admin"
     description: "SSO bridge administrator role with full access"
@@ -32,6 +35,7 @@ initUsers:
     email: "alice@example.com"
     roles:
       - "ssobridge_admin"
+    require2FA: false # Optional: Enable two-factor authentication (default: false)
 
   - username: "bob"
     password: "password"

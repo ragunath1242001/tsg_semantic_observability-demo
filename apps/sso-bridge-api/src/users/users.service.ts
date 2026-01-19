@@ -1,15 +1,17 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AppError, PaginationOptionsDto } from "@tsg-dsp/common-api";
-import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
+import { AppError, Paginated, PaginationOptionsDto } from "@tsg-dsp/common-api";
+import { UserDto, UserWithPasswordDto } from "@tsg-dsp/sso-bridge-dtos";
 import { compare, hash } from "bcrypt";
 import { Request } from "express";
 import { Repository } from "typeorm";
 
+import { TwoFactorHelper } from "../auth/two-factor.helper.js";
 import { InitUser, RootConfig } from "../config.js";
 import { OauthUser } from "../model/user.dao.js";
 import { RolesService } from "../roles/roles.service.js";
 import { getUser } from "../utils/session.js";
+import { oauthUserToDto } from "../utils/user.js";
 
 @Injectable()
 export class UsersService {
@@ -17,7 +19,8 @@ export class UsersService {
     private readonly rootConfig: RootConfig,
     @InjectRepository(OauthUser)
     private readonly userRepository: Repository<OauthUser>,
-    private readonly rolesService: RolesService
+    private readonly rolesService: RolesService,
+    private readonly twoFactorHelper: TwoFactorHelper
   ) {
     this.initialized = this.init();
   }
@@ -52,12 +55,14 @@ export class UsersService {
     );
   }
 
-  async getUsers(paginationOptions: PaginationOptionsDto) {
+  async getUsers(
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<UserDto[]>> {
     const [data, total] = await this.userRepository.findAndCount({
       ...paginationOptions.typeOrm
     });
     return {
-      data,
+      data: data.map(oauthUserToDto),
       total
     };
   }
@@ -75,6 +80,10 @@ export class UsersService {
     return user;
   }
 
+  async has2FACredentials(userId: number): Promise<boolean> {
+    return await this.twoFactorHelper.has2FACredentials(userId);
+  }
+
   async getUserByEmail(email: string): Promise<OauthUser> {
     const user = await this.userRepository.findOne({
       where: { email }
@@ -88,7 +97,9 @@ export class UsersService {
     return user;
   }
 
-  async createUser(createUserData: Partial<UserDto>): Promise<OauthUser> {
+  async createUser(
+    createUserData: Partial<UserWithPasswordDto>
+  ): Promise<OauthUser> {
     const user = this.userRepository.create(
       await this.fromUserInput(createUserData)
     );
@@ -100,7 +111,7 @@ export class UsersService {
    * Transforms roles from string[] to OauthRole[] objects.
    */
   async fromUserInput(
-    userData: Partial<InitUser> | Partial<UserDto>
+    userData: Partial<InitUser> | Partial<UserWithPasswordDto>
   ): Promise<OauthUser> {
     return {
       ...userData,
@@ -126,15 +137,17 @@ export class UsersService {
 
   async updateUser(
     id: number,
-    updateData: Partial<UserDto>
+    updateData: Partial<UserWithPasswordDto>
   ): Promise<OauthUser> {
     const user = await this.getUser(id);
     if (updateData.password) {
       updateData.password = await hash(updateData.password, 10);
     }
+    const transformedData = await this.fromUserInput(updateData);
+
     return await this.userRepository.save({
       ...user,
-      ...(await this.fromUserInput(updateData))
+      ...transformedData
     });
   }
 
@@ -156,5 +169,88 @@ export class UsersService {
       );
     }
     return user;
+  }
+
+  async getUserProfile(request: Request) {
+    const currentUser = getUser(request);
+    if (!currentUser) {
+      throw new AppError("Not authenticated", HttpStatus.UNAUTHORIZED);
+    }
+    const user = await this.getUser(currentUser.id);
+    const has2FA = await this.has2FACredentials(user.id);
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      roles: user.roles?.map((role) => role.name) || [],
+      require2FA: user.require2FA,
+      has2FA
+    };
+  }
+
+  async changePassword(
+    request: Request,
+    currentPassword: string,
+    newPassword: string
+  ) {
+    const currentUser = getUser(request);
+    if (!currentUser) {
+      throw new AppError("Not authenticated", HttpStatus.UNAUTHORIZED);
+    }
+
+    const user = await this.getUser(currentUser.id);
+    const isValid = await compare(currentPassword, user.password);
+    if (!isValid) {
+      throw new AppError(
+        "Current password is incorrect",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    user.password = await hash(newPassword, 10);
+    await this.userRepository.save(user);
+    return { success: true };
+  }
+
+  async verifyPassword(userId: number, password: string): Promise<boolean> {
+    const user = await this.getUser(userId);
+    return await compare(password, user.password);
+  }
+
+  async setRequire2FA(userId: number, require2FA: boolean): Promise<void> {
+    const user = await this.getUser(userId);
+    user.require2FA = require2FA;
+    await this.userRepository.save(user);
+  }
+
+  async getUserWithRelations(
+    userId: number,
+    relations: string[]
+  ): Promise<OauthUser> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations
+    });
+    if (!user) {
+      throw new AppError(
+        `User with id ${userId} not found`,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return user;
+  }
+
+  async resetUser2FA(userId: number): Promise<void> {
+    const user = await this.getUser(userId);
+
+    const has2FA = await this.has2FACredentials(user.id);
+    if (!has2FA) {
+      throw new AppError(
+        "User does not have 2FA enabled",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    await this.twoFactorHelper.deleteAll2FACredentials(user.id);
   }
 }

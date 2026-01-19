@@ -1,14 +1,21 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
-import { UserDto } from "@tsg-dsp/sso-bridge-dtos/dist/users.dto.js";
+import { UserWithPasswordDto } from "@tsg-dsp/sso-bridge-dtos/dist/users.dto.js";
 import { plainToInstance } from "class-transformer";
 import { Request } from "express";
 
+import { RecoveryCodeService } from "../auth/recovery-code.service.js";
+import { TotpService } from "../auth/totp.service.js";
+import { TwoFactorHelper } from "../auth/two-factor.helper.js";
+import { WebAuthnService } from "../auth/webauthn.service.js";
 import { RootConfig } from "../config.js";
 import { OauthClient } from "../model/client.dao.js";
+import { RecoveryCode } from "../model/recovery-code.dao.js";
 import { OauthRole } from "../model/role.dao.js";
+import { TotpCredential } from "../model/totp-credential.dao.js";
 import { OauthUser } from "../model/user.dao.js";
+import { WebAuthnCredential } from "../model/webauthn-credential.dao.js";
 import { RolesService } from "../roles/roles.service.js";
 import { UsersService } from "./users.service.js";
 
@@ -21,12 +28,30 @@ describe("UsersService Tests", () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([OauthUser, OauthRole, OauthClient]),
-        TypeOrmModule.forFeature([OauthUser, OauthRole, OauthClient])
+        TypeOrmTestHelper.instance.module([
+          OauthUser,
+          OauthRole,
+          OauthClient,
+          TotpCredential,
+          WebAuthnCredential,
+          RecoveryCode
+        ]),
+        TypeOrmModule.forFeature([
+          OauthUser,
+          OauthRole,
+          OauthClient,
+          TotpCredential,
+          WebAuthnCredential,
+          RecoveryCode
+        ])
       ],
       providers: [
         UsersService,
         RolesService,
+        TotpService,
+        WebAuthnService,
+        RecoveryCodeService,
+        TwoFactorHelper,
         {
           provide: RootConfig,
           useValue: plainToInstance(RootConfig, {})
@@ -48,7 +73,7 @@ describe("UsersService Tests", () => {
 
   describe("UsersService", () => {
     it("should create a new user", async () => {
-      const userData: Partial<UserDto> = {
+      const userData: Partial<UserWithPasswordDto> = {
         username: "Alice",
         password: "password",
         email: "alice@example.com",

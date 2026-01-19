@@ -221,6 +221,10 @@ export class General {
     | "ES256"
     | "ES384"
     | "ES512" = "ES256";
+
+  @IsBoolean()
+  @IsOptional()
+  public readonly require2FA: boolean = false;
 }
 
 export class Application {

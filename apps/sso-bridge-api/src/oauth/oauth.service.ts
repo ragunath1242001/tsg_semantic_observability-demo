@@ -108,6 +108,19 @@ export class OauthService {
     request: AuthorizationRequest
   ) {
     const user = await this.usersService.validateUser(username, password);
+
+    if (user.require2FA) {
+      const has2FACredentials = await this.usersService.has2FACredentials(
+        user.id
+      );
+      if (!has2FACredentials) {
+        throw new AppError(
+          "2FA setup required. Please complete 2FA setup before using OAuth login.",
+          HttpStatus.FORBIDDEN
+        );
+      }
+    }
+
     const loginResult = await this.handleAuthorizationRequest(request, user);
     return loginResult;
   }

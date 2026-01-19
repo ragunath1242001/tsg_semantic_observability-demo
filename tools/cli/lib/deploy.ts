@@ -208,11 +208,13 @@ export class Deploy {
       }
 
       await this.uninstallReleases(Array.from(allReleases), options.dryRun);
-      await execPromise(
-        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
-        options.dryRun,
-        this.cwd
-      );
+      if (general.oauthClientAuthMethod !== "private_key_jwt") {
+        await execPromise(
+          `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
+          options.dryRun,
+          this.cwd
+        );
+      }
       // Clear deploy state section but keep other sections
       this.writeState(statePath, {
         ...state,

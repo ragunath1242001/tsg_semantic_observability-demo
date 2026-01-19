@@ -68,21 +68,28 @@ export class TokenService {
     return keys.map((key) => key.publicKey);
   }
 
+  private isOauthClient(
+    subject: OauthClient | OauthUser
+  ): subject is OauthClient {
+    return (subject as OauthClient).clientId !== undefined;
+  }
+
   private async createJWT(
     type: "access_token" | "refresh_token",
     client_id: string,
     subject: OauthClient | OauthUser,
     nonce?: string
   ): Promise<string> {
-    const subjectId =
-      subject instanceof OauthUser ? `${subject.id}` : subject.clientId;
+    const subjectId = this.isOauthClient(subject)
+      ? subject.clientId
+      : `${subject.id}`;
 
     const claims: Record<string, any> = {
       roles: subject.roles.map((role) => role.name),
       tokenType: type
     };
 
-    if (subject instanceof OauthUser) {
+    if (!this.isOauthClient(subject)) {
       claims.username = subject.username;
       claims.email = subject.email;
     }

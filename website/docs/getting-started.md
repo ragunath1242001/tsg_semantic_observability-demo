@@ -39,6 +39,8 @@ tsg --version
 
 The TSG Playground is a demonstration dataspace that allows you to quickly experience TSG's capabilities without setting up a complete ecosystem.
 
+> **Security Note**: The playground example uses default security settings suitable for testing. For production deployments, consider enabling [enhanced security features](./tools/cli/configuration.md#security-features-for-production) such as `private_key_jwt` authentication and two-factor authentication (2FA).
+
 ### Step 1: Request Playground Access
 
 1. **Navigate to the TSG Playground**: Visit `https://playground.dataspac.es`
@@ -152,6 +154,8 @@ Access your participant interfaces:
 
 > **Note**: Replace `my-participant` with your actual namespace and `dataspace.my-org.example` with your configured domain.
 
+> **Security Tip**: After initial deployment, access the SSO Bridge web interface to review user settings and optionally enable two-factor authentication for enhanced account security.
+
 ## Next Steps
 
 ### Explore Your Participant
@@ -172,6 +176,7 @@ Ready for more complex deployments? Explore these advanced scenarios:
 
 - **[Complete Ecosystem Setup](./tools/cli/README.md#complete-ecosystem-deployment)**: Deploy your own dataspace with multiple participants
 - **[Production Deployment Guide](./deployment/)**: Production-ready deployment strategies
+- **[Security Features](./tools/cli/configuration.md#security-features-for-production)**: Enable 2FA and private_key_jwt for enhanced security
 - **[Custom Data Planes](./apps/)**: Implementing custom data plane connectors
 
 ## Troubleshooting

@@ -10,7 +10,9 @@ The TSG CLI tool is a powerful command-line utility for deploying and managing T
 
 **New to TSG?** Start with the [Getting Started Guide](../../getting-started.md) for step-by-step instructions.
 
-**Need configuration help?** See the [Configuration Reference](./configuration.md) for detailed configuration options.
+**Need configuration help?** See the [Configuration Reference](./configuration.md) for detailed configuration options including security features like 2FA and private_key_jwt authentication.
+
+**Setting up production?** Check out the [Security Features](./configuration.md#security-features-for-production) section for recommendations on securing your deployment.
 
 ## Installation
 
@@ -63,6 +65,7 @@ Options:
 Commands:
   bootstrap [options] <scope>  Bootstrap CLI utility to generate configuration files
   deploy [options] <scope>     Deploy configuration to an Kubernetes cluster (requires Helm to be installed)
+  keys                         Manage cryptographic keys for client authentication
   help [command]               display help for command
 ```
 
@@ -137,6 +140,47 @@ tsg deploy participant --dry-run
 # Show differences before deploying
 tsg deploy ecosystem --diff
 ```
+
+### Keys Command
+
+Manages cryptographic keys for `private_key_jwt` client authentication:
+
+```
+Usage: tsg-cli keys <command>
+
+Manage cryptographic keys for client authentication
+
+Commands:
+  generate [options]  Generate a new key pair for private_key_jwt client authentication
+```
+
+**Generate Subcommand**:
+```
+Usage: tsg-cli keys generate [options]
+
+Generate a new key pair for private_key_jwt client authentication
+
+Options:
+  -o, --output <dir>          output directory for generated keys
+  -a, --algorithm <algorithm> key algorithm (RS256, RS384, RS512, ES256, ES384, ES512)
+  -k, --key-id <keyId>        key ID (kid)
+  -y, --yes                   assume yes for all prompts (default: false)
+  -h, --help                  display help for command
+```
+
+**Examples:**
+```bash
+# Interactive key generation (will prompt for options)
+tsg keys generate
+
+# Generate with specific algorithm
+tsg keys generate --algorithm ES256 --output ./keys
+
+# Non-interactive generation
+tsg keys generate --algorithm RS256 --key-id my-key-2024 --yes
+```
+
+> **Note**: The `tsg bootstrap` command automatically generates all required keys when using `oauthClientAuthMethod: private_key_jwt`. This command is useful for manual key generation or key rotation scenarios.
 
 ## Configuration Files
 

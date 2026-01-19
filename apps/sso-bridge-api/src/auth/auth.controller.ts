@@ -5,20 +5,26 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Redirect,
   Req
 } from "@nestjs/common";
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { nonEmptyStringPipe } from "@tsg-dsp/common-api";
 import { Request } from "express";
 
+import { RootConfig } from "../config.js";
 import { OauthUser } from "../model/user.dao.js";
+import { oauthUserToDto } from "../utils/user.js";
 import { User } from "./auth.guard.js";
 import { AuthService } from "./auth.service.js";
 
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly config: RootConfig
+  ) {}
 
   @Get("user")
   @ApiOperation({
@@ -30,13 +36,7 @@ export class AuthController {
     if (user) {
       return {
         state: "authenticated",
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          roles: user.roles,
-          grants: user.grants
-        }
+        user: oauthUserToDto(user)
       };
     } else {
       return {
@@ -112,8 +112,36 @@ export class AuthController {
     summary: "Logout",
     description: "Logout the current user."
   })
-  @HttpCode(HttpStatus.OK)
+  @Redirect("/", HttpStatus.FOUND)
   async logout(@Req() request: Request) {
-    return await this.authService.logout(request);
+    await this.authService.logout(request);
+    return {
+      url: this.config.server.publicAddress
+    };
+  }
+
+  @Post("2fa/verify")
+  @ApiOperation({
+    summary: "Verify 2FA Token",
+    description: "Verify two-factor authentication token for login"
+  })
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        token: {
+          example: "123456",
+          type: "string"
+        }
+      },
+      required: ["token"]
+    }
+  })
+  @HttpCode(HttpStatus.OK)
+  async verify2FA(
+    @Body("token", nonEmptyStringPipe) token: string,
+    @Req() request: Request
+  ) {
+    return await this.authService.verify2FA(token, request);
   }
 }

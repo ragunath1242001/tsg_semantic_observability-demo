@@ -16,4 +16,6 @@
 @source "../layout/";
 
 @source inline("{sm:,md:,lg:,xl:,2xl:,}col-span-{1..12}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}col-start-{1..12}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}col-end-{1..12}");
 @source inline("hidden");

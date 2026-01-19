@@ -11,6 +11,8 @@ TSG supports flexible deployment strategies using the [TSG CLI tool](../tools/cl
 
 For detailed configuration options, see the [CLI Configuration Reference](../tools/cli/configuration.md).
 
+For production deployments, review the [Security Features](../tools/cli/configuration.md#security-features-for-production) section to enable enhanced security measures such as `private_key_jwt` authentication and two-factor authentication (2FA).
+
 ## Prerequisites
 
 ### Infrastructure Requirements

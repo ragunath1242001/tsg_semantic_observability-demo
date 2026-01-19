@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { AuthModule } from "../auth/auth.module.js";
 import { ClientsModule } from "../clients/clients.module.js";
 import { KeyDao } from "../model/keys.dao.js";
 import { TokenDao } from "../model/token.dao.js";
@@ -16,7 +17,8 @@ import { TokenService } from "./token.service.js";
   imports: [
     TypeOrmModule.forFeature([TokenDao, KeyDao]),
     UsersModule,
-    ClientsModule
+    ClientsModule,
+    AuthModule
   ],
   providers: [OauthService, TokenService, IngressAuthService],
   controllers: [OauthController, MetadataController, IngressAuthController],

@@ -25,6 +25,9 @@ export class OauthUser extends MetaEntity {
   @Column({ type: String })
   email!: string;
 
+  @Column({ type: Boolean, default: false })
+  require2FA!: boolean;
+
   @ManyToMany(() => OauthRole, { eager: true })
   @JoinTable()
   @Transform(

@@ -15,7 +15,7 @@ import {
   PaginationQuery,
   UsePagination
 } from "@tsg-dsp/common-api";
-import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
+import { UserWithPasswordDto } from "@tsg-dsp/sso-bridge-dtos";
 import { Request } from "express";
 
 import { AuthGuard, ManagementRoles } from "../auth/auth.guard.js";
@@ -33,12 +33,7 @@ export class UsersController {
   @ApiOperation({ summary: "Get all users" })
   @ApiResponse({ status: 200, description: "List of users returned." })
   async getUsers(@PaginationQuery() paginationOptions: PaginationOptionsDto) {
-    const result = await this.usersService.getUsers(paginationOptions);
-    const transformedData = result.data.map((user) => ({
-      ...user,
-      roles: user.roles?.map((role) => role.name) || []
-    }));
-    return { data: transformedData, total: result.total };
+    return await this.usersService.getUsers(paginationOptions);
   }
 
   @Post("create")
@@ -47,7 +42,7 @@ export class UsersController {
     status: 201,
     description: "The user has been successfully created."
   })
-  async createUser(@Body() createUserDto: Partial<UserDto>) {
+  async createUser(@Body() createUserDto: Partial<UserWithPasswordDto>) {
     return await this.usersService.createUser(createUserDto);
   }
 
@@ -65,8 +60,28 @@ export class UsersController {
   @ApiResponse({ status: 200, description: "User successfully updated." })
   async updateUser(
     @Param("id") id: number,
-    @Body() updateUserDto: Partial<UserDto>
+    @Body() updateUserDto: Partial<UserWithPasswordDto>
   ) {
     return this.usersService.updateUser(id, updateUserDto);
+  }
+
+  @Post(":id/reset-2fa")
+  @ApiOperation({
+    summary: "Reset 2FA for a user",
+    description:
+      "Admin endpoint to reset two-factor authentication for a user. Deletes all TOTP credentials, WebAuthn credentials, and recovery codes."
+  })
+  @ApiParam({ name: "id", type: Number, description: "User id" })
+  @ApiResponse({
+    status: 200,
+    description: "2FA successfully reset for the user."
+  })
+  async resetUser2FA(@Param("id") id: number) {
+    await this.usersService.resetUser2FA(id);
+    return {
+      success: true,
+      message:
+        "2FA has been reset for this user. They will need to set it up again on their next login."
+    };
   }
 }

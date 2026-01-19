@@ -13,6 +13,8 @@ The SSO Bridge provides unified authentication and authorization services across
 - **Multi-Protocol Authentication**: Support for OAuth2.0, OpenID Connect, and Verifiable Presentation protocols
 - **Centralized SSO**: Single sign-on across Control Planes, Data Planes, and user interfaces
 - **SSI Integration**: Native integration with TSG Mobile Wallet and Verifiable Credentials
+- **Two-Factor Authentication**: TOTP and WebAuthn support for enhanced account security
+- **Advanced Client Authentication**: Support for `private_key_jwt` method per RFC 7523
 - **Kubernetes Native**: Deep integration with Kubernetes authentication and ingress controllers
 - **Role-Based Access Control**: Fine-grained authorization with role management
 

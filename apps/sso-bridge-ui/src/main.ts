@@ -6,6 +6,7 @@ import { createPinia } from "pinia";
 import {
   Badge,
   Button,
+  Checkbox,
   Column,
   DataTable,
   Dialog,
@@ -71,6 +72,7 @@ app.directive("tooltip", Tooltip);
 app.component("Badge", Badge);
 app.component("Button", Button);
 app.component("Card", Card);
+app.component("Checkbox", Checkbox);
 app.component("Column", Column);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("DataTable", DataTable);
