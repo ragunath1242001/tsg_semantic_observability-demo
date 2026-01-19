@@ -72,6 +72,14 @@ The platform includes extensive key management capabilities designed for enterpr
 
 The TSG platform implements standardized data formats and schema validation to ensure interoperability and data integrity across all system components.
 
+### DCAT for Data Catalog Metadata
+
+TSG implements [DCAT 3 (Data Catalog Vocabulary)](https://www.w3.org/TR/vocab-dcat-3/) as the standard metadata model for describing data catalogs, datasets, and distributions in data spaces. This vocabulary provides a uniform way to represent dataset metadata, enabling standardized discovery and exchange of data resources between participants.
+
+The implementation extends DCAT with domain-specific application profiles such as [HealthDCAT-AP](https://healthdataeu.pages.code.europa.eu/healthdcat-ap/) for health data scenarios, providing additional properties for domain-specific metadata like patient age ranges, medical coding systems, and data quality measurements.
+
+For a detailed description of the DCAT structure used in TSG, including the relationship between Catalogs, Datasets, Distributions, and DataServices, see the [DCAT Metadata Structure](./dcat-structure.md) documentation.
+
 ### Schema Validation with JSON Schema
 
 API request and response validation is implemented using [JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12/schema), providing robust validation capabilities for all data exchanges. The runtime validation system provides detailed error messages that help developers quickly identify and resolve data format issues.
