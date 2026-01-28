@@ -1,7 +1,7 @@
-import { jest } from "@jest/globals";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import { Repository } from "typeorm";
+import { vi } from "vitest";
 
 import { SplitModeService } from "../bridge/split-mode/split-mode.service.js";
 import { RootConfig } from "../config.js";
@@ -11,16 +11,16 @@ import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 describe("AlgorithmInstancesService (server peer start)", () => {
   it("emits a start-requested event (does not spawn job) when started by peer in server mode", async () => {
     const repo = {
-      findOne: jest.fn(),
-      save: jest.fn()
+      findOne: vi.fn(),
+      save: vi.fn()
     } as unknown as Repository<AlgorithmInstanceDao>;
 
     const eventEmitter = {
-      emit: jest.fn()
+      emit: vi.fn()
     } as unknown as EventEmitter2;
 
     const catalog = {
-      getParticipantId: jest
+      getParticipantId: vi
         .fn<(...args: unknown[]) => Promise<string>>()
         .mockResolvedValue("did:web:server")
     } as unknown as CatalogClientService;

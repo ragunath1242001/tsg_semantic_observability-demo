@@ -1,4 +1,3 @@
-import { describe, expect, it } from "@jest/globals";
 import {
   VerifiableCredential,
   VerifiablePresentation
@@ -7,6 +6,7 @@ import { DcqlQuery, OID4VPAuthorizationResponse } from "@tsg-dsp/common-dtos";
 import { plainToInstance } from "class-transformer";
 import { JWK } from "jose";
 import { JWTInvalid } from "jose/errors";
+import { describe, expect, it } from "vitest";
 
 import { TrustAnchor } from "../model.js";
 import { generateSignedJwt } from "../signing/sign.js";

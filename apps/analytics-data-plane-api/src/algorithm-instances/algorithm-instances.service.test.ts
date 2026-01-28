@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Test, TestingModule } from "@nestjs/testing";
@@ -32,6 +31,7 @@ import {
 import { plainToClass } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { vi } from "vitest";
 
 import { SplitModeService } from "../bridge/split-mode/split-mode.service.js";
 import { RootConfig } from "../config.js";
@@ -216,9 +216,10 @@ describe("AlgorithmInstancesService", () => {
 
   it("should create an algorithm instance", async () => {
     // Mock the distribution method to avoid actual HTTP calls
-    jest
-      .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
-      .mockResolvedValue();
+    vi.spyOn(
+      algorithmInstancesService,
+      "distributeAlgorithmInstance"
+    ).mockResolvedValue();
 
     const result = await algorithmInstancesService.createAlgorithmInstance(
       sampleAlgorithmInstanceDto
@@ -258,11 +259,12 @@ describe("AlgorithmInstancesService", () => {
   });
 
   it("emits algorithm-instances.updated on updateStatus in server mode", async () => {
-    const emitSpy = jest.spyOn(eventEmitter, "emit");
+    const emitSpy = vi.spyOn(eventEmitter, "emit");
 
-    jest
-      .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
-      .mockResolvedValue();
+    vi.spyOn(
+      algorithmInstancesService,
+      "distributeAlgorithmInstance"
+    ).mockResolvedValue();
 
     const created = await algorithmInstancesService.createAlgorithmInstance(
       sampleAlgorithmInstanceDto
@@ -279,7 +281,7 @@ describe("AlgorithmInstancesService", () => {
   });
 
   it("emits algorithm-instances.created on receiveAlgorithmInstanceFromPeer", async () => {
-    const emitSpy = jest.spyOn(eventEmitter, "emit");
+    const emitSpy = vi.spyOn(eventEmitter, "emit");
 
     const secret = "peer-transfer-secret";
     await algorithmInstancesService["algorithmInstanceRepository"]["manager"]
@@ -320,9 +322,10 @@ describe("AlgorithmInstancesService", () => {
     );
   });
   it("should link transfers to algorithm instance", async () => {
-    jest
-      .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
-      .mockResolvedValue();
+    vi.spyOn(
+      algorithmInstancesService,
+      "distributeAlgorithmInstance"
+    ).mockResolvedValue();
     const createDto: CreateAlgorithmInstanceDto = {
       ...sampleAlgorithmInstanceDto,
       id: "test-instance-id-3"
@@ -383,9 +386,10 @@ describe("AlgorithmInstancesService", () => {
     ).rejects.toThrow("not found");
   });
   it("should create access tokens", async () => {
-    jest
-      .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
-      .mockResolvedValue();
+    vi.spyOn(
+      algorithmInstancesService,
+      "distributeAlgorithmInstance"
+    ).mockResolvedValue();
     const algorithmInstance =
       await algorithmInstancesService.createAlgorithmInstance({
         ...sampleAlgorithmInstanceDto,
@@ -414,9 +418,10 @@ describe("AlgorithmInstancesService", () => {
 
   describe("Project Agreement Validation", () => {
     it("should create algorithm instance without project agreement when not required", async () => {
-      jest
-        .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
-        .mockResolvedValue();
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
 
       const result = await algorithmInstancesService.createAlgorithmInstance({
         ...sampleAlgorithmInstanceDto,
@@ -437,38 +442,36 @@ describe("AlgorithmInstancesService", () => {
     });
 
     it("should throw error when project agreement is not finalized", async () => {
-      jest
-        .spyOn(
-          algorithmInstancesService["projectAgreementsService"]!,
-          "findById"
-        )
-        .mockResolvedValue({
-          id: 1,
-          projectId: "test-unfinalized-pa",
-          projectAgreement: {
-            id: "test-unfinalized-pa",
-            title: "Test Project",
-            description: "Test Description",
-            participants: [
-              { didId: "did:web:localhost", title: "Local" },
-              { didId: "did:web:remoteparty.com", title: "Remote" }
-            ],
-            validFrom: "2024-01-01",
-            validUntil: "2025-01-01",
-            purpose: "Testing",
-            researchQuestion: "Test?",
-            objectives: ["Test"],
-            hypotheses: ["Test"],
-            dataUseConditions: ["Test"],
-            securityMeasures: ["Test"],
-            complianceRequirements: ["Test"]
-          },
-          initiator: "did:web:localhost",
-          status: "WAITING_FOR_SIGNATURES",
-          signatures: {},
-          callbacks: [],
-          datasets: []
-        } as unknown as ProjectAgreementDao);
+      vi.spyOn(
+        algorithmInstancesService["projectAgreementsService"]!,
+        "findById"
+      ).mockResolvedValue({
+        id: 1,
+        projectId: "test-unfinalized-pa",
+        projectAgreement: {
+          id: "test-unfinalized-pa",
+          title: "Test Project",
+          description: "Test Description",
+          participants: [
+            { didId: "did:web:localhost", title: "Local" },
+            { didId: "did:web:remoteparty.com", title: "Remote" }
+          ],
+          validFrom: "2024-01-01",
+          validUntil: "2025-01-01",
+          purpose: "Testing",
+          researchQuestion: "Test?",
+          objectives: ["Test"],
+          hypotheses: ["Test"],
+          dataUseConditions: ["Test"],
+          securityMeasures: ["Test"],
+          complianceRequirements: ["Test"]
+        },
+        initiator: "did:web:localhost",
+        status: "WAITING_FOR_SIGNATURES",
+        signatures: {},
+        callbacks: [],
+        datasets: []
+      } as unknown as ProjectAgreementDao);
 
       await expect(
         algorithmInstancesService.createAlgorithmInstance({
@@ -483,36 +486,34 @@ describe("AlgorithmInstancesService", () => {
     });
 
     it("should throw error when algorithm instance participants are not in project agreement", async () => {
-      jest
-        .spyOn(
-          algorithmInstancesService["projectAgreementsService"]!,
-          "findById"
-        )
-        .mockResolvedValue({
-          id: 2,
-          projectId: "test-invalid-participants-pa",
-          projectAgreement: {
-            id: "test-invalid-participants-pa",
-            title: "Test Project",
-            description: "Test Description",
-            participants: [{ didId: "did:web:localhost", title: "Local" }],
-            validFrom: "2024-01-01",
-            validUntil: "2025-01-01",
-            purpose: "Testing",
-            researchQuestion: "Test?",
-            objectives: ["Test"],
-            hypotheses: ["Test"],
-            dataUseConditions: ["Test"],
-            securityMeasures: ["Test"],
-            complianceRequirements: ["Test"]
-          },
-          initiator: "did:web:localhost",
-          status: "FINALIZED",
-          signatures: {},
-          hash: "abc123",
-          callbacks: [],
-          datasets: []
-        } as unknown as ProjectAgreementDao);
+      vi.spyOn(
+        algorithmInstancesService["projectAgreementsService"]!,
+        "findById"
+      ).mockResolvedValue({
+        id: 2,
+        projectId: "test-invalid-participants-pa",
+        projectAgreement: {
+          id: "test-invalid-participants-pa",
+          title: "Test Project",
+          description: "Test Description",
+          participants: [{ didId: "did:web:localhost", title: "Local" }],
+          validFrom: "2024-01-01",
+          validUntil: "2025-01-01",
+          purpose: "Testing",
+          researchQuestion: "Test?",
+          objectives: ["Test"],
+          hypotheses: ["Test"],
+          dataUseConditions: ["Test"],
+          securityMeasures: ["Test"],
+          complianceRequirements: ["Test"]
+        },
+        initiator: "did:web:localhost",
+        status: "FINALIZED",
+        signatures: {},
+        hash: "abc123",
+        callbacks: [],
+        datasets: []
+      } as unknown as ProjectAgreementDao);
 
       await expect(
         algorithmInstancesService.createAlgorithmInstance({
@@ -532,9 +533,10 @@ describe("AlgorithmInstancesService", () => {
     });
 
     it("should successfully create algorithm instance with valid project agreement", async () => {
-      jest
-        .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
-        .mockResolvedValue();
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
       const datasetRepo =
         algorithmInstancesService["algorithmInstanceRepository"]["manager"][
           "getRepository"
@@ -579,12 +581,10 @@ describe("AlgorithmInstancesService", () => {
         callbacks: [],
         datasets: [savedDataset]
       });
-      jest
-        .spyOn(
-          algorithmInstancesService["projectAgreementsService"]!,
-          "findById"
-        )
-        .mockResolvedValue(savedProjectAgreement);
+      vi.spyOn(
+        algorithmInstancesService["projectAgreementsService"]!,
+        "findById"
+      ).mockResolvedValue(savedProjectAgreement);
       const result = await algorithmInstancesService.createAlgorithmInstance({
         ...sampleAlgorithmInstanceDto,
         id: "test-valid-pa-instance",

@@ -1,10 +1,10 @@
-import { jest } from "@jest/globals";
 import { EventEmitter2, EventEmitterModule } from "@nestjs/event-emitter";
 import { Test } from "@nestjs/testing";
 import type {
   BridgePushAlgorithmEventDataDto,
   BridgePushAlgorithmEventDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
+import { vi } from "vitest";
 
 import { RootConfig } from "../../config.js";
 import { INTERNAL_EVENTS } from "../../internal-events/internal-events.js";
@@ -16,8 +16,8 @@ import { BridgeWsServerListeners } from "./bridge-ws-server.listeners.js";
 describe("BridgeWsServerListeners", () => {
   it("publishes peer algorithm events to clients", async () => {
     const gateway = {
-      pushAlgorithmEventCreated: jest.fn(),
-      pushAlgorithmEventData: jest.fn()
+      pushAlgorithmEventCreated: vi.fn(),
+      pushAlgorithmEventData: vi.fn()
     } as unknown as Pick<
       BridgeWsGateway,
       "pushAlgorithmEventCreated" | "pushAlgorithmEventData"
@@ -56,6 +56,7 @@ describe("BridgeWsServerListeners", () => {
     };
 
     emitter.emit(INTERNAL_EVENTS.ALGORITHM_EVENTS_RECEIVED, createdPayload);
+    await new Promise((resolve) => setImmediate(resolve));
     expect(gateway.pushAlgorithmEventCreated).toHaveBeenCalledWith(
       createdPayload
     );
@@ -67,6 +68,7 @@ describe("BridgeWsServerListeners", () => {
     };
 
     emitter.emit(INTERNAL_EVENTS.ALGORITHM_EVENT_DATA_RECEIVED, dataPayload);
+    await new Promise((resolve) => setImmediate(resolve));
     expect(gateway.pushAlgorithmEventData).toHaveBeenCalledWith(dataPayload);
   });
 });

@@ -1,4 +1,3 @@
-import { beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
@@ -6,6 +5,7 @@ import { DIDMethod } from "@tsg-dsp/common-signing-and-validation";
 import { plainToInstance } from "class-transformer";
 import { DIDDocument } from "did-resolver";
 import { exportJWK, generateKeyPair } from "jose";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import { RootConfig } from "../config.js";
 import { KeyMaterialDao } from "../model/credentials.dao.js";

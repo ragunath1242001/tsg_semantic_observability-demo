@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -25,6 +24,7 @@ import {
 import { plainToClass } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { vi } from "vitest";
 
 import { LoggingConfig, RootConfig } from "../config.js";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
@@ -172,7 +172,7 @@ describe("Dataplane Service", () => {
   });
 
   afterEach(async () => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
   afterAll(() => {
     TypeOrmTestHelper.instance.teardownTestDB();

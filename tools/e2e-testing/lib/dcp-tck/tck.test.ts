@@ -41,7 +41,7 @@ describe("DCP TCK", () => {
   });
 
   // Test failing until JWT-based credentials are supported
-  test.failing("Exec TCK", async () => {
+  test.fails("Exec TCK", async () => {
     const { execTck } = await import("../exec-tck.js");
     const result = await execTck(
       "assets/dcp-tck-runtime.jar",

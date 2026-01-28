@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["vitest/globals", "node"],
     /* Visit https://aka.ms/tsconfig to read more about this file */
     /* Projects */
     /* Language and Environment */
@@ -29,5 +30,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": ["lib/"],
-  "exclude": ["jest.config.ts", "coverage/", "dist/"]
+  "exclude": ["vitest.config.ts", "coverage/", "dist/"]
 }

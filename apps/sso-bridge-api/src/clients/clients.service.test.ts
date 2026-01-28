@@ -1,9 +1,9 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { ClientDto } from "@tsg-dsp/sso-bridge-dtos/dist/clients.dto.js";
 import { plainToInstance } from "class-transformer";
+import { vi } from "vitest";
 
 import { RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
@@ -31,7 +31,7 @@ describe("ClientsService", () => {
         {
           provide: KubernetesService,
           useValue: {
-            applySecret: jest.fn()
+            applySecret: vi.fn()
           }
         },
         {

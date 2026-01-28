@@ -1,6 +1,6 @@
-import { jest } from "@jest/globals";
 import { ApiException, V1Secret } from "@kubernetes/client-node";
 import { Test, TestingModule } from "@nestjs/testing";
+import { vi } from "vitest";
 
 import { RootConfig } from "../config.js";
 import { KubernetesService } from "./kubernetes.service.js";
@@ -11,10 +11,10 @@ describe("KubernetesService", () => {
     kubernetesNamespace: "default"
   };
 
-  // Create a fake CoreV1Api object with jest.fn() mocks
+  // Create a fake CoreV1Api object with vi.fn() mocks
   const fakeCoreV1Api = {
-    createNamespacedSecret: jest.fn(),
-    replaceNamespacedSecret: jest.fn()
+    createNamespacedSecret: vi.fn(),
+    replaceNamespacedSecret: vi.fn()
   };
 
   beforeEach(async () => {
@@ -47,10 +47,9 @@ describe("KubernetesService", () => {
 
     it("should create secret if it does not exist", async () => {
       const fakeSecret: V1Secret = { ...secretBody };
-      jest
-        .spyOn(fakeCoreV1Api, "createNamespacedSecret")
-        // @ts-expect-error - mockResolvedValueOnce is not recognized
-        .mockResolvedValueOnce(fakeSecret);
+      vi.spyOn(fakeCoreV1Api, "createNamespacedSecret").mockResolvedValueOnce(
+        fakeSecret
+      );
 
       // Simulate successful creation
 
@@ -67,13 +66,11 @@ describe("KubernetesService", () => {
       const conflictError = new ApiException(409, "Conflict", "{}", {});
 
       // Simulate create returning a conflict error
-      // @ts-expect-error - mockRejectedValueOnce is not recognized
       fakeCoreV1Api.createNamespacedSecret.mockRejectedValue(conflictError);
 
       const fakeUpdatedSecret: V1Secret = { ...secretBody };
       // Simulate update success
       fakeCoreV1Api.replaceNamespacedSecret.mockResolvedValue(
-        // @ts-expect-error - mockResolvedValueOnce is not recognized
         fakeUpdatedSecret
       );
 
@@ -93,11 +90,9 @@ describe("KubernetesService", () => {
 
     it("should throw update error when secret update fails", async () => {
       const conflictError = new ApiException(409, "Conflict", "{}", {});
-      // @ts-expect-error - mockRejectedValueOnce is not recognized
       fakeCoreV1Api.createNamespacedSecret.mockRejectedValue(conflictError);
 
       const updateError: any = new Error("Update failed");
-      // @ts-expect-error - mockRejectedValueOnce is not recognized
       fakeCoreV1Api.replaceNamespacedSecret.mockRejectedValue(updateError);
 
       await expect(service.applySecret(secretName, data)).rejects.toThrow(
@@ -117,7 +112,6 @@ describe("KubernetesService", () => {
 
     it("should throw error if createNamespacedSecret fails with non-conflict error", async () => {
       const otherError = new ApiException(500, "Other error", "{}", {});
-      // @ts-expect-error - mockRejectedValueOnce is not recognized
       fakeCoreV1Api.createNamespacedSecret.mockRejectedValue(otherError);
 
       await expect(service.applySecret(secretName, data)).rejects.toThrow(

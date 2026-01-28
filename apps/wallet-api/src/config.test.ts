@@ -1,8 +1,8 @@
-import { describe, expect, it } from "@jest/globals";
 import { HttpStatus } from "@nestjs/common";
 import { AppError } from "@tsg-dsp/common-api";
 import { toArray } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
+import { describe, expect, it } from "vitest";
 
 import { RootConfig } from "./config.js";
 

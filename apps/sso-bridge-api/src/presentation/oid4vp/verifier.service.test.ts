@@ -1,5 +1,3 @@
-import { jest } from "@jest/globals";
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -15,6 +13,7 @@ import {
 import { plainToInstance } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { RecoveryCodeService } from "../../auth/recovery-code.service.js";
 import { TotpService } from "../../auth/totp.service.js";
@@ -83,7 +82,7 @@ describe("OID4VPVerifierService", () => {
         {
           provide: KubernetesService,
           useValue: {
-            applySecret: jest.fn()
+            applySecret: vi.fn()
           }
         },
         {

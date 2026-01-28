@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -34,6 +33,7 @@ import {
 import { plainToClass } from "class-transformer";
 import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { vi } from "vitest";
 
 import {
   DevWalletConfig,
@@ -75,7 +75,16 @@ describe("Transfer service", () => {
   let moduleRef: TestingModule;
 
   beforeAll(async () => {
-    jest.useFakeTimers({ doNotFake: ["Date"] });
+    vi.useFakeTimers({
+      toFake: [
+        "setTimeout",
+        "clearTimeout",
+        "setImmediate",
+        "clearImmediate",
+        "setInterval",
+        "clearInterval"
+      ]
+    });
     await TypeOrmTestHelper.instance.setupTestDB();
     const iamConfig = plainToClass(DevWalletConfig, {});
     const initCatalog = plainToClass(InitCatalog, {});
@@ -348,7 +357,7 @@ describe("Transfer service", () => {
   afterAll(() => {
     TypeOrmTestHelper.instance.teardownTestDB();
     server.close();
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe("Consumer interactions", () => {
@@ -640,8 +649,8 @@ describe("Transfer service", () => {
         []
       );
       localProcessId = handledRequest.providerPid;
-      jest.runAllTimers();
-      jest.useRealTimers();
+      vi.runAllTimers();
+      vi.useRealTimers();
       await new Promise((f) => setTimeout(f, 500));
       const pushTransfer = await transferService.getTransfer(localProcessId);
       expect(pushTransfer.state).toBe(TransferState.STARTED);

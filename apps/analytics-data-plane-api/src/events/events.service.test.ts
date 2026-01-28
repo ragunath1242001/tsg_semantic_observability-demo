@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -26,6 +25,7 @@ import { plainToClass } from "class-transformer";
 import { HttpResponse } from "msw";
 import { http } from "msw/core/http";
 import { SetupServer, setupServer } from "msw/node";
+import { vi } from "vitest";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
@@ -124,8 +124,8 @@ describe("EventsService", () => {
         {
           provide: BridgeWsClientService,
           useValue: {
-            emit: jest.fn(),
-            on: jest.fn()
+            emit: vi.fn(),
+            on: vi.fn()
           }
         },
         {
@@ -172,9 +172,10 @@ describe("EventsService", () => {
 
   it("should create an algorithm instance", async () => {
     // Mock the distribution method to avoid actual HTTP calls
-    jest
-      .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
-      .mockResolvedValue();
+    vi.spyOn(
+      algorithmInstancesService,
+      "distributeAlgorithmInstance"
+    ).mockResolvedValue();
     const algorithmInstance =
       await algorithmInstancesService.createAlgorithmInstance({
         id: "test-instance-id",
@@ -315,9 +316,10 @@ describe("EventsService", () => {
   });
 
   it("should upload event data", async () => {
-    jest
-      .spyOn(eventsService, "forwardEventDataToParticipant")
-      .mockResolvedValue();
+    vi.spyOn(
+      eventsService,
+      "forwardEventDataToParticipant"
+    ).mockResolvedValue();
     await eventsService.uploadAlgorithmEventData({
       algorithmInstanceId: algorithmInstanceId,
       eventId: JOB_ALGORITHM_EVENT_ID,
@@ -338,23 +340,24 @@ describe("EventsService", () => {
 
   it("should create an algorithm event with recipients and trigger forwarding", async () => {
     // Mock the algorithmInstancesService to include participants
-    jest
-      .spyOn(eventsService["algorithmInstancesService"], "getAlgorithmInstance")
-      .mockResolvedValue({
-        id: algorithmInstanceId!,
-        participants: [
-          {
-            didId: "did:web:participant1",
-            role: "participant",
-            dataset: "dataset-1"
-          },
-          {
-            didId: "did:web:participant2",
-            role: "participant",
-            dataset: "dataset-2"
-          }
-        ]
-      } as any);
+    vi.spyOn(
+      eventsService["algorithmInstancesService"],
+      "getAlgorithmInstance"
+    ).mockResolvedValue({
+      id: algorithmInstanceId!,
+      participants: [
+        {
+          didId: "did:web:participant1",
+          role: "participant",
+          dataset: "dataset-1"
+        },
+        {
+          didId: "did:web:participant2",
+          role: "participant",
+          dataset: "dataset-2"
+        }
+      ]
+    } as any);
     await eventsService["algorithmInstancesService"].linkTransfer({
       algorithmInstanceId,
       transfer: await eventsService["transferHandler"]![
@@ -433,23 +436,24 @@ describe("EventsService", () => {
 
   it("should reject invalid recipients early during event creation", async () => {
     // Mock the algorithmInstancesService to return specific participants
-    jest
-      .spyOn(eventsService["algorithmInstancesService"], "getAlgorithmInstance")
-      .mockResolvedValue({
-        id: algorithmInstanceId!,
-        participants: [
-          {
-            didId: "did:web:participant1",
-            role: "participant",
-            dataset: "dataset-1"
-          },
-          {
-            didId: "did:web:participant2",
-            role: "participant",
-            dataset: "dataset-2"
-          }
-        ]
-      } as any);
+    vi.spyOn(
+      eventsService["algorithmInstancesService"],
+      "getAlgorithmInstance"
+    ).mockResolvedValue({
+      id: algorithmInstanceId!,
+      participants: [
+        {
+          didId: "did:web:participant1",
+          role: "participant",
+          dataset: "dataset-1"
+        },
+        {
+          didId: "did:web:participant2",
+          role: "participant",
+          dataset: "dataset-2"
+        }
+      ]
+    } as any);
 
     const EVENT_TIMESTAMP = new Date().toISOString();
     const EVENT_NAME = "Test Invalid Recipients";
@@ -584,7 +588,7 @@ describe("EventsService", () => {
   });
 
   it("should return null event data for management when no data exists", async () => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     const NEW_EVENT_ID = "urn:uuid:new-event-no-data";
     const EVENT_TIMESTAMP = new Date().toISOString();
     const EVENT_NAME = "New Event No Data";

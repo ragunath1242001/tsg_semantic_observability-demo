@@ -1,4 +1,3 @@
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
@@ -8,6 +7,7 @@ import { DcqlQuery, OID4VPAuthorizationResponse } from "@tsg-dsp/common-dtos";
 import { plainToInstance } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { RootConfig } from "../../config.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";

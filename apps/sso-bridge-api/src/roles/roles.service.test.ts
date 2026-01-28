@@ -1,10 +1,10 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { UserWithPasswordDto } from "@tsg-dsp/sso-bridge-dtos";
 import { ClientDto } from "@tsg-dsp/sso-bridge-dtos/dist/clients.dto.js";
 import { plainToInstance } from "class-transformer";
+import { vi } from "vitest";
 
 import { RecoveryCodeService } from "../auth/recovery-code.service.js";
 import { TotpService } from "../auth/totp.service.js";
@@ -59,7 +59,7 @@ describe("RolesService Tests", () => {
         {
           provide: KubernetesService,
           useValue: {
-            applySecret: jest.fn()
+            applySecret: vi.fn()
           }
         },
         {

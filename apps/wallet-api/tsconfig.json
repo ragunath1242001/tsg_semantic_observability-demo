@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["vitest/globals", "node", "multer"],
     "target": "ES2022",
     "lib": ["ES2022"],
     "declaration": true,
@@ -19,5 +20,5 @@
     "noImplicitAny": true,
     "skipLibCheck": true
   },
-  "exclude": ["jest.config.ts", "coverage/", "dist/"]
+  "exclude": ["vitest.config.ts", "coverage/", "dist/"]
 }

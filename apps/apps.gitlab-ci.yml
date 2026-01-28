@@ -1,9 +1,11 @@
-variables:
-  RULES_CHANGES_PATH: "**/*"
-
 .build:
-  extends: .base-rules
+  extends:
+    - .base-rules
+    - .pnpm-cache-readonly
   stage: build
+  needs:
+    - job: warm-cache
+      optional: true
   rules:
     - if: $CI_COMMIT_BRANCH != "main"
       changes:
@@ -20,8 +22,13 @@ variables:
     - pnpm run --filter "./apps/$APP*" --parallel -r  build
 
 .test:
-  extends: .base-rules
+  extends:
+    - .base-rules
+    - .pnpm-cache-readonly
   stage: test
+  needs:
+    - job: warm-cache
+      optional: true
   tags:
     - saas-linux-medium-amd64
   rules:
@@ -37,9 +44,7 @@ variables:
     - pnpm install --frozen-lockfile
     - pnpm run --filter "./libs/common*" --filter "./libs/wallet-dtos" -r  build
     - pnpm run --filter "./libs/$APP*" --parallel -r  build
-    - pnpm run --filter "./apps/$APP*" --parallel -r  build
-    - NODE_OPTIONS="--experimental-vm-modules" pnpm test:$APP-ci
-    - pnpm run --filter "./apps/$APP-api" migrations:check
+    - pnpm test:$APP-ci
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts:
     reports:
@@ -48,6 +53,30 @@ variables:
       coverage_report:
         coverage_format: cobertura
         path: apps/$APP-api/coverage/cobertura-coverage.xml
+
+.migrations-check:
+  extends:
+    - .base-rules
+    - .pnpm-cache-readonly
+  stage: test
+  needs:
+    - job: warm-cache
+      optional: true
+  tags:
+    - saas-linux-medium-amd64
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
+      changes:
+        - "apps/$APP-api/**/*"
+        - "libs/$APP-dtos/**/*"
+        - "libs/common-dsp/**/*"
+        - apps/apps.gitlab-ci.yml
+        - .gitlab-ci.yml
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm run --filter "./libs/common*" --filter "./libs/wallet-dtos" -r  build
+    - pnpm run --filter "./libs/$APP*" --parallel -r  build
+    - pnpm run --filter "./apps/$APP-api" migrations:check
 
 .package:
   stage: package
@@ -98,112 +127,73 @@ variables:
   rules:
     - if: "$CI_COMMIT_TAG"
 
-wallet-build:
+# Matrix jobs for all apps
+build:
   extends:
     - .build
-  variables:
-    APP: wallet
+  parallel:
+    matrix:
+      - APP: wallet
+      - APP: control-plane
+      - APP: http-data-plane
+      - APP: analytics-data-plane
+      - APP: sso-bridge
 
-wallet-test:
+test:
   extends:
     - .test
-  variables:
-    APP: wallet
+  parallel:
+    matrix:
+      - APP: wallet
+      - APP: control-plane
+      - APP: http-data-plane
+      - APP: analytics-data-plane
+      - APP: sso-bridge
 
-wallet-package:
+migrations-check:
+  extends:
+    - .migrations-check
+  parallel:
+    matrix:
+      - APP: wallet
+      - APP: control-plane
+      - APP: http-data-plane
+      - APP: analytics-data-plane
+      - APP: sso-bridge
+
+package:
   extends: .package
-  variables:
-    APP: wallet
+  needs:
+    - job: test
+      optional: true
+      parallel:
+        matrix:
+          - APP: ${APP}
+    - job: migrations-check
+      optional: true
+      parallel:
+        matrix:
+          - APP: ${APP}
+    - job: lint
+      optional: true
+    - job: config_docs
+      optional: true
+    - job: openapi
+      optional: true
+  parallel:
+    matrix:
+      - APP: wallet
+      - APP: control-plane
+      - APP: http-data-plane
+      - APP: analytics-data-plane
+      - APP: sso-bridge
 
-wallet-package-version:
+package-version:
   extends: .package-version
-  variables:
-    APP: wallet
-
-control-plane-build:
-  extends:
-    - .build
-  variables:
-    APP: control-plane
-
-control-plane-test:
-  extends:
-    - .test
-  variables:
-    APP: control-plane
-
-control-plane-package:
-  extends: .package
-  variables:
-    APP: control-plane
-
-control-plane-package-version:
-  extends: .package-version
-  variables:
-    APP: control-plane
-
-http-data-plane-build:
-  extends:
-    - .build
-  variables:
-    APP: http-data-plane
-
-http-data-plane-test:
-  extends:
-    - .test
-  variables:
-    APP: http-data-plane
-
-http-data-plane-package:
-  extends: .package
-  variables:
-    APP: http-data-plane
-
-http-data-plane-package-version:
-  extends: .package-version
-  variables:
-    APP: http-data-plane
-
-analytics-data-plane-build:
-  extends:
-    - .build
-  variables:
-    APP: analytics-data-plane
-
-analytics-data-plane-test:
-  extends:
-    - .test
-  variables:
-    APP: analytics-data-plane
-
-analytics-data-plane-package:
-  extends: .package
-  variables:
-    APP: analytics-data-plane
-
-analytics-data-plane-package-version:
-  extends: .package-version
-  variables:
-    APP: analytics-data-plane
-
-sso-bridge-build:
-  extends:
-    - .build
-  variables:
-    APP: sso-bridge
-
-sso-bridge-test:
-  extends:
-    - .test
-  variables:
-    APP: sso-bridge
-
-sso-bridge-package:
-  extends: .package
-  variables:
-    APP: sso-bridge
-
-sso-bridge-package-version:
-  extends: .package-version
-  variables:
-    APP: sso-bridge
+  parallel:
+    matrix:
+      - APP: wallet
+      - APP: control-plane
+      - APP: http-data-plane
+      - APP: analytics-data-plane
+      - APP: sso-bridge

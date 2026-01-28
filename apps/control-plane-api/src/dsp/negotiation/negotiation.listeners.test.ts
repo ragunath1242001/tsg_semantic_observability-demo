@@ -1,7 +1,7 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { DataService, Dataset, Distribution, Offer } from "@tsg-dsp/common-dsp";
+import { vi } from "vitest";
 
 import { RuntimeConfig } from "../../config.js";
 import { CatalogService } from "../catalog/catalog.service.js";
@@ -27,23 +27,23 @@ describe("NegotiationListener", () => {
         {
           provide: NegotiationService,
           useValue: {
-            agree: jest.fn(),
-            terminate: jest.fn(),
-            verify: jest.fn(),
-            finalize: jest.fn(),
-            getNegotiation: jest.fn()
+            agree: vi.fn(),
+            terminate: vi.fn(),
+            verify: vi.fn(),
+            finalize: vi.fn(),
+            getNegotiation: vi.fn()
           }
         },
         {
           provide: TransferService,
           useValue: {
-            initiateTransferProcess: jest.fn()
+            initiateTransferProcess: vi.fn()
           }
         },
         {
           provide: CatalogService,
           useValue: {
-            getDataset: jest.fn()
+            getDataset: vi.fn()
           }
         },
         {
@@ -62,7 +62,7 @@ describe("NegotiationListener", () => {
     TypeOrmTestHelper.instance.teardownTestDB();
   });
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
   const offer = new Offer({
     id: "urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00",
@@ -94,7 +94,7 @@ describe("NegotiationListener", () => {
         offer: offer.serialize(),
         remoteParty: "did:web:remoteparty.test"
       });
-      jest.spyOn(catalogService, "getDataset").mockResolvedValue(dataset);
+      vi.spyOn(catalogService, "getDataset").mockResolvedValue(dataset);
       await negotiationListener.handleNegotiationCreatedEvent(mockEvent);
 
       expect(catalogService.getDataset).toHaveBeenCalledWith("datasetId123");
@@ -116,7 +116,7 @@ describe("NegotiationListener", () => {
         target: "urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b"
       });
       dataset.hasPolicy = [otherOffer];
-      jest.spyOn(catalogService, "getDataset").mockResolvedValue(dataset);
+      vi.spyOn(catalogService, "getDataset").mockResolvedValue(dataset);
 
       await negotiationListener.handleNegotiationCreatedEvent(mockEvent);
       expect(catalogService.getDataset).toHaveBeenCalledWith("datasetId123");
@@ -132,7 +132,7 @@ describe("NegotiationListener", () => {
         offer: offer.serialize(),
         remoteParty: "did:web:remoteparty.test"
       });
-      jest.spyOn(catalogService, "getDataset").mockResolvedValue(dataset);
+      vi.spyOn(catalogService, "getDataset").mockResolvedValue(dataset);
 
       await negotiationListener.handleNegotiationCreatedEvent(mockEvent);
 
@@ -149,7 +149,7 @@ describe("NegotiationListener", () => {
         offer: offer.serialize(),
         remoteParty: "did:web:remoteparty.test"
       });
-      jest.spyOn(catalogService, "getDataset").mockRejectedValueOnce(null);
+      vi.spyOn(catalogService, "getDataset").mockRejectedValueOnce(null);
 
       await negotiationListener.handleNegotiationCreatedEvent(mockEvent);
 

@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "vitest";
 
 import dsp from "./contexts/dsp.2025-1.js";
 import health from "./contexts/health.js";

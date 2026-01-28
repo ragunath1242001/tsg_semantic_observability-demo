@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -11,6 +10,7 @@ import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import { plainToInstance } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { vi } from "vitest";
 
 import { RootConfig } from "../config.js";
 import { CredentialsService } from "../credentials/credentials.service.js";
@@ -126,7 +126,7 @@ describe("DCP Issuance", () => {
         {
           provide: IssueConfigurationService,
           useValue: {
-            getIssueConfigurationByType: jest.fn().mockImplementation(() => ({
+            getIssueConfigurationByType: vi.fn().mockImplementation(() => ({
               id: "Example",
               credentialType: "ExampleCredentialType",
               documentUrl: "https://example.com/context.json",
@@ -161,13 +161,13 @@ describe("DCP Issuance", () => {
         {
           provide: OID4VCIHolderService,
           useValue: {
-            requestCredential: jest.fn()
+            requestCredential: vi.fn()
           }
         },
         {
           provide: DCPHolderService,
           useValue: {
-            requestCredential: jest.fn()
+            requestCredential: vi.fn()
           }
         }
       ]

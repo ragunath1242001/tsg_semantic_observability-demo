@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { ScheduleModule } from "@nestjs/schedule";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -13,6 +12,7 @@ import { plainToClass, plainToInstance } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer } from "msw/node";
 import { Repository } from "typeorm";
+import { vi } from "vitest";
 
 import { IamConfig, RegistryConfig, RootConfig } from "../config.js";
 import { DspClientService } from "../dsp/client/client.service.js";
@@ -31,8 +31,8 @@ describe("RegistryService", () => {
   let server: SetupServer;
 
   beforeAll(async () => {
-    jest.useFakeTimers();
-    jest.spyOn(global, "setTimeout");
+    vi.useFakeTimers();
+    vi.spyOn(global, "setTimeout");
     await TypeOrmTestHelper.instance.setupTestDB();
     const iamConfig: IamConfig = mockWalletConfig();
     const registryConfig = plainToClass(RegistryConfig, {
@@ -187,8 +187,8 @@ describe("RegistryService", () => {
   afterAll(() => {
     server.close();
     TypeOrmTestHelper.instance.teardownTestDB();
-    jest.clearAllTimers();
-    jest.useRealTimers();
+    vi.clearAllTimers();
+    vi.useRealTimers();
   });
 
   it("should be defined", () => {
@@ -233,8 +233,8 @@ describe("RegistryService", () => {
   });
   describe("Crawl fails when registry is disabled", () => {
     beforeEach(async () => {
-      jest.useFakeTimers();
-      jest.spyOn(global, "setTimeout");
+      vi.useFakeTimers();
+      vi.spyOn(global, "setTimeout");
       await TypeOrmTestHelper.instance.setupTestDB();
       const iamConfig: IamConfig = mockWalletConfig();
       const registryConf = plainToClass(RegistryConfig, { useRegistry: false });

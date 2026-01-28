@@ -1,4 +1,3 @@
-import { afterAll, beforeAll, describe, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -17,6 +16,7 @@ import { DIDDocument } from "did-resolver";
 import { exportJWK, generateKeyPair, GenerateKeyPairResult } from "jose";
 import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { afterAll, beforeAll, describe, it, vi } from "vitest";
 
 import { RootConfig } from "../../config.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";
@@ -123,7 +123,7 @@ describe("Holder service", () => {
         {
           provide: DCPHolderService,
           useValue: {
-            handleCredentialRequest: jest.fn()
+            handleCredentialRequest: vi.fn()
           }
         }
       ]

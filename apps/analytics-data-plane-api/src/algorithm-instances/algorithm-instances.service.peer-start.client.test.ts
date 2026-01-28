@@ -1,7 +1,7 @@
-import { jest } from "@jest/globals";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import { Repository } from "typeorm";
+import { vi } from "vitest";
 
 import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service.js";
 import { SplitModeService } from "../bridge/split-mode/split-mode.service.js";
@@ -12,16 +12,16 @@ import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 describe("AlgorithmInstancesService (client peer start)", () => {
   it("spawns a job when started by peer in client mode", async () => {
     const repo = {
-      findOne: jest.fn(),
-      save: jest.fn()
+      findOne: vi.fn(),
+      save: vi.fn()
     } as unknown as Repository<AlgorithmInstanceDao>;
 
     const eventEmitter = {
-      emit: jest.fn()
+      emit: vi.fn()
     } as unknown as EventEmitter2;
 
     const catalog = {
-      getParticipantId: jest
+      getParticipantId: vi
         .fn<(...args: unknown[]) => Promise<string>>()
         .mockResolvedValue("did:web:client")
     } as unknown as CatalogClientService;
@@ -33,7 +33,7 @@ describe("AlgorithmInstancesService (client peer start)", () => {
     const splitMode = new SplitModeService(config);
 
     const bridgeWs = {
-      emit: jest.fn()
+      emit: vi.fn()
     } as unknown as BridgeWsClientService;
 
     const service = new AlgorithmInstancesService(

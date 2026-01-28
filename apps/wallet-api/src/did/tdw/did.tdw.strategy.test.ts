@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
@@ -10,6 +9,7 @@ import { plainToInstance } from "class-transformer";
 import { DIDDocument } from "did-resolver";
 import { exportJWK, generateKeyPair } from "jose";
 import { Repository } from "typeorm";
+import { vi } from "vitest";
 
 import { DidServiceConfig, RootConfig } from "../../config.js";
 import { KeyMaterialDao } from "../../model/credentials.dao.js";
@@ -47,9 +47,9 @@ describe("DID Tdw Service", () => {
     });
   };
   const mockDidLogsRepository = () => ({
-    find: jest.fn(),
-    save: jest.fn(),
-    clear: jest.fn()
+    find: vi.fn(),
+    save: vi.fn(),
+    clear: vi.fn()
   });
 
   beforeAll(async () => {
@@ -144,7 +144,7 @@ describe("DID Tdw Service", () => {
           deletedDate: new Date()
         }
       ];
-      jest.spyOn(didLogsRepository, "find").mockResolvedValue(didLogs);
+      vi.spyOn(didLogsRepository, "find").mockResolvedValue(didLogs);
     });
 
     it("Get DID Log", async () => {
@@ -154,14 +154,14 @@ describe("DID Tdw Service", () => {
     });
 
     it("Get empty DID Log", async () => {
-      jest.spyOn(didLogsRepository, "find").mockResolvedValueOnce([]);
+      vi.spyOn(didLogsRepository, "find").mockResolvedValueOnce([]);
       await expect(didTdwStrategy.getDidLog(didLogs[0].scid)).rejects.toThrow(
         "DID Logs not ready yet"
       );
     });
 
     it("Update non-existing DID document", async () => {
-      jest.spyOn(didLogsRepository, "find").mockResolvedValueOnce([]);
+      vi.spyOn(didLogsRepository, "find").mockResolvedValueOnce([]);
       await expect(
         didTdwStrategy.updateDidDocument(completeDidDocument, [], [])
       ).rejects.toThrow("DID Document not ready yet");

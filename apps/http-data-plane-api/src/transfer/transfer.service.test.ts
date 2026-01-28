@@ -1,5 +1,3 @@
-import { jest } from "@jest/globals";
-import { getMockRes } from "@jest-mock/express";
 import { HttpStatus, RawBodyRequest } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -32,6 +30,8 @@ import { plainToClass } from "class-transformer";
 import { Request, Response } from "express";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { Writable } from "stream";
+import { Mock, MockedObject, vi } from "vitest";
 
 import { LoggingConfig, RootConfig } from "../config.js";
 import {
@@ -44,7 +44,43 @@ import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
 import { HTTPTransferHandler } from "./http-transfer-handler.service.js";
 import { TransferDao } from "./transfer.dao.js";
-// import { TransferService } from "./transfer.service.js";
+
+// Vitest-compatible mock for Express Response that supports piping
+function getMockRes() {
+  const writtenData: Buffer[] = [];
+  const writable = new Writable({
+    write(chunk, _encoding, callback) {
+      writtenData.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      callback();
+    }
+  });
+
+  const res = Object.assign(writable, {
+    status: vi.fn().mockReturnValue(writable),
+    send: vi.fn().mockReturnValue(writable),
+    json: vi.fn().mockReturnValue(writable),
+    write: vi.fn((data: any) => {
+      writtenData.push(Buffer.isBuffer(data) ? data : Buffer.from(data));
+      return true;
+    }),
+    end: vi.fn().mockReturnValue(writable),
+    setHeader: vi.fn().mockReturnValue(writable),
+    getHeader: vi.fn(),
+    getHeaders: vi.fn().mockReturnValue({}),
+    removeHeader: vi.fn().mockReturnValue(writable),
+    header: vi.fn().mockReturnValue(writable),
+    set: vi.fn().mockReturnValue(writable),
+    type: vi.fn().mockReturnValue(writable),
+    contentType: vi.fn().mockReturnValue(writable),
+    redirect: vi.fn().mockReturnValue(writable),
+    render: vi.fn().mockReturnValue(writable),
+    locals: {},
+    headersSent: false,
+    statusCode: 200
+  }) as unknown as MockedObject<Response>;
+
+  return { res, getWrittenData: () => Buffer.concat(writtenData) };
+}
 
 describe.each(["Authorization"])(
   //, "X-TSG-Authorization"])(
@@ -206,7 +242,7 @@ describe.each(["Authorization"])(
     });
 
     afterEach(async () => {
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
     });
     afterAll(() => {
       TypeOrmTestHelper.instance.teardownTestDB();
@@ -310,7 +346,7 @@ describe.each(["Authorization"])(
 
         const resultBody = JSON.parse(
           Buffer.from(
-            (response.res.write as jest.Mock).mock.calls[0][0] as any
+            (response.res.write as Mock).mock.calls[0][0] as any
           ).toString()
         );
 
@@ -318,7 +354,7 @@ describe.each(["Authorization"])(
         expect(resultBody["headers"]["Content-Type"]).toBe("application/json");
         expect(resultBody["headers"]["Accept"]).toBe("application/json");
         expect(resultBody["args"]["filter"]).toBe("filterQueryString");
-        expect((response.res.status as jest.Mock).mock.calls[0][0]).toBe(200);
+        expect((response.res.status as Mock).mock.calls[0][0]).toBe(200);
       });
 
       it("Transfer execution without authorization", async () => {
@@ -481,7 +517,7 @@ describe.each(["Authorization"])(
       });
 
       it("Transfer execution", async () => {
-        const mockedResponse = getMockRes().res as unknown as jest.MockedObject<
+        const mockedResponse = getMockRes().res as unknown as MockedObject<
           Response<any, Record<string, any>>
         >;
         await transferService.executeProxyRequest(
@@ -557,9 +593,10 @@ describe.each(["Authorization"])(
           createdDate: new Date()
         } as TransferDao;
 
-        jest
-          .spyOn(transferService.transferRepository, "findOne")
-          .mockResolvedValueOnce(transfer);
+        vi.spyOn(
+          transferService.transferRepository,
+          "findOne"
+        ).mockResolvedValueOnce(transfer);
 
         const result = await transferService.determineTransferId(
           datasetId,
@@ -571,9 +608,10 @@ describe.each(["Authorization"])(
       });
 
       it("should request a new negotiation and transfer if no active transfer is found", async () => {
-        jest
-          .spyOn(transferService.transferRepository, "findOne")
-          .mockResolvedValueOnce(null);
+        vi.spyOn(
+          transferService.transferRepository,
+          "findOne"
+        ).mockResolvedValueOnce(null);
 
         const negotiation = {
           localId: "test",
@@ -596,16 +634,18 @@ describe.each(["Authorization"])(
         } as NegotiationDetailDto;
         const negotiationClient = moduleRef.get(NegotiationClientService);
         const transferClient = moduleRef.get(TransferClientService);
-        jest
-          .spyOn(negotiationClient, "getNegotiationForDataset")
-          .mockRejectedValueOnce(new Error("Not found"));
-        jest
-          .spyOn(negotiationClient, "requestDefaultNegotiation")
-          .mockResolvedValueOnce(negotiation);
+        vi.spyOn(
+          negotiationClient,
+          "getNegotiationForDataset"
+        ).mockRejectedValueOnce(new Error("Not found"));
+        vi.spyOn(
+          negotiationClient,
+          "requestDefaultNegotiation"
+        ).mockResolvedValueOnce(negotiation);
 
-        jest
-          .spyOn(transferClient, "requestTransfer")
-          .mockResolvedValueOnce({} as TransferProcessDto);
+        vi.spyOn(transferClient, "requestTransfer").mockResolvedValueOnce(
+          {} as TransferProcessDto
+        );
 
         const transfer = {
           id: "urn:uuid:transfer-id",
@@ -614,9 +654,10 @@ describe.each(["Authorization"])(
           createdDate: new Date()
         } as TransferDao;
 
-        jest
-          .spyOn(transferService, "getStartedTransferWithBackoff")
-          .mockResolvedValueOnce(transfer);
+        vi.spyOn(
+          transferService,
+          "getStartedTransferWithBackoff"
+        ).mockResolvedValueOnce(transfer);
 
         const result = await transferService.determineTransferId(
           datasetId,
@@ -641,9 +682,10 @@ describe.each(["Authorization"])(
       });
 
       it("should throw an error if no transfer is found after retries", async () => {
-        jest
-          .spyOn(transferService.transferRepository, "findOne")
-          .mockResolvedValueOnce(null);
+        vi.spyOn(
+          transferService.transferRepository,
+          "findOne"
+        ).mockResolvedValueOnce(null);
 
         const negotiation = {
           localId: "test",
@@ -666,25 +708,29 @@ describe.each(["Authorization"])(
         } as NegotiationDetailDto;
         const negotiationClient = moduleRef.get(NegotiationClientService);
         const transferClient = moduleRef.get(TransferClientService);
-        jest
-          .spyOn(negotiationClient, "getNegotiationForDataset")
-          .mockRejectedValue(new Error("Not found"));
-        jest
-          .spyOn(negotiationClient, "requestDefaultNegotiation")
-          .mockResolvedValue(negotiation);
+        vi.spyOn(
+          negotiationClient,
+          "getNegotiationForDataset"
+        ).mockRejectedValue(new Error("Not found"));
+        vi.spyOn(
+          negotiationClient,
+          "requestDefaultNegotiation"
+        ).mockResolvedValue(negotiation);
 
-        jest
-          .spyOn(transferClient, "requestTransfer")
-          .mockResolvedValue({} as TransferProcessDto);
+        vi.spyOn(transferClient, "requestTransfer").mockResolvedValue(
+          {} as TransferProcessDto
+        );
 
-        jest
-          .spyOn(transferService["transferRepository"], "findOne")
-          .mockResolvedValue(null);
-        jest
-          .spyOn(transferService, "getStartedTransferWithBackoff")
-          .mockRejectedValueOnce(
-            new Error(`Failed to find transfer for dataset ${datasetId}`)
-          );
+        vi.spyOn(
+          transferService["transferRepository"],
+          "findOne"
+        ).mockResolvedValue(null);
+        vi.spyOn(
+          transferService,
+          "getStartedTransferWithBackoff"
+        ).mockRejectedValueOnce(
+          new Error(`Failed to find transfer for dataset ${datasetId}`)
+        );
 
         await expect(
           transferService.determineTransferId(
@@ -696,17 +742,20 @@ describe.each(["Authorization"])(
       });
 
       it("should handle errors during negotiation request", async () => {
-        jest
-          .spyOn(transferService.transferRepository, "findOne")
-          .mockResolvedValueOnce(null);
+        vi.spyOn(
+          transferService.transferRepository,
+          "findOne"
+        ).mockResolvedValueOnce(null);
 
         const negotiationClient = moduleRef.get(NegotiationClientService);
-        jest
-          .spyOn(negotiationClient, "getNegotiationForDataset")
-          .mockRejectedValueOnce(new Error("Negotiation error A"));
-        jest
-          .spyOn(negotiationClient, "requestDefaultNegotiation")
-          .mockRejectedValueOnce(new Error("Negotiation error B"));
+        vi.spyOn(
+          negotiationClient,
+          "getNegotiationForDataset"
+        ).mockRejectedValueOnce(new Error("Negotiation error A"));
+        vi.spyOn(
+          negotiationClient,
+          "requestDefaultNegotiation"
+        ).mockRejectedValueOnce(new Error("Negotiation error B"));
 
         await expect(
           transferService.determineTransferId(
@@ -719,7 +768,7 @@ describe.each(["Authorization"])(
     });
     describe("retryFindTransfer", () => {
       afterEach(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
       });
 
       it("should return transfer if found within max retries", async () => {
@@ -731,9 +780,10 @@ describe.each(["Authorization"])(
           createdDate: new Date()
         } as TransferDao;
 
-        jest
-          .spyOn(transferService.transferRepository, "findOne")
-          .mockResolvedValueOnce(transfer);
+        vi.spyOn(
+          transferService.transferRepository,
+          "findOne"
+        ).mockResolvedValueOnce(transfer);
 
         const result = await transferService.getStartedTransferWithBackoff(
           datasetId,
@@ -750,9 +800,10 @@ describe.each(["Authorization"])(
       it("should throw if transfer is not found after max retries", async () => {
         const datasetId = "urn:uuid:test-dataset";
 
-        jest
-          .spyOn(transferService.transferRepository, "findOne")
-          .mockResolvedValueOnce(null);
+        vi.spyOn(
+          transferService.transferRepository,
+          "findOne"
+        ).mockResolvedValueOnce(null);
 
         await expect(
           transferService.getStartedTransferWithBackoff(datasetId, 3, 1)
