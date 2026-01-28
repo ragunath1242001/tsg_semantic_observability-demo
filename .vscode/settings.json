@@ -7,53 +7,11 @@
   "[helm]": {
     "editor.formatOnSave": false
   },
-  "jest.runMode": "on-save",
-  "jest.jestCommandLine": "\"./node_modules/jest/bin/jest.js\" --runInBand",
-  "jest.nodeEnv": {
-    "NODE_OPTIONS": "--experimental-vm-modules"
-  },
-  "jest.virtualFolders": [
-    {
-      "name": "wallet",
-      "rootPath": "apps/wallet-api"
-    },
-    {
-      "name": "control-plane",
-      "rootPath": "apps/control-plane-api"
-    },
-    {
-      "name": "http-data-plane",
-      "rootPath": "apps/http-data-plane-api"
-    },
-    {
-      "name": "analytics-data-plane",
-      "rootPath": "apps/analytics-data-plane-api"
-    },
-    {
-      "name": "sso-bridge",
-      "rootPath": "apps/sso-bridge-api"
-    },
-    {
-      "name": "common-api",
-      "rootPath": "libs/common-api"
-    },
-    {
-      "name": "common-dsp",
-      "rootPath": "libs/common-dsp"
-    },
-    {
-      "name": "common-signing-and-validation",
-      "rootPath": "libs/common-signing-and-validation"
-    },
-    {
-      "name": "analytics-data-plane-dtos",
-      "rootPath": "libs/analytics-data-plane-dtos"
-    },
-    {
-      "name": "e2e",
-      "rootPath": "tools/e2e-testing",
-      "runMode": "on-demand"
-    }
-  ],
-  "jest.useJest30": true
+  "vitest.disableWorkspaceWarning": true,
+  "vitest.maximumConfigs": 15,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true
+  }
 }

@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { Logger } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
 import { Test, TestingModule } from "@nestjs/testing";
@@ -12,6 +11,7 @@ import { plainToClass, plainToInstance } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { Repository } from "typeorm";
+import { vi } from "vitest";
 
 import { IamConfig, RegistryConfig, RootConfig } from "../config.js";
 import { DspClientService } from "../dsp/client/client.service.js";
@@ -26,8 +26,8 @@ describe("No error when no dataspace credentials are found", () => {
   let server: SetupServer;
 
   beforeAll(async () => {
-    jest.useFakeTimers();
-    jest.spyOn(global, "setTimeout");
+    vi.useFakeTimers();
+    vi.spyOn(global, "setTimeout");
     await TypeOrmTestHelper.instance.setupTestDB();
     const iamConfig: IamConfig = mockWalletConfig();
     const registryConfig = plainToClass(RegistryConfig, {

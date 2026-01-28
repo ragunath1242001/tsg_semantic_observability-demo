@@ -1,4 +1,3 @@
-import { afterAll, beforeAll, describe, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -17,6 +16,7 @@ import {
 } from "jose";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { afterAll, beforeAll, describe, it, vi } from "vitest";
 
 import { RootConfig } from "../../config.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";
@@ -135,7 +135,7 @@ describe("Issuer service", () => {
         {
           provide: DCPHolderService,
           useValue: {
-            handleCredentialRequest: jest.fn()
+            handleCredentialRequest: vi.fn()
           }
         }
       ]

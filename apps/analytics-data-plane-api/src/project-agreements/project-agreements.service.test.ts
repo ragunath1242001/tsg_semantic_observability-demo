@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -29,6 +28,7 @@ import { plainToClass } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { Repository } from "typeorm";
+import { vi } from "vitest";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 import { RootConfig } from "../config.js";
@@ -195,10 +195,10 @@ describe("ProjectAgreementsService", () => {
         {
           provide: DataPlaneService,
           useValue: {
-            getDataset: jest
+            getDataset: vi
               .fn<() => Promise<DatasetDto>>()
               .mockResolvedValue(sampleDataset),
-            updateDataset: jest
+            updateDataset: vi
               .fn<() => Promise<void>>()
               .mockResolvedValue(undefined)
           }
@@ -395,12 +395,13 @@ describe("ProjectAgreementsService", () => {
 
   describe("create", () => {
     it("should create a project agreement with callbacks for other participants", async () => {
-      jest
-        .spyOn(catalogService, "getParticipantId")
-        .mockResolvedValue("did:web:localhost");
-      jest
-        .spyOn(projectAgreementsService, "requestSignatures")
-        .mockResolvedValue();
+      vi.spyOn(catalogService, "getParticipantId").mockResolvedValue(
+        "did:web:localhost"
+      );
+      vi.spyOn(
+        projectAgreementsService,
+        "requestSignatures"
+      ).mockResolvedValue();
 
       const result = await projectAgreementsService.create(
         sampleProjectAgreementDto
@@ -423,12 +424,13 @@ describe("ProjectAgreementsService", () => {
     });
 
     it("should not create callbacks for the initiator", async () => {
-      jest
-        .spyOn(catalogService, "getParticipantId")
-        .mockResolvedValue("did:web:localhost");
-      jest
-        .spyOn(projectAgreementsService, "requestSignatures")
-        .mockResolvedValue();
+      vi.spyOn(catalogService, "getParticipantId").mockResolvedValue(
+        "did:web:localhost"
+      );
+      vi.spyOn(
+        projectAgreementsService,
+        "requestSignatures"
+      ).mockResolvedValue();
 
       const singleParticipantDto: ProjectAgreementDto = {
         ...sampleProjectAgreementDto,
@@ -452,9 +454,9 @@ describe("ProjectAgreementsService", () => {
 
   describe("linkDatasetToProjectAgreement", () => {
     it("should link a dataset to a finalized project agreement", async () => {
-      jest
-        .spyOn(catalogService, "getParticipantId")
-        .mockResolvedValue("did:web:localhost");
+      vi.spyOn(catalogService, "getParticipantId").mockResolvedValue(
+        "did:web:localhost"
+      );
 
       // Create dataset first to avoid foreign key constraint
       await datasetRepository.save({
@@ -490,9 +492,9 @@ describe("ProjectAgreementsService", () => {
     });
 
     it("should not link the same dataset twice to a project agreement", async () => {
-      jest
-        .spyOn(catalogService, "getParticipantId")
-        .mockResolvedValue("did:web:localhost");
+      vi.spyOn(catalogService, "getParticipantId").mockResolvedValue(
+        "did:web:localhost"
+      );
       // Create dataset first to avoid foreign key constraint
       await datasetRepository.save({
         identifier: "urn:uuid:test-dataset",
@@ -616,9 +618,9 @@ describe("ProjectAgreementsService", () => {
         remoteParty: "did:web:remoteparty.com"
       };
 
-      jest
-        .spyOn(transferHandler, "getTransferBySecret")
-        .mockResolvedValue(mockTransfer as TransferDao);
+      vi.spyOn(transferHandler, "getTransferBySecret").mockResolvedValue(
+        mockTransfer as TransferDao
+      );
 
       const signatureRequest: SignatureRequestMessage = {
         projectAgreement: sampleProjectAgreementDto,
@@ -647,17 +649,17 @@ describe("ProjectAgreementsService", () => {
 
   describe("signProjectAgreement", () => {
     it("should sign a project agreement and send callback", async () => {
-      jest
-        .spyOn(catalogService, "getParticipantId")
-        .mockResolvedValue("did:web:localhost");
+      vi.spyOn(catalogService, "getParticipantId").mockResolvedValue(
+        "did:web:localhost"
+      );
       const mockSignature = {
         jwt: "test-signature-jwt",
         jws: "test-jws",
         jti: "test-jti"
       };
-      jest
-        .spyOn(walletService, "requestSignature")
-        .mockResolvedValue(mockSignature);
+      vi.spyOn(walletService, "requestSignature").mockResolvedValue(
+        mockSignature
+      );
 
       const agreement = await projectAgreementsService[
         "projectAgreementsRepository"
@@ -688,17 +690,17 @@ describe("ProjectAgreementsService", () => {
     });
 
     it("should throw an error if callbacks count is not exactly one", async () => {
-      jest
-        .spyOn(catalogService, "getParticipantId")
-        .mockResolvedValue("did:web:localhost");
+      vi.spyOn(catalogService, "getParticipantId").mockResolvedValue(
+        "did:web:localhost"
+      );
       const mockSignature = {
         jwt: "test-signature-jwt",
         jws: "test-jws",
         jti: "test-jti"
       };
-      jest
-        .spyOn(walletService, "requestSignature")
-        .mockResolvedValue(mockSignature);
+      vi.spyOn(walletService, "requestSignature").mockResolvedValue(
+        mockSignature
+      );
 
       const agreement = await projectAgreementsService[
         "projectAgreementsRepository"
@@ -722,24 +724,24 @@ describe("ProjectAgreementsService", () => {
 
   describe("handleSignatureCallback", () => {
     it("should handle a signature callback and update signatures", async () => {
-      jest
-        .spyOn(catalogService, "getParticipantId")
-        .mockResolvedValue("did:web:localhost");
+      vi.spyOn(catalogService, "getParticipantId").mockResolvedValue(
+        "did:web:localhost"
+      );
       const mockValidation = {
         projectAgreement: sampleProjectAgreementDto
       };
-      jest
-        .spyOn(walletService, "validateSignature")
-        .mockResolvedValue(mockValidation);
+      vi.spyOn(walletService, "validateSignature").mockResolvedValue(
+        mockValidation
+      );
       const mockSignature = {
         jwt: "initiator-signature-jwt",
         jws: "test-jws",
         jti: "test-jti"
       };
-      jest
-        .spyOn(walletService, "requestSignature")
-        .mockResolvedValue(mockSignature);
-      jest.spyOn(walletService, "createOffer").mockResolvedValue({
+      vi.spyOn(walletService, "requestSignature").mockResolvedValue(
+        mockSignature
+      );
+      vi.spyOn(walletService, "createOffer").mockResolvedValue({
         credential_issuer: "did:web:localhost",
         credential_configuration_ids: ["ProjectAgreementCredential"],
         grants: {
@@ -748,26 +750,27 @@ describe("ProjectAgreementsService", () => {
           }
         }
       });
-      jest.spyOn(walletService, "requestOfferViaDCP").mockResolvedValue();
+      vi.spyOn(walletService, "requestOfferViaDCP").mockResolvedValue();
 
       // Mock catalog service to avoid network calls
-      jest.spyOn(catalogService, "getDatasetConformingTo").mockResolvedValue({
+      vi.spyOn(catalogService, "getDatasetConformingTo").mockResolvedValue({
         "@id": "mock-dataset-id",
         "@type": "dcat:Dataset"
       } as never);
 
       // Mock negotiation and transfer services
-      jest
-        .spyOn(negotiationService, "requestDefaultNegotiation")
-        .mockResolvedValue({
-          localId: "mock-negotiation-id",
-          agreement: {
-            "@id": "mock-agreement-id",
-            "@type": "odrl:Agreement"
-          }
-        } as never);
+      vi.spyOn(
+        negotiationService,
+        "requestDefaultNegotiation"
+      ).mockResolvedValue({
+        localId: "mock-negotiation-id",
+        agreement: {
+          "@id": "mock-agreement-id",
+          "@type": "odrl:Agreement"
+        }
+      } as never);
 
-      jest.spyOn(transferService, "requestTransfer").mockResolvedValue({
+      vi.spyOn(transferService, "requestTransfer").mockResolvedValue({
         localId: "mock-transfer-id",
         "@id": "mock-transfer-urn",
         consumerPid: "mock-consumer-pid"
@@ -780,15 +783,15 @@ describe("ProjectAgreementsService", () => {
         dataAddress: { endpoint: "http://mock-endpoint" }
       } as unknown as TransferDao;
 
-      jest
-        .spyOn(transferHandler, "getTransferByProcessId")
-        .mockResolvedValue(mockTransferDao);
-      jest
-        .spyOn(transferHandler, "addListener")
-        .mockImplementation((_id, _state, callback) => {
+      vi.spyOn(transferHandler, "getTransferByProcessId").mockResolvedValue(
+        mockTransferDao
+      );
+      vi.spyOn(transferHandler, "addListener").mockImplementation(
+        (_id, _state, callback) => {
           // Immediately resolve with the transfer
           setTimeout(() => callback(mockTransferDao), 0);
-        });
+        }
+      );
 
       const agreement = await projectAgreementsService[
         "projectAgreementsRepository"
@@ -871,18 +874,18 @@ describe("ProjectAgreementsService", () => {
     });
 
     it("should throw an error when signature validation fails", async () => {
-      jest
-        .spyOn(catalogService, "getParticipantId")
-        .mockResolvedValue("did:web:localhost");
+      vi.spyOn(catalogService, "getParticipantId").mockResolvedValue(
+        "did:web:localhost"
+      );
       const mockValidation = {
         projectAgreement: {
           ...sampleProjectAgreementDto,
           title: "Different Title" // Mismatch
         }
       };
-      jest
-        .spyOn(walletService, "validateSignature")
-        .mockResolvedValue(mockValidation);
+      vi.spyOn(walletService, "validateSignature").mockResolvedValue(
+        mockValidation
+      );
 
       await projectAgreementsService["projectAgreementsRepository"].save({
         projectId: "test-project-14",
@@ -924,12 +927,12 @@ describe("ProjectAgreementsService", () => {
         remoteParty: "did:web:remoteparty.com"
       };
 
-      jest
-        .spyOn(transferHandler, "getTransferBySecret")
-        .mockResolvedValue(mockTransfer as TransferDao);
-      jest
-        .spyOn(walletService, "requestOfferViaDCP")
-        .mockResolvedValue(undefined);
+      vi.spyOn(transferHandler, "getTransferBySecret").mockResolvedValue(
+        mockTransfer as TransferDao
+      );
+      vi.spyOn(walletService, "requestOfferViaDCP").mockResolvedValue(
+        undefined
+      );
 
       const agreement = await projectAgreementsService[
         "projectAgreementsRepository"
@@ -980,9 +983,9 @@ describe("ProjectAgreementsService", () => {
         remoteParty: "did:web:unauthorized.com"
       };
 
-      jest
-        .spyOn(transferHandler, "getTransferBySecret")
-        .mockResolvedValue(mockTransfer as TransferDao);
+      vi.spyOn(transferHandler, "getTransferBySecret").mockResolvedValue(
+        mockTransfer as TransferDao
+      );
 
       await projectAgreementsService["projectAgreementsRepository"].save({
         projectId: "test-project-16",
@@ -1021,9 +1024,9 @@ describe("ProjectAgreementsService", () => {
         remoteParty: "did:web:remoteparty.com"
       };
 
-      jest
-        .spyOn(transferHandler, "getTransferBySecret")
-        .mockResolvedValue(mockTransfer as TransferDao);
+      vi.spyOn(transferHandler, "getTransferBySecret").mockResolvedValue(
+        mockTransfer as TransferDao
+      );
 
       const finalizationMessage: ProjectAgreementFinalizationMessage = {
         projectId: "non-existent-project",

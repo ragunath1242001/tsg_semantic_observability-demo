@@ -1,7 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { DIDDocument } from "did-resolver";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { resolveDid } from "./did.resolver.js";
 

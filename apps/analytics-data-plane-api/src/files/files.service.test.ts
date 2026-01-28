@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -16,6 +15,7 @@ import fs from "fs/promises";
 import { SetupServer, setupServer } from "msw/node";
 import path from "path";
 import { fileURLToPath } from "url";
+import { Mock, vi } from "vitest";
 
 import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service.js";
 import { FilesConfig, LLMConfig, RootConfig } from "../config.js";
@@ -28,11 +28,11 @@ describe("FilesService", () => {
   let server: SetupServer;
   let filesService: FilesService;
   let dataPlaneServiceMock: {
-    getControlPlaneCatalog: jest.Mock;
-    updateDatasets: jest.Mock;
-    addDataset: jest.Mock;
-    updateDataset: jest.Mock;
-    deleteDataset: jest.Mock;
+    getControlPlaneCatalog: Mock;
+    updateDatasets: Mock;
+    addDataset: Mock;
+    updateDataset: Mock;
+    deleteDataset: Mock;
   };
   const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
   const __dirname = path.dirname(__filename); // get the name of the directory
@@ -69,15 +69,15 @@ describe("FilesService", () => {
         {
           provide: DataPlaneService,
           useValue: {
-            getControlPlaneCatalog: jest.fn(async () => {
+            getControlPlaneCatalog: vi.fn(async () => {
               return {
                 provider: "hello"
               };
             }),
-            updateDatasets: jest.fn(async () => ({})),
-            addDataset: jest.fn(async () => ({})),
-            updateDataset: jest.fn(async () => ({})),
-            deleteDataset: jest.fn(async () => ({}))
+            updateDatasets: vi.fn(async () => ({})),
+            addDataset: vi.fn(async () => ({})),
+            updateDataset: vi.fn(async () => ({})),
+            deleteDataset: vi.fn(async () => ({}))
           }
         },
         FilesService,
@@ -99,8 +99,8 @@ describe("FilesService", () => {
         {
           provide: BridgeWsClientService,
           useValue: {
-            emit: jest.fn(),
-            on: jest.fn()
+            emit: vi.fn(),
+            on: vi.fn()
           }
         },
         {

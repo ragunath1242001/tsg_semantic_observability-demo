@@ -8,9 +8,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "e2e:dsp-local": "jest --runInBand --testNamePattern .\\* --testPathPatterns lib/dsp-local --verbose",
-    "e2e:dsp-tck": "jest --runInBand --testNamePattern .\\* --testPathPatterns lib/dsp-tck --verbose",
-    "e2e:dcp-tck": "jest --runInBand --testNamePattern .\\* --testPathPatterns lib/dcp-tck --verbose"
+    "e2e:dsp-local": "vitest run --testNamePattern .\\* lib/dsp-local --sequence.concurrent=false",
+    "e2e:dsp-tck": "vitest run --testNamePattern .\\* lib/dsp-tck --sequence.concurrent=false",
+    "e2e:dcp-tck": "vitest run --testNamePattern .\\* lib/dcp-tck --sequence.concurrent=false"
   },
   "license": "Apache-2.0",
   "repository": {
@@ -22,13 +22,11 @@
     "access": "public"
   },
   "devDependencies": {
-    "@jest/types": "^30.0.5",
     "@nestjs/cli": "^11.0.12",
     "@nestjs/testing": "^11.1.9",
     "@types/deep-equal": "^1.0.1",
     "@types/express": "^5.0.5",
     "@types/express-session": "^1.18.2",
-    "@types/jest": "^30.0.0",
     "@types/jsonld": "^1.5.15",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.0",
@@ -37,15 +35,13 @@
     "@typescript-eslint/eslint-plugin": "^8.47.0",
     "@typescript-eslint/parser": "^8.47.0",
     "eslint": "^9.39.1",
-    "jest": "^30.0.5",
-    "jest-junit": "^16.0.0",
     "msw": "^2.12.3",
     "supertest": "^7.1.4",
-    "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
     "tsc-watch": "^7.0.0",
     "typescript": "^5.9.3",
-    "typescript-json-schema": "^0.67.0"
+    "typescript-json-schema": "^0.67.0",
+    "vitest": "^4.0.17"
   },
   "dependencies": {
     "@apps/control-plane-api": "workspace:*",

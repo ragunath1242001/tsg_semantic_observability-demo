@@ -1,9 +1,9 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { ServerConfig } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
 import { decodeJwt } from "jose";
+import { vi } from "vitest";
 
 import { KeyDao } from "../model/keys.dao.js";
 import { TokenDao } from "../model/token.dao.js";
@@ -18,15 +18,15 @@ describe("TokenService", () => {
 
   beforeEach(async () => {
     mockKeyRepository = {
-      findOneBy: jest.fn(),
-      save: jest.fn(),
-      find: jest.fn(),
-      update: jest.fn()
+      findOneBy: vi.fn(),
+      save: vi.fn(),
+      find: vi.fn(),
+      update: vi.fn()
     };
 
     mockTokenRepository = {
-      save: jest.fn(),
-      findOneBy: jest.fn()
+      save: vi.fn(),
+      findOneBy: vi.fn()
     };
 
     mockServerConfig = plainToInstance(ServerConfig, {
@@ -63,7 +63,7 @@ describe("TokenService", () => {
     } as OauthUser;
 
     beforeEach(() => {
-      mockTokenRepository.save = jest
+      mockTokenRepository.save = vi
         .fn()
         .mockImplementation((token) => Promise.resolve(token));
     });

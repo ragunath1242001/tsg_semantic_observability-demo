@@ -1,8 +1,8 @@
-import { beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import { RootConfig } from "../config.js";
 import { IssueConfiguration } from "../model/issue-configuration.dao.js";

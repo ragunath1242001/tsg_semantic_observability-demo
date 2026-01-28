@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -25,6 +24,7 @@ import {
 } from "jose";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { vi } from "vitest";
 
 import { RootConfig } from "../../config.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";
@@ -136,7 +136,7 @@ describe("DCP Issuance", () => {
         {
           provide: OID4VCIHolderService,
           useValue: {
-            requestCredential: jest.fn()
+            requestCredential: vi.fn()
           }
         }
       ]
@@ -235,7 +235,7 @@ describe("DCP Issuance", () => {
 
   describe("Issuance Process", () => {
     it("Issuance flow", async () => {
-      const stsMock = jest
+      const stsMock = vi
         .spyOn(issuerService["secureTokenService"], "validateIDToken")
         .mockImplementation(async (token: string) => {
           if (token === "test") {
@@ -320,7 +320,7 @@ describe("DCP Issuance", () => {
         })
       ).rejects.toThrow("Issuer does not support credential type");
       const tokenAttributes: Record<string, string> = {};
-      const stsIssuerMock = jest
+      const stsIssuerMock = vi
         .spyOn(issuerService["secureTokenService"], "validateIDToken")
         .mockImplementation(async (token: string) => {
           if (token === "test") {
@@ -334,7 +334,7 @@ describe("DCP Issuance", () => {
             return decodeJwt(token);
           }
         });
-      const stsHolderMock = jest
+      const stsHolderMock = vi
         .spyOn(holderService["secureTokenService"], "validateIDToken")
         .mockImplementation(async (token: string) => {
           if (token === "test") {
@@ -386,34 +386,32 @@ describe("DCP Issuance", () => {
       stsHolderMock.mockRestore();
     });
     it("Holder errors", async () => {
-      jest
-        .spyOn(
-          issuerService["secureTokenService"],
-          "validateIDTokenWithAccessToken"
-        )
-        .mockImplementation(async (token: string) => {
-          if (token === "test") {
-            return {
-              originalIdToken: {
-                audience: "did:web:localhost",
-                accessToken: "test",
-                id: 0,
-                createdDate: new Date(),
-                modifiedDate: new Date(),
-                deletedDate: new Date()
-              },
-              tokenPayload: {
-                iss: "did:web:localhost",
-                sub: "did:web:localhost",
-                aud: "did:web:localhost",
-                token: "test"
-              }
-            };
-          } else {
-            return decodeJwt(token);
-          }
-        });
-      const stsHolderMock = jest
+      vi.spyOn(
+        issuerService["secureTokenService"],
+        "validateIDTokenWithAccessToken"
+      ).mockImplementation(async (token: string) => {
+        if (token === "test") {
+          return {
+            originalIdToken: {
+              audience: "did:web:localhost",
+              accessToken: "test",
+              id: 0,
+              createdDate: new Date(),
+              modifiedDate: new Date(),
+              deletedDate: new Date()
+            },
+            tokenPayload: {
+              iss: "did:web:localhost",
+              sub: "did:web:localhost",
+              aud: "did:web:localhost",
+              token: "test"
+            }
+          };
+        } else {
+          return decodeJwt(token);
+        }
+      });
+      const stsHolderMock = vi
         .spyOn(holderService["secureTokenService"], "validateIDToken")
         .mockImplementation(async (token: string) => {
           if (token === "test") {

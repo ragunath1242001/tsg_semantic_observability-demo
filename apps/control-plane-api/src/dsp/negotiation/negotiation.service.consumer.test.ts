@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -26,6 +25,7 @@ import {
 import { plainToClass } from "class-transformer";
 import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { vi } from "vitest";
 
 import { RootConfig } from "../../config.js";
 import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao.js";
@@ -274,7 +274,7 @@ describe("Negotiation Service (Consumer)", () => {
     });
 
     it("Handle contract agreement", async () => {
-      const emitAsyncMock = jest.spyOn(
+      const emitAsyncMock = vi.spyOn(
         negotiationService.eventEmitter,
         "emitAsync"
       );

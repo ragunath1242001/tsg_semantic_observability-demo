@@ -29,5 +29,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": ["bin/", "lib/"],
-  "exclude": ["jest.config.ts", "coverage/", "dist/"]
+  "exclude": ["vitest.config.ts", "coverage/", "dist/"]
 }

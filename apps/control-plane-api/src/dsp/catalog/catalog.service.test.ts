@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
@@ -16,6 +15,7 @@ import {
   PermissionDto
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
+import { vi } from "vitest";
 
 import { InitCatalog, PolicyConfig } from "../../config.js";
 import {
@@ -33,7 +33,7 @@ import { CatalogService } from "./catalog.service.js";
 describe("Catalog Service", () => {
   let catalogService: CatalogService;
   beforeAll(async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     await TypeOrmTestHelper.instance.setupTestDB();
     const initCatalog = plainToClass(InitCatalog, {
       creator: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
@@ -100,7 +100,7 @@ describe("Catalog Service", () => {
 
   afterAll(async () => {
     TypeOrmTestHelper.instance.teardownTestDB();
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe("Initializing catalog", () => {

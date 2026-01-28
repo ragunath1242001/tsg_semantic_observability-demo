@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -14,6 +13,7 @@ import {
 import { plainToInstance } from "class-transformer";
 import { Request, Response } from "express";
 import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
+import { vi } from "vitest";
 
 import { RecoveryCodeService } from "../auth/recovery-code.service.js";
 import { TotpService } from "../auth/totp.service.js";
@@ -77,7 +77,7 @@ describe("Oauth", () => {
         {
           provide: KubernetesService,
           useValue: {
-            applySecret: jest.fn()
+            applySecret: vi.fn()
           }
         },
         ClientsService,
@@ -256,9 +256,9 @@ describe("Oauth", () => {
         session: {}
       } as unknown as Request;
       const response = {
-        redirect: jest.fn(),
-        status: jest.fn(),
-        json: jest.fn()
+        redirect: vi.fn(),
+        status: vi.fn(),
+        json: vi.fn()
       } as unknown as Response;
       const authorizationRequest: AuthorizationRequest = {
         response_type: "code",
@@ -279,7 +279,7 @@ describe("Oauth", () => {
       );
       expect(response.status).toHaveBeenCalledWith(200);
       expect(response.redirect).not.toHaveBeenCalled();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       await oauth.loginHandler(
         request,
         response,
@@ -297,7 +297,7 @@ describe("Oauth", () => {
       );
       expect(response.redirect).toHaveBeenCalled();
       expect(response.status).not.toHaveBeenCalled();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       await expect(
         oauth.loginHandler(
           request,
@@ -311,7 +311,7 @@ describe("Oauth", () => {
       ).rejects.toThrow("Invalid login request");
       expect(response.redirect).not.toHaveBeenCalled();
       expect(response.status).not.toHaveBeenCalled();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       const invalidAuthorizationRequest: AuthorizationRequest = {
         response_type: "code",
         response_mode: "query",

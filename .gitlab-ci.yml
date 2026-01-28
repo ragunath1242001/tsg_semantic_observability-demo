@@ -1,12 +1,30 @@
 stages:
+  - .pre
   - build
   - test
   - package
   - release
   - check
 
-variables:
-  RULES_CHANGES_PATH: "**/*"
+# Global cache configuration for pnpm store
+.pnpm-cache:
+  cache:
+    - key:
+        files:
+          - pnpm-lock.yaml
+      paths:
+        - .pnpm-store
+      policy: pull-push
+
+# Read-only cache for jobs that don't need to update it
+.pnpm-cache-readonly:
+  cache:
+    - key:
+        files:
+          - pnpm-lock.yaml
+      paths:
+        - .pnpm-store
+      policy: pull
 
 .base-rules:
   image: node:24
@@ -16,16 +34,23 @@ variables:
   before_script:
     - corepack enable pnpm
     - pnpm config set store-dir .pnpm-store
-  cache:
-    key:
-      files:
-        - pnpm-lock.yaml
-    paths:
-      - .pnpm-store
+  extends: .pnpm-cache
+
+warm-cache:
+  extends: .base-rules
+  stage: .pre
+  script:
+    - pnpm install --frozen-lockfile
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
 
 openapi:
   extends: .base-rules
   stage: test
+  needs:
+    - job: warm-cache
+      optional: true
   script:
     - pnpm install --frozen-lockfile
     - pnpm --filter "./libs/*" build
@@ -37,6 +62,9 @@ openapi:
 config_docs:
   extends: .base-rules
   stage: test
+  needs:
+    - job: warm-cache
+      optional: true
   script:
     - pnpm install --frozen-lockfile
     - pnpm --filter "./libs/*" build
@@ -47,6 +75,9 @@ config_docs:
 lint:
   extends: .base-rules
   stage: test
+  needs:
+    - job: warm-cache
+      optional: true
   script:
     - pnpm install --frozen-lockfile
     - pnpm prettier --check . && pnpm eslint --quiet

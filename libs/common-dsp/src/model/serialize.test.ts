@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "vitest";
 
 import { defaultContext } from "../jsonld/context.defaults.js";
 import { serializableTypes } from "./decorators.js";
@@ -13,7 +13,7 @@ test("Validation", async () => {
     "@type": "TransferCompletionMessage",
     providerPid: ""
   };
-  expect(async () => {
+  await expect(async () => {
     serializableTypes["TransferCompletionMessage"] = TransferCompletionMessage;
     const result = await deserialize<TransferCompletionMessage>(jsonLd);
     result.validate();

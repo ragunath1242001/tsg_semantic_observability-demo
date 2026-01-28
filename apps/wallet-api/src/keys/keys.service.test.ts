@@ -1,8 +1,8 @@
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { RootConfig } from "../config.js";
 import { CredentialsService } from "../credentials/credentials.service.js";

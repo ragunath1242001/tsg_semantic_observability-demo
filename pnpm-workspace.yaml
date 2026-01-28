@@ -31,6 +31,11 @@ trustPolicyExclude:
 # pnpm v10+ blocks scripts by default for security
 # Add packages here only after reviewing their postinstall scripts
 onlyBuiltDependencies:
-  - bcrypt
-  - esbuild
-  - sqlite3
+  - "@nestjs/core"
+  - "@parcel/watcher"
+  - "@swc/core"
+  - "bcrypt"
+  - "esbuild"
+  - "msw"
+  - "sqlite3"
+  - "vue-demi"

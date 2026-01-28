@@ -1,7 +1,7 @@
-import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import { JsonLdDocument } from "jsonld";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
 import { OfferDto } from "../model/dsp/index.js";
 import { defaultContext, setJsonLdDebugContexts } from "./context.defaults.js";

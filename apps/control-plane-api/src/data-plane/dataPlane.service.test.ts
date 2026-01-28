@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -20,6 +19,7 @@ import {
   Permission
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
+import { vi } from "vitest";
 
 import { InitCatalog } from "../config.js";
 import { CatalogService } from "../dsp/catalog/catalog.service.js";
@@ -40,7 +40,7 @@ describe("DataPlane Service", () => {
   let dataPlaneService: DataPlaneService;
   let catalogService: CatalogService;
   beforeAll(async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     await TypeOrmTestHelper.instance.setupTestDB();
     const initCatalog = plainToClass(InitCatalog, {});
     const serverConfig = plainToClass(ServerConfig, {});
@@ -107,7 +107,7 @@ describe("DataPlane Service", () => {
 
   afterAll(async () => {
     TypeOrmTestHelper.instance.teardownTestDB();
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe("Add, get, update and delete dataplane", () => {

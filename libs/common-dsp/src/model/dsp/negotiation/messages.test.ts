@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "vitest";
 
 import { defaultContext } from "../../../jsonld/context.defaults.js";
 import { compact } from "../../../jsonld/jsonld.js";

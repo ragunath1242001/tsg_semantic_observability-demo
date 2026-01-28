@@ -1,9 +1,9 @@
-import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
 import { Request } from "express";
+import { vi } from "vitest";
 
 import { RecoveryCodeService } from "../auth/recovery-code.service.js";
 import { TotpService } from "../auth/totp.service.js";
@@ -71,7 +71,7 @@ describe("IngressAuthService", () => {
         {
           provide: KubernetesService,
           useValue: {
-            applySecret: jest.fn()
+            applySecret: vi.fn()
           }
         },
         TokenService,
