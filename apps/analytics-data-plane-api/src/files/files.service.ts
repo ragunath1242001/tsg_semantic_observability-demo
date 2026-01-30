@@ -17,6 +17,7 @@ import {
   DataService,
   Dataset,
   DatasetDto,
+  defaultContext,
   Distribution,
   Offer,
   Permission
@@ -35,7 +36,10 @@ import { mergeFileDatasetUpdate } from "../utils/dataset-file-merge.js";
 import { DataPlaneError } from "../utils/errors/error.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
 import { MetadataGeneratorService } from "./metadata-generator.service.js";
-import { CombinedMetadataResult } from "./metadata-tools/metadata-types.js";
+import {
+  ColumnMetadataEnhancement,
+  CombinedMetadataResult
+} from "./metadata-tools/metadata-types.js";
 
 @Injectable()
 export class FilesService {
@@ -238,30 +242,25 @@ export class FilesService {
   async createCSVW(
     file: Express.Multer.File,
     dbentry: FileMetadataDao,
-    columnEnhancements?: Array<{
-      name: string;
-      datatype?: string;
-      description?: string;
-    }>
+    columnEnhancements?: Array<ColumnMetadataEnhancement>
   ): Promise<string> {
     const csv = await this.processFile(file, 10);
-
     // Build columns structure with optional enhancements
-    const columns: Array<{
-      name: string;
-      datatype?: string;
-      "dc:description"?: string;
-    }> = csv[0].map((column: string) => {
-      const enhancement = columnEnhancements?.find((e) => e.name === column);
-      return {
-        name: column,
-        datatype: enhancement?.datatype,
-        "dc:description": enhancement?.description
-      };
-    });
-
+    const columns: Array<ColumnMetadataEnhancement | { name: string }> =
+      csv[0].map((column: string) => {
+        const enhancement = columnEnhancements?.find(
+          (e) => e["csvw:name"] === column
+        );
+        if (enhancement) {
+          return enhancement;
+        } else {
+          return {
+            name: column
+          };
+        }
+      });
     const csvw = {
-      "@context": ["http://www.w3.org/ns/csvw"],
+      "@context": ["http://www.w3.org/ns/csvw", ...defaultContext()],
       tables: [
         {
           url: "",
@@ -273,7 +272,7 @@ export class FilesService {
           }
         }
       ]
-    };
+    } as CSVW;
     dbentry.csvw = csvw;
     await this.fileRepository.save(dbentry);
     return `${this.rootConfig.server.publicAddress}/files/${dbentry.identifier}/csvw`;
@@ -316,7 +315,7 @@ export class FilesService {
             // For LLM analysis, only use a subset of rows (first 20) to avoid token limits
             const llmRows = useLLM ? allRows.slice(0, 20) : allRows;
 
-            const result = await this.metadataGenerator.generateMetadata(
+            metadata = await this.metadataGenerator.generateMetadata(
               headers,
               allRows, // Pass all rows for deterministic facts
               file.originalname,
@@ -324,29 +323,30 @@ export class FilesService {
               llmRows // Pass subset for LLM
             );
 
-            metadata = {
-              columns: result.columns,
-              dataset: result.dataset
-            };
-
             this.logger.log(
               `Generated metadata for ${file.originalname}: ${allRows.length} rows, ${headers.length} columns`
             );
-          }
 
-          // Create CSVW with column metadata
-          if (file.mimetype === "text/csv") {
-            try {
-              const csvwUrl = await this.createCSVW(
-                file,
-                dbentry,
-                metadata?.columns
-              );
-              conformsTo.push(csvwUrl);
-            } catch (error) {
-              this.logger.debug(
-                `Error creating CSVW: ${file.filename} -> ${error instanceof Error ? error.message : error}`
-              );
+            if (
+              headers.length >= this.rootConfig.files.maxInlineMetadataColumns
+            ) {
+              try {
+                const csvwUrl = await this.createCSVW(
+                  file,
+                  dbentry,
+                  metadata?.columns
+                );
+                conformsTo.push(csvwUrl);
+              } catch (error) {
+                this.logger.debug(
+                  `Error creating CSVW: ${file.filename} -> ${error instanceof Error ? error.message : error}`
+                );
+              }
+            } else {
+              dbentry.inlineCsvw = true;
+              await this.fileRepository.update(dbentry.identifier, {
+                inlineCsvw: true
+              });
             }
           }
 
@@ -355,22 +355,26 @@ export class FilesService {
             dbentry.datasetId ?? `urn:uuid:${dbentry.identifier}`;
 
           // Use generated metadata if available, otherwise use defaults
-          const title = metadata?.dataset?.title || file.originalname;
-          const description = metadata?.dataset?.description
-            ? [metadata.dataset.description]
+          const title = metadata?.dataset?.["dct:title"] || file.originalname;
+          const description = metadata?.dataset?.["dct:description"]
+            ? [metadata.dataset["dct:description"]]
             : [`Data file ${file.originalname}`];
 
           this.logger.debug(
-            `Creating dataset: title="${title}", keywords=${JSON.stringify(metadata?.dataset?.keywords)}, temporal="${metadata?.dataset?.temporal}"`
+            `Creating dataset: title="${title}", keywords=${JSON.stringify(metadata?.dataset?.["dcat:keyword"])}, temporal="${metadata?.dataset?.["dct:temporal"]}"`
           );
-
+          // Get all properties of Dataset to know which to filter
+          const datasetProperties = Object.getOwnPropertyNames(new Dataset({}));
           const datasetDto = new Dataset({
             id: datasetId,
             extraProps: metadata?.dataset
               ? Object.fromEntries(
                   Object.entries(metadata.dataset).filter(
                     ([key, value]) =>
-                      key.includes(":") && value !== undefined && value !== null
+                      key.includes(":") &&
+                      !datasetProperties.includes(key.split(":")[1]) &&
+                      value !== undefined &&
+                      value !== null
                   )
                 )
               : undefined,
@@ -391,11 +395,19 @@ export class FilesService {
             ],
             title: title,
             description: description,
-            keyword: metadata?.dataset?.keywords,
-            theme: metadata?.dataset?.theme,
-            temporal: metadata?.dataset?.temporal,
-            spatial: metadata?.dataset?.spatial,
-            license: metadata?.dataset?.license,
+            keyword: metadata?.dataset?.["dcat:keyword"],
+            theme: metadata?.dataset?.["dcat:theme"],
+            temporal: metadata?.dataset?.["dct:temporal"],
+            spatial: metadata?.dataset?.["dct:spatial"],
+            license: metadata?.dataset?.["dct:license"],
+            hasCodingSystem:
+              metadata?.dataset?.["healthdcatap:hasCodingSystem"],
+            numberOfRecords:
+              metadata?.dataset?.["healthdcatap:numberOfRecords"],
+            numberOfUniqueIndividuals:
+              metadata?.dataset?.["healthdcatap:numberOfUniqueIndividuals"],
+            healthTheme: metadata?.dataset?.["healthdcatap:healthTheme"],
+
             hasPolicy: [
               new Offer({
                 assigner: catalog.publisher as string,

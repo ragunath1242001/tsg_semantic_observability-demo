@@ -76,6 +76,10 @@ export class FileMetadataDto {
   @ApiProperty({ type: () => CSVW })
   @IsOptional()
   csvw?: CSVW;
+  @ApiProperty({ example: false })
+  @IsBoolean()
+  @IsOptional()
+  inlineCsvw?: boolean;
   @ApiPropertyOptional({ example: "dataset-123" })
   @IsString()
   @IsOptional()

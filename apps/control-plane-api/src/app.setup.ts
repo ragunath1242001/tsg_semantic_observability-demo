@@ -1,6 +1,7 @@
 import { INestApplication, Logger } from "@nestjs/common";
 import { ServerConfig } from "@tsg-dsp/common-api";
 import crypto from "crypto";
+import { json, urlencoded } from "express";
 import session from "express-session";
 
 export function setupApp(app: INestApplication) {
@@ -10,6 +11,8 @@ export function setupApp(app: INestApplication) {
       exclude: [".well-known/dspace-version", "health"]
     });
   }
+  app.use(json({ limit: "1mb" }));
+  app.use(urlencoded({ extended: true, limit: "1mb" }));
   app.use(
     session({
       name: process.env["SESSION_NAME"] || "connect.sid.tsgcp",
