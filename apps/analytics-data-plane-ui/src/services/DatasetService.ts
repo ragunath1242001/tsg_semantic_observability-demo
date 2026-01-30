@@ -4,15 +4,14 @@ import { DEFAULT_CONTEXTS } from "../config/metadata-wizard.constants";
 
 export interface CSVWColumnMetadata {
   "@type"?: "csvw:Column";
-  name: string;
-  titles?: string | string[];
-  datatype?: string;
-  "dc:description"?: string;
-  description?: string;
-  required?: boolean;
-  null?: string | string[];
-  "csvw:null"?: number;
-  "csvw:uniqueCount"?: number;
+  "csvw:name": string;
+  "csvw:title"?: string | string[];
+  "csvw:datatype"?: string;
+  "dct:description"?: string;
+  "csvw:required"?: boolean;
+  "csvw:null"?: string | string[];
+  "tsg:nullCount"?: number;
+  "tsg:uniqueCount"?: number;
   "csvw:minInclusive"?: number | string;
   "csvw:maxInclusive"?: number | string;
   "csvw:pattern"?: string;

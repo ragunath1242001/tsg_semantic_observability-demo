@@ -26,6 +26,9 @@ export class FileMetadataDao {
   @IsOptional()
   csvw?: CSVW;
 
+  @Column({ type: Boolean, nullable: true })
+  inlineCsvw?: boolean;
+
   @Column({ type: String, nullable: true })
   datasetId?: string;
 

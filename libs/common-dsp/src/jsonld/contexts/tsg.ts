@@ -3,6 +3,10 @@ export default {
     "@import": "https://w3id.org/dspace/2025/1/odrl-profile.jsonld",
     tsg: "https://dataspac.es/ns/tsg#",
     iana: "https://www.iana.org/assignments/media-types/",
+    csvw: "http://www.w3.org/ns/csvw#",
+    dqv: "http://www.w3.org/ns/dqv#",
+    dcatap: "http://data.europa.eu/r5r/",
+    sdmx: "http://purl.org/linked-data/sdmx#",
 
     contactPoint: {
       "@id": "dcat:contactPoint",

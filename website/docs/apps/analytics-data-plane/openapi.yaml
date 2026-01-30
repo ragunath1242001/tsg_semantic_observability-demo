@@ -2942,6 +2942,9 @@ components:
           example: true
         csvw:
           $ref: "#/components/schemas/CSVW"
+        inlineCsvw:
+          type: boolean
+          example: false
         datasetId:
           type: string
           example: dataset-123
@@ -2966,6 +2969,7 @@ components:
         - mediaType
         - presentInLastCheck
         - csvw
+        - inlineCsvw
         - metadataStatus
     FileUpdateDto:
       type: object

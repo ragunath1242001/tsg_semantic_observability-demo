@@ -230,24 +230,23 @@ export const KNOWN_HEALTH_THEMES = [
 export interface ColumnMetadataEnhancement {
   // Core CSVW properties (csvw:Column)
   "@type"?: "csvw:Column";
-  name: string; // Technical name as in CSV header
-  titles?: string | string[]; // Human-readable title(s), can be multilingual
-  datatype?: string; // XSD datatype (string, integer, decimal, date, dateTime, boolean, etc.)
-  "dc:description"?: string; // Column description from Dublin Core
-  description?: string; // Alias for dc:description for backwards compatibility
+  "csvw:name": string; // Technical name as in CSV header
+  "csvw:title"?: string | string[]; // Human-readable title(s), can be multilingual
+  "csvw:datatype"?: string; // XSD datatype (string, integer, decimal, date, dateTime, boolean, etc.)
+  "dct:description"?: string; // Column description from Dublin Core
 
   // CSVW Extended properties
-  propertyUrl?: string; // RDF predicate URI for semantic mapping
-  required?: boolean; // Whether column values are required (non-null)
-  null?: string | string[]; // Values representing null (e.g., "NA", "N/A", "")
-  default?: string; // Default value for null cells
-  separator?: string; // For multi-value cells
-  ordered?: boolean; // Whether order of values matters
-  lang?: string; // Language tag for string values (BCP 47)
+  "csvw:propertyUrl"?: string; // RDF predicate URI for semantic mapping
+  "csvw:required"?: boolean; // Whether column values are required (non-null)
+  "csvw:null"?: string | string[]; // Values representing null (e.g., "NA", "N/A", "")
+  "csvw:default"?: string; // Default value for null cells
+  "csvw:separator"?: string; // For multi-value cells
+  "csvw:ordered"?: boolean; // Whether order of values matters
+  "csvw:lang"?: string; // Language tag for string values (BCP 47)
 
   // Statistical properties (computed from data)
-  "csvw:null"?: number; // Count of null values
-  "csvw:uniqueCount"?: number; // Number of distinct values
+  "tsg:nullCount"?: number; // Count of null values
+  "tsg:uniqueCount"?: number; // Number of distinct values
   "csvw:minInclusive"?: number | string; // Minimum value
   "csvw:maxInclusive"?: number | string; // Maximum value
   "csvw:pattern"?: string; // Regex pattern for validation
@@ -264,23 +263,23 @@ export interface ColumnMetadataEnhancement {
 export interface DatasetMetadataEnhancement {
   // Core DCAT properties (dct:)
   "@type"?: "dcat:Dataset";
-  title?: string; // dct:title
-  description?: string; // dct:description
-  identifier?: string; // dct:identifier - unique dataset identifier
-  issued?: string; // dct:issued - release date (ISO 8601)
-  modified?: string; // dct:modified - last modification date (ISO 8601)
-  language?: string; // dct:language - dataset language (BCP 47 or URI)
-  version?: string; // dcat:version - version indicator
+  "dct:title"?: string; // dct:title
+  "dct:description"?: string; // dct:description
+  "dct:identifier"?: string; // dct:identifier - unique dataset identifier
+  "dct:issued"?: string; // dct:issued - release date (ISO 8601)
+  "dct:modified"?: string; // dct:modified - last modification date (ISO 8601)
+  "dct:language"?: string; // dct:language - dataset language (BCP 47 or URI)
+  "dcat:version"?: string; // dcat:version - version indicator
 
   // Discovery & classification (dcat:)
-  keywords?: string[]; // dcat:keyword - search/discovery keywords
-  theme?: string[]; // dcat:theme - thematic categories (from controlled vocabulary)
+  "dcat:keyword"?: string[]; // dcat:keyword - search/discovery keywords
+  "dcat:theme"?: string[]; // dcat:theme - thematic categories (from controlled vocabulary)
 
   // Coverage (dct:spatial, dct:temporal)
-  temporal?: string; // dct:temporal - ISO 8601 time period (start/end)
+  "dct:temporal"?: string; // dct:temporal - ISO 8601 time period (start/end)
   "dcat:startDate"?: string; // Start of temporal coverage
   "dcat:endDate"?: string; // End of temporal coverage
-  spatial?: string; // dct:spatial - geographic coverage (URI or text)
+  "dct:spatial"?: string; // dct:spatial - geographic coverage (URI or text)
 
   // Provenance & quality (prov:, dqv:)
   "dct:provenance"?: string; // Provenance statement
@@ -304,7 +303,7 @@ export interface DatasetMetadataEnhancement {
   };
 
   // Rights & licensing (dct:, odrl:)
-  license?: string; // dct:license - license document URI
+  "dct:license"?: string; // dct:license - license document URI
   "dct:accessRights"?: string; // Access rights (public, restricted, non-public)
   "dct:rights"?: string; // Rights statement
 

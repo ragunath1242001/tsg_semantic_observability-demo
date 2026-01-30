@@ -15,6 +15,7 @@ import {
   IsBoolean,
   IsDefined,
   IsIn,
+  IsInt,
   IsOptional,
   IsString,
   ValidateIf,
@@ -62,6 +63,11 @@ export class FilesConfig {
   @IsString()
   @IsOptional()
   public pvcName?: string;
+
+  @Description("Maximum number of columns to include in inline metadata")
+  @IsOptional()
+  @IsInt()
+  public maxInlineMetadataColumns: number = 200;
 }
 
 export class RuntimeConfig {

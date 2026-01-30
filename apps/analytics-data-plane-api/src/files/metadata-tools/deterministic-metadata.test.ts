@@ -86,7 +86,6 @@ describe("toDCATDataset", () => {
     expect(dcat["dct:description"]).toMatch(
       /Temporal coverage: 2020-01-01 to 2020-12-31\./
     );
-    expect(dcat["temporal"]).toBe("2020-01-01/2020-12-31");
     expect(dcat["dct:temporal"]).toBeDefined();
     expect(dcat["dct:temporal"]?.["dcat:startDate"]).toBe("2020-01-01");
     expect(dcat["dct:temporal"]?.["dcat:endDate"]).toBe("2020-12-31");

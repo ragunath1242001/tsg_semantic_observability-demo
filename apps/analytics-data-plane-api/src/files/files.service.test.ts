@@ -51,6 +51,9 @@ describe("FilesService", () => {
       },
       logging: {
         debug: true
+      },
+      files: {
+        maxInlineMetadataColumns: 1
       }
     });
     server = setupServer(
@@ -287,7 +290,7 @@ describe("FilesService", () => {
       expect(dataPlaneServiceMock.addDataset).toHaveBeenCalledTimes(2);
       for (const call of dataPlaneServiceMock.addDataset.mock.calls) {
         const datasetDto = call[0] as Record<string, unknown>;
-        expect(datasetDto["healthdcatap:numberOfRecords"]).toBe(2);
+        expect(datasetDto.numberOfRecords).toBe(2);
         expect(datasetDto["dqv:completeness"]).toBe("all-variables");
       }
 

@@ -1,7 +1,7 @@
 import { LanguageModelV3 } from "@ai-sdk/provider";
 import { Injectable, Logger } from "@nestjs/common";
 
-import { LLMConfig } from "../config.js";
+import { FilesConfig, LLMConfig } from "../config.js";
 import {
   ColumnMetadataEnhancement,
   CombinedMetadataResult,
@@ -19,7 +19,10 @@ export class MetadataGeneratorService {
   private readonly logger = new Logger(MetadataGeneratorService.name);
   private model: LanguageModelV3 | null = null;
 
-  constructor(private readonly llmConfig: LLMConfig) {
+  constructor(
+    private readonly llmConfig: LLMConfig,
+    private readonly filesConfig: FilesConfig
+  ) {
     if (this.llmConfig.enabled) {
       this.initializeModel();
     }
@@ -66,15 +69,14 @@ export class MetadataGeneratorService {
     const csvwColumns = toCSVWColumns(deterministicData);
     const columns: ColumnMetadataEnhancement[] = csvwColumns.map((col) => ({
       "@type": "csvw:Column",
-      name: col.name,
-      titles: col.titles,
-      datatype: col.datatype,
-      "dc:description": col["dc:description"],
-      description: col["dc:description"], // Backwards compatibility
-      required: col.required,
-      null: col.null,
+      "csvw:name": col["csvw:name"],
+      "csvw:title": col["csvw:title"],
+      "csvw:datatype": col["csvw:datatype"],
+      "dct:description": col["dct:description"],
+      "csvw:required": col["csvw:required"],
       "csvw:null": col["csvw:null"],
-      "csvw:uniqueCount": col["csvw:uniqueCount"],
+      "tsg:nullCount": col["tsg:nullCount"],
+      "tsg:uniqueCount": col["tsg:uniqueCount"],
       "csvw:minInclusive": col["csvw:minInclusive"],
       "csvw:maxInclusive": col["csvw:maxInclusive"],
       "csvw:pattern": col["csvw:pattern"],
@@ -82,17 +84,24 @@ export class MetadataGeneratorService {
     }));
 
     // Convert to DCAT dataset format with full metadata
-    const dcatDataset = toDCATDataset(deterministicData);
+    const dcatDataset = toDCATDataset(
+      deterministicData,
+      this.filesConfig.maxInlineMetadataColumns
+    );
     const dataset: DatasetMetadataEnhancement = {
       "@type": "dcat:Dataset",
-      title: dcatDataset.title,
-      description: dcatDataset.description,
-      identifier: dcatDataset["dct:identifier"],
-      issued: dcatDataset["dct:issued"],
-      modified: dcatDataset["dct:modified"],
-      keywords: dcatDataset["dcat:keyword"],
-      theme: dcatDataset["dcat:theme"],
-      temporal: dcatDataset.temporal,
+      "dct:title": dcatDataset["dct:title"],
+      "dct:description": dcatDataset["dct:description"],
+      "dct:identifier": dcatDataset["dct:identifier"],
+      "dct:issued": dcatDataset["dct:issued"],
+      "dct:modified": dcatDataset["dct:modified"],
+      "dcat:keyword": dcatDataset["dcat:keyword"],
+      "dcat:theme": dcatDataset["dcat:theme"],
+      "dct:temporal": dcatDataset["dct:temporal"]
+        ? (dcatDataset["dct:temporal"]["dcat:startDate"] || "") +
+          "/" +
+          (dcatDataset["dct:temporal"]["dcat:endDate"] || "")
+        : undefined,
       "dcat:startDate": dcatDataset["dct:temporal"]?.["dcat:startDate"],
       "dcat:endDate": dcatDataset["dct:temporal"]?.["dcat:endDate"],
       "dqv:completeness": dcatDataset["dqv:completeness"],
@@ -118,11 +127,7 @@ export class MetadataGeneratorService {
       "healthdcatap:maxTypicalAge": dcatDataset["healthdcatap:maxTypicalAge"],
       "healthdcatap:hasCodingSystem":
         dcatDataset["healthdcatap:hasCodingSystem"],
-      "csvw:tableSchema": {
-        "@type": "csvw:Table",
-        "csvw:columns": columns,
-        "csvw:primaryKey": dcatDataset["csvw:tableSchema"]?.["csvw:primaryKey"]
-      }
+      "csvw:tableSchema": dcatDataset["csvw:tableSchema"]
     };
 
     if (useLLM && this.isReady()) {
@@ -144,10 +149,12 @@ export class MetadataGeneratorService {
 
         // Merge LLM-generated subjective fields with deterministic facts
         // Subjective fields from LLM:
-        dataset.title = subjectiveData.title || dataset.title;
-        dataset.description = subjectiveData.description || dataset.description;
-        dataset.keywords = subjectiveData.keywords || dataset.keywords;
-        dataset.theme = subjectiveData.theme;
+        dataset["dct:title"] = subjectiveData.title || dataset["dct:title"];
+        dataset["dct:description"] =
+          subjectiveData.description || dataset["dct:description"];
+        dataset["dcat:keyword"] =
+          subjectiveData.keywords || dataset["dcat:keyword"];
+        dataset["dcat:theme"] = subjectiveData.theme;
 
         // HealthDCAT-AP extensions from LLM
         if (subjectiveData.healthCategory) {
@@ -177,10 +184,9 @@ export class MetadataGeneratorService {
         // Merge column descriptions from LLM
         if (subjectiveData.columnDescriptions) {
           for (const colDesc of subjectiveData.columnDescriptions) {
-            const column = columns.find((c) => c.name === colDesc.name);
+            const column = columns.find((c) => c["csvw:name"] === colDesc.name);
             if (column) {
-              column.description = colDesc.description;
-              column["dc:description"] = colDesc.description;
+              column["dct:description"] = colDesc.description;
             }
           }
         }

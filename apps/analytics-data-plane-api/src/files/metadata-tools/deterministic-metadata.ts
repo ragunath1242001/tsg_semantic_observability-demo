@@ -505,19 +505,19 @@ export function generateDeterministicMetadata(
  */
 export interface CSVWColumn {
   "@type"?: "csvw:Column";
-  name: string;
-  titles?: string | string[];
-  datatype?: string; // XSD datatype
-  "dc:description"?: string;
-  propertyUrl?: string;
-  required?: boolean;
-  null?: string[];
-  "csvw:null"?: number;
-  "csvw:uniqueCount"?: number;
+  "csvw:name": string;
+  "csvw:title"?: string | string[];
+  "csvw:datatype"?: string; // XSD datatype
+  "dct:description"?: string;
+  "csvw:propertyUrl"?: string;
+  "csvw:required"?: boolean;
+  "csvw:null"?: string[];
   "csvw:minInclusive"?: number | string;
   "csvw:maxInclusive"?: number | string;
   "csvw:pattern"?: string;
-  "csvw:mean"?: number;
+  "tsg:uniqueCount"?: number;
+  "tsg:mean"?: number;
+  "tsg:nullCount"?: number;
   "healthdcatap:codingSystem"?: string;
 }
 
@@ -527,8 +527,7 @@ export interface CSVWColumn {
  */
 export interface CSVWTable {
   "@type": "csvw:Table";
-  "@context"?: Record<string, string>;
-  url?: string;
+  "csvw:url"?: string;
   "dct:title"?: string;
   "dcat:keyword"?: string[];
   "csvw:column": CSVWColumn[];
@@ -542,7 +541,6 @@ export interface CSVWTable {
  */
 export interface CSVWTableGroup {
   "@type": "csvw:TableGroup";
-  "@context"?: Record<string, string>;
   "csvw:table": CSVWTable[];
 }
 
@@ -574,7 +572,6 @@ export interface DCATDistribution {
  */
 export interface DCATDataset {
   "@type": "dcat:Dataset";
-  "@context"?: Record<string, string>;
   "dct:title": string;
   "dct:description"?: string;
   "dct:identifier"?: string;
@@ -613,11 +610,6 @@ export interface DCATDataset {
   "healthdcatap:hasCodingSystem"?: string[];
   // CSVW table schema for variable dictionary
   "csvw:tableSchema"?: CSVWTable;
-  // Backward compatibility
-  title: string;
-  description: string;
-  keywords: string[];
-  temporal?: string;
   "dqv:completeness"?: string;
 }
 
@@ -660,18 +652,18 @@ export function toCSVWColumns(metadata: DeterministicMetadata): CSVWColumn[] {
 
     const csvwColumn: CSVWColumn = {
       "@type": "csvw:Column",
-      name: col.name,
-      titles: col.name, // Human-readable title (same as name for now)
-      datatype: col.xsdDatatype,
-      "dc:description": parts.length > 0 ? parts.join("; ") : undefined,
-      required: col.nullCount === 0,
-      "csvw:null": col.nullCount > 0 ? col.nullCount : undefined,
-      "csvw:uniqueCount": col.uniqueCount
+      "csvw:name": col.name,
+      "csvw:title": col.name, // Human-readable title (same as name for now)
+      "csvw:datatype": col.xsdDatatype,
+      "dct:description": parts.length > 0 ? parts.join("; ") : undefined,
+      "csvw:required": col.nullCount === 0,
+      "tsg:nullCount": col.nullCount > 0 ? col.nullCount : undefined,
+      "tsg:uniqueCount": col.uniqueCount
     };
 
     // Add null value representations if found
     if (col.nullValues && col.nullValues.length > 0) {
-      csvwColumn.null = col.nullValues;
+      csvwColumn["csvw:null"] = col.nullValues;
     }
 
     // Add min/max for numeric columns
@@ -682,7 +674,7 @@ export function toCSVWColumns(metadata: DeterministicMetadata): CSVWColumn[] {
       csvwColumn["csvw:maxInclusive"] = col.max;
     }
     if (col.mean !== undefined) {
-      csvwColumn["csvw:mean"] = col.mean;
+      csvwColumn["tsg:mean"] = col.mean;
     }
 
     // Add min/max for date columns
@@ -721,13 +713,6 @@ export function toCSVWTable(metadata: DeterministicMetadata): CSVWTable {
 
   return {
     "@type": "csvw:Table",
-    "@context": {
-      csvw: "http://www.w3.org/ns/csvw#",
-      dc: "http://purl.org/dc/terms/",
-      dcat: "http://www.w3.org/ns/dcat#",
-      xsd: "http://www.w3.org/2001/XMLSchema#",
-      healthdcatap: "http://healthdataportal.eu/ns/health#"
-    },
     "dct:title": metadata.filename,
     "csvw:column": columns,
     "csvw:primaryKey":
@@ -743,7 +728,10 @@ export function toCSVWTable(metadata: DeterministicMetadata): CSVWTable {
  * @see https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset
  * @see https://healthdataeu.pages.code.europa.eu/healthdcat-ap/releases/release-5/#Dataset
  */
-export function toDCATDataset(metadata: DeterministicMetadata): DCATDataset {
+export function toDCATDataset(
+  metadata: DeterministicMetadata,
+  maxColumnCount: number = 100
+): DCATDataset {
   // Generate a factual description
   const descriptionParts = [
     `CSV dataset with ${metadata.rowCount} rows and ${metadata.columnCount} columns.`
@@ -799,20 +787,11 @@ export function toDCATDataset(metadata: DeterministicMetadata): DCATDataset {
   }));
 
   // Build CSVW table schema for variable dictionary
-  const csvwTableSchema = toCSVWTable(metadata);
+  const csvwTableSchema =
+    metadata.columnCount < maxColumnCount ? toCSVWTable(metadata) : undefined;
 
   const dcatDataset: DCATDataset = {
     "@type": "dcat:Dataset",
-    "@context": {
-      dcat: "http://www.w3.org/ns/dcat#",
-      dct: "http://purl.org/dc/terms/",
-      dqv: "http://www.w3.org/ns/dqv#",
-      csvw: "http://www.w3.org/ns/csvw#",
-      healthdcatap: "http://healthdataportal.eu/ns/health#",
-      dcatap: "http://data.europa.eu/r5r/",
-      sdmx: "http://purl.org/linked-data/sdmx#",
-      xsd: "http://www.w3.org/2001/XMLSchema#"
-    },
     "dct:title": metadata.filename,
     "dct:description": descriptionParts.join(" "),
     "dct:issued": metadata.metadataGenerated,
@@ -835,10 +814,6 @@ export function toDCATDataset(metadata: DeterministicMetadata): DCATDataset {
     "healthdcatap:numberOfRecords": metadata.rowCount,
     "healthdcatap:hasCodingSystem": metadata.detectedCodingSystems,
     // Backward compatibility fields
-    title: metadata.filename,
-    description: descriptionParts.join(" "),
-    keywords,
-    temporal: metadata.temporalCoverage?.interval,
     "dqv:completeness": dqvCompleteness
   };
 

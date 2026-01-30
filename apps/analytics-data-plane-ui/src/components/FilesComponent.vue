@@ -591,6 +591,15 @@ onMounted(async () => {
                       )
                     " />
                   <Button
+                    v-if="file.inlineCsvw"
+                    :pt:root:class="'p-0.5! text-xs!'"
+                    label="Has inline CSVW"
+                    severity="info"
+                    size="small"
+                    @click="
+                      showDatasetDetails(file.identifier, file.originalFileName)
+                    " />
+                  <Button
                     v-if="file.datasetId"
                     :pt:root:class="'p-0.5! text-xs!'"
                     label="Dataset Linked"
@@ -766,6 +775,15 @@ onMounted(async () => {
                         file.csvw,
                         file.originalFileName
                       )
+                    " />
+                  <Button
+                    v-if="file.inlineCsvw"
+                    :pt:root:class="'p-0.5! text-xs!'"
+                    label="Has inline CSVW"
+                    severity="info"
+                    size="small"
+                    @click="
+                      showDatasetDetails(file.identifier, file.originalFileName)
                     " />
                   <Button
                     v-if="file.datasetId"
