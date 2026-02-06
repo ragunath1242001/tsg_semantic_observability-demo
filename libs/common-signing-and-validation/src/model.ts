@@ -1,4 +1,4 @@
 export class TrustAnchor {
-  identifier!: string;
+  id!: string;
   credentialTypes!: string[];
 }

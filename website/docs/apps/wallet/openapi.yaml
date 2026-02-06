@@ -84,9 +84,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a3
-        - oauth2:
-            - wallet_issue_credentials
+      security:
+        - &a3
+          oauth2:
+            - read:w.config
       summary: Retrieve settings
       tags: &a4
         - Settings
@@ -120,7 +121,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security:
+        - *a3
+        - oauth2:
+            - update:w.config
       summary: Update settings
       tags: *a4
   /api/settings/upload:
@@ -131,7 +135,10 @@ paths:
       responses:
         "200":
           description: ""
-      security: *a3
+      security:
+        - *a3
+        - oauth2:
+            - update:w.config
       summary: Upload logo
       tags: *a4
   /api/status:
@@ -178,7 +185,7 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security: &a5
         - oauth2:
-            - wallet_view_presentations
+            - read:w.presentation
       summary: Get the status of a credential
       tags: &a6
         - Management Presentation
@@ -394,7 +401,7 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security:
         - oauth2:
-            - wallet_view_presentations
+            - read:w.presentation
       summary: Request a SIOP token
       tags:
         - Presentation DCP
@@ -421,7 +428,7 @@ paths:
                   $ref: "#/components/schemas/VerifiablePresentation"
       security:
         - oauth2:
-            - wallet_view_presentations
+            - read:w.presentation
       summary: Start verification flow
       tags:
         - Presentation DCP
@@ -498,7 +505,7 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security: &a8
         - oauth2:
-            - wallet_view_presentations
+            - read:w.presentation
       summary: Add an Authorization Request
       tags: &a9
         - OID4VP
@@ -763,9 +770,7 @@ paths:
       security: &a14
         - &a12
           oauth2:
-            - wallet_view_all_credentials
-            - wallet_view_own_credentials
-            - readonly_user
+            - read:w.credential
       summary: List credentials
       tags: &a13
         - Management Credentials
@@ -807,8 +812,7 @@ paths:
       security:
         - *a12
         - oauth2:
-            - wallet_manage_all_credentials
-            - wallet_manage_own_credentials
+            - create:w.credential
       summary: Add credential
       tags: *a13
   /api/management/credentials/dataspace:
@@ -890,8 +894,7 @@ paths:
       security:
         - *a12
         - oauth2:
-            - wallet_manage_all_credentials
-            - wallet_manage_own_credentials
+            - create:w.credential
       summary: Import credential
       tags: *a13
   /api/management/credentials/{credentialId}:
@@ -926,8 +929,7 @@ paths:
       security:
         - *a12
         - oauth2:
-            - wallet_manage_all_credentials
-            - wallet_manage_own_credentials
+            - read:w.credential
       summary: Retrieve credential
       tags: *a13
     put:
@@ -968,8 +970,7 @@ paths:
       security:
         - *a12
         - oauth2:
-            - wallet_manage_all_credentials
-            - wallet_manage_own_credentials
+            - update:w.credential
       summary: Update credential
       tags: *a13
     delete:
@@ -997,8 +998,7 @@ paths:
       security:
         - *a12
         - oauth2:
-            - wallet_manage_all_credentials
-            - wallet_manage_own_credentials
+            - delete:w.credential
       summary: Delete credential
       tags: *a13
   /api/management/credentials/{credentialId}/revoke:
@@ -1029,8 +1029,7 @@ paths:
       security:
         - *a12
         - oauth2:
-            - wallet_manage_all_credentials
-            - wallet_manage_own_credentials
+            - update:w.credential
       summary: Revoke credential
       tags: *a13
   /api/management/credentials/gaiax/legalRegistrationNumber:
@@ -1066,8 +1065,7 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security: &a15
         - oauth2:
-            - wallet_manage_all_credentials
-            - wallet_manage_own_credentials
+            - create:w.credential
       summary: Issue legal registration number credential
       tags: &a16
         - Management Gaia-X Credentials
@@ -1124,9 +1122,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       security: &a17
-        - oauth2:
-            - wallet_view_did
-            - readonly_user
+        - &a19
+          oauth2:
+            - read:w.did
       summary: Retrieve DID document
       tags: &a18
         - Management DID
@@ -1243,7 +1241,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a17
+      security:
+        - *a19
+        - oauth2:
+            - create:w.did
       summary: Add DID service
       tags: *a18
   /api/management/did/services/{id}:
@@ -1281,7 +1282,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a17
+      security:
+        - *a19
+        - oauth2:
+            - update:w.did
       summary: Update DID service
       tags: *a18
     delete:
@@ -1308,7 +1312,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a17
+      security:
+        - *a19
+        - oauth2:
+            - delete:w.did
       summary: Delete DID service
       tags: *a18
   /.well-known/did.json:
@@ -1435,10 +1442,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a19
+      security:
         - oauth2:
-            - wallet_manage_keys
-            - readonly_user
+            - read:w.key
       summary: Retrieve keys
       tags: &a20
         - Management Keys
@@ -1477,7 +1483,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a19
+      security:
+        - oauth2:
+            - create:w.key
       summary: Add key
       tags: *a20
   /api/management/keys/{keyId}:
@@ -1509,7 +1517,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a19
+      security:
+        - oauth2:
+            - read:w.key
       summary: Retrieve key
       tags: *a20
     delete:
@@ -1536,7 +1546,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a19
+      security:
+        - oauth2:
+            - delete:w.key
       summary: Delete key
       tags: *a20
   /api/management/keys/{keyId}/default:
@@ -1565,7 +1577,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a19
+      security:
+        - oauth2:
+            - update:w.key
       summary: Set default key
       tags: *a20
   /api/management/signature/sign:
@@ -1600,8 +1614,7 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security: &a21
         - oauth2:
-            - wallet_use_keys
-            - wallet_manage_keys
+            - execute:w.key
       summary: Sign document
       tags: &a22
         - Management Signatures
@@ -1783,9 +1796,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a24
-        - oauth2:
-            - wallet_view_did
+      security:
+        - &a24
+          oauth2:
+            - read:w.issue_config
       summary: Retrieve issue configurations
       tags: &a25
         - Management Issue Configurations
@@ -1824,7 +1838,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a24
+      security:
+        - *a24
+        - oauth2:
+            - create:w.issue_config
       summary: Add issue configuration
       tags: *a25
   /api/management/issue-configurations/{id}:
@@ -1868,7 +1885,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a24
+      security:
+        - *a24
+        - oauth2:
+            - update:w.issue_config
       summary: Update issue configuration
       tags: *a25
     delete:
@@ -1895,7 +1915,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a24
+      security:
+        - *a24
+        - oauth2:
+            - delete:w.issue_config
       summary: Delete issue configuration
       tags: *a25
   /api/management/issuance/request/dcp:
@@ -1918,6 +1941,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - create:w.credential
       summary: Request credential via DCP
       tags: &a26
         - Issuance Management
@@ -1948,6 +1974,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - create:w.credential
       summary: Request credential via OID4VCI
       tags: *a26
   /api/management/issuance/offers:
@@ -2033,7 +2062,7 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security:
         - oauth2:
-            - wallet_manage_all_credentials
+            - read:w.credential
       summary: Retrieve offered credentials
       tags: *a26
     post:
@@ -2061,6 +2090,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CredentialOfferStatus"
+      security:
+        - oauth2:
+            - create:w.credential
       summary: Add offer
       tags: *a26
   /api/management/issuance/offers/{id}:
@@ -2136,9 +2168,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security:
-        - oauth2:
-            - wallet_manage_all_credentials
       summary: Revoke offer
       tags: *a26
   /api/dcp/credentials:
@@ -2349,8 +2378,7 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security:
         - oauth2:
-            - wallet_manage_own_credentials
-            - wallet_manage_all_credentials
+            - create:w.credential
       summary: Request credential via OID4VCI
       tags:
         - OpenID 4 Verifiable Credential Issuance
@@ -2495,18 +2523,46 @@ components:
     oauth2:
       type: oauth2
       flows:
-        password:
-          scopes:
-            wallet_view_did: wallet_view_did
-            wallet_manage_keys: wallet_manage_keys
-            wallet_use_keys: wallet_use_keys
-            wallet_view_own_credentials: wallet_view_own_credentials
-            wallet_view_all_credentials: wallet_view_all_credentials
-            wallet_manage_own_credentials: wallet_manage_own_credentials
-            wallet_manage_all_credentials: wallet_manage_all_credentials
-            wallet_issue_credentials: wallet_issue_credentials
-            wallet_view_presentations: wallet_view_presentations
-            readonly_user: readonly_user
+        authorizationCode:
+          scopes: &a30
+            create:w.config: create:w.config
+            read:w.config: read:w.config
+            update:w.config: update:w.config
+            delete:w.config: delete:w.config
+            execute:w.config: execute:w.config
+            manage:w.config: manage:w.config
+            create:w.credential: create:w.credential
+            read:w.credential: read:w.credential
+            update:w.credential: update:w.credential
+            delete:w.credential: delete:w.credential
+            execute:w.credential: execute:w.credential
+            manage:w.credential: manage:w.credential
+            create:w.did: create:w.did
+            read:w.did: read:w.did
+            update:w.did: update:w.did
+            delete:w.did: delete:w.did
+            execute:w.did: execute:w.did
+            manage:w.did: manage:w.did
+            create:w.issue_config: create:w.issue_config
+            read:w.issue_config: read:w.issue_config
+            update:w.issue_config: update:w.issue_config
+            delete:w.issue_config: delete:w.issue_config
+            execute:w.issue_config: execute:w.issue_config
+            manage:w.issue_config: manage:w.issue_config
+            create:w.key: create:w.key
+            read:w.key: read:w.key
+            update:w.key: update:w.key
+            delete:w.key: delete:w.key
+            execute:w.key: execute:w.key
+            manage:w.key: manage:w.key
+            create:w.presentation: create:w.presentation
+            read:w.presentation: read:w.presentation
+            update:w.presentation: update:w.presentation
+            delete:w.presentation: delete:w.presentation
+            execute:w.presentation: execute:w.presentation
+            manage:w.presentation: manage:w.presentation
+        clientCredentials:
+          scopes: *a30
   schemas:
     RuntimeConfigDto:
       type: object
@@ -2777,7 +2833,7 @@ components:
           type: object
           example: example-const
         enum:
-          example: &a30
+          example: &a31
             - 1
             - two
           type: array
@@ -2817,7 +2873,7 @@ components:
             - $ref: "#/components/schemas/FilterItems"
         items:
           type: object
-          example: &a31
+          example: &a32
             property:
               type: string
               format: default
@@ -2828,7 +2884,7 @@ components:
           type: object
           example: example-const
         enum:
-          example: *a30
+          example: *a31
           type: array
           items:
             type: number
@@ -2866,7 +2922,7 @@ components:
             - $ref: "#/components/schemas/FilterItems"
         items:
           type: object
-          example: *a31
+          example: *a32
         type:
           type: string
           example: string
@@ -3113,7 +3169,7 @@ components:
           example: did:example:xyz#proof-1
         type:
           type: string
-          enum: &a43
+          enum: &a44
             - DataIntegrityProof
           example: DataIntegrityProof
         proofPurpose:
@@ -3132,7 +3188,7 @@ components:
           type: string
           example: 2022-01-01T00:00:00Z
         domain:
-          example: &a44
+          example: &a45
             - example.com
           type: array
           items:
@@ -3144,7 +3200,7 @@ components:
           type: string
           example: ProofValueString
         previousProof:
-          example: &a45
+          example: &a46
             - PreviousProof1
             - PreviousProof2
           type: array
@@ -3163,15 +3219,15 @@ components:
       properties:
         "@context":
           type: array
-          example: &a34
+          example: &a35
             - https://www.w3.org/ns/credentials/v2
-          items: &a35
+          items: &a36
             type: string
             enum:
               - https://www.w3.org/ns/credentials/v2
               - string
         type:
-          example: &a36
+          example: &a37
             - VerifiableCredential
             - TestCredential
           type: array
@@ -3182,7 +3238,7 @@ components:
           example: http://example.edu/credentials/1872
         credentialSubject:
           additionalProperties: true
-          example: &a37
+          example: &a38
             id: did:example:subject-1
             customProp: value
           allOf:
@@ -3205,15 +3261,15 @@ components:
         evidence:
           type: object
           additionalProperties: true
-          example: &a38
+          example: &a39
             type: DocumentVerification
             verifier: did:example:verifier
         credentialStatus:
-          oneOf: &a39
-            - &a32
+          oneOf: &a40
+            - &a33
               $ref: "#/components/schemas/CredentialStatus"
             - type: array
-              items: *a32
+              items: *a33
         proof:
           example:
             - type: DataIntegrityProof
@@ -3251,10 +3307,10 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         verifiableCredential:
           oneOf:
-            - &a33
+            - &a34
               $ref: "#/components/schemas/VerifiableCredential"
             - type: array
-              items: *a33
+              items: *a34
         proof:
           type: array
           items:
@@ -3543,10 +3599,11 @@ components:
         didId:
           type: string
           example: did:example:123456789
-        roles:
+        permissions:
           example:
-            - admin
-            - user
+            - read:credential:own
+            - manage:key
+          description: ABAC permissions
           type: array
           items:
             type: string
@@ -3557,7 +3614,7 @@ components:
         - sub
         - name
         - email
-        - roles
+        - permissions
     AuthenticatedUser:
       type: object
       properties:
@@ -3569,9 +3626,9 @@ components:
             sub: user-id-123
             name: John Doe
             email: john.doe@example.com
-            roles:
-              - admin
-              - user
+            permissions:
+              - read:credential:own
+              - manage:key
             didId: did:example:123456789
             refreshToken: refresh-token-abc123
           allOf:
@@ -3592,10 +3649,10 @@ components:
       properties:
         "@context":
           type: array
-          example: *a34
-          items: *a35
+          example: *a35
+          items: *a36
         type:
-          example: *a36
+          example: *a37
           type: array
           items:
             type: string
@@ -3604,7 +3661,7 @@ components:
           example: http://example.edu/credentials/1872
         credentialSubject:
           additionalProperties: true
-          example: *a37
+          example: *a38
           allOf:
             - $ref: "#/components/schemas/CredentialSubject"
         issuer:
@@ -3625,9 +3682,9 @@ components:
         evidence:
           type: object
           additionalProperties: true
-          example: *a38
+          example: *a39
         credentialStatus:
-          oneOf: *a39
+          oneOf: *a40
       required:
         - "@context"
         - type
@@ -3888,10 +3945,10 @@ components:
         serviceEndpoint:
           example: https://example.com
           oneOf:
-            - &a40
+            - &a41
               type: string
             - type: array
-              items: *a40
+              items: *a41
       required:
         - id
         - type
@@ -3902,10 +3959,10 @@ components:
         "@context":
           example: https://www.w3.org/ns/did/v1
           oneOf:
-            - &a41
+            - &a42
               type: string
             - type: array
-              items: *a41
+              items: *a42
         id:
           type: string
           example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
@@ -3918,10 +3975,10 @@ components:
         controller:
           example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
           oneOf:
-            - &a42
+            - &a43
               type: string
             - type: array
-              items: *a42
+              items: *a43
         verificationMethod:
           example:
             - id: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
@@ -4070,7 +4127,7 @@ components:
           example: did:example:xyz#proof-1
         type:
           type: string
-          enum: *a43
+          enum: *a44
           example: DataIntegrityProof
         proofPurpose:
           type: string
@@ -4088,7 +4145,7 @@ components:
           type: string
           example: 2022-01-01T00:00:00Z
         domain:
-          example: *a44
+          example: *a45
           type: array
           items:
             type: string
@@ -4099,7 +4156,7 @@ components:
           type: string
           example: ProofValueString
         previousProof:
-          example: *a45
+          example: *a46
           type: array
           items:
             type: string
@@ -4648,7 +4705,7 @@ components:
           type: string
           example: en-US
         logo:
-          example: &a46
+          example: &a47
             uri: https://example.com/logo.png
             alt_text: Logo alt text
           allOf:
@@ -4894,7 +4951,7 @@ components:
           type: string
           example: en-US
         logo:
-          example: *a46
+          example: *a47
           allOf:
             - $ref: "#/components/schemas/Logo"
     CredentialIssuerMetadata:

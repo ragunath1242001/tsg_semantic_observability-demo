@@ -1,6 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AuthClientService, validateOrRejectSync } from "@tsg-dsp/common-api";
+import {
+  AuthClientService,
+  parseNetworkError,
+  validateOrRejectSync
+} from "@tsg-dsp/common-api";
 import { DataPlaneCreation, DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
 import { AxiosInstance } from "axios";
 import { plainToInstance } from "class-transformer";
@@ -46,23 +50,28 @@ export class DataPlaneRegistrationService {
 
     const state = await this.stateRepository.findOneBy({ _id: 1 });
     if (state) {
-      dataPlaneCreation.identifier = state.identifier;
+      dataPlaneCreation.id = state.id;
     }
 
-    const response = await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/init`,
-      dataPlaneCreation
-    );
-    const details = plainToInstance(DataPlaneDetailsDto, response.data);
-    validateOrRejectSync(details);
+    try {
+      const response = await this.axiosDataPlane.post<DataPlaneDetailsDto>(
+        `/init`,
+        dataPlaneCreation
+      );
+      const details = plainToInstance(DataPlaneDetailsDto, response.data);
+      validateOrRejectSync(details);
 
-    await this.saveState(details);
+      await this.saveState(details);
 
-    this.logger.log(
-      `Data plane registered with identifier: ${details.identifier}`
-    );
+      this.logger.log(`Data plane registered with id: ${details.id}`);
 
-    return details;
+      return details;
+    } catch (error) {
+      throw parseNetworkError(
+        error,
+        "registering data plane with control plane"
+      );
+    }
   }
 
   /**
@@ -71,11 +80,11 @@ export class DataPlaneRegistrationService {
   async saveState(details: DataPlaneDetailsDto): Promise<DataPlaneStateDao> {
     const state = await this.stateRepository.save({
       _id: 1,
-      identifier: details.identifier,
+      id: details.id,
       details: details
     });
 
-    this.logger.log(`Data plane state saved with ID: ${state.identifier}`);
+    this.logger.log(`Data plane state saved with ID: ${state.id}`);
     return state;
   }
 

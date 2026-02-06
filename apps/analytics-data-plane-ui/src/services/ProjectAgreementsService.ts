@@ -29,12 +29,12 @@ export class ProjectAgreementsService {
     return response.data;
   }
 
-  static async sign(id: number): Promise<void> {
+  static async sign(id: string): Promise<void> {
     await http.post(`${this.BASE_PATH}/${id}/sign`);
   }
 
   static async linkDataset(
-    projectAgreementId: number,
+    projectAgreementId: string,
     datasetId: string
   ): Promise<void> {
     await http.post(
@@ -43,7 +43,7 @@ export class ProjectAgreementsService {
   }
 
   static async unlinkDataset(
-    projectAgreementId: number,
+    projectAgreementId: string,
     datasetId: string
   ): Promise<void> {
     await http.post(

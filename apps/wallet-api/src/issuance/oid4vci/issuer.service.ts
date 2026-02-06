@@ -165,12 +165,14 @@ export class OID4VCIIssuerService {
     }
     const expirationDate = new Date();
     expirationDate.setSeconds(expirationDate.getSeconds() + 86400);
-    const token = await this.tokenRepository.save({
-      access_token: crypto.randomBytes(48).toString("hex"),
-      expires_at: expirationDate,
-      refresh_token: crypto.randomBytes(48).toString("hex"),
-      issuance: issuance
-    });
+    const token = await this.tokenRepository.save(
+      this.tokenRepository.create({
+        access_token: crypto.randomBytes(48).toString("hex"),
+        expires_at: expirationDate,
+        refresh_token: crypto.randomBytes(48).toString("hex"),
+        issuance: issuance
+      })
+    );
     return {
       access_token: token.access_token,
       token_type: "bearer",
@@ -291,10 +293,12 @@ export class OID4VCIIssuerService {
         credentialConfig,
         issuance.holderId
       );
-      await this.issuanceRepository.save({
-        ...issuance,
-        credentialId: credential.id
-      });
+      await this.issuanceRepository.save(
+        this.issuanceRepository.create({
+          ...issuance,
+          credentialId: credential.id
+        })
+      );
       if (issueConfig.proofType === "jwt") {
         return {
           credentials: [

@@ -221,7 +221,7 @@ export class WebAuthnService {
     };
   }
 
-  async deleteWebAuthnCredential(request: Request, credentialId: number) {
+  async deleteWebAuthnCredential(request: Request, credentialId: string) {
     const user = requireAuthenticatedUser(request, this.logger);
 
     await this.credentialRepository.delete({
@@ -233,7 +233,7 @@ export class WebAuthnService {
   }
 
   private async verifyRegistration(
-    userId: number,
+    userId: string,
     response: RegistrationResponseJSON,
     expectedChallenge: string,
     deviceName?: string
@@ -271,7 +271,7 @@ export class WebAuthnService {
   }
 
   private async generateAuthenticationOptions(
-    userId?: number
+    userId?: string
   ): Promise<AuthenticationOptions> {
     let allowCredentials: Array<{
       id: string;
@@ -305,7 +305,7 @@ export class WebAuthnService {
   }
 
   private async verifyAuthentication(
-    userId: number,
+    userId: string,
     response: AuthenticationResponseJSON,
     expectedChallenge: string
   ): Promise<boolean> {

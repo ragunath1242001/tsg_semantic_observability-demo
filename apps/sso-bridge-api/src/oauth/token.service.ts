@@ -42,14 +42,16 @@ export class TokenService {
     const publicKey = await exportJWK(keypair.publicKey);
     privateKey.kid = kid;
     publicKey.kid = kid;
-    await this.keyRepository.save({
-      kid,
-      privateKey,
-      publicKey,
-      createdAt: new Date(),
-      expiresAt: new Date(Date.now() + 31 * 24 * 3600 * 1000),
-      current: true
-    });
+    await this.keyRepository.save(
+      this.keyRepository.create({
+        kid,
+        privateKey,
+        publicKey,
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 31 * 24 * 3600 * 1000),
+        current: true
+      })
+    );
     return privateKey;
   }
 
@@ -85,7 +87,7 @@ export class TokenService {
       : `${subject.id}`;
 
     const claims: Record<string, any> = {
-      roles: subject.roles.map((role) => role.name),
+      permissions: subject.permissions || [],
       tokenType: type
     };
 
@@ -120,7 +122,7 @@ export class TokenService {
     clientId: string,
     subject: OauthUser | OauthClient,
     createRefreshToken: boolean,
-    userId?: number,
+    userId?: string,
     scope?: string,
     nonce?: string
   ): Promise<TokenResponse> {
@@ -148,7 +150,7 @@ export class TokenService {
         Date.now() + 7 * 24 * 3600 * 1000
       );
     }
-    await this.tokenRepository.save(tokenDao);
+    await this.tokenRepository.save(this.tokenRepository.create(tokenDao));
     return plainToInstance(TokenResponse, {
       access_token: accessToken,
       id_token: accessToken,
@@ -182,9 +184,11 @@ export class TokenService {
 
   async revokeToken(token: string, token_type_hint: string = "access_token") {
     const storedToken = await this.validateToken(token, token_type_hint);
-    await this.tokenRepository.save({
-      ...storedToken,
-      revoked: true
-    });
+    await this.tokenRepository.save(
+      this.tokenRepository.create({
+        ...storedToken,
+        revoked: true
+      })
+    );
   }
 }

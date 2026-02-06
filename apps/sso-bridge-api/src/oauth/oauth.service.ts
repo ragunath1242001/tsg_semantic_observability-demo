@@ -333,7 +333,7 @@ export class OauthService {
         "sub",
         "username",
         "email",
-        "roles"
+        "permissions"
       ],
       token_endpoint_auth_methods_supported: [
         "client_secret_post",

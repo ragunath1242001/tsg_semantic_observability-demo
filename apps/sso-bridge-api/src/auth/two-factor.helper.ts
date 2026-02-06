@@ -22,7 +22,7 @@ export class TwoFactorHelper {
     private readonly recoveryCodeRepository: Repository<RecoveryCode>
   ) {}
 
-  async has2FACredentials(userId: number): Promise<boolean> {
+  async has2FACredentials(userId: string): Promise<boolean> {
     const hasTotpCredentials = await this.hasVerifiedTotpCredentials(userId);
     if (hasTotpCredentials) {
       return true;
@@ -31,14 +31,14 @@ export class TwoFactorHelper {
     return hasWebAuthnCredentials;
   }
 
-  async hasVerifiedTotpCredentials(userId: number): Promise<boolean> {
+  async hasVerifiedTotpCredentials(userId: string): Promise<boolean> {
     const count = await this.totpCredentialRepository.count({
       where: { userId, isVerified: true }
     });
     return count > 0;
   }
 
-  async hasWebAuthnCredentials(userId: number): Promise<boolean> {
+  async hasWebAuthnCredentials(userId: string): Promise<boolean> {
     const count = await this.webAuthnCredentialRepository.count({
       where: { userId }
     });
@@ -46,7 +46,7 @@ export class TwoFactorHelper {
   }
 
   async isInitial2FASetup(
-    userId: number,
+    userId: string,
     credentialType: "totp" | "webauthn"
   ): Promise<boolean> {
     const totpCount = await this.getVerifiedTotpCredentialsCount(userId);
@@ -57,7 +57,7 @@ export class TwoFactorHelper {
       : webAuthnCount === 1 && totpCount === 0;
   }
 
-  async deleteAll2FACredentials(userId: number): Promise<void> {
+  async deleteAll2FACredentials(userId: string): Promise<void> {
     await this.totpCredentialRepository.delete({ userId });
     await this.webAuthnCredentialRepository.delete({ userId });
     await this.recoveryCodeRepository.delete({ userId });
@@ -81,14 +81,14 @@ export class TwoFactorHelper {
   }
 
   private async getVerifiedTotpCredentialsCount(
-    userId: number
+    userId: string
   ): Promise<number> {
     return await this.totpCredentialRepository.count({
       where: { userId, isVerified: true }
     });
   }
 
-  private async getWebAuthnCredentialsCount(userId: number): Promise<number> {
+  private async getWebAuthnCredentialsCount(userId: string): Promise<number> {
     return await this.webAuthnCredentialRepository.count({
       where: { userId }
     });

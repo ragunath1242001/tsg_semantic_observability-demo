@@ -50,4 +50,3 @@ config:
     openIdConfigurationURL: "https://{{ .Values.host }}/.well-known/openid-configuration"
     callbackURL: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}/api/auth/callback
     redirectURL: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}/
-    rolePath: "$.roles[*]"

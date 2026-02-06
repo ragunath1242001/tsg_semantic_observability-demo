@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  AbacModule,
   AuthModule,
   GenericConfigModule,
   LoggerMiddleware,
@@ -26,6 +27,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 
 @Module({
   imports: [
+    AbacModule.forRoot(),
     DataPlaneModule,
     TransferModule,
     LoggingModule,

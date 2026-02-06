@@ -4,6 +4,17 @@ export class Postgres20241112151859 implements MigrationInterface {
     name = 'Postgres20241112151859'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        // Create uuid-ossp extension only if uuid_generate_v4() function doesn't exist
+        await queryRunner.query(`
+            DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_proc WHERE proname = 'uuid_generate_v4'
+                ) THEN
+                    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+                END IF;
+            END $$;
+        `);
         await queryRunner.query(`CREATE TABLE "key_materials" ("created" TIMESTAMP NOT NULL DEFAULT now(), "modified" TIMESTAMP NOT NULL DEFAULT now(), "deleted" TIMESTAMP, "id" character varying NOT NULL, "type" character varying NOT NULL, "default" boolean NOT NULL, "privateKey" text NOT NULL, "publicKey" text NOT NULL, "caChain" character varying, CONSTRAINT "PK_0727dec8a0fc93d1d7dfdcd64a4" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "credentials" ("created" TIMESTAMP NOT NULL DEFAULT now(), "modified" TIMESTAMP NOT NULL DEFAULT now(), "deleted" TIMESTAMP, "id" character varying NOT NULL, "targetDid" character varying NOT NULL, "credential" text NOT NULL, "selfIssued" boolean NOT NULL, CONSTRAINT "PK_1e38bc43be6697cdda548ad27a6" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "did_documents" ("created" TIMESTAMP NOT NULL DEFAULT now(), "modified" TIMESTAMP NOT NULL DEFAULT now(), "deleted" TIMESTAMP, "id" SERIAL NOT NULL, "document" text NOT NULL, CONSTRAINT "PK_a604aab1c9cc976196e81f49a1c" PRIMARY KEY ("id"))`);

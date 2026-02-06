@@ -6,7 +6,7 @@ import { UserDto, UserWithPasswordDto } from "@tsg-dsp/sso-bridge-dtos";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 
-import { useRoles } from "../composables/useRoles";
+import { usePermissions } from "../composables/usePermissions";
 import { OAUTH_GRANTS } from "../utils/constants";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
@@ -22,14 +22,15 @@ const userObj = {
   username: undefined,
   password: undefined,
   email: undefined,
-  roles: [],
+  permissions: [],
   grants: [],
   require2FA: false
 } as Partial<UserWithPasswordDto>;
 
 const user = ref<Partial<UserWithPasswordDto>>(userObj);
 
-const { roles: userRoles, loadRoles } = useRoles(http);
+const { permissions: availablePermissions, loadPermissions } =
+  usePermissions(http);
 
 const userDialog = ref(false);
 const deleteUserDialog = ref(false);
@@ -47,16 +48,6 @@ const hideDialog = () => {
 
 const editUser = (data: UserWithPasswordDto) => {
   user.value = { ...data };
-  // @ts-expect-error Grants should be annotated with label and value
-  user.value.grants = user.value.grants.map((grant) => ({
-    label: grant,
-    value: grant
-  }));
-  // @ts-expect-error Roles should be annotated with label and value
-  user.value.roles = user.value.roles.map((role) => ({
-    label: role,
-    value: role
-  }));
   userDialog.value = true;
 };
 
@@ -108,15 +99,9 @@ const saveUser = async () => {
   if (
     user?.value.username?.trim() &&
     user?.value.email?.trim() &&
-    user?.value.roles?.length > 0 &&
+    user?.value.permissions?.length > 0 &&
     (user?.value.id || (user?.value.password?.trim() ?? "") !== "")
   ) {
-    if (user?.value.grants) {
-      // @ts-expect-error Grants should be annotated with label and value
-      user.value.grants = user.value.grants.map((grant) => grant.value);
-    }
-    // @ts-expect-error Roles should be annotated with label and value
-    user.value.roles = user.value.roles.map((role) => role.value);
     if (user.value.id) {
       if (user?.value.password?.trim() === "") {
         user.value.password = undefined;
@@ -197,7 +182,7 @@ const { data, loading, total, perPage, load } = setupPagination({
 });
 
 onMounted(async () => {
-  await Promise.all([load(), loadRoles()]);
+  await Promise.all([load(), loadPermissions()]);
 });
 </script>
 <template>
@@ -230,18 +215,21 @@ onMounted(async () => {
           @sort="load">
           <template #empty>No users added yet.</template>
           <Column field="username" header="Username" sortable />
-          <Column field="roles" class="break-all" header="Roles">
+          <Column field="permissions" class="break-all" header="Permissions">
             <template #body="slotProps">
               <div class="flex flex-wrap gap-1 text-xs">
                 <Tag
-                  v-for="(role, index) in slotProps.data.roles.slice(0, 5)"
+                  v-for="(perm, index) in slotProps.data.permissions.slice(
+                    0,
+                    5
+                  )"
                   :key="index"
                   severity="info"
-                  :value="role" />
+                  :value="perm" />
                 <Tag
-                  v-if="slotProps.data.roles.length > 5"
+                  v-if="slotProps.data.permissions.length > 5"
                   v-tooltip.left="{
-                    value: slotProps.data.roles.slice(5).join('<br />'),
+                    value: slotProps.data.permissions.slice(5).join('<br />'),
                     escape: false,
                     hideDelay: 500,
                     pt: {
@@ -250,16 +238,17 @@ onMounted(async () => {
                       }
                     }
                   }"
-                  :value="`+${slotProps.data.roles.length - 5}`"
+                  :value="`+${slotProps.data.permissions.length - 5}`"
                   severity="secondary"
                   class="text-xs cursor-help" />
               </div>
               <span
                 v-if="
-                  !slotProps.data.roles || slotProps.data.roles.length === 0
+                  !slotProps.data.permissions ||
+                  slotProps.data.permissions.length === 0
                 "
                 class="text-gray-500 italic">
-                No roles
+                No permissions
               </span>
             </template>
           </Column>
@@ -374,19 +363,23 @@ onMounted(async () => {
           >
         </div>
         <div>
-          <label for="roles" class="block font-bold mb-3">Roles</label>
+          <label for="permissions" class="block font-bold mb-3"
+            >Permissions</label
+          >
           <MultiSelect
-            id="roles"
-            v-model="user.roles"
-            :options="userRoles"
+            id="permissions"
+            v-model="user.permissions"
+            filter
+            :options="availablePermissions"
             required="true"
-            :invalid="submitted && !user.roles"
-            option-label="label"
-            placeholder="Select Roles"
+            :invalid="submitted && !user.permissions"
+            placeholder="Select Permissions"
             fluid>
           </MultiSelect>
-          <small v-if="submitted && user.roles.length == 0" class="text-red-500"
-            >You must select at least one role.</small
+          <small
+            v-if="submitted && user.permissions.length == 0"
+            class="text-red-500"
+            >You must select at least one permission.</small
           >
         </div>
         <div>
@@ -395,7 +388,6 @@ onMounted(async () => {
             id="grants"
             v-model="user.grants"
             :options="OAUTH_GRANTS"
-            option-label="label"
             placeholder="Select Grants"
             fluid>
           </MultiSelect>

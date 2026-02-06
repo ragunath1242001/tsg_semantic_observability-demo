@@ -1,22 +1,16 @@
+import { OwnableEntity } from "@tsg-dsp/common-api";
 import {
   DataAddressDto,
   DataPlaneRequestResponseDto,
   TransferRequestMessageDto,
   TransferState
 } from "@tsg-dsp/common-dsp";
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  PrimaryColumn,
-  UpdateDateColumn
-} from "typeorm";
+import { Resource } from "@tsg-dsp/common-dtos";
+import { Column, Entity } from "typeorm";
 
 @Entity()
-export class TransferDao {
-  @PrimaryColumn({ type: String })
-  id!: string;
+export class TransferDao extends OwnableEntity {
+  readonly resourceType = Resource.DP_TRANSFER;
 
   @Column({ type: String })
   role!: "provider" | "consumer";
@@ -44,13 +38,4 @@ export class TransferDao {
 
   @Column("simple-json", { nullable: true })
   dataAddress?: DataAddressDto;
-
-  @CreateDateColumn({ type: String })
-  createdDate!: Date;
-
-  @UpdateDateColumn({ type: String })
-  modifiedDate!: Date;
-
-  @DeleteDateColumn({ type: String })
-  deletedDate!: Date;
 }

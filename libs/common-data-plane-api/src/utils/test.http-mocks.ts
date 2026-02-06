@@ -17,7 +17,7 @@ export function createDataPlaneHttpMocks(
         const requestBody = await request.json();
         return HttpResponse.json({
           ...requestBody,
-          identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
+          id: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
         });
       }
     ),

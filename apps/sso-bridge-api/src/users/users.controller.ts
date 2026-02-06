@@ -13,22 +13,25 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
   PaginationOptionsDto,
   PaginationQuery,
+  Requires,
   UsePagination
 } from "@tsg-dsp/common-api";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import { UserWithPasswordDto } from "@tsg-dsp/sso-bridge-dtos";
 import { Request } from "express";
 
-import { AuthGuard, ManagementRoles } from "../auth/auth.guard.js";
+import { AuthGuard } from "../auth/auth.guard.js";
+import { getOwnershipFieldsFromSession } from "../utils/ownership.js";
 import { UsersService } from "./users.service.js";
 
 @ApiTags("Users")
 @Controller("users")
 @UseGuards(AuthGuard)
-@ManagementRoles("ssobridge_admin")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @Requires(Action.READ, Resource.SSO_USER)
   @UsePagination()
   @ApiOperation({ summary: "Get all users" })
   @ApiResponse({ status: 200, description: "List of users returned." })
@@ -37,35 +40,43 @@ export class UsersController {
   }
 
   @Post("create")
+  @Requires(Action.CREATE, Resource.SSO_USER)
   @ApiOperation({ summary: "Create a new user" })
   @ApiResponse({
     status: 201,
     description: "The user has been successfully created."
   })
-  async createUser(@Body() createUserDto: Partial<UserWithPasswordDto>) {
-    return await this.usersService.createUser(createUserDto);
+  async createUser(
+    @Body() createUserDto: Partial<UserWithPasswordDto>,
+    @Req() request: Request
+  ) {
+    const ownershipFields = getOwnershipFieldsFromSession(request);
+    return await this.usersService.createUser(createUserDto, ownershipFields);
   }
 
   @Delete(":id")
+  @Requires(Action.DELETE, Resource.SSO_USER)
   @ApiOperation({ summary: "Delete a user" })
   @ApiParam({ name: "id", type: Number, description: "User id" })
   @ApiResponse({ status: 200, description: "User successfully deleted." })
-  async deleteUser(@Param("id") id: number, @Req() request: Request) {
+  async deleteUser(@Param("id") id: string, @Req() request: Request) {
     return this.usersService.deleteUser(id, request);
   }
 
   @Patch("update/:id")
+  @Requires(Action.UPDATE, Resource.SSO_USER)
   @ApiOperation({ summary: "Update an existing user" })
   @ApiParam({ name: "id", type: Number, description: "User id" })
   @ApiResponse({ status: 200, description: "User successfully updated." })
   async updateUser(
-    @Param("id") id: number,
+    @Param("id") id: string,
     @Body() updateUserDto: Partial<UserWithPasswordDto>
   ) {
     return this.usersService.updateUser(id, updateUserDto);
   }
 
   @Post(":id/reset-2fa")
+  @Requires(Action.EXECUTE, Resource.SSO_USER)
   @ApiOperation({
     summary: "Reset 2FA for a user",
     description:
@@ -76,7 +87,7 @@ export class UsersController {
     status: 200,
     description: "2FA successfully reset for the user."
   })
-  async resetUser2FA(@Param("id") id: number) {
+  async resetUser2FA(@Param("id") id: string) {
     await this.usersService.resetUser2FA(id);
     return {
       success: true,

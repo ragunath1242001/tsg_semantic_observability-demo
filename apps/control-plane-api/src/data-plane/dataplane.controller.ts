@@ -12,12 +12,11 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBody,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { Roles } from "@tsg-dsp/common-api";
+import { Requires } from "@tsg-dsp/common-api";
 import {
   Catalog,
   CatalogSchema,
@@ -26,22 +25,25 @@ import {
   Dataset,
   DatasetSchema
 } from "@tsg-dsp/common-dsp";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { DeserializePipe } from "../utils/deserialize.pipe.js";
 import { DSPError } from "../utils/errors/error.js";
 import { DataPlaneService } from "./dataPlane.service.js";
 
-@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("data-plane")
 @ApiTags("Data Plane")
-@ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
 export class DataPlaneController {
   private readonly logger = new Logger(this.constructor.name);
   constructor(private readonly dataPlaneService: DataPlaneService) {}
 
   @Post("/init")
   @HttpCode(HttpStatus.OK)
+  @Requires(Action.CREATE, Resource.CP_DATAPLANE)
   @ApiOperation({
     summary: "Initialize data plane",
     description: "Initializes a new data plane with the provided details."
@@ -61,6 +63,7 @@ export class DataPlaneController {
 
   @Post("/:id/update")
   @HttpCode(HttpStatus.OK)
+  @Requires(Action.UPDATE, Resource.CP_DATAPLANE)
   @ApiOperation({
     summary: "Update data plane",
     description: "Updates the details of an existing data plane."
@@ -78,7 +81,7 @@ export class DataPlaneController {
         dataPlaneDetails
       )}`
     );
-    if (id !== dataPlaneDetails.identifier) {
+    if (id !== dataPlaneDetails.id) {
       throw new DSPError(
         "Identifier in path and in body do not match",
         HttpStatus.BAD_REQUEST
@@ -89,6 +92,7 @@ export class DataPlaneController {
 
   @Post("/:id/catalog")
   @HttpCode(HttpStatus.OK)
+  @Requires(Action.UPDATE, Resource.CP_CATALOG)
   @ApiOperation({
     summary: "Update catalog",
     description: "Updates the catalog for the specified data plane."
@@ -111,6 +115,7 @@ export class DataPlaneController {
 
   @Post("/:id/dataset")
   @HttpCode(HttpStatus.OK)
+  @Requires(Action.CREATE, Resource.CP_DATASET)
   @ApiOperation({
     summary: "Add dataset",
     description: "Adds a new dataset to the specified data plane."
@@ -131,6 +136,7 @@ export class DataPlaneController {
 
   @Put("/:id/dataset/:datasetId")
   @HttpCode(HttpStatus.OK)
+  @Requires(Action.UPDATE, Resource.CP_DATASET)
   @ApiOperation({
     summary: "Update dataset",
     description: "Updates an existing dataset for the specified data plane."
@@ -160,6 +166,7 @@ export class DataPlaneController {
 
   @Delete("/:id/dataset/:datasetId")
   @HttpCode(HttpStatus.OK)
+  @Requires(Action.DELETE, Resource.CP_DATASET)
   @ApiOperation({
     summary: "Delete dataset",
     description: "Deletes a dataset from the specified data plane."

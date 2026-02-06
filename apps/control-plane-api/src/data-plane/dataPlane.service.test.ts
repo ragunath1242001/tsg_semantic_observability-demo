@@ -128,13 +128,13 @@ describe("DataPlane Service", () => {
       };
       const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
 
-      const dp = await dataPlaneService.getDataPlane(addedDataPlane.identifier);
+      const dp = await dataPlaneService.getDataPlane(addedDataPlane.id);
       expect(dp).toBeDefined();
     });
     describe("Dataplane update", () => {
       it("Add", async () => {
         const dataPlane: DataPlaneCreation = {
-          identifier: "urn:uuid:f0a10802-90b4-43f5-a8d9-71ccdf907126",
+          id: "urn:uuid:f0a10802-90b4-43f5-a8d9-71ccdf907126",
           title: "Test Data Plane",
           dataplaneType: "http",
           endpointPrefix: "/api",
@@ -184,9 +184,9 @@ describe("DataPlane Service", () => {
         role: "consumer"
       };
       const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
-      await dataPlaneService.deleteDataplane(addedDataPlane.identifier);
+      await dataPlaneService.deleteDataplane(addedDataPlane.id);
       await expect(
-        dataPlaneService.getDataPlane(addedDataPlane.identifier)
+        dataPlaneService.getDataPlane(addedDataPlane.id)
       ).rejects.toThrow(DSPError);
     });
   });
@@ -248,7 +248,7 @@ describe("DataPlane Service", () => {
       const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
 
       const createdDataset = await dataPlaneService.updateCatalog(
-        addedDataPlane.identifier,
+        addedDataPlane.id,
         new Catalog({ participantId: "did:web:localhost", dataset: [dataset] })
       );
 
@@ -303,7 +303,7 @@ describe("DataPlane Service", () => {
       };
       const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
       const createdCatalog = await dataPlaneService.updateCatalog(
-        addedDataPlane.identifier,
+        addedDataPlane.id,
         new Catalog({ participantId: "did:web:localhost", dataset: [dataset] })
       );
       createdCatalog!.title = "Updated Test HTTP Dataset";
@@ -316,7 +316,7 @@ describe("DataPlane Service", () => {
         createdCatalog.dataset![0].distribution![0].accessService as DataService
       ).endpointDescription = "dspace:connector";
       const updatedCatalog = await dataPlaneService.updateCatalog(
-        addedDataPlane.identifier,
+        addedDataPlane.id,
         createdCatalog
       );
 
@@ -338,7 +338,7 @@ describe("DataPlane Service", () => {
       const dataPlane = await dataPlaneService.getDataPlanes(
         PaginationOptionsDto.NO_PAGINATION
       );
-      const dataplaneId = dataPlane.data[0]!.identifier;
+      const dataplaneId = dataPlane.data[0]!.id;
 
       const dataset = new Dataset({
         id: "urn:uuid:7e2a79c3-cbbe-4cb3-83a1-788521b0c980",
@@ -379,7 +379,7 @@ describe("DataPlane Service", () => {
       ).rejects.toThrow("does not exist");
       await expect(
         dataPlaneService.updateDataset(
-          dataPlane.data[1]!.identifier,
+          dataPlane.data[1]!.id,
           dataset.id,
           dataset
         )

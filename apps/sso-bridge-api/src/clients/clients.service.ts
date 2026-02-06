@@ -8,7 +8,8 @@ import { Repository } from "typeorm";
 import { InitClient, RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
 import { OauthClient } from "../model/client.dao.js";
-import { RolesService } from "../roles/roles.service.js";
+import { PermissionsService } from "../permissions/permissions.service.js";
+import { OwnershipFields } from "../utils/ownership.js";
 
 /** Client assertion type for private_key_jwt as per RFC 7523 */
 const JWT_BEARER_ASSERTION_TYPE =
@@ -21,7 +22,7 @@ export class ClientsService {
     private readonly kubernetesService: KubernetesService,
     @InjectRepository(OauthClient)
     private readonly clientsRepository: Repository<OauthClient>,
-    private readonly rolesService: RolesService
+    private readonly permissionsService: PermissionsService
   ) {
     this.initialized = this.init();
   }
@@ -29,8 +30,6 @@ export class ClientsService {
   initialized: Promise<void>;
 
   async init() {
-    await this.rolesService.initialized;
-
     // Verify if kubernetes secrets are available
     if (
       !this.rootConfig.initClients.length ||
@@ -96,11 +95,13 @@ export class ClientsService {
   }
 
   async createClient(
-    createClientData: Partial<ClientDto>
+    createClientData: Partial<ClientDto>,
+    ownershipFields?: OwnershipFields
   ): Promise<OauthClient> {
-    const client = this.clientsRepository.create(
-      await this.fromUserInput(createClientData)
-    );
+    const client = this.clientsRepository.create({
+      ...this.fromUserInput(createClientData),
+      ...ownershipFields
+    });
 
     // Only create Kubernetes secrets for clients using symmetric authentication
     if (
@@ -118,18 +119,21 @@ export class ClientsService {
   }
 
   /**
-   * Transforms roles from string[] to OauthRole[] objects.
+   * Transforms permissions from string[] (which may include permission set names)
+   * to expanded permission strings.
    */
-  async fromUserInput(
+  fromUserInput(
     clientData: Partial<InitClient> | Partial<ClientDto>
-  ): Promise<OauthClient> {
+  ): Partial<OauthClient> {
     return {
       ...clientData,
-      roles: await this.rolesService.getRolesByNames(clientData.roles || [])
-    } as OauthClient;
+      permissions: this.permissionsService.expandPermissions(
+        clientData.permissions || []
+      )
+    } as Partial<OauthClient>;
   }
 
-  async deleteClient(id: number): Promise<{ deleted: boolean }> {
+  async deleteClient(id: string): Promise<{ deleted: boolean }> {
     const result = await this.clientsRepository.delete(id);
     if (result.affected === 0) {
       throw new AppError(
@@ -141,7 +145,7 @@ export class ClientsService {
   }
 
   async updateClient(
-    id: number,
+    id: string,
     updateData: Partial<ClientDto>
   ): Promise<OauthClient> {
     const client = await this.clientsRepository.findOneBy({ id });
@@ -164,10 +168,12 @@ export class ClientsService {
       });
     }
 
-    return await this.clientsRepository.save({
-      ...client,
-      ...(await this.fromUserInput(updateData))
-    });
+    return await this.clientsRepository.save(
+      this.clientsRepository.create({
+        ...client,
+        ...this.fromUserInput(updateData)
+      })
+    );
   }
 
   /**

@@ -221,7 +221,7 @@ describe("Negotiation Service (Consumer)", () => {
       expect(negotiationDetail.dataSet).toBe(
         "urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b"
       );
-      localProcessId = negotiationDetail.localId;
+      localProcessId = negotiationDetail.id;
     });
 
     it("Retrieve negotiation", async () => {
@@ -374,7 +374,7 @@ describe("Negotiation Service (Consumer)", () => {
       expect(negotiationDetail.dataSet).toBe(
         "urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b"
       );
-      localProcessId = negotiationDetail.localId;
+      localProcessId = negotiationDetail.id;
     });
 
     it("Retrieve negotiation", async () => {
@@ -563,7 +563,7 @@ describe("Negotiation Service (Consumer)", () => {
       expect(negotiationDetail.dataSet).toBe(
         "urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b"
       );
-      localProcessId = negotiationDetail.localId;
+      localProcessId = negotiationDetail.id;
 
       const termination = await negotiationService.handleTermination(
         localProcessId,
@@ -598,7 +598,7 @@ describe("Negotiation Service (Consumer)", () => {
       expect(negotiationDetail.dataSet).toBe(
         "urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b"
       );
-      localProcessId = negotiationDetail.localId;
+      localProcessId = negotiationDetail.id;
 
       const termination = await negotiationService.terminate(
         localProcessId,

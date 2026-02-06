@@ -15,7 +15,7 @@ const { registerCredential } = useWebAuthn(http);
 const profile = ref({
   username: "",
   email: "",
-  roles: [],
+  permissions: [],
   require2FA: false,
   has2FA: false
 });
@@ -52,7 +52,10 @@ const totpVerifyToken = ref("");
 const pendingTotpCredentialId = ref<number | null>(null);
 
 const isAdmin = computed(() => {
-  return profile.value.roles.includes("ssobridge_admin");
+  return (
+    profile.value.permissions.includes("manage:user") ||
+    profile.value.permissions.includes("manage:client")
+  );
 });
 
 const loadProfile = async () => {
@@ -473,9 +476,12 @@ onMounted(() => {
         <FormField label="Email">
           {{ profile.email }}
         </FormField>
-        <FormField label="Roles">
+        <FormField label="Permissions">
           <div class="flex flex-wrap gap-2">
-            <Tag v-for="role in profile.roles" :key="role" :value="role" />
+            <Tag
+              v-for="perm in profile.permissions"
+              :key="perm"
+              :value="perm" />
           </div>
         </FormField>
       </div>

@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { DataPlaneError } from "@tsg-dsp/common-data-plane-api";
 
 import { AnalyticsDataPlaneMode, RootConfig } from "../../config.js";
-import { DataPlaneError } from "../../utils/errors/error.js";
 
 @Injectable()
 export class SplitModeService {

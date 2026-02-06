@@ -15,12 +15,11 @@ import { KubernetesService } from "../k8s/kubernetes.service.js";
 import { OauthClient } from "../model/client.dao.js";
 import { KeyDao } from "../model/keys.dao.js";
 import { RecoveryCode } from "../model/recovery-code.dao.js";
-import { OauthRole } from "../model/role.dao.js";
 import { TokenDao } from "../model/token.dao.js";
 import { TotpCredential } from "../model/totp-credential.dao.js";
 import { OauthUser } from "../model/user.dao.js";
 import { WebAuthnCredential } from "../model/webauthn-credential.dao.js";
-import { RolesService } from "../roles/roles.service.js";
+import { PermissionsService } from "../permissions/permissions.service.js";
 import { UsersService } from "../users/users.service.js";
 import { IngressAuthService } from "./ingress-auth.service.js";
 import { OauthService } from "./oauth.service.js";
@@ -38,7 +37,6 @@ describe("IngressAuthService", () => {
         TypeOrmTestHelper.instance.module([
           OauthUser,
           OauthClient,
-          OauthRole,
           TokenDao,
           KeyDao,
           TotpCredential,
@@ -48,7 +46,6 @@ describe("IngressAuthService", () => {
         TypeOrmModule.forFeature([
           OauthUser,
           OauthClient,
-          OauthRole,
           TokenDao,
           KeyDao,
           TotpCredential,
@@ -75,7 +72,7 @@ describe("IngressAuthService", () => {
           }
         },
         TokenService,
-        RolesService,
+        PermissionsService,
         TotpService,
         WebAuthnService,
         RecoveryCodeService,

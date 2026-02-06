@@ -1,25 +1,16 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn
-} from "typeorm";
+import { MetaEntity } from "@tsg-dsp/common-api";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 
-import { MetaEntity } from "./common.dao.js";
 import { OauthUser } from "./user.dao.js";
 
 @Entity()
 export class TotpCredential extends MetaEntity {
-  @PrimaryGeneratedColumn()
-  id!: number;
-
   @ManyToOne(() => OauthUser, { onDelete: "CASCADE" })
   @JoinColumn()
   user!: OauthUser;
 
-  @Column({ type: Number })
-  userId!: number;
+  @Column({ type: String })
+  userId!: string;
 
   @Column({ type: String })
   secret!: string;

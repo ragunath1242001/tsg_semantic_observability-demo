@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { Resource } from "@tsg-dsp/common-dtos";
 import fs from "fs/promises";
 import { stringify } from "yaml";
 
@@ -14,6 +15,17 @@ async function bootstrap() {
   app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
     exclude: [".well-known/(.*)", "health"]
   });
+  const actions = ["create", "read", "update", "delete", "execute", "manage"];
+  const scopes: Record<string, string> = Object.fromEntries(
+    [
+      Resource.ADP_ALGORITHM,
+      Resource.ADP_CONFIG,
+      Resource.ADP_DATAPLANE,
+      Resource.ADP_FILE,
+      Resource.ADP_ORCHESTRATION,
+      Resource.ADP_PROJECT_AGREEMENT
+    ].flatMap((r) => actions.map((a) => [`${a}:${r}`, `${a}:${r}`]))
+  );
   const config = new DocumentBuilder()
     .setTitle("TSG Analytics Data Plane")
     .setVersion("")
@@ -37,22 +49,14 @@ async function bootstrap() {
     .addOAuth2({
       type: "oauth2",
       flows: {
-        password: {
-          scopes: {
-            analyticsdataplane_admin: "analyticsdataplane_admin",
-            analyticsdataplane_dataplane: "analyticsdataplane_dataplane"
-          }
+        authorizationCode: {
+          scopes: scopes
+        },
+        clientCredentials: {
+          scopes: scopes
         }
       }
     })
-    .addBearerAuth({
-      type: "http",
-      scheme: "bearer",
-      bearerFormat: "VP",
-      description:
-        "Verifiable Presentation needed to communicate between two instances of the control plane."
-    })
-
     .build();
   const document = SwaggerModule.createDocument(app, config);
 

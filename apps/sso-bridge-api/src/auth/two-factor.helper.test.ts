@@ -7,11 +7,10 @@ import { authenticator } from "otplib";
 import { RootConfig } from "../config.js";
 import { OauthClient } from "../model/client.dao.js";
 import { RecoveryCode } from "../model/recovery-code.dao.js";
-import { OauthRole } from "../model/role.dao.js";
 import { TotpCredential } from "../model/totp-credential.dao.js";
 import { OauthUser } from "../model/user.dao.js";
 import { WebAuthnCredential } from "../model/webauthn-credential.dao.js";
-import { RolesService } from "../roles/roles.service.js";
+import { PermissionsService } from "../permissions/permissions.service.js";
 import { UsersService } from "../users/users.service.js";
 import { RecoveryCodeService } from "./recovery-code.service.js";
 import { TotpService } from "./totp.service.js";
@@ -34,7 +33,6 @@ describe("TwoFactorHelper", () => {
           TotpCredential,
           WebAuthnCredential,
           OauthUser,
-          OauthRole,
           OauthClient
         ]),
         TypeOrmModule.forFeature([
@@ -42,7 +40,6 @@ describe("TwoFactorHelper", () => {
           TotpCredential,
           WebAuthnCredential,
           OauthUser,
-          OauthRole,
           OauthClient
         ])
       ],
@@ -52,7 +49,7 @@ describe("TwoFactorHelper", () => {
         WebAuthnService,
         RecoveryCodeService,
         UsersService,
-        RolesService,
+        PermissionsService,
         {
           provide: RootConfig,
           useValue: plainToInstance(RootConfig, {

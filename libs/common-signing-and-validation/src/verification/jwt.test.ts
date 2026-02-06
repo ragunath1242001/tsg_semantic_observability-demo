@@ -16,7 +16,7 @@ describe("JWT validation", () => {
       `did:key:${publicKeyMultibase}`,
       {
         key: {
-          identifier: publicKeyMultibase,
+          id: publicKeyMultibase,
           signingKey: privateJwk,
           algorithm: "EdDSA"
         },

@@ -14,7 +14,6 @@ auth:
   # clientSecret:
   # clientUsername:
   # clientPassword:
-  # rolePath: "$.roles[*].name"
   # redirectURL: http://localhost:5173/
 
 initKeys:
@@ -35,7 +34,7 @@ runtime:
   issueDebugCredentials: true
 
 trustAnchors:
-  - identifier: did:web:localhost%3A3000
+  - id: did:web:localhost%3A3000
     credentialTypes:
       - SCSNCredential
       - scsn:SCSNCredential

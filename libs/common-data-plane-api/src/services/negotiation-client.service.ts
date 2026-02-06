@@ -197,7 +197,7 @@ export class NegotiationClientService {
     ).catch(() => null);
     if (existingNegotiation) {
       this.logger.log(
-        `Using existing negotiation ${existingNegotiation.localId} for dataset ${datasetId} with participant ${participantId}`
+        `Using existing negotiation ${existingNegotiation.id} for dataset ${datasetId} with participant ${participantId}`
       );
       return existingNegotiation;
     }

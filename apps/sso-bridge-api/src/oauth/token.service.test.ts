@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { ServerConfig } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
+import { randomUUID } from "crypto";
 import { decodeJwt } from "jose";
 import { vi } from "vitest";
 
@@ -20,12 +21,14 @@ describe("TokenService", () => {
     mockKeyRepository = {
       findOneBy: vi.fn(),
       save: vi.fn(),
+      create: vi.fn().mockImplementation((x) => ({ id: randomUUID(), ...x })),
       find: vi.fn(),
       update: vi.fn()
     };
 
     mockTokenRepository = {
       save: vi.fn(),
+      create: vi.fn().mockImplementation((x) => ({ id: randomUUID(), ...x })),
       findOneBy: vi.fn()
     };
 
@@ -59,8 +62,8 @@ describe("TokenService", () => {
       id: 1,
       username: "testuser",
       email: "test@example.com",
-      roles: [{ id: 1, name: "user" }]
-    } as OauthUser;
+      permissions: ["manage:sso.user", "manage:sso.client"]
+    } as unknown as OauthUser;
 
     beforeEach(() => {
       mockTokenRepository.save = vi
@@ -119,7 +122,7 @@ describe("TokenService", () => {
       expect(decoded.nonce).toBe(nonce);
     });
 
-    it("should include user roles in token", async () => {
+    it("should include user permissions in token", async () => {
       const tokenResponse = await tokenService.createToken(
         "test-client",
         mockUser,
@@ -127,9 +130,11 @@ describe("TokenService", () => {
       );
 
       const decoded = decodeJwt(tokenResponse.access_token);
-      expect(decoded.roles).toBeDefined();
-      expect(Array.isArray(decoded.roles)).toBe(true);
-      expect((decoded.roles as string[]).includes("user")).toBe(true);
+      expect(decoded.permissions).toBeDefined();
+      expect(Array.isArray(decoded.permissions)).toBe(true);
+      expect(
+        (decoded.permissions as string[]).includes("manage:sso.user")
+      ).toBe(true);
     });
   });
 
@@ -141,7 +146,7 @@ describe("TokenService", () => {
         accessTokenExpiresAt: new Date(Date.now() + 3600 * 1000),
         clientId: "test-client",
         revoked: false
-      } as TokenDao;
+      } as unknown as TokenDao;
 
       mockTokenRepository.findOneBy?.mockResolvedValue(mockStoredToken);
 
@@ -168,7 +173,7 @@ describe("TokenService", () => {
         accessToken: "revoked-token",
         accessTokenExpiresAt: new Date(Date.now() + 3600 * 1000),
         revoked: true
-      } as TokenDao;
+      } as unknown as TokenDao;
 
       mockTokenRepository.findOneBy?.mockResolvedValue(mockStoredToken);
 
@@ -183,7 +188,7 @@ describe("TokenService", () => {
         accessToken: "expired-token",
         accessTokenExpiresAt: new Date(Date.now() - 1000),
         revoked: false
-      } as TokenDao;
+      } as unknown as TokenDao;
 
       mockTokenRepository.findOneBy?.mockResolvedValue(mockStoredToken);
 
@@ -200,7 +205,7 @@ describe("TokenService", () => {
         accessToken: "token-to-revoke",
         accessTokenExpiresAt: new Date(Date.now() + 3600 * 1000),
         revoked: false
-      } as TokenDao;
+      } as unknown as TokenDao;
 
       mockTokenRepository.findOneBy?.mockResolvedValue(mockStoredToken);
       mockTokenRepository.save?.mockResolvedValue(mockStoredToken);

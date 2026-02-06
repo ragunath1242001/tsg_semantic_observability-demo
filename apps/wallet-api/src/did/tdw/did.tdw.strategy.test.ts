@@ -6,6 +6,7 @@ import {
   jwkToMultibase
 } from "@tsg-dsp/common-signing-and-validation";
 import { plainToInstance } from "class-transformer";
+import { randomUUID } from "crypto";
 import { DIDDocument } from "did-resolver";
 import { exportJWK, generateKeyPair } from "jose";
 import { Repository } from "typeorm";
@@ -49,6 +50,7 @@ describe("DID Tdw Service", () => {
   const mockDidLogsRepository = () => ({
     find: vi.fn(),
     save: vi.fn(),
+    create: vi.fn().mockImplementation((x) => ({ id: randomUUID(), ...x })),
     clear: vi.fn()
   });
 

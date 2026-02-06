@@ -101,7 +101,7 @@ export class InitCredentialConfig {
 export class TrustAnchorConfig {
   @Description("DID of the trust anchor")
   @IsString()
-  public readonly identifier!: string;
+  public readonly id!: string;
 
   @Description("Credential types trusted of the trust anchor")
   @IsString({ each: true })

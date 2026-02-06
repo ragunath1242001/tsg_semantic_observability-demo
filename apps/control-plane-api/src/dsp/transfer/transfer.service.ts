@@ -1,6 +1,8 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
+  ClientInfo,
+  getOwnershipFieldsFromClient,
   Paginated,
   PaginationOptionsDto,
   ServerConfig
@@ -125,14 +127,14 @@ export class TransferService {
       const event: TransferEvent = {
         time: new Date(),
         state: to,
-        localMessage: `Transfer with process ID ${transfer.localId} cannot transition from ${transfer.state} to ${to}`,
+        localMessage: `Transfer with process ID ${transfer.id} cannot transition from ${transfer.state} to ${to}`,
         type: direction
       };
       const eventObj = this.transferEventRepository.create(event);
       transfer.events.push(eventObj);
       await this.transferDetailRepository.save(transfer);
       throw new DSPError(
-        `Transfer with process ID ${transfer.localId} cannot transition from ${transfer.state} to ${to}`,
+        `Transfer with process ID ${transfer.id} cannot transition from ${transfer.state} to ${to}`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "warn");
     }
@@ -145,7 +147,7 @@ export class TransferService {
     const [transfers, itemCount] =
       await this.transferDetailRepository.findAndCount({
         select: {
-          localId: true,
+          id: true,
           remoteId: true,
           role: true,
           remoteAddress: true,
@@ -173,7 +175,7 @@ export class TransferService {
     audience?: string
   ): Promise<TransferDetail> {
     const transfer = await this.transferDetailRepository.findOneBy({
-      localId: processId,
+      id: processId,
       remoteParty: audience
     });
     if (transfer) {
@@ -218,20 +220,21 @@ export class TransferService {
     remoteAddress: string,
     audience: string,
     format?: string,
-    dataPlaneIdentifier?: string
+    dataPlaneIdentifier?: string,
+    client?: ClientInfo
   ): Promise<{
-    localId: string;
+    id: string;
     remoteId: string;
     message: TransferRequestMessage;
     process: TransferProcess;
   }> {
     let dataAddress: DataAddress | undefined;
-    const localId = `urn:uuid:consumer:${crypto.randomUUID()}`;
+    const id = `urn:uuid:consumer:${crypto.randomUUID()}`;
     const context = await this.policyEvaluationService.initializeContext(
       agreementId,
       "consumer",
       EvaluationTrigger.CONSUMER_ON_REQUEST,
-      localId,
+      id,
       audience,
       ODRLAction.USE,
       []
@@ -275,7 +278,7 @@ export class TransferService {
       );
     }
     const transferRequestMessage = new TransferRequestMessage({
-      consumerPid: localId,
+      consumerPid: id,
       agreementId: agreementId,
       format: format,
       dataAddress: dataAddress,
@@ -283,7 +286,7 @@ export class TransferService {
     });
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(
       transferRequestMessage,
-      localId,
+      id,
       "consumer",
       audience,
       dataPlaneIdentifier
@@ -306,7 +309,7 @@ export class TransferService {
     );
     const transferProcess = await deserialize<TransferProcess>(requestTransfer);
     const transfer: TransferDetail = {
-      localId: localId,
+      id: id,
       remoteId: transferProcess.providerPid,
       role: "consumer",
       remoteAddress: `${remoteAddress}/${transferProcess.providerPid}`,
@@ -325,12 +328,17 @@ export class TransferService {
       ],
       modifiedDate: new Date()
     };
-    await this.transferDetailRepository.save(transfer);
+    await this.transferDetailRepository.save(
+      this.transferDetailRepository.create({
+        ...transfer,
+        ...getOwnershipFieldsFromClient(client)
+      })
+    );
     if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:create", transfer.localId);
+      this.dspGateway.sendUpdateToClients("transfer:create", transfer.id);
     }
     return {
-      localId,
+      id,
       remoteId: transferProcess.providerPid,
       message: transferRequestMessage,
       process: transferProcess
@@ -355,7 +363,7 @@ export class TransferService {
       undefined
     );
     const transfer: TransferDetail = {
-      localId: transferProcess.providerPid,
+      id: transferProcess.providerPid,
       remoteId: transferRequestMessage.consumerPid,
       role: "provider",
       remoteAddress: `${transferRequestMessage.callbackAddress}/transfers/${transferProcess.consumerPid}`,
@@ -402,7 +410,7 @@ export class TransferService {
       );
     }
     if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:create", transfer.localId);
+      this.dspGateway.sendUpdateToClients("transfer:create", transfer.id);
     }
     return transferProcess;
   }
@@ -459,7 +467,7 @@ export class TransferService {
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
     if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
     return {
       status: "OK"
@@ -495,7 +503,7 @@ export class TransferService {
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
     if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
     return {
       status: "OK"
@@ -533,7 +541,7 @@ export class TransferService {
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
     if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
     return {
       status: "OK"
@@ -567,7 +575,7 @@ export class TransferService {
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
     if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
     return {
       status: "OK"
@@ -611,7 +619,7 @@ export class TransferService {
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
     if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
     return {
       status: "OK"
@@ -647,7 +655,7 @@ export class TransferService {
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
     if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
     return {
       status: "OK"
@@ -657,13 +665,9 @@ export class TransferService {
   mapId(transfer: TransferDetail, id: "providerPid" | "consumerPid"): string {
     switch (id) {
       case "providerPid":
-        return transfer.role === "provider"
-          ? transfer.localId
-          : transfer.remoteId!;
+        return transfer.role === "provider" ? transfer.id : transfer.remoteId!;
       case "consumerPid":
-        return transfer.role === "provider"
-          ? transfer.remoteId!
-          : transfer.localId;
+        return transfer.role === "provider" ? transfer.remoteId! : transfer.id;
     }
   }
 
@@ -701,7 +705,7 @@ export class TransferService {
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
     if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
     return {
       status: "OK"
@@ -735,7 +739,7 @@ export class TransferService {
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
     if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
     return {
       status: "OK"
@@ -748,20 +752,14 @@ export class TransferService {
     transfer: TransferDetail
   ) {
     if (transfer.role == "consumer") {
-      if (
-        consumerPid !== transfer.localId ||
-        providerPid !== transfer.remoteId
-      ) {
+      if (consumerPid !== transfer.id || providerPid !== transfer.remoteId) {
         throw new DSPError(
           "Mismatch in received and stored process identifiers",
           HttpStatus.BAD_REQUEST
         ).andLog(this.logger, "warn");
       }
     } else {
-      if (
-        providerPid !== transfer.localId ||
-        consumerPid !== transfer.remoteId
-      ) {
+      if (providerPid !== transfer.id || consumerPid !== transfer.remoteId) {
         throw new DSPError(
           "Mismatch in received and stored process identifiers",
           HttpStatus.BAD_REQUEST

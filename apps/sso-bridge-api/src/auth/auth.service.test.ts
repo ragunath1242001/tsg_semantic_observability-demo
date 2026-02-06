@@ -7,11 +7,10 @@ import { Request } from "express";
 import { RootConfig } from "../config.js";
 import { OauthClient } from "../model/client.dao.js";
 import { RecoveryCode } from "../model/recovery-code.dao.js";
-import { OauthRole } from "../model/role.dao.js";
 import { TotpCredential } from "../model/totp-credential.dao.js";
 import { OauthUser } from "../model/user.dao.js";
 import { WebAuthnCredential } from "../model/webauthn-credential.dao.js";
-import { RolesService } from "../roles/roles.service.js";
+import { PermissionsService } from "../permissions/permissions.service.js";
 import { UsersService } from "../users/users.service.js";
 import { getSession } from "../utils/session.js";
 import { AuthService } from "./auth.service.js";
@@ -22,7 +21,6 @@ import { WebAuthnService } from "./webauthn.service.js";
 
 describe("AuthService", () => {
   let authService: AuthService;
-  let rolesService: RolesService;
   let usersService: UsersService;
 
   beforeAll(async () => {
@@ -32,7 +30,6 @@ describe("AuthService", () => {
       imports: [
         TypeOrmTestHelper.instance.module([
           OauthUser,
-          OauthRole,
           OauthClient,
           RecoveryCode,
           TotpCredential,
@@ -40,7 +37,6 @@ describe("AuthService", () => {
         ]),
         TypeOrmModule.forFeature([
           OauthUser,
-          OauthRole,
           OauthClient,
           RecoveryCode,
           TotpCredential,
@@ -49,7 +45,7 @@ describe("AuthService", () => {
       ],
       providers: [
         AuthService,
-        RolesService,
+        PermissionsService,
         UsersService,
         TotpService,
         RecoveryCodeService,
@@ -67,31 +63,28 @@ describe("AuthService", () => {
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
-    rolesService = module.get<RolesService>(RolesService);
     usersService = module.get<UsersService>(UsersService);
 
-    const userRole = await rolesService.createRole({
-      name: "user",
-      description: "User role"
-    });
     await usersService.createUser({
+      id: "1",
       username: "Alice",
       password: "password",
       email: "alice@example.com",
-      roles: [userRole.name],
+      permissions: ["manage:*"],
       grants: ["authorization_code"]
     });
     await usersService.createUser({
+      id: "2",
       username: "Bob",
       password: "password",
       email: "bob@example.com",
-      roles: [userRole.name],
+      permissions: ["manage:*"],
       grants: ["authorization_code"]
     });
   });
   describe("Test Auth Service Session handling", () => {
     it("No session", async () => {
-      const user = await usersService.getUser(1);
+      const user = await usersService.getUser("1");
       const request: Request = {} as Request;
 
       const loginResult = await authService.login("Alice", "password", request);
@@ -101,14 +94,14 @@ describe("AuthService", () => {
         username: user.username,
         email: user.email,
         require2FA: false,
-        roles: ["user"],
+        permissions: expect.arrayContaining(["manage:sso.user"]),
         grants: ["authorization_code"]
       });
       expect(request.session).toBeUndefined();
       await authService.logout(request);
     });
     it("Empty session and logout", async () => {
-      const user = await usersService.getUser(1);
+      const user = await usersService.getUser("1");
       const request = {
         session: {}
       } as unknown as Request;
@@ -119,7 +112,7 @@ describe("AuthService", () => {
         username: user.username,
         email: user.email,
         require2FA: false,
-        roles: ["user"],
+        permissions: expect.arrayContaining(["manage:sso.user"]),
         grants: ["authorization_code"]
       };
 
@@ -131,8 +124,8 @@ describe("AuthService", () => {
       expect(getSession(request)?.user).toBeUndefined();
     });
     it("Session with user", async () => {
-      const user = await usersService.getUser(1);
-      const user2 = await usersService.getUser(2);
+      const user = await usersService.getUser("1");
+      const user2 = await usersService.getUser("2");
       const requestWithUserSession = {
         session: {
           user: user2
@@ -150,7 +143,7 @@ describe("AuthService", () => {
         username: user.username,
         email: user.email,
         require2FA: false,
-        roles: ["user"],
+        permissions: expect.arrayContaining(["manage:sso.user"]),
         grants: ["authorization_code"]
       };
 
@@ -174,7 +167,7 @@ describe("AuthService", () => {
         username: "User2FA",
         password: "password",
         email: "user2fa@example.com",
-        roles: ["user"],
+        permissions: ["manage:*"],
         grants: ["authorization_code"],
         require2FA: true
       });

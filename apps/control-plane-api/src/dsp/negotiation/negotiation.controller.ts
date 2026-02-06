@@ -81,7 +81,7 @@ export class NegotiationController {
     this.logger.log(`Received negotiation status request for ${id}`);
     const negotiation = await this.negotiationService.getNegotiation(id, vpId);
     return new ContractNegotiation({
-      providerPid: negotiation.localId,
+      providerPid: negotiation.id,
       consumerPid: negotiation.remoteId,
       state: negotiation.state
     }).serialize();
@@ -231,7 +231,7 @@ export class NegotiationController {
     this.logger.log(`Received negotiation callback status request for ${id}`);
     const negotiation = await this.negotiationService.getNegotiation(id, vpId);
     return new ContractNegotiation({
-      providerPid: negotiation.localId,
+      providerPid: negotiation.id,
       consumerPid: negotiation.remoteId,
       state: negotiation.state
     }).serialize();

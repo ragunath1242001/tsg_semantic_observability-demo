@@ -26,18 +26,17 @@ import { OauthClient } from "../../model/client.dao.js";
 import { KeyDao } from "../../model/keys.dao.js";
 import { AuthorizationRequestDao } from "../../model/oid4vp.dao.js";
 import { RecoveryCode } from "../../model/recovery-code.dao.js";
-import { OauthRole } from "../../model/role.dao.js";
 import { TokenDao } from "../../model/token.dao.js";
 import { TotpCredential } from "../../model/totp-credential.dao.js";
 import { OauthUser } from "../../model/user.dao.js";
 import { WebAuthnCredential } from "../../model/webauthn-credential.dao.js";
 import { OauthService } from "../../oauth/oauth.service.js";
 import { TokenService } from "../../oauth/token.service.js";
-import { RolesService } from "../../roles/roles.service.js";
+import { PermissionsService } from "../../permissions/permissions.service.js";
 import { UsersService } from "../../users/users.service.js";
 import { OID4VPVerifierService } from "./verifier.service.js";
 
-describe("OID4VPVerifierService", () => {
+describe("SSO OID4VPVerifierService", () => {
   let service: OID4VPVerifierService;
   let server: SetupServer;
 
@@ -48,7 +47,6 @@ describe("OID4VPVerifierService", () => {
         TypeOrmTestHelper.instance.module([
           AuthorizationRequestDao,
           OauthUser,
-          OauthRole,
           OauthClient,
           TokenDao,
           KeyDao,
@@ -59,7 +57,6 @@ describe("OID4VPVerifierService", () => {
         TypeOrmModule.forFeature([
           AuthorizationRequestDao,
           OauthUser,
-          OauthRole,
           OauthClient,
           TokenDao,
           KeyDao,
@@ -72,7 +69,7 @@ describe("OID4VPVerifierService", () => {
         OID4VPVerifierService,
         OauthService,
         ClientsService,
-        RolesService,
+        PermissionsService,
         TokenService,
         UsersService,
         TotpService,
@@ -91,7 +88,6 @@ describe("OID4VPVerifierService", () => {
             server: {
               publicAddress: "http://localhost"
             },
-            initRoles: [],
             initUsers: [],
             initClients: [],
             dcqlQueryMap: {
@@ -232,7 +228,6 @@ describe("OID4VPVerifierService", () => {
 
   describe("getAuthorizationRequest", () => {
     it("should return the authorization request with DCQL query", async () => {
-      const id = "test-get-request";
       const dcqlQuery = {
         credentials: [
           {
@@ -254,20 +249,21 @@ describe("OID4VPVerifierService", () => {
         ]
       };
 
-      await service.authorizationRequestRepository.save({
-        identifier: id,
-        nonce: "test-nonce",
-        dcqlQuery: dcqlQuery,
-        response_mode: "direct_post",
-        response_type: "vp_token",
-        response_uri: "http://localhost/api/oid4vp/authorize"
-      });
+      const saveResult = await service.authorizationRequestRepository.save(
+        service.authorizationRequestRepository.create({
+          nonce: "test-nonce",
+          dcqlQuery: dcqlQuery,
+          response_mode: "direct_post",
+          response_type: "vp_token",
+          response_uri: "http://localhost/api/oid4vp/authorize"
+        })
+      );
 
-      const result = await service.getAuthorizationRequest(id);
+      const result = await service.getAuthorizationRequest(saveResult.id);
 
       expect(result).toEqual(
         expect.objectContaining({
-          state: id,
+          state: saveResult.id,
           nonce: "test-nonce",
           dcql_query: dcqlQuery,
           client_id: "http://localhost",
@@ -288,9 +284,9 @@ describe("OID4VPVerifierService", () => {
 
   describe("getOrCreateAuthorizationRequestUrl", () => {
     it("should return existing authorization request URL if found", async () => {
-      const identifier = "existing-request";
+      const id = "existing-request";
       await service.createAuthorizationRequest(
-        identifier,
+        id,
         {
           client_id: "http://localhost",
           redirect_uri: "http://localhost/api/oid4vp/authorize",
@@ -300,25 +296,22 @@ describe("OID4VPVerifierService", () => {
         "User"
       );
 
-      const result = await service.getOrCreateAuthorizationRequestUrl(
-        identifier,
-        {
-          client_id: "http://localhost",
-          redirect_uri: "http://localhost/api/oid4vp/authorize",
-          response_type: "vp_token",
-          response_mode: "query"
-        } as AuthorizationRequest
-      );
+      const result = await service.getOrCreateAuthorizationRequestUrl(id, {
+        client_id: "http://localhost",
+        redirect_uri: "http://localhost/api/oid4vp/authorize",
+        response_type: "vp_token",
+        response_mode: "query"
+      } as AuthorizationRequest);
 
       expect(result).toContain(
-        `oid4vp://?client_id=http://localhost&request_uri=http://localhost/api/oid4vp/ar/${identifier}`
+        `oid4vp://?client_id=http://localhost&request_uri=http://localhost/api/oid4vp/ar/${id}`
       );
     });
 
     it("should create new authorization request if not found", async () => {
-      const identifier = "new-request-with-role";
+      const id = "new-request-with-role";
       const result = await service.getOrCreateAuthorizationRequestUrl(
-        identifier,
+        id,
         {
           client_id: "http://localhost",
           redirect_uri: "http://localhost/api/oid4vp/authorize",
@@ -329,11 +322,10 @@ describe("OID4VPVerifierService", () => {
       );
 
       expect(result).toContain(
-        `oid4vp://?client_id=http://localhost&request_uri=http://localhost/api/oid4vp/ar/${identifier}`
+        `oid4vp://?client_id=http://localhost&request_uri=http://localhost/api/oid4vp/ar/${id}`
       );
 
-      const savedRequest =
-        await service.getAuthorizationRequestFromDB(identifier);
+      const savedRequest = await service.getAuthorizationRequestFromDB(id);
       expect(savedRequest.dcqlQuery.credentials[0].claims).toContainEqual({
         id: "role",
         path: ["credentialSubject", "role"],
@@ -344,9 +336,9 @@ describe("OID4VPVerifierService", () => {
 
   describe("getAuthorizationRequestFromDB", () => {
     it("should return authorization request with user relation", async () => {
-      const identifier = "test-db-request";
+      const id = "test-db-request";
       await service.createAuthorizationRequest(
-        identifier,
+        id,
         {
           client_id: "http://localhost",
           redirect_uri: "http://localhost/api/oid4vp/authorize",
@@ -356,9 +348,9 @@ describe("OID4VPVerifierService", () => {
         "User"
       );
 
-      const result = await service.getAuthorizationRequestFromDB(identifier);
+      const result = await service.getAuthorizationRequestFromDB(id);
 
-      expect(result.identifier).toBe(identifier);
+      expect(result.id).toBe(id);
       expect(result.dcqlQuery).toBeDefined();
       expect(result.nonce).toBeDefined();
     });
@@ -463,7 +455,7 @@ describe("OID4VPVerifierService", () => {
           username: "existing@example.com",
           email: "existing@example.com",
           password: "password",
-          roles: ["sso_bridge_user"],
+          permissions: ["manage:*"],
           grants: ["authorization_code"]
         });
 
@@ -553,11 +545,13 @@ describe("OID4VPVerifierService", () => {
     beforeEach(async () => {
       // Setup a mock authorization request
       mockAuthRequest = new AuthorizationRequestDao();
-      mockAuthRequest.identifier = "test-handle-vp";
+      mockAuthRequest.id = "test-handle-vp";
       mockAuthRequest.nonce = "test-nonce";
       mockAuthRequest.dcqlQuery = service["getDefaultDcqlQuery"]();
       mockAuthRequest.completed = false;
-      await service.authorizationRequestRepository.save(mockAuthRequest);
+      await service.authorizationRequestRepository.save(
+        service.authorizationRequestRepository.create(mockAuthRequest)
+      );
     });
 
     it("should successfully process verifiable presentations and return user", async () => {
@@ -592,7 +586,7 @@ describe("OID4VPVerifierService", () => {
       // Verify authorization request completion status was updated
       const updatedAuthRequest =
         await service.authorizationRequestRepository.findOne({
-          where: { identifier: "test-handle-vp" }
+          where: { id: "test-handle-vp" }
         });
       expect(updatedAuthRequest?.completed).toBe(true);
     });
@@ -709,10 +703,10 @@ describe("OID4VPVerifierService", () => {
 
   describe("private getOid4vpUri", () => {
     it("should generate correct OID4VP URI", () => {
-      const identifier = "test-identifier";
-      const result = service["getOid4vpUri"](identifier);
+      const id = "test-identifier";
+      const result = service["getOid4vpUri"](id);
       expect(result).toBe(
-        `oid4vp://?client_id=http://localhost&request_uri=http://localhost/api/oid4vp/ar/${identifier}`
+        `oid4vp://?client_id=http://localhost&request_uri=http://localhost/api/oid4vp/ar/${id}`
       );
     });
   });

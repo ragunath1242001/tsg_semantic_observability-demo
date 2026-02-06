@@ -9,21 +9,16 @@ import {
   Post,
   Put
 } from "@nestjs/common";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Requires, validationPipe } from "@tsg-dsp/common-api";
 import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
-import { Roles, validationPipe } from "@tsg-dsp/common-api";
-import {
+  Action,
   ApiBadRequestResponseDefault,
   ApiConflictResponseDefault,
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault
+  ApiNotFoundResponseDefault,
+  Resource
 } from "@tsg-dsp/common-dtos";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
 
 import { IssueConfigurationConfig } from "../config.js";
 import { IssueConfiguration } from "../model/issue-configuration.dao.js";
@@ -35,15 +30,13 @@ import { IssueConfigurationService } from "./issue-configuration.service.js";
 
 @Controller("management/issue-configurations")
 @ApiTags("Management Issue Configurations")
-@ApiOAuth2([AppRole.VIEW_DID])
-@Roles(AppRole.VIEW_DID)
+@Requires(Action.READ, Resource.W_ISSUE_CONFIG)
 export class IssueConfigurationManagementController {
   constructor(
     private readonly issueConfigurationService: IssueConfigurationService
   ) {}
 
   @Get()
-  @Roles([AppRole.VIEW_DID, AppRole.READONLY_USER])
   @ApiOperation({
     summary: "Retrieve issue configurations",
     description: "Retrieve all issue configurations registered in this wallet"
@@ -66,6 +59,7 @@ export class IssueConfigurationManagementController {
   @ApiConflictResponseDefault()
   @ApiForbiddenResponseDefault()
   @ApiBadRequestResponseDefault()
+  @Requires(Action.CREATE, Resource.W_ISSUE_CONFIG)
   async addIssueConfiguration(
     @Body(validationPipe) service: IssueConfigurationConfig
   ): Promise<IssueConfiguration> {
@@ -85,6 +79,7 @@ export class IssueConfigurationManagementController {
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
   @ApiBadRequestResponseDefault()
+  @Requires(Action.UPDATE, Resource.W_ISSUE_CONFIG)
   async updateIssueConfiguration(
     @Param("id") id: string,
     @Body(validationPipe)
@@ -105,6 +100,7 @@ export class IssueConfigurationManagementController {
   @ApiOkResponse()
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.DELETE, Resource.W_ISSUE_CONFIG)
   async deleteIssueConfiguration(@Param("id") id: string): Promise<void> {
     return await this.issueConfigurationService.deleteIssueConfiguration(id);
   }

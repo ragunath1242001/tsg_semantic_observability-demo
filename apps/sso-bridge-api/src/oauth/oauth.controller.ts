@@ -23,14 +23,16 @@ import {
   AuthorizationRequest,
   JWKS,
   nonEmptyStringPipe,
+  Requires,
   TokenRequestWrapper,
   validateOrRejectSync,
   validationPipe
 } from "@tsg-dsp/common-api";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import { plainToInstance } from "class-transformer";
 import { Request, Response } from "express";
 
-import { AuthGuard, ManagementRoles, User } from "../auth/auth.guard.js";
+import { AuthGuard, User } from "../auth/auth.guard.js";
 import { OauthUser } from "../model/user.dao.js";
 import { OauthService } from "./oauth.service.js";
 
@@ -120,7 +122,7 @@ export class OauthController {
   })
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  @ManagementRoles("admin")
+  @Requires(Action.EXECUTE, Resource.SSO_CONFIG)
   async introspect(
     @Body("token", nonEmptyStringPipe) token: string,
     @Body("token_type_hint") tokenTypeHint?: string
@@ -145,7 +147,7 @@ export class OauthController {
   })
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  @ManagementRoles("admin")
+  @Requires(Action.EXECUTE, Resource.SSO_CONFIG)
   async revocation(
     @Body("token", nonEmptyStringPipe) token: string,
     @Body("token_type_hint") tokenTypeHint?: string

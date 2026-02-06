@@ -284,7 +284,7 @@ export class NegotiationProcessEvent {
 }
 
 export interface INegotiationStatus {
-  localId: string;
+  id: string;
   remoteId: string;
   remoteParty: string;
   role: NegotiationRole;
@@ -301,7 +301,7 @@ export interface INegotiationDetail extends INegotiationStatus {
 }
 
 export class NegotiationStatus {
-  localId: string;
+  id: string;
   remoteId: string;
   remoteParty: string;
   role: NegotiationRole;
@@ -310,7 +310,7 @@ export class NegotiationStatus {
   dataSet: string;
 
   constructor(value: withExtraProps<INegotiationStatus>) {
-    this.localId = value.localId;
+    this.id = value.id;
     this.remoteId = value.remoteId;
     this.remoteParty = value.remoteParty;
     this.role = value.role;

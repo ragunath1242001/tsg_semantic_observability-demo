@@ -16,31 +16,34 @@ import {
   UseInterceptors
 } from "@nestjs/common";
 import { AnyFilesInterceptor } from "@nestjs/platform-express";
-import { ApiOAuth2, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import {
   CSVW,
   FileMetadataDto,
   FileUpdateDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import {
+  DisableAbac,
   DisableOAuthGuard,
-  DisableRolesGuard,
-  Roles,
+  Requires,
   validationPipe
 } from "@tsg-dsp/common-api";
 import { DatasetSchema } from "@tsg-dsp/common-dsp";
 import { DatasetDto } from "@tsg-dsp/common-dsp/dist/model/dsp/catalog/catalog.dto.js";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { FilesService } from "./files.service.js";
 
 @Controller("files")
-@ApiOAuth2(["controlplane_dataplane"])
-@Roles("controlplane_dataplane")
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @Get()
+  @Requires(Action.READ, Resource.ADP_FILE)
   @ApiOperation({
     summary: "Get all files",
     description: "Get all files and their metadata."
@@ -53,6 +56,7 @@ export class FilesController {
   }
 
   @Post("upload")
+  @Requires(Action.CREATE, Resource.ADP_FILE)
   @ApiOperation({
     summary: "Upload files",
     description: "Upload files and create metadata."
@@ -74,6 +78,7 @@ export class FilesController {
   }
 
   @Post("sync")
+  @Requires(Action.EXECUTE, Resource.ADP_FILE)
   @ApiOperation({
     summary: "Sync files",
     description: "Sync files and their metadata."
@@ -101,7 +106,7 @@ export class FilesController {
   })
   @HttpCode(HttpStatus.OK)
   @DisableOAuthGuard()
-  @DisableRolesGuard()
+  @DisableAbac
   async getFile(
     @Param("id") id: string,
     @Headers("Authorization") authorizationHeader?: string
@@ -110,6 +115,7 @@ export class FilesController {
   }
 
   @Get(":id/preview")
+  @Requires(Action.READ, Resource.ADP_FILE)
   @ApiOperation({
     summary: "Preview file"
   })
@@ -124,6 +130,7 @@ export class FilesController {
   }
 
   @Post(":id")
+  @Requires(Action.UPDATE, Resource.ADP_FILE)
   @ApiOperation({
     summary: "Update file metadata",
     description: "Update the file metadata by ID."
@@ -138,6 +145,7 @@ export class FilesController {
   }
 
   @Post(":id/upload")
+  @Requires(Action.UPDATE, Resource.ADP_FILE)
   @ApiOperation({
     summary: "Upload updated file",
     description: "Upload updated file and (re)create metadata."
@@ -162,6 +170,7 @@ export class FilesController {
   }
 
   @Delete(":id")
+  @Requires(Action.DELETE, Resource.ADP_FILE)
   @ApiOperation({
     summary: "Delete file",
     description: "Delete the file by ID."
@@ -173,6 +182,7 @@ export class FilesController {
   }
 
   @Get(":id/csvw")
+  @Requires(Action.READ, Resource.ADP_FILE)
   @ApiOperation({
     summary: "Get CSVW",
     description: "Get the CSVW of a file."
@@ -185,6 +195,7 @@ export class FilesController {
   }
 
   @Get(":id/dataset")
+  @Requires(Action.READ, Resource.ADP_FILE)
   @ApiOperation({
     summary: "Get dataset",
     description: "Get the dataset of a file."

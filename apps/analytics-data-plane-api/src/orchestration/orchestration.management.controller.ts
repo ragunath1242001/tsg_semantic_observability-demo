@@ -10,7 +10,6 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -18,8 +17,12 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { JobDto, PodListDto } from "@tsg-dsp/analytics-data-plane-dtos";
-import { Roles } from "@tsg-dsp/common-api";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { Requires } from "@tsg-dsp/common-api";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import {
   IOrchestrationService,
@@ -28,9 +31,7 @@ import {
 } from "./orchestration.interface.js";
 
 @ApiTags("Data Plane Management")
-@ApiOAuth2(["controlplane_dataplane"])
 @Controller("management/k8s")
-@Roles("controlplane_dataplane")
 export class OrchestrationManagementController {
   constructor(
     @Inject(IOrchestrationService)
@@ -39,6 +40,7 @@ export class OrchestrationManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("/jobs/algorithm-instance/:algorithmInstanceId")
+  @Requires(Action.READ, Resource.ADP_ORCHESTRATION)
   @ApiOperation({ summary: "Get jobs for algorithm instance" })
   @ApiParam({
     name: "algorithmInstanceId",
@@ -58,6 +60,7 @@ export class OrchestrationManagementController {
   }
 
   @Get("/jobs/:jobName/pods")
+  @Requires(Action.READ, Resource.ADP_ORCHESTRATION)
   @ApiOperation({ summary: "Get job pods" })
   @ApiParam({
     name: "jobName",
@@ -73,6 +76,7 @@ export class OrchestrationManagementController {
   }
 
   @Get("/pods/:podName/logs")
+  @Requires(Action.READ, Resource.ADP_ORCHESTRATION)
   @ApiOperation({ summary: "Get job logs" })
   @ApiParam({
     name: "podName",
@@ -88,6 +92,7 @@ export class OrchestrationManagementController {
   }
 
   @Post("/spawn-job")
+  @Requires(Action.EXECUTE, Resource.ADP_ORCHESTRATION)
   @ApiOperation({ summary: "Spawn a job" })
   @ApiBody({
     schema: {

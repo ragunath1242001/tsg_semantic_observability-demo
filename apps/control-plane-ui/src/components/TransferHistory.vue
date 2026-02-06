@@ -71,14 +71,14 @@ const getTransfer = async (uuid: string) => {
       <Accordion @update:value="getTransfer">
         <AccordionPanel
           v-for="(transfer, index) in transfers"
-          :key="transfer.localId"
-          :value="transfer.localId">
+          :key="transfer.id"
+          :value="transfer.id">
           <AccordionHeader>
             <span class="flex items-center justify-between w-full">
               <div>
                 <i :class="calculateIcon(index)"></i>
                 <span class="mx-2"
-                  >{{ transfer.localId }} -
+                  >{{ transfer.id }} -
                   {{ transfer.remoteParty.replace("%3A", ":") }}</span
                 >
               </div>

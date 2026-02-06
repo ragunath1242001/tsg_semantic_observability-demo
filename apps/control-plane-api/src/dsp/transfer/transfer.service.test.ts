@@ -235,14 +235,14 @@ describe("Transfer service", () => {
           dataPlaneConsumerFirst = false;
           return HttpResponse.json({
             accepted: true,
-            identifier: "ABCDEFG",
+            id: "ABCDEFG",
             callbackAddress:
               "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG"
           });
         }
         return HttpResponse.json<DataPlaneRequestResponseDto>({
           accepted: true,
-          identifier: "ABCDEFG",
+          id: "ABCDEFG",
           callbackAddress:
             "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG",
           dataAddress: {
@@ -261,7 +261,7 @@ describe("Transfer service", () => {
         () => {
           return HttpResponse.json({
             accepted: true,
-            identifier: "ABCDEFG",
+            id: "ABCDEFG",
             callbackAddress:
               "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG",
             dataAddress: {
@@ -343,7 +343,7 @@ describe("Transfer service", () => {
     const dataPlaneService = moduleRef.get(DataPlaneService);
 
     await dataPlaneService.addDataPlane({
-      identifier: "urn:uuid:db725fa1-584f-4d9d-91d5-0aa0b0f60848",
+      id: "urn:uuid:db725fa1-584f-4d9d-91d5-0aa0b0f60848",
       title: "Test Data Plane",
       dataplaneType: "tsg:HTTP",
       endpointPrefix: "",
@@ -378,7 +378,7 @@ describe("Transfer service", () => {
       );
       expect(transferProcess).toBeDefined();
       expect(transferProcess.process.providerPid).toBe(remoteProcessId);
-      localProcessId = transferProcess.localId;
+      localProcessId = transferProcess.id;
 
       const transferProcessPush = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
@@ -390,7 +390,7 @@ describe("Transfer service", () => {
       expect(transferProcessPush.process.providerPid).toBe(remoteProcessId);
 
       const transferDetail = await transferService.getTransfer(
-        transferProcessPush.localId
+        transferProcessPush.id
       );
       expect(transferDetail.dataAddress).toBeDefined();
     });
@@ -402,7 +402,7 @@ describe("Transfer service", () => {
       );
       expect(transferProcess).toBeDefined();
       expect(transferProcess.process.providerPid).toBe(remoteProcessId);
-      localProcessId = transferProcess.localId;
+      localProcessId = transferProcess.id;
 
       const transferProcessPush = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
@@ -413,7 +413,7 @@ describe("Transfer service", () => {
       expect(transferProcessPush.process.providerPid).toBe(remoteProcessId);
 
       const transferDetail = await transferService.getTransfer(
-        transferProcessPush.localId
+        transferProcessPush.id
       );
       expect(transferDetail.dataAddress).toBeDefined();
     });
@@ -491,7 +491,7 @@ describe("Transfer service", () => {
         await moduleRef
           .get(DataPlaneService)
           .getDataPlanes(PaginationOptionsDto.NO_PAGINATION)
-      ).data[0].identifier;
+      ).data[0].id;
       const transferProcessPush = await transferService.initiateTransferProcess(
         "urn:uuid:3ecd19d6-3cf6-4540-84fa-3ea226230b2f",
         "http://remoteparty.test/transfers",
@@ -503,7 +503,7 @@ describe("Transfer service", () => {
       expect(transferProcessPush.process.providerPid).toBe(remoteProcessId);
 
       const transferDetail = await transferService.getTransfer(
-        transferProcessPush.localId
+        transferProcessPush.id
       );
       expect(transferDetail.dataAddress).toBeDefined();
     });
@@ -724,17 +724,17 @@ describe("Transfer service", () => {
         "tsg:HTTP"
       );
       await transferService.handleTerminate(
-        transferProcess.localId,
+        transferProcess.id,
         new TransferTerminationMessage({
           providerPid: transferProcess.remoteId,
-          consumerPid: transferProcess.localId,
+          consumerPid: transferProcess.id,
           reason: [new Multilanguage("Test termination")],
           code: "PROVIDER_TERMINATION"
         }),
         "did:web:remoteparty.test"
       );
       const transferDetail = await transferService.getTransfer(
-        transferProcess.localId
+        transferProcess.id
       );
       expect(transferDetail.state).toBe(TransferState.TERMINATED);
     });
@@ -746,13 +746,13 @@ describe("Transfer service", () => {
         "tsg:HTTP"
       );
       await transferService.terminate(
-        transferProcess.localId,
+        transferProcess.id,
         "CONSUMER_TERMINATION",
         "Test termination",
         true
       );
       const transferDetail = await transferService.getTransfer(
-        transferProcess.localId
+        transferProcess.id
       );
       expect(transferDetail.state).toBe(TransferState.TERMINATED);
     });

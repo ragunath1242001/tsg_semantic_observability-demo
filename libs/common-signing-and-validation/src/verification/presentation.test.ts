@@ -43,7 +43,7 @@ describe("Presentation Verification", () => {
 
         const trustAnchors: TrustAnchor[] = [
           {
-            identifier: "did:web:localhost",
+            id: "did:web:localhost",
             credentialTypes: ["TestCredential"]
           }
         ];
@@ -79,7 +79,7 @@ describe("Presentation Verification", () => {
 
         const trustAnchors: TrustAnchor[] = [
           {
-            identifier: "did:web:localhost",
+            id: "did:web:localhost",
             credentialTypes: ["TestCredential"]
           }
         ];
@@ -104,7 +104,7 @@ describe("Presentation Verification", () => {
 
         const trustAnchors: TrustAnchor[] = [
           {
-            identifier: "did:web:localhost",
+            id: "did:web:localhost",
             credentialTypes: ["TestCredential"]
           }
         ];
@@ -150,7 +150,7 @@ describe("Presentation Verification", () => {
           `did:key:${publicKeyMultibase}`,
           {
             key: {
-              identifier: publicKeyMultibase,
+              id: publicKeyMultibase,
               signingKey: privateJwk,
               algorithm: "EdDSA"
             },
@@ -179,7 +179,7 @@ describe("Presentation Verification", () => {
           `did:key:${publicKeyMultibase}`,
           {
             key: {
-              identifier: publicKeyMultibase,
+              id: publicKeyMultibase,
               signingKey: privateJwk,
               algorithm: "EdDSA"
             },
@@ -209,7 +209,7 @@ describe("Presentation Verification", () => {
           `did:key:${publicKeyMultibase}`,
           {
             key: {
-              identifier: publicKeyMultibase,
+              id: publicKeyMultibase,
               signingKey: privateJwk,
               algorithm: "EdDSA"
             },
@@ -232,7 +232,7 @@ describe("Presentation Verification", () => {
           `did:key:${publicKeyMultibase}`,
           {
             key: {
-              identifier: publicKeyMultibase,
+              id: publicKeyMultibase,
               signingKey: privateJwk,
               algorithm: "EdDSA"
             },
@@ -254,7 +254,7 @@ describe("Presentation Verification", () => {
           `did:key:${publicKeyMultibase}`,
           {
             key: {
-              identifier: publicKeyMultibase,
+              id: publicKeyMultibase,
               signingKey: privateJwk,
               algorithm: "EdDSA"
             },
@@ -278,7 +278,7 @@ describe("Presentation Verification", () => {
           `did:key:${publicKeyMultibase}`,
           {
             key: {
-              identifier: publicKeyMultibase,
+              id: publicKeyMultibase,
               signingKey: privateJwk,
               algorithm: "EdDSA"
             },
@@ -307,7 +307,7 @@ describe("Presentation Verification", () => {
           `did:key:${publicKeyMultibase}`,
           {
             key: {
-              identifier: publicKeyMultibase,
+              id: publicKeyMultibase,
               signingKey: privateJwk,
               algorithm: "EdDSA"
             },
@@ -331,7 +331,7 @@ describe("Presentation Verification", () => {
           `did:key:${publicKeyMultibase}`,
           {
             key: {
-              identifier: publicKeyMultibase,
+              id: publicKeyMultibase,
               signingKey: privateJwk,
               algorithm: "EdDSA"
             },

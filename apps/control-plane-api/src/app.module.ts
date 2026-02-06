@@ -5,6 +5,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { TerminusModule } from "@nestjs/terminus";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  AbacModule,
   AuthModule,
   GenericConfigModule,
   HealthController,
@@ -49,6 +50,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       ],
       migrationsRun: !GenericConfigModule.get(RootConfig).db.synchronize
     }),
+    AbacModule.forRoot(),
     AuthModule,
     VCAuthModule,
     TypeOrmModule.forFeature([NegotiationDetailDao, TransferDetailDao]),

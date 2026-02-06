@@ -173,7 +173,7 @@ export class AnalyticsTransferHandler implements ITransferHandler {
 
     if (!negotiation.agreement) {
       throw new DataPlaneError(
-        `No agreement found for negotiation ${negotiation.localId}`,
+        `No agreement found for negotiation ${negotiation.id}`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
@@ -228,21 +228,23 @@ export class AnalyticsTransferHandler implements ITransferHandler {
       };
     }
 
-    const transfer = await this.transferRepository.save({
-      role: role,
-      id: id,
-      processId: processId,
-      remoteParty: remoteParty,
-      datasetId: datasetId,
-      secret: secret,
-      state: TransferState.REQUESTED,
-      request: transferRequestMessage,
-      response: {
-        accepted: true,
-        identifier: id,
-        dataAddress: dataAddress
-      }
-    });
+    const transfer = await this.transferRepository.save(
+      this.transferRepository.create({
+        role: role,
+        id: id,
+        processId: processId,
+        remoteParty: remoteParty,
+        datasetId: datasetId,
+        secret: secret,
+        state: TransferState.REQUESTED,
+        request: transferRequestMessage,
+        response: {
+          accepted: true,
+          id: id,
+          dataAddress: dataAddress
+        }
+      })
+    );
     return transfer.response;
   }
   async handleTransferStart(

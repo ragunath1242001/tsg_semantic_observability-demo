@@ -80,7 +80,7 @@ describe("Local - CN_C_01: Contract request scenarios", () => {
         "provider",
         ContractNegotiationState.REQUESTED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.agree(negotiation.localId);
+          await negotiationService.agree(negotiation.id);
         }
       )
       .onEvent(
@@ -88,7 +88,7 @@ describe("Local - CN_C_01: Contract request scenarios", () => {
         "consumer",
         ContractNegotiationState.AGREED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.verify(negotiation.localId);
+          await negotiationService.verify(negotiation.id);
         }
       )
       .onEvent(
@@ -96,7 +96,7 @@ describe("Local - CN_C_01: Contract request scenarios", () => {
         "provider",
         ContractNegotiationState.VERIFIED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.finalize(negotiation.localId);
+          await negotiationService.finalize(negotiation.id);
         }
       )
       .onComplete(expectedNegotiationState(ContractNegotiationState.FINALIZED))

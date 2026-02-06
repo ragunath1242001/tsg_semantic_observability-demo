@@ -25,20 +25,17 @@ import { KubernetesService } from "../k8s/kubernetes.service.js";
 import { OauthClient } from "../model/client.dao.js";
 import { KeyDao } from "../model/keys.dao.js";
 import { RecoveryCode } from "../model/recovery-code.dao.js";
-import { OauthRole } from "../model/role.dao.js";
 import { TokenDao } from "../model/token.dao.js";
 import { TotpCredential } from "../model/totp-credential.dao.js";
 import { OauthUser } from "../model/user.dao.js";
 import { WebAuthnCredential } from "../model/webauthn-credential.dao.js";
-import { RolesService } from "../roles/roles.service.js";
+import { PermissionsService } from "../permissions/permissions.service.js";
 import { UsersService } from "../users/users.service.js";
 import { OauthService } from "./oauth.service.js";
 import { TokenService } from "./token.service.js";
 
 describe("Oauth", () => {
   let oauth: OauthService;
-  let rolesService: RolesService;
-  let userRole: OauthRole;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -48,7 +45,6 @@ describe("Oauth", () => {
         TypeOrmTestHelper.instance.module([
           OauthUser,
           OauthClient,
-          OauthRole,
           TokenDao,
           KeyDao,
           TotpCredential,
@@ -58,7 +54,6 @@ describe("Oauth", () => {
         TypeOrmModule.forFeature([
           OauthUser,
           OauthClient,
-          OauthRole,
           TokenDao,
           KeyDao,
           TotpCredential,
@@ -69,7 +64,7 @@ describe("Oauth", () => {
       providers: [
         OauthService,
         UsersService,
-        RolesService,
+        PermissionsService,
         TotpService,
         WebAuthnService,
         RecoveryCodeService,
@@ -95,24 +90,18 @@ describe("Oauth", () => {
 
     oauth = module.get<OauthService>(OauthService);
 
-    rolesService = module.get<RolesService>(RolesService);
-    userRole = await rolesService.createRole({
-      name: "user",
-      description: "User role"
-    });
-
     await module.get(UsersService).createUser({
       username: "Alice",
       password: "password",
       email: "alice@example.com",
-      roles: [userRole.name],
+      permissions: ["manage:*"],
       grants: ["authorization_code"]
     });
     await module.get(ClientsService).createClient({
       clientId: "test-client",
       clientSecret: "test-secret",
       secretName: "test-secret",
-      roles: [userRole.name],
+      permissions: ["manage:*"],
       grants: [
         "password",
         "refresh_token",
@@ -288,12 +277,12 @@ describe("Oauth", () => {
         undefined,
         undefined,
         {
-          id: 1,
+          id: "1",
           username: "Alice",
           email: "alice@example.com",
-          roles: [userRole],
+          permissions: ["manage:sso.user"],
           grants: ["authorization_code"]
-        } as OauthUser
+        } as unknown as OauthUser
       );
       expect(response.redirect).toHaveBeenCalled();
       expect(response.status).not.toHaveBeenCalled();
@@ -329,12 +318,12 @@ describe("Oauth", () => {
           undefined,
           undefined,
           {
-            id: 1,
+            id: "1",
             username: "Alice",
             email: "alice@example.com",
-            roles: [userRole],
+            permissions: ["manage:sso.user"],
             grants: ["authorization_code"]
-          } as OauthUser
+          } as unknown as OauthUser
         )
       ).rejects.toThrow("Invalid redirect uri");
       expect(response.redirect).not.toHaveBeenCalled();
@@ -396,7 +385,7 @@ describe("Oauth", () => {
       );
       await oauth["tokenService"]["tokenRepository"].update(
         { refreshToken: token.refresh_token },
-        { userId: null as unknown as number }
+        { userId: null as unknown as string }
       );
       const misconfiguredRefreshRequest = plainToInstance(RefreshTokenRequest, {
         grant_type: "refresh_token",

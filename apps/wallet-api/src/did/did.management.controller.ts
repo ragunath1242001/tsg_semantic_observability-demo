@@ -9,29 +9,24 @@ import {
   Post,
   Put
 } from "@nestjs/common";
-import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination,
   validationPipe
 } from "@tsg-dsp/common-api";
 import {
+  Action,
   ApiConflictResponseDefault,
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault,
   DIDDocumentDto,
+  Resource,
   ServiceDto
 } from "@tsg-dsp/common-dtos";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { DIDDocument } from "did-resolver";
 
 import { DidServiceConfig } from "../config.js";
@@ -40,14 +35,12 @@ import { DidServiceConfigDto } from "./did.schemas.js";
 import { DidService } from "./did.service.js";
 
 @Controller("management/did")
-@Roles(AppRole.VIEW_DID)
+@Requires(Action.READ, Resource.W_DID)
 @ApiTags("Management DID")
-@ApiOAuth2([AppRole.VIEW_DID, AppRole.READONLY_USER])
 export class DIDManagementController {
   constructor(private readonly didService: DidService) {}
 
   @Get()
-  @Roles([AppRole.VIEW_DID, AppRole.READONLY_USER])
   @ApiOperation({
     summary: "Retrieve DID document",
     description: "Retrieves the current DID document for this wallet"
@@ -60,7 +53,6 @@ export class DIDManagementController {
   }
 
   @Get("services")
-  @Roles([AppRole.VIEW_DID, AppRole.READONLY_USER])
   @UsePagination()
   @ApiOperation({
     summary: "Retrieve DID services",
@@ -86,6 +78,7 @@ export class DIDManagementController {
   @ApiOkResponse({ type: ServiceDto })
   @ApiConflictResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.CREATE, Resource.W_DID)
   async addService(
     @Body(validationPipe) service: DidServiceConfig
   ): Promise<DIDService> {
@@ -102,6 +95,7 @@ export class DIDManagementController {
   @ApiOkResponse({ type: ServiceDto })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.UPDATE, Resource.W_DID)
   async updateService(
     @Param("id") id: string,
     @Body(validationPipe)
@@ -119,6 +113,7 @@ export class DIDManagementController {
   @ApiOkResponse()
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.DELETE, Resource.W_DID)
   async deleteService(@Param("id") id: string): Promise<void> {
     return await this.didService.deleteService(id);
   }

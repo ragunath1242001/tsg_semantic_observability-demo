@@ -17,7 +17,7 @@ export class LogFilterDto {
 }
 
 export interface LogEntry {
-  identifier?: number;
+  id?: number;
   date: Date;
   remoteParty: string;
   transferId: string;

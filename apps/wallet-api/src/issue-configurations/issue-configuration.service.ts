@@ -73,7 +73,9 @@ export class IssueConfigurationService {
         HttpStatus.CONFLICT
       );
     }
-    return await this.issueConfigurationRepository.save(config);
+    return await this.issueConfigurationRepository.save(
+      this.issueConfigurationRepository.create(config)
+    );
   }
 
   async updateIssueConfiguration(
@@ -81,10 +83,12 @@ export class IssueConfigurationService {
     config: IssueConfigurationConfig
   ): Promise<IssueConfiguration> {
     if (await this.issueConfigurationRepository.existsBy({ id: config.id })) {
-      return await this.issueConfigurationRepository.save({
-        ...config,
-        id: id
-      });
+      return await this.issueConfigurationRepository.save(
+        this.issueConfigurationRepository.create({
+          ...config,
+          id: id
+        })
+      );
     } else {
       throw new AppError(
         `Issue configuration with id ${config.id} does not exists`,

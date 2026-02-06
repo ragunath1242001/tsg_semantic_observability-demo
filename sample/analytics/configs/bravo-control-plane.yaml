@@ -23,7 +23,6 @@ auth:
     kid: bravo-control-plane-key-1767782797384
     alg: ES256
     use: sig
-  rolePath: "$.roles[*]"
   redirectURL: http://localhost:3651/
 
 runtime:

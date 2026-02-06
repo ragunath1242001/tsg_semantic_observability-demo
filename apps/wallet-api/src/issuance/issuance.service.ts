@@ -172,13 +172,15 @@ export class IssuanceService {
     } else {
       credentialSubject = offerRequest.credentialSubject;
     }
-    const offer = await this.issuanceRepository.save({
-      preAuthorizedCode: code,
-      holderId: offerRequest.holderId,
-      credentialType: offerRequest.credentialType,
-      revoked: false,
-      credentialSubject: credentialSubject
-    });
+    const offer = await this.issuanceRepository.save(
+      this.issuanceRepository.create({
+        preAuthorizedCode: code,
+        holderId: offerRequest.holderId,
+        credentialType: offerRequest.credentialType,
+        revoked: false,
+        credentialSubject: credentialSubject
+      })
+    );
 
     if (credentialSubject.email && this.config.email.enabled) {
       const emailParameters: TemplateParameters = {

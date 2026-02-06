@@ -15,33 +15,32 @@ import {
   Res
 } from "@nestjs/common";
 import {
-  ApiOAuth2,
   ApiOperation,
   ApiParam,
   ApiQuery,
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
-import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
+import { nonEmptyStringPipe, Requires } from "@tsg-dsp/common-api";
 import {
+  DataPlaneClientError,
   ITransferHandler,
   TransferClientService
 } from "@tsg-dsp/common-data-plane-api";
 import { AgreementDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   ApiForbiddenResponseDefault,
   MetadataDto,
+  Resource,
   TransferDto
 } from "@tsg-dsp/common-dtos";
 import { Request, Response } from "express";
 
-import { DataPlaneClientError } from "../utils/errors/error.js";
 import { HTTPTransferHandler } from "./http-transfer-handler.service.js";
 
 @ApiTags("Data Plane Management")
-@ApiOAuth2(["controlplane_dataplane"])
 @Controller("/management")
-@Roles("controlplane_dataplane")
 export class TransferManagementController {
   constructor(
     @Inject(ITransferHandler)
@@ -51,7 +50,7 @@ export class TransferManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("/transfers")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.DP_TRANSFER)
   @ApiOperation({ summary: "Get all transfers" })
   @ApiResponse({ status: HttpStatus.OK, type: [TransferDto] })
   @ApiForbiddenResponseDefault()
@@ -60,7 +59,7 @@ export class TransferManagementController {
   }
 
   @Get("/transfers/:id")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.DP_TRANSFER)
   @ApiOperation({ summary: "Get transfer by ID" })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiResponse({ status: HttpStatus.OK, type: TransferDto })
@@ -70,6 +69,7 @@ export class TransferManagementController {
   }
 
   @Get("/transfers/:id/metadata")
+  @Requires(Action.READ, Resource.DP_TRANSFER)
   @ApiOperation({ summary: "Get metadata of transfer by ID" })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiResponse({
@@ -84,6 +84,7 @@ export class TransferManagementController {
   }
 
   @Post("/transfers/:id/start")
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @ApiOperation({ summary: "Start a transfer by ID" })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiResponse({ status: HttpStatus.ACCEPTED })
@@ -95,6 +96,7 @@ export class TransferManagementController {
   }
 
   @Post("/transfers/:id/completion")
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @ApiOperation({ summary: "Complete a transfer by ID" })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiResponse({ status: HttpStatus.ACCEPTED })
@@ -106,6 +108,7 @@ export class TransferManagementController {
   }
 
   @Post("/transfers/:id/termination")
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @ApiOperation({ summary: "Terminate a transfer by ID" })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiQuery({ name: "code", type: String })
@@ -123,6 +126,7 @@ export class TransferManagementController {
   }
 
   @Post("/transfers/:id/suspension")
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @ApiOperation({ summary: "Suspend a transfer by ID" })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiQuery({ name: "code", type: String })

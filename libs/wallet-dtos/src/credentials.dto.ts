@@ -23,7 +23,7 @@ export class KeyInfo {
 }
 
 export interface TrustAnchorConfig {
-  identifier: string;
+  id: string;
   credentialTypes: string[];
 }
 

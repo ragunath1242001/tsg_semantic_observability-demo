@@ -8,26 +8,23 @@ import { vi } from "vitest";
 import { RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
 import { OauthClient } from "../model/client.dao.js";
-import { OauthRole } from "../model/role.dao.js";
 import { OauthUser } from "../model/user.dao.js";
-import { RolesService } from "../roles/roles.service.js";
+import { PermissionsService } from "../permissions/permissions.service.js";
 import { ClientsService } from "./clients.service.js";
 
 describe("ClientsService", () => {
   let clientsService: ClientsService;
-  let rolesService: RolesService;
-  let userRole: OauthRole;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([OauthClient, OauthRole, OauthUser]),
-        TypeOrmModule.forFeature([OauthClient, OauthRole, OauthUser])
+        TypeOrmTestHelper.instance.module([OauthClient, OauthUser]),
+        TypeOrmModule.forFeature([OauthClient, OauthUser])
       ],
       providers: [
         ClientsService,
-        RolesService,
+        PermissionsService,
         {
           provide: KubernetesService,
           useValue: {
@@ -42,11 +39,6 @@ describe("ClientsService", () => {
     }).compile();
 
     clientsService = module.get<ClientsService>(ClientsService);
-    rolesService = module.get<RolesService>(RolesService);
-    userRole = await rolesService.createRole({
-      name: "user",
-      description: "User role"
-    });
   });
 
   afterAll(async () => {
@@ -58,7 +50,7 @@ describe("ClientsService", () => {
       clientId: "test-client",
       clientSecret: "test-secret",
       secretName: "test-secret",
-      roles: [userRole.name],
+      permissions: ["manage:*"],
       grants: [
         "password",
         "refresh_token",
@@ -92,7 +84,7 @@ describe("ClientsService", () => {
       clientId: "updateable-client",
       clientSecret: "test-secret",
       secretName: "test-secret",
-      roles: [userRole.name],
+      permissions: ["manage:*"],
       grants: [
         "password",
         "refresh_token",
@@ -117,7 +109,7 @@ describe("ClientsService", () => {
 
   it("should throw error when updating a non-existent client", async () => {
     await expect(
-      clientsService.updateClient(999999, { name: "Non-existent" })
+      clientsService.updateClient("999999", { name: "Non-existent" })
     ).rejects.toThrow();
   });
 
@@ -127,7 +119,7 @@ describe("ClientsService", () => {
       clientId: "deletable-client",
       clientSecret: "test-secret",
       secretName: "test-secret",
-      roles: [userRole.name],
+      permissions: ["manage:*"],
       grants: [
         "password",
         "refresh_token",
@@ -149,6 +141,6 @@ describe("ClientsService", () => {
   });
 
   it("should throw error when deleting a non-existent client", async () => {
-    await expect(clientsService.deleteClient(999999)).rejects.toThrow();
+    await expect(clientsService.deleteClient("999999")).rejects.toThrow();
   });
 });

@@ -14,7 +14,7 @@ export async function CN_02_01(pipelineExecutor: PipelineExecutor) {
       "provider",
       ContractNegotiationState.REQUESTED,
       async ({ negotiation, negotiationService }) => {
-        await negotiationService.terminate(negotiation.localId);
+        await negotiationService.terminate(negotiation.id);
       }
     )
     .onEvent(
@@ -56,7 +56,7 @@ export async function CN_02_03(pipelineExecutor: PipelineExecutor) {
       "provider",
       ContractNegotiationState.REQUESTED,
       async ({ negotiation, negotiationService }) => {
-        await negotiationService.agree(negotiation.localId);
+        await negotiationService.agree(negotiation.id);
       }
     )
     .onEvent(
@@ -88,7 +88,7 @@ export async function CN_02_04(pipelineExecutor: PipelineExecutor) {
               })
             ]
           }),
-          negotiation.localId
+          negotiation.id
         );
       }
     )
@@ -121,7 +121,7 @@ export async function CN_02_05(pipelineExecutor: PipelineExecutor) {
               })
             ]
           }),
-          negotiation.localId
+          negotiation.id
         );
       }
     )
@@ -131,7 +131,7 @@ export async function CN_02_05(pipelineExecutor: PipelineExecutor) {
       ContractNegotiationState.OFFERED,
       async ({ negotiation, negotiationService }) => {
         setTimeout(() => {
-          negotiationService.terminate(negotiation.localId);
+          negotiationService.terminate(negotiation.id);
         }, 100);
       }
     )
@@ -164,7 +164,7 @@ export async function CN_02_06(pipelineExecutor: PipelineExecutor) {
               })
             ]
           }),
-          negotiation.localId
+          negotiation.id
         );
       }
     )
@@ -173,7 +173,7 @@ export async function CN_02_06(pipelineExecutor: PipelineExecutor) {
       "provider",
       ContractNegotiationState.ACCEPTED,
       async ({ negotiation, negotiationService }) => {
-        await negotiationService.terminate(negotiation.localId);
+        await negotiationService.terminate(negotiation.id);
       }
     )
     .onEvent(
@@ -194,7 +194,7 @@ export async function CN_02_07(pipelineExecutor: PipelineExecutor) {
       "provider",
       ContractNegotiationState.REQUESTED,
       async ({ negotiation, negotiationService }) => {
-        await negotiationService.agree(negotiation.localId);
+        await negotiationService.agree(negotiation.id);
       }
     )
     .onEvent(
@@ -202,7 +202,7 @@ export async function CN_02_07(pipelineExecutor: PipelineExecutor) {
       "provider",
       ContractNegotiationState.VERIFIED,
       async ({ negotiation, negotiationService }) => {
-        await negotiationService.terminate(negotiation.localId);
+        await negotiationService.terminate(negotiation.id);
       }
     )
     .onEvent(

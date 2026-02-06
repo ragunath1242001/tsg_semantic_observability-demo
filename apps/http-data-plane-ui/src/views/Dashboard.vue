@@ -186,7 +186,7 @@ onMounted(async () => {
     <template #content>
       <div v-if="state" class="flex flex-col gap-4">
         <FormField :label-width="3" label="Identifier">{{
-          state.identifier
+          state.id
         }}</FormField>
         <FormField :label-width="3" label="Type">{{
           state.details.dataplaneType

@@ -12,7 +12,6 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
@@ -20,15 +19,17 @@ import {
 } from "@nestjs/swagger";
 import {
   nonEmptyStringPipe,
-  Roles,
+  Requires,
   validateOrRejectSync,
   validationPipe
 } from "@tsg-dsp/common-api";
 import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   ApiForbiddenResponseDefault,
-  DataPlaneStateDto
+  DataPlaneStateDto,
+  Resource
 } from "@tsg-dsp/common-dtos";
 import {
   DatasetConfig,
@@ -42,9 +43,7 @@ import { DatasetItemDao } from "./dataplane.dao.js";
 import { DataPlaneService } from "./dataplane.service.js";
 
 @ApiTags("Data Plane Management")
-@ApiOAuth2(["controlplane_dataplane"])
 @Controller("/management")
-@Roles("controlplane_dataplane")
 export class DataPlaneManagementController {
   constructor(
     private readonly dataPlaneService: DataPlaneService,
@@ -53,7 +52,7 @@ export class DataPlaneManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("/state")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Get Data Plane state",
     description:
@@ -66,7 +65,7 @@ export class DataPlaneManagementController {
   }
 
   @Get("/catalog")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Get catalog",
     description: "Get the current catalog from the Control Plane."
@@ -78,7 +77,7 @@ export class DataPlaneManagementController {
   }
 
   @Get("/registry/addresses")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Get registry addresses",
     description: "Get the current registry addresses from the Control Plane."
@@ -98,7 +97,7 @@ export class DataPlaneManagementController {
   }
 
   @Get("/registry/catalog/:participantId")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Get participant catalog",
     description: "Get the catalog of a participant based on its participant ID."
@@ -112,6 +111,7 @@ export class DataPlaneManagementController {
   }
 
   @Post("/registry/refresh")
+  @Requires(Action.EXECUTE, Resource.HDP_DATAPLANE)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Refresh registry",
@@ -128,6 +128,7 @@ export class DataPlaneManagementController {
   }
 
   @Post("/refresh")
+  @Requires(Action.EXECUTE, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "(Re)register data plane",
     description:
@@ -141,7 +142,7 @@ export class DataPlaneManagementController {
   }
 
   @Get("/config")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Get dataset",
     description: "Get the current dataset configuration."
@@ -153,6 +154,7 @@ export class DataPlaneManagementController {
   }
 
   @Put("/config")
+  @Requires(Action.UPDATE, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Update dataset",
     description: "Update the current dataset configuration."
@@ -176,7 +178,7 @@ export class DataPlaneManagementController {
   }
 
   @Get("/datasets")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Get datasets",
     description: "Retrieve all datasets."
@@ -188,7 +190,7 @@ export class DataPlaneManagementController {
   }
 
   @Get("/datasets/:id")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Get dataset",
     description: "Retrieve a specific dataset by id."
@@ -200,6 +202,7 @@ export class DataPlaneManagementController {
   }
 
   @Post("/datasets")
+  @Requires(Action.CREATE, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Create dataset",
     description: "Create a new dataset."
@@ -214,6 +217,7 @@ export class DataPlaneManagementController {
   }
 
   @Put("/datasets/:id")
+  @Requires(Action.UPDATE, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Update dataset",
     description: "Update an existing dataset by id."
@@ -229,6 +233,7 @@ export class DataPlaneManagementController {
   }
 
   @Delete("/datasets/:id")
+  @Requires(Action.DELETE, Resource.HDP_DATAPLANE)
   @ApiOperation({
     summary: "Delete dataset",
     description: "Delete an existing dataset by id."

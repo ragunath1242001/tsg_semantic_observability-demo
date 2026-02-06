@@ -29,7 +29,7 @@ export class TotpService {
   ) {}
   private readonly logger: Logger = new Logger(this.constructor.name);
 
-  async verifyAnyCredential(userId: number, token: string): Promise<boolean> {
+  async verifyAnyCredential(userId: string, token: string): Promise<boolean> {
     const credentials = await this.credentialRepository.find({
       where: { userId, isVerified: true }
     });
@@ -244,7 +244,7 @@ export class TotpService {
     };
   }
 
-  async deleteTotpCredential(request: Request, credentialId: number) {
+  async deleteTotpCredential(request: Request, credentialId: string) {
     const user = requireAuthenticatedUser(request, this.logger);
     await this.credentialRepository.delete({
       userId: user.id,
@@ -420,7 +420,7 @@ export class TotpService {
   }
 
   private async createCredential(
-    userId: number,
+    userId: string,
     secret: string,
     deviceName?: string
   ): Promise<TotpCredential> {
@@ -436,8 +436,8 @@ export class TotpService {
   }
 
   private async verifyCredential(
-    userId: number,
-    credentialId: number,
+    userId: string,
+    credentialId: string,
     token: string
   ): Promise<boolean> {
     const credential = await this.credentialRepository.findOne({
@@ -460,7 +460,7 @@ export class TotpService {
     return false;
   }
 
-  private async getUserCredentials(userId: number): Promise<TotpCredential[]> {
+  private async getUserCredentials(userId: string): Promise<TotpCredential[]> {
     return await this.credentialRepository.find({
       where: { userId },
       order: { createdDate: "DESC" }

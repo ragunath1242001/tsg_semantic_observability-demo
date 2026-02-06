@@ -4,7 +4,6 @@ import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 import {
   IsEnum,
   IsIn,
-  IsNumber,
   IsOptional,
   IsString,
   ValidateNested
@@ -35,11 +34,11 @@ export enum ConstraintType {
 
 @Exclude()
 export abstract class ConstraintModel {
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @Expose()
   @ApiPropertyOptional()
-  id?: number;
+  id?: string;
 
   @IsEnum(ConstraintType)
   @Expose()

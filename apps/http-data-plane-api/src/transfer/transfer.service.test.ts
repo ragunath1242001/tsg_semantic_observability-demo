@@ -288,7 +288,7 @@ describe.each(["Authorization"])(
           "did:web:localhost",
           "urn:uuid:test"
         );
-        transferProcessId = result.identifier;
+        transferProcessId = result.id;
         authorization =
           result.dataAddress?.properties?.find(
             ({ name }: { name: string }) => name === authorizationHeaderConfig
@@ -478,7 +478,7 @@ describe.each(["Authorization"])(
           "did:web:localhost",
           "urn:uuid:test"
         );
-        transferProcessId = result.identifier;
+        transferProcessId = result.id;
       });
 
       it("Transfer execution on requested", async () => {
@@ -614,7 +614,7 @@ describe.each(["Authorization"])(
         ).mockResolvedValueOnce(null);
 
         const negotiation = {
-          localId: "test",
+          id: "test",
           remoteId: "test",
           events: [],
           remoteParty: "did:web:test",
@@ -688,7 +688,7 @@ describe.each(["Authorization"])(
         ).mockResolvedValueOnce(null);
 
         const negotiation = {
-          localId: "test",
+          id: "test",
           remoteId: "test",
           events: [],
           remoteParty: "did:web:test",

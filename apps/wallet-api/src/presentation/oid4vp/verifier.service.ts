@@ -26,7 +26,7 @@ export class OID4VPVerifierService {
   ): Promise<AuthorizationRequestDao> {
     const authorizationRequest =
       await this.authorizationRequestRepository.findOneBy({
-        identifier: id
+        id: id
       });
     if (!authorizationRequest) {
       throw new AppError(
@@ -38,13 +38,13 @@ export class OID4VPVerifierService {
   }
 
   async createAuthorizationRequest(dcqlQuery: DcqlQuery): Promise<string> {
-    const id = crypto.randomUUID();
-    await this.authorizationRequestRepository.save({
-      identifier: id,
-      nonce: crypto.randomBytes(48).toString("hex"),
-      dcqlQuery: dcqlQuery
-    });
-    return `oid4vp://?client_id=${this.serverConfig.publicAddress}&request_uri=${this.serverConfig.publicAddress}/api/oid4vp/ar/${id}`;
+    const authorizationRequest = await this.authorizationRequestRepository.save(
+      this.authorizationRequestRepository.create({
+        nonce: crypto.randomBytes(48).toString("hex"),
+        dcqlQuery: dcqlQuery
+      })
+    );
+    return `oid4vp://?client_id=${this.serverConfig.publicAddress}&request_uri=${this.serverConfig.publicAddress}/api/oid4vp/ar/${authorizationRequest.id}`;
   }
 
   async getAuthorizationRequest(
@@ -52,7 +52,7 @@ export class OID4VPVerifierService {
   ): Promise<OID4VPAuthorizationRequest> {
     const authorizationRequest = await this.getAuthorizationRequestFromDB(id);
     return {
-      state: authorizationRequest.identifier,
+      state: authorizationRequest.id,
       nonce: authorizationRequest.nonce,
       dcql_query: authorizationRequest.dcqlQuery,
       client_id: `${this.serverConfig.publicAddress}`,

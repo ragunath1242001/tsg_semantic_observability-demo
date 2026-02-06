@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 @Entity()
 export class DatasetDao {
   @PrimaryColumn({ type: String })
-  identifier!: string;
+  id!: string;
 
   @Column("simple-json")
   dataset!: DatasetDto;

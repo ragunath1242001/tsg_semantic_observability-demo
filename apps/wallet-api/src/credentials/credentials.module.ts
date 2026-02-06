@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AuthModule } from "@tsg-dsp/common-api";
+import { AbacModule, AuthModule } from "@tsg-dsp/common-api";
+import { Resource } from "@tsg-dsp/common-dtos";
 
 import { DidModule } from "../did/did.module.js";
 import { IssueConfigurationModule } from "../issue-configurations/issue-configuration.module.js";
@@ -28,7 +29,13 @@ import { GaiaXService } from "./gaiax/gaiax.service.js";
     CredentialsManagementController,
     GaiaXManagementController
   ],
-  providers: [CredentialsService, GaiaXService],
+  providers: [
+    ...AbacModule.createOwnershipProviders([
+      { entity: CredentialDao, resourceType: Resource.W_CREDENTIAL }
+    ]),
+    CredentialsService,
+    GaiaXService
+  ],
   exports: [CredentialsService, GaiaXService]
 })
 export class CredentialsModule {}

@@ -183,7 +183,7 @@ describe("Dataplane Service", () => {
     it("Get state", async () => {
       await dataPlaneService.initialized;
       const state = await dataPlaneService.getStateDto();
-      expect(state.identifier).toBeDefined();
+      expect(state.id).toBeDefined();
       expect(state.details).toBeDefined();
     });
     it("Update config", async () => {

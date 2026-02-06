@@ -1,15 +1,11 @@
-import { AuthorizationRequest } from "@tsg-dsp/common-api";
+import { AuthorizationRequest, MetaEntity } from "@tsg-dsp/common-api";
 import { DcqlQuery } from "@tsg-dsp/common-dtos";
-import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 
-import { MetaEntity } from "./common.dao.js";
 import { OauthUser } from "./user.dao.js";
 
 @Entity()
 export class AuthorizationRequestDao extends MetaEntity {
-  @PrimaryColumn({ type: String })
-  identifier!: string;
-
   @Column({ type: "simple-json" })
   dcqlQuery!: DcqlQuery;
 

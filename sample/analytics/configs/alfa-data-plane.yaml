@@ -23,7 +23,6 @@ auth:
     kid: alfa-analytics-data-plane-key-1767782614226
     alg: ES256
     use: sig
-  rolePath: "$.roles[*]"
   redirectURL: http://localhost:3552/
 
 controlPlane:

@@ -113,7 +113,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
           await expect(
-            transferService.complete(transfer.localId, true)
+            transferService.complete(transfer.id, true)
           ).rejects.toThrow("cannot transition from REQUESTED to COMPLETED");
 
           const dsp: DspClientService = transferService["dsp"];
@@ -122,7 +122,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
               `${transfer.remoteAddress}/completion`,
               new TransferCompletionMessage({
                 providerPid: transfer.remoteId!,
-                consumerPid: transfer.localId
+                consumerPid: transfer.id
               }),
               transfer.remoteParty
             )
@@ -149,7 +149,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
           await expect(
-            transferService.suspend(transfer.localId, "Test suspension", true)
+            transferService.suspend(transfer.id, "Test suspension", true)
           ).rejects.toThrow("cannot transition from REQUESTED to SUSPENDED");
 
           const dsp: DspClientService = transferService["dsp"];
@@ -158,7 +158,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
               `${transfer.remoteAddress}/suspension`,
               new TransferSuspensionMessage({
                 providerPid: transfer.remoteId!,
-                consumerPid: transfer.localId,
+                consumerPid: transfer.id,
                 reason: [new Multilanguage("Test suspension")]
               }),
               transfer.remoteParty
@@ -186,7 +186,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
           await transferService.start(
-            transfer.localId,
+            transfer.id,
             {
               endpoint: "http://dataplane.test",
               properties: [
@@ -205,11 +205,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         "consumer",
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
-          await transferService.suspend(
-            transfer.localId,
-            "Test suspension",
-            true
-          );
+          await transferService.suspend(transfer.id, "Test suspension", true);
         }
       )
       .onEvent(
@@ -218,7 +214,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         TransferState.SUSPENDED,
         async ({ transfer, transferService }) => {
           await expect(
-            transferService.complete(transfer.localId, true)
+            transferService.complete(transfer.id, true)
           ).rejects.toThrow("cannot transition from SUSPENDED to COMPLETED");
 
           const dsp: DspClientService = transferService["dsp"];
@@ -227,7 +223,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
               `${transfer.remoteAddress}/completion`,
               new TransferCompletionMessage({
                 providerPid: transfer.remoteId!,
-                consumerPid: transfer.localId
+                consumerPid: transfer.id
               }),
               transfer.remoteParty
             )
@@ -254,7 +250,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
           await transferService.start(
-            transfer.localId,
+            transfer.id,
             {
               endpoint: "http://dataplane.test",
               properties: [
@@ -274,7 +270,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
           await transferService.terminate(
-            transfer.localId,
+            transfer.id,
             "500",
             "Test suspension",
             true
@@ -287,7 +283,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         TransferState.TERMINATED,
         async ({ transfer, transferService }) => {
           await expect(
-            transferService.start(transfer.localId, undefined, true)
+            transferService.start(transfer.id, undefined, true)
           ).rejects.toThrow("cannot transition from TERMINATED to STARTED");
 
           const dsp: DspClientService = transferService["dsp"];
@@ -296,7 +292,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
               `${transfer.remoteAddress}/start`,
               new TransferStartMessage({
                 providerPid: transfer.remoteId!,
-                consumerPid: transfer.localId
+                consumerPid: transfer.id
               }),
               transfer.remoteParty
             )
@@ -323,7 +319,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
           await transferService.start(
-            transfer.localId,
+            transfer.id,
             {
               endpoint: "http://dataplane.test",
               properties: [
@@ -343,7 +339,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
           await transferService.terminate(
-            transfer.localId,
+            transfer.id,
             "500",
             "Test suspension",
             true
@@ -356,7 +352,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
         TransferState.TERMINATED,
         async ({ transfer, transferService }) => {
           await expect(
-            transferService.suspend(transfer.localId, "Test suspension", true)
+            transferService.suspend(transfer.id, "Test suspension", true)
           ).rejects.toThrow("cannot transition from TERMINATED to SUSPENDED");
 
           const dsp: DspClientService = transferService["dsp"];
@@ -365,7 +361,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
               `${transfer.remoteAddress}/suspension`,
               new TransferSuspensionMessage({
                 providerPid: transfer.remoteId!,
-                consumerPid: transfer.localId,
+                consumerPid: transfer.id,
                 reason: [new Multilanguage("Test suspension")]
               }),
               transfer.remoteParty

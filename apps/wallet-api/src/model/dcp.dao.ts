@@ -1,9 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-import { MetaEntity } from "./common.dao.js";
+import { TimestampEntity } from "./common.dao.js";
 
 @Entity()
-export class SIToken extends MetaEntity {
+export class SIToken extends TimestampEntity {
   @PrimaryGeneratedColumn("increment")
   id!: number;
 

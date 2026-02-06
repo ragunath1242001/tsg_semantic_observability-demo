@@ -1,20 +1,10 @@
 import { CredentialSubject } from "@tsg-dsp/common-dsp";
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryColumn,
-  PrimaryGeneratedColumn
-} from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 
 import { MetaEntity } from "./common.dao.js";
 
 @Entity()
 export class CredentialIssuance extends MetaEntity {
-  @PrimaryGeneratedColumn("uuid")
-  id!: string;
-
   @Column({ type: String, unique: true })
   preAuthorizedCode!: string;
 

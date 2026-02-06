@@ -88,7 +88,7 @@ export async function createTestVerifiableCredential(
         typ: "vc+jwt",
         jwt: await generateSignedJwt(credential, testDidId, {
           key: {
-            identifier: publicKeyMultibase,
+            id: publicKeyMultibase,
             signingKey: privateJwk,
             algorithm: "EdDSA"
           },
@@ -103,7 +103,7 @@ export async function createTestVerifiableCredential(
     case "enveloped": {
       const vpJwt = await generateSignedJwt(credential, testDidId, {
         key: {
-          identifier: publicKeyMultibase,
+          id: publicKeyMultibase,
           signingKey: privateJwk,
           algorithm: "EdDSA"
         },
@@ -124,7 +124,7 @@ export async function createTestVerifiableCredential(
         typ: "jwt_vc",
         jwt: await generateSignedJwt({ vc: credential }, testDidId, {
           key: {
-            identifier: publicKeyMultibase,
+            id: publicKeyMultibase,
             signingKey: privateJwk,
             algorithm: "EdDSA"
           },
@@ -188,7 +188,7 @@ export async function createTestVerifiablePresentation(
           testDidId,
           {
             key: {
-              identifier: publicKeyMultibase,
+              id: publicKeyMultibase,
               signingKey: privateJwk,
               algorithm: "EdDSA"
             },
@@ -207,7 +207,7 @@ export async function createTestVerifiablePresentation(
         testDidId,
         {
           key: {
-            identifier: publicKeyMultibase,
+            id: publicKeyMultibase,
             signingKey: privateJwk,
             algorithm: "EdDSA"
           },
@@ -231,7 +231,7 @@ export async function createTestVerifiablePresentation(
           testDidId,
           {
             key: {
-              identifier: publicKeyMultibase,
+              id: publicKeyMultibase,
               signingKey: privateJwk,
               algorithm: "EdDSA"
             },

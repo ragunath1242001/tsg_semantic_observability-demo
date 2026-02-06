@@ -106,7 +106,7 @@ describe("DataPlaneController", () => {
         catalogSynchronization: "pull",
         role: "consumer"
       });
-      expect(result.identifier).toContain("urn:uuid:");
+      expect(result.id).toContain("urn:uuid:");
     });
   });
 });

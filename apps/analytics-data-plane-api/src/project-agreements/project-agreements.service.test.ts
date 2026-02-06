@@ -53,7 +53,8 @@ describe("ProjectAgreementsService", () => {
   let transferService: TransferClientService;
   let transferHandler: AnalyticsTransferHandler;
   let dataplaneService: DataPlaneService;
-  let datasetRepository: Repository<DatasetDao>;
+  let datasetRepo: Repository<DatasetDao>;
+  let agreementRepo: Repository<ProjectAgreementDao>;
 
   const sampleProjectAgreementDto: ProjectAgreementDto = {
     id: "test-project-id",
@@ -233,17 +234,16 @@ describe("ProjectAgreementsService", () => {
     transferService = module.get(TransferClientService);
     transferHandler = module.get(ITransferHandler);
     dataplaneService = module.get(DataPlaneService);
-    datasetRepository = module.get("DatasetDaoRepository");
+    datasetRepo = module.get("DatasetDaoRepository");
+    agreementRepo = module.get("ProjectAgreementDaoRepository");
   });
 
   afterEach(async () => {
     // Clear repositories after each test
-    const projectAgreementRepo =
-      projectAgreementsService["projectAgreementsRepository"];
     const callbackRepo = projectAgreementsService["callbackRepository"];
     await callbackRepo.clear();
-    await projectAgreementRepo.clear();
-    await datasetRepository.clear();
+    await agreementRepo.clear();
+    await datasetRepo.clear();
   });
 
   afterAll(async () => {
@@ -263,15 +263,18 @@ describe("ProjectAgreementsService", () => {
 
     it("should return all project agreements", async () => {
       // Create a test project agreement
-      await projectAgreementsService["projectAgreementsRepository"].save({
-        projectId: "test-project-1",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "WAITING_FOR_SIGNATURES",
-        signatures: {},
-        callbacks: [],
-        datasets: []
-      });
+      await agreementRepo.save(
+        agreementRepo.create({
+          id: "1",
+          projectId: "test-project-1",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "WAITING_FOR_SIGNATURES",
+          signatures: {},
+          callbacks: [],
+          datasets: []
+        })
+      );
 
       const result = await projectAgreementsService.findAll();
       expect(result).toHaveLength(1);
@@ -287,21 +290,24 @@ describe("ProjectAgreementsService", () => {
 
     it("should return all project agreements as DTOs with mapped datasets", async () => {
       // Create a test dataset first
-      const dataset = await datasetRepository.save({
-        identifier: "urn:uuid:test-dataset",
+      const dataset = await datasetRepo.save({
+        id: "urn:uuid:test-dataset",
         dataset: sampleDataset
       });
 
       // Create a test project agreement with datasets
-      await projectAgreementsService["projectAgreementsRepository"].save({
-        projectId: "test-project-2",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "FINALIZED",
-        signatures: {},
-        callbacks: [],
-        datasets: [dataset]
-      });
+      await agreementRepo.save(
+        agreementRepo.create({
+          id: "2",
+          projectId: "test-project-2",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "FINALIZED",
+          signatures: {},
+          callbacks: [],
+          datasets: [dataset]
+        })
+      );
 
       const result = await projectAgreementsService.findAllDto();
       expect(result).toHaveLength(1);
@@ -315,17 +321,18 @@ describe("ProjectAgreementsService", () => {
 
   describe("findById", () => {
     it("should find a project agreement by ID", async () => {
-      const agreement = await projectAgreementsService[
-        "projectAgreementsRepository"
-      ].save({
-        projectId: "test-project-3",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "WAITING_FOR_SIGNATURES",
-        signatures: {},
-        callbacks: [],
-        datasets: []
-      });
+      const agreement = await agreementRepo.save(
+        agreementRepo.create({
+          id: "3",
+          projectId: "test-project-3",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "WAITING_FOR_SIGNATURES",
+          signatures: {},
+          callbacks: [],
+          datasets: []
+        })
+      );
 
       const result = await projectAgreementsService.findById(agreement.id);
       expect(result).toBeDefined();
@@ -333,7 +340,7 @@ describe("ProjectAgreementsService", () => {
     });
 
     it("should throw an error when project agreement is not found", async () => {
-      await expect(projectAgreementsService.findById(99999)).rejects.toThrow(
+      await expect(projectAgreementsService.findById("99999")).rejects.toThrow(
         "Project Agreement with id 99999 not found"
       );
     });
@@ -341,15 +348,18 @@ describe("ProjectAgreementsService", () => {
 
   describe("findByProjectId", () => {
     it("should find a project agreement by project ID", async () => {
-      await projectAgreementsService["projectAgreementsRepository"].save({
-        projectId: "test-project-4",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "WAITING_FOR_SIGNATURES",
-        signatures: {},
-        callbacks: [],
-        datasets: []
-      });
+      await agreementRepo.save(
+        agreementRepo.create({
+          id: "4",
+          projectId: "test-project-4",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "WAITING_FOR_SIGNATURES",
+          signatures: {},
+          callbacks: [],
+          datasets: []
+        })
+      );
 
       const result =
         await projectAgreementsService.findByProjectId("test-project-4");
@@ -368,16 +378,19 @@ describe("ProjectAgreementsService", () => {
 
   describe("findByHash", () => {
     it("should find a project agreement by hash", async () => {
-      await projectAgreementsService["projectAgreementsRepository"].save({
-        projectId: "test-project-5",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "FINALIZED",
-        signatures: {},
-        hash: "test-hash-123",
-        callbacks: [],
-        datasets: []
-      });
+      await agreementRepo.save(
+        agreementRepo.create({
+          id: "5",
+          projectId: "test-project-5",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "FINALIZED",
+          signatures: {},
+          hash: "test-hash-123",
+          callbacks: [],
+          datasets: []
+        })
+      );
 
       const result = await projectAgreementsService.findByHash("test-hash-123");
       expect(result).toBeDefined();
@@ -459,23 +472,23 @@ describe("ProjectAgreementsService", () => {
       );
 
       // Create dataset first to avoid foreign key constraint
-      await datasetRepository.save({
-        identifier: "urn:uuid:test-dataset",
+      await datasetRepo.save({
+        id: "urn:uuid:test-dataset",
         dataset: sampleDataset
       });
 
-      const agreement = await projectAgreementsService[
-        "projectAgreementsRepository"
-      ].save({
-        projectId: "test-project-6",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "FINALIZED",
-        signatures: {},
-        hash: "finalized-hash",
-        callbacks: [],
-        datasets: []
-      });
+      const agreement = await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-6",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "FINALIZED",
+          signatures: {},
+          hash: "finalized-hash",
+          callbacks: [],
+          datasets: []
+        })
+      );
 
       await projectAgreementsService.linkDatasetToProjectAgreement(
         agreement.id,
@@ -485,7 +498,7 @@ describe("ProjectAgreementsService", () => {
       // Verify the dataset was linked
       const updated = await projectAgreementsService.findById(agreement.id);
       expect(updated.datasets).toHaveLength(1);
-      expect(updated.datasets[0].identifier).toBe("urn:uuid:test-dataset");
+      expect(updated.datasets[0].id).toBe("urn:uuid:test-dataset");
 
       // Verify the dataset policy was updated
       expect(dataplaneService.updateDataset).toHaveBeenCalled();
@@ -496,23 +509,23 @@ describe("ProjectAgreementsService", () => {
         "did:web:localhost"
       );
       // Create dataset first to avoid foreign key constraint
-      await datasetRepository.save({
-        identifier: "urn:uuid:test-dataset",
+      await datasetRepo.save({
+        id: "urn:uuid:test-dataset",
         dataset: sampleDataset
       });
 
-      const agreement = await projectAgreementsService[
-        "projectAgreementsRepository"
-      ].save({
-        projectId: "test-project-6",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "FINALIZED",
-        signatures: {},
-        hash: "finalized-hash",
-        callbacks: [],
-        datasets: []
-      });
+      const agreement = await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-6",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "FINALIZED",
+          signatures: {},
+          hash: "finalized-hash",
+          callbacks: [],
+          datasets: []
+        })
+      );
 
       await projectAgreementsService.linkDatasetToProjectAgreement(
         agreement.id,
@@ -530,17 +543,17 @@ describe("ProjectAgreementsService", () => {
     });
 
     it("should throw an error if project agreement is not finalized", async () => {
-      const agreement = await projectAgreementsService[
-        "projectAgreementsRepository"
-      ].save({
-        projectId: "test-project-7",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "WAITING_FOR_SIGNATURES",
-        signatures: {},
-        callbacks: [],
-        datasets: []
-      });
+      const agreement = await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-7",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "WAITING_FOR_SIGNATURES",
+          signatures: {},
+          callbacks: [],
+          datasets: []
+        })
+      );
 
       await expect(
         projectAgreementsService.linkDatasetToProjectAgreement(
@@ -556,23 +569,23 @@ describe("ProjectAgreementsService", () => {
   describe("unlinkDatasetFromProjectAgreement", () => {
     it("should unlink a dataset from a finalized project agreement", async () => {
       // Create dataset first
-      const dataset = await datasetRepository.save({
-        identifier: "urn:uuid:test-dataset",
+      const dataset = await datasetRepo.save({
+        id: "urn:uuid:test-dataset",
         dataset: sampleDataset
       });
 
-      const agreement = await projectAgreementsService[
-        "projectAgreementsRepository"
-      ].save({
-        projectId: "test-project-8",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "FINALIZED",
-        signatures: {},
-        hash: "finalized-hash-2",
-        callbacks: [],
-        datasets: [dataset]
-      });
+      const agreement = await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-8",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "FINALIZED",
+          signatures: {},
+          hash: "finalized-hash-2",
+          callbacks: [],
+          datasets: [dataset]
+        })
+      );
 
       await projectAgreementsService.unlinkDatasetFromProjectAgreement(
         agreement.id,
@@ -588,17 +601,17 @@ describe("ProjectAgreementsService", () => {
     });
 
     it("should throw an error if project agreement is not finalized", async () => {
-      const agreement = await projectAgreementsService[
-        "projectAgreementsRepository"
-      ].save({
-        projectId: "test-project-9",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "WAITING_FOR_SIGNATURES",
-        signatures: {},
-        callbacks: [],
-        datasets: []
-      });
+      const agreement = await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-9",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "WAITING_FOR_SIGNATURES",
+          signatures: {},
+          callbacks: [],
+          datasets: []
+        })
+      );
 
       await expect(
         projectAgreementsService.unlinkDatasetFromProjectAgreement(
@@ -661,23 +674,23 @@ describe("ProjectAgreementsService", () => {
         mockSignature
       );
 
-      const agreement = await projectAgreementsService[
-        "projectAgreementsRepository"
-      ].save({
-        projectId: "test-project-10",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:remoteparty.com",
-        status: "SIGNATURE_REQUESTED",
-        signatures: {},
-        callbacks: [
-          {
-            participantId: "did:web:remoteparty.com",
-            url: "http://localhost:3000/project-agreements/signature-callback",
-            authToken: "test-callback-token"
-          } as ProjectAgreementCallbackDao
-        ],
-        datasets: []
-      });
+      const agreement = await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-10",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:remoteparty.com",
+          status: "SIGNATURE_REQUESTED",
+          signatures: {},
+          callbacks: [
+            {
+              participantId: "did:web:remoteparty.com",
+              url: "http://localhost:3000/project-agreements/signature-callback",
+              authToken: "test-callback-token"
+            } as ProjectAgreementCallbackDao
+          ],
+          datasets: []
+        })
+      );
 
       await projectAgreementsService.signProjectAgreement(agreement.id);
 
@@ -702,17 +715,17 @@ describe("ProjectAgreementsService", () => {
         mockSignature
       );
 
-      const agreement = await projectAgreementsService[
-        "projectAgreementsRepository"
-      ].save({
-        projectId: "test-project-11",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:remoteparty.com",
-        status: "SIGNATURE_REQUESTED",
-        signatures: {},
-        callbacks: [], // No callbacks
-        datasets: []
-      });
+      const agreement = await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-11",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:remoteparty.com",
+          status: "SIGNATURE_REQUESTED",
+          signatures: {},
+          callbacks: [], // No callbacks
+          datasets: []
+        })
+      );
 
       await expect(
         projectAgreementsService.signProjectAgreement(agreement.id)
@@ -763,7 +776,7 @@ describe("ProjectAgreementsService", () => {
         negotiationService,
         "requestDefaultNegotiation"
       ).mockResolvedValue({
-        localId: "mock-negotiation-id",
+        id: "mock-negotiation-id",
         agreement: {
           "@id": "mock-agreement-id",
           "@type": "odrl:Agreement"
@@ -771,7 +784,7 @@ describe("ProjectAgreementsService", () => {
       } as never);
 
       vi.spyOn(transferService, "requestTransfer").mockResolvedValue({
-        localId: "mock-transfer-id",
+        id: "mock-transfer-id",
         "@id": "mock-transfer-urn",
         consumerPid: "mock-consumer-pid"
       } as never);
@@ -793,23 +806,23 @@ describe("ProjectAgreementsService", () => {
         }
       );
 
-      const agreement = await projectAgreementsService[
-        "projectAgreementsRepository"
-      ].save({
-        projectId: "test-project-12",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "WAITING_FOR_SIGNATURES",
-        signatures: {},
-        callbacks: [
-          {
-            participantId: "did:web:remoteparty.com",
-            url: "http://remote-callback-url",
-            authToken: "test-callback-token"
-          } as ProjectAgreementCallbackDao
-        ],
-        datasets: []
-      });
+      const agreement = await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-12",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "WAITING_FOR_SIGNATURES",
+          signatures: {},
+          callbacks: [
+            {
+              participantId: "did:web:remoteparty.com",
+              url: "http://remote-callback-url",
+              authToken: "test-callback-token"
+            } as ProjectAgreementCallbackDao
+          ],
+          datasets: []
+        })
+      );
 
       const signatureResponse: SignatureResponseMessage = {
         participantId: "did:web:remoteparty.com",
@@ -841,21 +854,23 @@ describe("ProjectAgreementsService", () => {
       // Wait for any pending async operations from previous test
       await new Promise((resolve) => setTimeout(resolve, 50));
 
-      await projectAgreementsService["projectAgreementsRepository"].save({
-        projectId: "test-project-13",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "WAITING_FOR_SIGNATURES",
-        signatures: {},
-        callbacks: [
-          {
-            participantId: "did:web:remoteparty.com",
-            url: "http://remote-callback-url",
-            authToken: "correct-token"
-          } as ProjectAgreementCallbackDao
-        ],
-        datasets: []
-      });
+      await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-13",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "WAITING_FOR_SIGNATURES",
+          signatures: {},
+          callbacks: [
+            {
+              participantId: "did:web:remoteparty.com",
+              url: "http://remote-callback-url",
+              authToken: "correct-token"
+            } as ProjectAgreementCallbackDao
+          ],
+          datasets: []
+        })
+      );
 
       const signatureResponse: SignatureResponseMessage = {
         participantId: "did:web:remoteparty.com",
@@ -887,21 +902,23 @@ describe("ProjectAgreementsService", () => {
         mockValidation
       );
 
-      await projectAgreementsService["projectAgreementsRepository"].save({
-        projectId: "test-project-14",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:localhost",
-        status: "WAITING_FOR_SIGNATURES",
-        signatures: {},
-        callbacks: [
-          {
-            participantId: "did:web:remoteparty.com",
-            url: "http://remote-callback-url",
-            authToken: "test-callback-token"
-          } as ProjectAgreementCallbackDao
-        ],
-        datasets: []
-      });
+      await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-14",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:localhost",
+          status: "WAITING_FOR_SIGNATURES",
+          signatures: {},
+          callbacks: [
+            {
+              participantId: "did:web:remoteparty.com",
+              url: "http://remote-callback-url",
+              authToken: "test-callback-token"
+            } as ProjectAgreementCallbackDao
+          ],
+          datasets: []
+        })
+      );
 
       const signatureResponse: SignatureResponseMessage = {
         participantId: "did:web:remoteparty.com",
@@ -934,17 +951,17 @@ describe("ProjectAgreementsService", () => {
         undefined
       );
 
-      const agreement = await projectAgreementsService[
-        "projectAgreementsRepository"
-      ].save({
-        projectId: "test-project-15",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:remoteparty.com",
-        status: "SIGNED",
-        signatures: {},
-        callbacks: [],
-        datasets: []
-      });
+      const agreement = await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-15",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:remoteparty.com",
+          status: "SIGNED",
+          signatures: {},
+          callbacks: [],
+          datasets: []
+        })
+      );
 
       const finalizationMessage: ProjectAgreementFinalizationMessage = {
         projectId: "test-project-15",
@@ -987,15 +1004,17 @@ describe("ProjectAgreementsService", () => {
         mockTransfer as TransferDao
       );
 
-      await projectAgreementsService["projectAgreementsRepository"].save({
-        projectId: "test-project-16",
-        projectAgreement: sampleProjectAgreementDto,
-        initiator: "did:web:remoteparty.com",
-        status: "SIGNED",
-        signatures: {},
-        callbacks: [],
-        datasets: []
-      });
+      await agreementRepo.save(
+        agreementRepo.create({
+          projectId: "test-project-16",
+          projectAgreement: sampleProjectAgreementDto,
+          initiator: "did:web:remoteparty.com",
+          status: "SIGNED",
+          signatures: {},
+          callbacks: [],
+          datasets: []
+        })
+      );
 
       const finalizationMessage: ProjectAgreementFinalizationMessage = {
         projectId: "test-project-16",

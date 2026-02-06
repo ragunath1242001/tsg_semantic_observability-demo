@@ -1,16 +1,14 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
-import { Roles, validationPipe } from "@tsg-dsp/common-api";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Requires, validationPipe } from "@tsg-dsp/common-api";
 import { toArray } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   ApiBadRequestResponseDefault,
+  ApiForbiddenResponseDefault,
+  ApiNotFoundResponseDefault,
   ProofDocument,
+  Resource,
   SignedJwtResponse,
   SignRequest,
   SignRequestJwt,
@@ -18,22 +16,16 @@ import {
   ValidateRequest
 } from "@tsg-dsp/common-dtos";
 import {
-  ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault
-} from "@tsg-dsp/common-dtos";
-import {
   validateDataIntegrityProof,
   validateJwt
 } from "@tsg-dsp/common-signing-and-validation";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { JWTPayload } from "jose";
 
 import { SignatureService } from "./signature.service.js";
 
 @Controller("management/signature")
 @ApiTags("Management Signatures")
-@ApiOAuth2([AppRole.USE_KEYS, AppRole.MANAGE_KEYS])
-@Roles([AppRole.USE_KEYS, AppRole.MANAGE_KEYS])
+@Requires(Action.EXECUTE, Resource.W_KEY)
 export class SignatureManagementController {
   constructor(private readonly signatureService: SignatureService) {}
 

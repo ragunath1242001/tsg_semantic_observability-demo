@@ -52,11 +52,15 @@ export class LoggingService {
   }
 
   async insertIngressLog(entry: LogEntry): Promise<IngressLogDao> {
-    return await this.ingressRepository.save(entry);
+    return await this.ingressRepository.save(
+      this.ingressRepository.create(entry)
+    );
   }
 
   async insertEgressLog(entry: LogEntry): Promise<EgressLogDao> {
-    return await this.egressRepository.save(entry);
+    return await this.egressRepository.save(
+      this.egressRepository.create(entry)
+    );
   }
 
   private filterClause(filter: LogFilterDto) {

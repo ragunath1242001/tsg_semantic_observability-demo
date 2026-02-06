@@ -1,8 +1,12 @@
 import { Bitstring } from "@digitalbazaar/bitstring";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AppError } from "@tsg-dsp/common-api";
-import { PaginationOptionsDto } from "@tsg-dsp/common-api";
+import {
+  AppError,
+  ClientInfo,
+  getOwnershipFieldsFromClient,
+  PaginationOptionsDto
+} from "@tsg-dsp/common-api";
 import {
   Credential,
   CredentialSubject,
@@ -154,7 +158,8 @@ export class CredentialsService {
 
   async issueCredential(
     credentialConfig: InitCredentialConfig,
-    targetDid?: string
+    targetDid?: string,
+    client?: ClientInfo
   ): Promise<CredentialDao> {
     const existing = await this.credentialRepository.findOneBy({
       id: credentialConfig.id
@@ -165,7 +170,7 @@ export class CredentialsService {
         HttpStatus.CONFLICT
       ).andLog(this.logger, "debug");
     }
-    return await this.selfIssueCredential(credentialConfig, targetDid);
+    return await this.selfIssueCredential(credentialConfig, targetDid, client);
   }
 
   async getDataspaceCredentials(issuerIds?: string): Promise<CredentialDao[]> {
@@ -219,7 +224,8 @@ export class CredentialsService {
 
   async importCredential(
     credential: VerifiableCredential | EnvelopedVerifiableCredential | string,
-    targetDid?: string
+    targetDid?: string,
+    client?: ClientInfo
   ): Promise<CredentialDao> {
     const credentialContainer = formatCredential(credential);
     const didId = targetDid || (await this.didService.getDidId());
@@ -233,14 +239,18 @@ export class CredentialsService {
       ).andLog(this.logger, "warn");
     }
 
-    return await this.credentialRepository.save({
-      id: credentialContainer.credential.id,
-      targetDid: didId,
-      selfIssued: false,
-      credential: credentialContainer.credential,
-      jwt: credentialContainer.jwt,
-      proof: credentialContainer.proof
-    });
+    return await this.credentialRepository.save(
+      this.credentialRepository.create({
+        id: credentialContainer.credential.id,
+        targetDid: didId,
+        selfIssued: false,
+        credential: credentialContainer.credential,
+        jwt: credentialContainer.jwt,
+        proof: credentialContainer.proof,
+        ...getOwnershipFieldsFromClient(client),
+        ownerIdentifier: client?.didId || didId
+      })
+    );
   }
 
   async updateCredential(
@@ -250,21 +260,24 @@ export class CredentialsService {
       | VerifiableCredential
       | EnvelopedVerifiableCredential
       | string,
-    targetDid?: string
+    targetDid?: string,
+    client?: ClientInfo
   ): Promise<CredentialDao> {
     await this.getCredential(credentialId, targetDid);
     if (credential instanceof InitCredentialConfig) {
-      return await this.selfIssueCredential(credential, targetDid);
+      return await this.selfIssueCredential(credential, targetDid, client);
     } else {
       const credentialContainer = formatCredential(credential);
-      return await this.credentialRepository.save({
-        id: credentialContainer.credential.id,
-        targetDid: targetDid || (await this.didService.getDidId()),
-        selfIssued: false,
-        credential: credentialContainer.credential,
-        jwt: credentialContainer.jwt,
-        proof: credentialContainer.proof
-      });
+      return await this.credentialRepository.save(
+        this.credentialRepository.create({
+          id: credentialContainer.credential.id,
+          targetDid: targetDid || (await this.didService.getDidId()),
+          selfIssued: false,
+          credential: credentialContainer.credential,
+          jwt: credentialContainer.jwt,
+          proof: credentialContainer.proof
+        })
+      );
     }
   }
 
@@ -285,7 +298,8 @@ export class CredentialsService {
 
   async selfIssueCredential(
     credentialConfig: InitCredentialConfig,
-    targetDid?: string
+    targetDid?: string,
+    client?: ClientInfo
   ): Promise<CredentialDao> {
     this.logger.log(
       `Creating verifiable credential for ${credentialConfig.id}`
@@ -331,7 +345,11 @@ export class CredentialsService {
       credential: credential,
       selfIssued: true,
       statusListIndex,
-      statusListCredential
+      statusListCredential,
+      // Set ownership fields
+      ...getOwnershipFieldsFromClient(client),
+      // ownerIdentifier should be the credential's target DID
+      ownerIdentifier: client?.didId || target
     };
 
     if (credentialConfig.proofType === "jwt") {
@@ -406,12 +424,14 @@ export class CredentialsService {
     const index = await this.statusListCredentialRepository.count();
     const credentialId = `${this.credentialAddress()}/status-${index}`;
     const credential = await this.updateStatusListCredential(credentialId, []);
-    return await this.statusListCredentialRepository.save({
-      id: credentialId,
-      revoked: [],
-      full: false,
-      credential: credential
-    });
+    return await this.statusListCredentialRepository.save(
+      this.statusListCredentialRepository.create({
+        id: credentialId,
+        revoked: [],
+        full: false,
+        credential: credential
+      })
+    );
   }
 
   async assignStatusListIndex() {

@@ -1,23 +1,14 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn
-} from "typeorm";
+import { MetaEntity } from "@tsg-dsp/common-api";
+import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
 
 import {
   ConstraintType,
   DataType,
   EvaluationTrigger
 } from "../policy/constraint.dto.js";
-import { MetaEntity } from "./common.dao.js";
 
 @Entity()
 export class ConstraintDao extends MetaEntity {
-  @PrimaryGeneratedColumn()
-  id!: number;
-
   @Column({ type: "simple-enum", enum: ConstraintType })
   type!: ConstraintType;
 
@@ -55,9 +46,6 @@ export class ConstraintDao extends MetaEntity {
 
 @Entity()
 export class RuleDao extends MetaEntity {
-  @PrimaryGeneratedColumn()
-  id!: number;
-
   @Column("simple-array")
   action!: string[];
 

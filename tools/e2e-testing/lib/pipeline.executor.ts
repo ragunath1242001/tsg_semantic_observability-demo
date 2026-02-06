@@ -61,7 +61,7 @@ export class PipelineExecutor {
             const negotiation =
               await this.negotiationService.getNegotiation(data);
             this.logger.log(
-              `Received event: ${event} - ${negotiation.localId} - ${negotiation.state}`
+              `Received event: ${event} - ${negotiation.id} - ${negotiation.state}`
             );
             await this.pipelines[negotiation.dataSet]?.handleNegotiationEvent(
               negotiation
@@ -72,7 +72,7 @@ export class PipelineExecutor {
           case "transfer:update": {
             const transfer = await this.transferService.getTransfer(data);
             this.logger.log(
-              `Received event: ${event} - ${transfer.localId} - ${transfer.state}`
+              `Received event: ${event} - ${transfer.id} - ${transfer.state}`
             );
             await this.pipelines[transfer.agreementId]?.handleTransferEvent(
               transfer

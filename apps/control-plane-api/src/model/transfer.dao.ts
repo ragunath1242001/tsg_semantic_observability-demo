@@ -1,3 +1,4 @@
+import { MetaEntity, OwnableEntity } from "@tsg-dsp/common-api";
 import {
   DataAddress,
   DataPlaneTransferDto,
@@ -8,19 +9,13 @@ import {
   TransferRole,
   TransferState
 } from "@tsg-dsp/common-dsp";
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryColumn,
-  Relation
-} from "typeorm";
+import { Resource } from "@tsg-dsp/common-dtos";
+import { Column, Entity, ManyToOne, OneToMany, Relation } from "typeorm";
 
-import { AutoIdEntity, jsonLdTransformer, MetaEntity } from "./common.dao.js";
+import { jsonLdTransformer } from "./common.dao.js";
 
 @Entity()
-export class TransferEventDao extends AutoIdEntity implements ITransferEvent {
+export class TransferEventDao extends MetaEntity implements ITransferEvent {
   @Column({ type: String })
   time!: Date;
   @Column({ type: "simple-enum", enum: TransferState })
@@ -38,9 +33,12 @@ export class TransferEventDao extends AutoIdEntity implements ITransferEvent {
 }
 
 @Entity()
-export class TransferDetailDao extends MetaEntity implements ITransferStatus {
-  @PrimaryColumn({ type: String })
-  localId!: string;
+export class TransferDetailDao
+  extends OwnableEntity
+  implements ITransferStatus
+{
+  readonly resourceType = Resource.CP_TRANSFER;
+
   @Column({ type: String, nullable: true })
   remoteId?: string;
   @Column({ type: String })

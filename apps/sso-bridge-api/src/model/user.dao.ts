@@ -1,20 +1,15 @@
+import { OwnableEntity } from "@tsg-dsp/common-api";
+import { PermissionString, Resource } from "@tsg-dsp/common-dtos";
 import { GrantType } from "@tsg-dsp/sso-bridge-dtos";
-import { Transform } from "class-transformer";
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn
-} from "typeorm";
+import { Column, Entity } from "typeorm";
 
-import { MetaEntity } from "./common.dao.js";
-import { OauthRole } from "./role.dao.js";
-
+/**
+ * Note: This entity uses auto-generated numeric id.
+ * Extends OwnableBase for ABAC support.
+ */
 @Entity()
-export class OauthUser extends MetaEntity {
-  @PrimaryGeneratedColumn()
-  id!: number;
+export class OauthUser extends OwnableEntity {
+  readonly resourceType = Resource.SSO_USER;
 
   @Column({ type: String })
   username!: string;
@@ -28,19 +23,12 @@ export class OauthUser extends MetaEntity {
   @Column({ type: Boolean, default: false })
   require2FA!: boolean;
 
-  @ManyToMany(() => OauthRole, { eager: true })
-  @JoinTable()
-  @Transform(
-    ({ value }) => {
-      return value?.map((role: OauthRole) => role.name) || [];
-    },
-    { toPlainOnly: true }
-  )
-  roles!: OauthRole[];
-
-  get roleNames(): string[] {
-    return this.roles?.map((role) => role.name) || [];
-  }
+  /**
+   * Permissions assigned to this user.
+   * These are stored as simple strings in format "action:resource" or "action:resource:scope".
+   */
+  @Column("simple-array", { default: "" })
+  permissions!: PermissionString[];
 
   @Column("simple-array")
   grants!: GrantType[];

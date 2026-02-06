@@ -7,35 +7,30 @@ import {
   Param,
   Post
 } from "@nestjs/common";
-import {
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination
 } from "@tsg-dsp/common-api";
 import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
 import {
+  Action,
+  ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault,
-  DIDDocumentDto
+  DIDDocumentDto,
+  Resource
 } from "@tsg-dsp/common-dtos";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { DIDDocument } from "did-resolver";
 
 import { RegistryClientService } from "./registry.client.service.js";
 import { RegistryService } from "./registry.service.js";
 
-@Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
 @Controller("management/registry")
 @ApiTags("Registry Management")
-@ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
 export class RegistryManagementController {
   constructor(
     private readonly registryClientService: RegistryClientService,
@@ -44,6 +39,7 @@ export class RegistryManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("")
+  @Requires(Action.READ, Resource.CP_REGISTRY)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request catalogs",
@@ -56,7 +52,7 @@ export class RegistryManagementController {
   }
 
   @Get("addresses")
-  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.CP_REGISTRY)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request addresses",
@@ -69,6 +65,7 @@ export class RegistryManagementController {
   }
 
   @Get("didDocuments")
+  @Requires(Action.READ, Resource.CP_REGISTRY)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request DID Documents",
@@ -82,6 +79,7 @@ export class RegistryManagementController {
   }
 
   @Get("catalogs")
+  @Requires(Action.READ, Resource.CP_REGISTRY)
   @UsePagination()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -98,6 +96,7 @@ export class RegistryManagementController {
   }
 
   @Get("catalogs/:participantId")
+  @Requires(Action.READ, Resource.CP_REGISTRY)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get catalog by participant ID",
@@ -116,6 +115,7 @@ export class RegistryManagementController {
   }
 
   @Post("refresh")
+  @Requires(Action.EXECUTE, Resource.CP_REGISTRY)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Refresh registry",

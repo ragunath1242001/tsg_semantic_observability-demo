@@ -59,7 +59,7 @@ export class CreateAlgorithmInstanceDto {
   })
   @IsNumber()
   @IsOptional()
-  public projectAgreementId?: number;
+  public projectAgreementId?: string;
 }
 
 export class AlgorithmInstanceDto {

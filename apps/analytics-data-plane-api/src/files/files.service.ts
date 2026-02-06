@@ -12,7 +12,10 @@ import {
   FileUpdateDto,
   MetadataStatus
 } from "@tsg-dsp/analytics-data-plane-dtos";
-import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
+import {
+  CatalogClientService,
+  DataPlaneError
+} from "@tsg-dsp/common-data-plane-api";
 import {
   DataService,
   Dataset,
@@ -33,7 +36,6 @@ import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service
 import { FilesConfig, RootConfig } from "../config.js";
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { mergeFileDatasetUpdate } from "../utils/dataset-file-merge.js";
-import { DataPlaneError } from "../utils/errors/error.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
 import { MetadataGeneratorService } from "./metadata-generator.service.js";
 import {
@@ -122,9 +124,9 @@ export class FilesService {
     return this.fileRepository.find({});
   }
 
-  async getFileMetadata(identifier: string): Promise<FileMetadataDao> {
+  async getFileMetadata(id: string): Promise<FileMetadataDao> {
     const file = await this.fileRepository.findOneBy({
-      identifier: identifier
+      id: id
     });
     if (!file) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
@@ -139,11 +141,11 @@ export class FilesService {
   }
 
   async getFile(
-    identifier: string,
+    id: string,
     authorizationHeader?: string
   ): Promise<StreamableFile> {
     const file = await this.fileRepository.findOneBy({
-      identifier: identifier
+      id: id
     });
     if (!file) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
@@ -162,7 +164,7 @@ export class FilesService {
       );
     }
     const tokenIdentifier = this.accessTokens.get(accessToken);
-    if (!tokenIdentifier || tokenIdentifier !== file.identifier) {
+    if (!tokenIdentifier || tokenIdentifier !== file.id) {
       throw new DataPlaneError("Invalid access token", HttpStatus.UNAUTHORIZED);
     }
     if (!file.presentInLastCheck) {
@@ -179,12 +181,9 @@ export class FilesService {
     return new StreamableFile(fileStream);
   }
 
-  async previewFile(
-    identifier: string,
-    previewSize?: number
-  ): Promise<StreamableFile> {
+  async previewFile(id: string, previewSize?: number): Promise<StreamableFile> {
     const file = await this.fileRepository.findOneBy({
-      identifier: identifier
+      id: id
     });
     if (!file) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
@@ -203,15 +202,15 @@ export class FilesService {
     return new StreamableFile(fileStream);
   }
 
-  async createAccessToken(identifier: string): Promise<string> {
+  async createAccessToken(id: string): Promise<string> {
     const file = await this.fileRepository.findOneBy({
-      identifier: identifier
+      id: id
     });
     if (!file) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
     }
     const accessToken = randomBytes(16).toString("hex");
-    this.accessTokens.set(accessToken, identifier);
+    this.accessTokens.set(accessToken, id);
     return accessToken;
   }
 
@@ -275,7 +274,7 @@ export class FilesService {
     } as CSVW;
     dbentry.csvw = csvw;
     await this.fileRepository.save(dbentry);
-    return `${this.rootConfig.server.publicAddress}/files/${dbentry.identifier}/csvw`;
+    return `${this.rootConfig.server.publicAddress}/files/${dbentry.id}/csvw`;
   }
 
   async createMetadata(files: Array<Express.Multer.File>) {
@@ -344,15 +343,14 @@ export class FilesService {
               }
             } else {
               dbentry.inlineCsvw = true;
-              await this.fileRepository.update(dbentry.identifier, {
+              await this.fileRepository.update(dbentry.id, {
                 inlineCsvw: true
               });
             }
           }
 
           const catalog = await this.catalog.getOwnCatalog();
-          const datasetId =
-            dbentry.datasetId ?? `urn:uuid:${dbentry.identifier}`;
+          const datasetId = dbentry.datasetId ?? `urn:uuid:${dbentry.id}`;
 
           // Use generated metadata if available, otherwise use defaults
           const title = metadata?.dataset?.["dct:title"] || file.originalname;
@@ -426,16 +424,30 @@ export class FilesService {
           );
 
           if (dbentry.datasetId) {
-            await this.dataplaneService?.updateDataset(
-              dbentry.datasetId,
-              datasetDto
-            );
+            if (this.isClientMode) {
+              // Client mode: notify server side of bridge
+              this.bridgeWs.emit("client.datasets.upsert", {
+                dataset: datasetDto
+              });
+            } else {
+              await this.dataplaneService?.updateDataset(
+                dbentry.datasetId,
+                datasetDto
+              );
+            }
             this.logger.log(
               `Updated dataset ${dbentry.datasetId} for file ${file.originalname}`
             );
           } else {
-            await this.dataplaneService?.addDataset(datasetDto);
-            await this.fileRepository.update(dbentry.identifier, {
+            if (this.isClientMode) {
+              // Client mode: notify server side of bridge
+              this.bridgeWs.emit("client.datasets.upsert", {
+                dataset: datasetDto
+              });
+            } else {
+              await this.dataplaneService?.addDataset(datasetDto);
+            }
+            await this.fileRepository.update(dbentry.id, {
               datasetId: datasetId
             });
             this.logger.log(
@@ -444,7 +456,7 @@ export class FilesService {
           }
 
           // Mark metadata generation as complete
-          await this.fileRepository.update(dbentry.identifier, {
+          await this.fileRepository.update(dbentry.id, {
             metadataStatus: MetadataStatus.COMPLETE
           });
         } catch (error) {
@@ -454,7 +466,7 @@ export class FilesService {
           this.logger.warn(
             `Metadata generation failed for ${file.originalname}: ${errorMessage}`
           );
-          await this.fileRepository.update(dbentry.identifier, {
+          await this.fileRepository.update(dbentry.id, {
             metadataStatus: MetadataStatus.ERROR,
             metadataError: errorMessage
           });
@@ -463,9 +475,9 @@ export class FilesService {
     );
   }
 
-  async getCSVW(identifier: string): Promise<CSVW> {
+  async getCSVW(id: string): Promise<CSVW> {
     const file = await this.fileRepository.findOneBy({
-      identifier: identifier
+      id: id
     });
     if (!file) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
@@ -476,9 +488,9 @@ export class FilesService {
     return file.csvw;
   }
 
-  async getDataset(identifier: string): Promise<DatasetDto> {
+  async getDataset(id: string): Promise<DatasetDto> {
     const file = await this.fileRepository.findOneBy({
-      identifier: identifier
+      id: id
     });
     if (!file) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
@@ -498,7 +510,6 @@ export class FilesService {
   async uploadFiles(files: Array<Express.Multer.File>) {
     const fileEntries = files.map((file: Express.Multer.File) => {
       return this.fileRepository.create({
-        identifier: crypto.randomUUID(),
         fileSizeInBytes: file.size,
         fileName: file.filename,
         originalFileName: file.originalname,
@@ -512,9 +523,9 @@ export class FilesService {
     await this.fileRepository.insert(fileEntries);
   }
 
-  async updateFileMetadata(identifier: string, fileUpdateDto: FileUpdateDto) {
+  async updateFileMetadata(id: string, fileUpdateDto: FileUpdateDto) {
     const dbentry = await this.fileRepository.findOneBy({
-      identifier: identifier
+      id: id
     });
     if (!dbentry) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
@@ -534,16 +545,16 @@ export class FilesService {
     const conformsTo: string[] = [];
     if (dbentry.csvw) {
       conformsTo.push(
-        `${this.rootConfig.server.publicAddress}/files/${dbentry.identifier}/csvw`
+        `${this.rootConfig.server.publicAddress}/files/${dbentry.id}/csvw`
       );
     }
 
     if (this.isClientMode) {
-      const clientDatasetId = datasetId ?? `urn:uuid:${dbentry.identifier}`;
+      const clientDatasetId = datasetId ?? `urn:uuid:${dbentry.id}`;
 
       // Persist derived dataset id so later operations (e.g., delete) can reference it.
       if (!dbentry.datasetId) {
-        await this.fileRepository.update(dbentry.identifier, {
+        await this.fileRepository.update(dbentry.id, {
           datasetId: clientDatasetId
         });
       }
@@ -593,9 +604,9 @@ export class FilesService {
     }
   }
 
-  async updateFile(identifier: string, file: Express.Multer.File) {
+  async updateFile(id: string, file: Express.Multer.File) {
     const dbentry = await this.fileRepository.findOneBy({
-      identifier: identifier
+      id: id
     });
     if (!dbentry) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
@@ -616,15 +627,15 @@ export class FilesService {
     const conformsTo: string[] = [];
     if (dbentry.csvw) {
       conformsTo.push(
-        `${this.rootConfig.server.publicAddress}/files/${dbentry.identifier}/csvw`
+        `${this.rootConfig.server.publicAddress}/files/${dbentry.id}/csvw`
       );
     }
 
     if (this.isClientMode) {
       // Client mode: publish dataset changes to the server side of the bridge.
-      const clientDatasetId = datasetId ?? `urn:uuid:${dbentry.identifier}`;
+      const clientDatasetId = datasetId ?? `urn:uuid:${dbentry.id}`;
       if (!dbentry.datasetId) {
-        await this.fileRepository.update(dbentry.identifier, {
+        await this.fileRepository.update(dbentry.id, {
           datasetId: clientDatasetId
         });
       }
@@ -644,7 +655,7 @@ export class FilesService {
 
     // Standalone/server: ensure the dataset is updated (not just file DB state).
     if (this.dataplaneService) {
-      const publishedDatasetId = datasetId ?? `urn:uuid:${dbentry.identifier}`;
+      const publishedDatasetId = datasetId ?? `urn:uuid:${dbentry.id}`;
       const catalog = await this.catalog.getOwnCatalog();
       const datasetDto = this.buildDatasetDto({
         datasetId: publishedDatasetId,
@@ -675,16 +686,16 @@ export class FilesService {
       }
 
       if (!dbentry.datasetId) {
-        await this.fileRepository.update(dbentry.identifier, {
+        await this.fileRepository.update(dbentry.id, {
           datasetId: publishedDatasetId
         });
       }
     }
   }
 
-  async removeFile(identifier: string) {
+  async removeFile(id: string) {
     const dbentry = await this.fileRepository.findOneBy({
-      identifier: identifier
+      id: id
     });
     if (!dbentry) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
@@ -697,7 +708,7 @@ export class FilesService {
         });
       }
     } else if (dbentry.datasetId && this.dataplaneService) {
-      this.logger.log(`Deleting dataset for file: ${identifier}`);
+      this.logger.log(`Deleting dataset for file: ${id}`);
       await this.dataplaneService.deleteDataset(dbentry.datasetId);
     }
     const filePath = this.filesConfig.path + "/" + dbentry.fileName;
@@ -719,7 +730,7 @@ export class FilesService {
       );
       if (missingFiles.length > 0) {
         await this.fileRepository.update(
-          missingFiles.map((missingFile) => missingFile.identifier),
+          missingFiles.map((missingFile) => missingFile.id),
           {
             presentInLastCheck: false
           }

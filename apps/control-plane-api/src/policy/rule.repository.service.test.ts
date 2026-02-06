@@ -130,17 +130,22 @@ describe("Rule Repository Service", () => {
         ],
         leftOperand: "dspace:vc"
       });
-      expect(await ruleRepositoryService.getConstraint(1)).toBeInstanceOf(
-        AtomicConstraint
-      );
-      expect(await ruleRepositoryService.getConstraint(1, true)).toBeInstanceOf(
-        ConstraintDao
-      );
-      await expect(ruleRepositoryService.getConstraint(3)).rejects.toThrow(
-        "Could not find constraint"
-      );
+
+      expect(
+        await ruleRepositoryService.getConstraint(constraints[0].id)
+      ).toBeInstanceOf(AtomicConstraint);
+      expect(
+        await ruleRepositoryService.getConstraint(constraints[1].id, true)
+      ).toBeInstanceOf(ConstraintDao);
+      await expect(
+        ruleRepositoryService.getConstraint("unknown")
+      ).rejects.toThrow("Could not find constraint");
       await ruleRepositoryService.addConstraint(
-        AtomicConstraint.parse({ ...constraintTemplate, leftOperand: "test" })
+        AtomicConstraint.parse({
+          ...constraintTemplate,
+          id: "fixed-test",
+          leftOperand: "test"
+        })
       );
 
       expect(
@@ -150,7 +155,7 @@ describe("Rule Repository Service", () => {
           )
         ).total
       ).toBe(3);
-      await ruleRepositoryService.deleteConstraint(3);
+      await ruleRepositoryService.deleteConstraint("fixed-test");
 
       expect(
         (
@@ -281,6 +286,10 @@ describe("Rule Repository Service", () => {
 
   describe("Rules", () => {
     it("CRUD", async () => {
+      const constraints = await ruleRepositoryService.listConstraint(
+        PaginationOptionsDto.NO_PAGINATION,
+        true
+      );
       expect(
         (
           await ruleRepositoryService.listRule(
@@ -288,11 +297,11 @@ describe("Rule Repository Service", () => {
           )
         ).total
       ).toBe(0);
-      await ruleRepositoryService.addRule(
+      const rule1 = await ruleRepositoryService.addRule(
         Rule.parse({
           action: ["use"],
           assignee: ["did:web:localhost"],
-          constraints: [await ruleRepositoryService.getConstraint(1)]
+          constraints: [constraints[0]]
         })
       );
       expect(
@@ -302,16 +311,16 @@ describe("Rule Repository Service", () => {
           )
         ).total
       ).toBe(1);
-      expect(await ruleRepositoryService.getRule(1)).toBeDefined();
-      await expect(ruleRepositoryService.getRule(2)).rejects.toThrow(
+      expect(await ruleRepositoryService.getRule(rule1.id!)).toBeDefined();
+      await expect(ruleRepositoryService.getRule("unknown")).rejects.toThrow(
         "Could not find rule"
       );
-      expect(await ruleRepositoryService.getRule(1, false)).toBeInstanceOf(
-        Rule
-      );
-      expect(await ruleRepositoryService.getRule(1, true)).toBeInstanceOf(
-        RuleDao
-      );
+      expect(
+        await ruleRepositoryService.getRule(rule1.id!, false)
+      ).toBeInstanceOf(Rule);
+      expect(
+        await ruleRepositoryService.getRule(rule1.id!, true)
+      ).toBeInstanceOf(RuleDao);
       expect(
         (
           await ruleRepositoryService.listRule(
@@ -321,11 +330,11 @@ describe("Rule Repository Service", () => {
         )[0]
       ).toBeInstanceOf(RuleDao);
 
-      await ruleRepositoryService.addRule(
+      const rule2 = await ruleRepositoryService.addRule(
         Rule.parse({
           action: ["use"],
           assignee: ["did:web:remote.com"],
-          constraints: [await ruleRepositoryService.getConstraint(1)]
+          constraints: [constraints[0]]
         })
       );
       expect(
@@ -335,7 +344,7 @@ describe("Rule Repository Service", () => {
           )
         ).total
       ).toBe(2);
-      await ruleRepositoryService.deleteRule(2);
+      await ruleRepositoryService.deleteRule(rule2.id!);
 
       expect(
         (
@@ -346,7 +355,10 @@ describe("Rule Repository Service", () => {
       ).toBe(1);
     });
     it("ODRL", async () => {
-      const rule = await ruleRepositoryService.getRule(1);
+      const rules = await ruleRepositoryService.listRule(
+        PaginationOptionsDto.NO_PAGINATION
+      );
+      const rule = rules.data[0];
       (rule.constraints[0] as AtomicConstraint).value =
         "tsg:MembershipCredential";
       expect(

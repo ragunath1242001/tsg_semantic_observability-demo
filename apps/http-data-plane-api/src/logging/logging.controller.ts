@@ -8,13 +8,13 @@ import {
   ValidationPipe
 } from "@nestjs/common";
 import {
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags
 } from "@nestjs/swagger";
-import { Roles } from "@tsg-dsp/common-api";
+import { Requires } from "@tsg-dsp/common-api";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 
 import { PageDto, PageOptionsDto } from "../utils/pagination.js";
 import { LogEntry, LogFilterDto } from "./logging.dto.js";
@@ -23,13 +23,11 @@ import { LoggingService } from "./logging.service.js";
 @ApiTags("Logging")
 @Controller("/management/logging")
 @UsePipes(new ValidationPipe({ transform: true }))
-@ApiOAuth2(["controlplane_dataplane"])
-@Roles("controlplane_dataplane")
 export class LoggingController {
   constructor(private readonly loggingService: LoggingService) {}
 
   @Get("ingress")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.HDP_LOGS)
   @ApiOperation({ summary: "Get ingress logs" })
   @ApiQuery({ type: LogFilterDto })
   @ApiQuery({ type: PageOptionsDto })
@@ -43,7 +41,7 @@ export class LoggingController {
   }
 
   @Get("egress")
-  @Roles(["controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.HDP_LOGS)
   @ApiOperation({ summary: "Get egress logs" })
   @ApiQuery({ type: LogFilterDto })
   @ApiQuery({ type: PageOptionsDto })

@@ -6,12 +6,10 @@ import {
   HttpStatus,
   Logger,
   Param,
-  ParseIntPipe,
   Post
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -21,15 +19,17 @@ import {
   ProjectAgreementDetailDto,
   ProjectAgreementDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
-import { Roles } from "@tsg-dsp/common-api";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { nonEmptyStringPipe, Requires } from "@tsg-dsp/common-api";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { ProjectAgreementsService } from "./project-agreements.service.js";
 
 @Controller("management/project-agreements")
 @ApiTags("Project Agreements")
-@ApiOAuth2(["controlplane_dataplane"])
-@Roles("controlplane_dataplane")
 export class ProjectAgreementsManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
@@ -38,6 +38,7 @@ export class ProjectAgreementsManagementController {
   ) {}
 
   @Get()
+  @Requires(Action.READ, Resource.ADP_PROJECT_AGREEMENT)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get all Project Agreements",
@@ -55,6 +56,7 @@ export class ProjectAgreementsManagementController {
   }
 
   @Post()
+  @Requires(Action.CREATE, Resource.ADP_PROJECT_AGREEMENT)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create Project Agreement",
@@ -78,6 +80,7 @@ export class ProjectAgreementsManagementController {
   }
 
   @Post(":id/sign")
+  @Requires(Action.EXECUTE, Resource.ADP_PROJECT_AGREEMENT)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Sign Project Agreement",
@@ -94,13 +97,14 @@ export class ProjectAgreementsManagementController {
   })
   @ApiForbiddenResponseDefault()
   async signProjectAgreement(
-    @Param("id", new ParseIntPipe()) id: number
+    @Param("id", nonEmptyStringPipe) id: string
   ): Promise<void> {
     this.logger.log(`Signing project agreement with id ${id}`);
     await this.projectAgreementsService.signProjectAgreement(id);
   }
 
   @Post(":id/link/:datasetId")
+  @Requires(Action.UPDATE, Resource.ADP_PROJECT_AGREEMENT)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Link Dataset to Project Agreement",
@@ -122,8 +126,8 @@ export class ProjectAgreementsManagementController {
   })
   @ApiForbiddenResponseDefault()
   async linkDatasetToProjectAgreement(
-    @Param("id", new ParseIntPipe()) id: number,
-    @Param("datasetId") datasetId: string
+    @Param("id", nonEmptyStringPipe) id: string,
+    @Param("datasetId", nonEmptyStringPipe) datasetId: string
   ): Promise<void> {
     this.logger.log(
       `Linking dataset ${datasetId} to project agreement with id ${id}`
@@ -135,6 +139,7 @@ export class ProjectAgreementsManagementController {
   }
 
   @Post(":id/unlink/:datasetId")
+  @Requires(Action.UPDATE, Resource.ADP_PROJECT_AGREEMENT)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Unlink Dataset from Project Agreement",
@@ -156,8 +161,8 @@ export class ProjectAgreementsManagementController {
   })
   @ApiForbiddenResponseDefault()
   async unlinkDatasetFromProjectAgreement(
-    @Param("id", new ParseIntPipe()) id: number,
-    @Param("datasetId") datasetId: string
+    @Param("id", nonEmptyStringPipe) id: string,
+    @Param("datasetId", nonEmptyStringPipe) datasetId: string
   ): Promise<void> {
     this.logger.log(
       `Unlinking dataset ${datasetId} from project agreement with id ${id}`

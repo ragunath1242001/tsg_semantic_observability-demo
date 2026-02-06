@@ -216,7 +216,7 @@ describe("NegotiationController", () => {
       "http://127.0.0.1/negotiation",
       "did:web:localhost"
     );
-    consumerNegotiationId = consumerNegotiation.localId!;
+    consumerNegotiationId = consumerNegotiation.id!;
   });
 
   afterEach(() => {
@@ -278,7 +278,7 @@ describe("NegotiationController", () => {
   describe("/:id/request", () => {
     it("Contract request should with specified identifier return default contract negotiation", async () => {
       negotiationService["negotiationDetailRepository"].update(
-        { localId: providerNegotiationId },
+        { id: providerNegotiationId },
         { state: ContractNegotiationState.OFFERED }
       );
       const result = await negotiationController.requestWithId(
@@ -346,7 +346,7 @@ describe("NegotiationController", () => {
   describe("/:id/events", () => {
     it("Contract negotiation event should with specified identifier return a status OK", async () => {
       negotiationService["negotiationDetailRepository"].update(
-        { localId: providerNegotiationId },
+        { id: providerNegotiationId },
         { state: ContractNegotiationState.OFFERED }
       );
       const result = await negotiationController.negotiationEvent(
@@ -381,7 +381,7 @@ describe("NegotiationController", () => {
   describe("/:id/agreement/verification", () => {
     it("Contract agreement verification should with specified identifier return a status OK", async () => {
       negotiationService["negotiationDetailRepository"].update(
-        { localId: providerNegotiationId },
+        { id: providerNegotiationId },
         { state: ContractNegotiationState.AGREED }
       );
       const result = await negotiationController.agreementVerification(
@@ -534,7 +534,7 @@ describe("NegotiationController", () => {
   describe("/callbacks/:id/event", () => {
     it("Callback with a contract event should return a status OK", async () => {
       negotiationService["negotiationDetailRepository"].update(
-        { localId: consumerNegotiationId },
+        { id: consumerNegotiationId },
         { state: ContractNegotiationState.VERIFIED }
       );
       const result = await negotiationController.callbackEvent(

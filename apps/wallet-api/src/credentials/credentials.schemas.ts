@@ -24,7 +24,7 @@ export class TrustAnchorConfigDto implements TrustAnchorConfig {
     example: "b86483f3-3792-4a54-b11e-f1c6face9935",
     description: "A unique identifier for the trust anchor"
   })
-  identifier!: string;
+  id!: string;
 
   @IsString()
   @ApiProperty({
@@ -40,7 +40,7 @@ export class CredentialsConfigDto {
     type: [TrustAnchorConfigDto],
     example: [
       {
-        identifier: "b86483f3-3792-4a54-b11e-f1c6face9935",
+        id: "b86483f3-3792-4a54-b11e-f1c6face9935",
         credentialTypes: ["DataSpaceCredentialType"]
       }
     ],
@@ -67,7 +67,10 @@ export class CredentialsConfigDto {
   issueConfigurations!: IssueConfigurationConfigDto[];
 }
 
-export class CredentialsDto implements CredentialDao {
+export class CredentialsDto implements Omit<
+  CredentialDao,
+  "resourceType" | "syncOwnerIdentifier" | "generateId"
+> {
   @IsString()
   @ApiProperty({
     example: "b86483f3-3792-4a54-b11e-f1c6face9935",

@@ -192,7 +192,7 @@ export class DatasetSummaryDto {
 export class ProjectAgreementSummaryDto {
   @ApiProperty({ description: "Internal identifier of the project agreement" })
   @IsDefined()
-  public id!: number;
+  public id!: string;
 
   @ApiProperty({ description: "Project identifier" })
   @IsString()
@@ -228,7 +228,7 @@ export class ProjectAgreementDetailDto {
   @ApiProperty({ description: "Internal identifier of the project agreement" })
   @IsString()
   @IsDefined()
-  public id!: number;
+  public id!: string;
 
   @ApiProperty({ description: "Decentralized identifier of the initiator" })
   @IsString()

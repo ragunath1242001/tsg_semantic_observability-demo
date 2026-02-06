@@ -193,7 +193,7 @@ onMounted(async () => {
       <template #subtitle>State of this HTTP data plane</template>
       <template #content>
         <div v-if="state" class="flex flex-col gap-4">
-          <FormField label="Identifier">{{ state.identifier }}</FormField>
+          <FormField label="Identifier">{{ state.id }}</FormField>
           <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
           <FormField label="Synchronization">{{
             state.details.catalogSynchronization

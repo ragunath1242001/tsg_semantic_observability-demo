@@ -65,14 +65,16 @@ export class PolicyEvaluationService {
     const evaluation = new Evaluation(context, this.ruleRepositoryService);
     const decision = await evaluation.evaluate();
     if (context.transferId) {
-      await this.transferMonitorRepository.save({
-        id: context.transferId,
-        agreement: {
-          id: context.policy.agreement["@id"]
-        },
-        lastContext: context,
-        lastDecision: decision
-      });
+      await this.transferMonitorRepository.save(
+        this.transferMonitorRepository.create({
+          id: context.transferId,
+          agreement: {
+            id: context.policy.agreement["@id"]
+          },
+          lastContext: context,
+          lastDecision: decision
+        })
+      );
     }
     return decision;
   }

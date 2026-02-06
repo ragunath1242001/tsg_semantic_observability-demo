@@ -15,16 +15,17 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiCreatedResponse,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
 import {
+  Client,
+  ClientInfo,
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination
 } from "@tsg-dsp/common-api";
 import {
@@ -32,20 +33,22 @@ import {
   DatasetDto,
   DatasetSchema
 } from "@tsg-dsp/common-dsp";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { DataPlaneService } from "./dataPlane.service.js";
 
-@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/dataplanes")
 @ApiTags("Data Plane Management")
-@ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
 export class DataplaneManagementController {
   constructor(private readonly dataplaneService: DataPlaneService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
-  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.CP_DATAPLANE)
   @UsePagination()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -62,6 +65,7 @@ export class DataplaneManagementController {
   }
 
   @Post()
+  @Requires(Action.CREATE, Resource.CP_DATAPLANE)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Add a dataplane",
@@ -72,14 +76,16 @@ export class DataplaneManagementController {
   @ApiBadRequestResponse({ description: "Invalid dataplane data" })
   @ApiForbiddenResponseDefault()
   async addDataplane(
-    @Body() dataplane: DataPlaneDetailsDto
+    @Body() dataplane: DataPlaneDetailsDto,
+    @Client() client: ClientInfo
   ): Promise<DataPlaneDetailsDto> {
     this.logger.log("Received call to add dataplane.");
     this.logger.log(dataplane);
-    return await this.dataplaneService.addDataPlane(dataplane);
+    return await this.dataplaneService.addDataPlane(dataplane, client);
   }
 
   @Put(":id")
+  @Requires(Action.UPDATE, Resource.CP_DATAPLANE)
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: DataPlaneDetailsDto })
   @ApiOperation({
@@ -98,6 +104,7 @@ export class DataplaneManagementController {
   }
 
   @Delete(":id")
+  @Requires(Action.DELETE, Resource.CP_DATAPLANE)
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: "Delete a dataplane",
@@ -112,6 +119,7 @@ export class DataplaneManagementController {
   }
 
   @Get(":id/datasets")
+  @Requires(Action.READ, Resource.CP_DATAPLANE)
   @UsePagination()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

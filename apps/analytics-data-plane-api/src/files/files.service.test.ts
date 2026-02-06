@@ -337,9 +337,7 @@ describe("FilesService", () => {
       await filesService.createMetadata(mockFiles);
 
       const dbEntry = await filesService.getAllFileMetadata();
-      const metadata = await filesService.getFileMetadata(
-        dbEntry[0].identifier
-      );
+      const metadata = await filesService.getFileMetadata(dbEntry[0].id);
       expect(metadata).toBeDefined();
       expect(metadata.fileName).toBe(mockFiles[0].filename);
       expect(metadata.originalFileName).toBe(mockFiles[0].originalname);
@@ -380,11 +378,11 @@ describe("FilesService", () => {
       await filesService.uploadFiles(mockFiles);
       await filesService.createMetadata(mockFiles);
       const dbEntry = await filesService.getAllFileMetadata();
-      const token = await filesService.createAccessToken(dbEntry[0].identifier);
+      const token = await filesService.createAccessToken(dbEntry[0].id);
       expect(token).toBeDefined();
       expect(token).toMatch(/^[a-zA-Z0-9-]+$/);
       expect(token.length).toBe(32);
-      expect(token).not.toBe(dbEntry[0].identifier);
+      expect(token).not.toBe(dbEntry[0].id);
     });
     it("should throw an error if file not found", async () => {
       await expect(
@@ -422,7 +420,7 @@ describe("FilesService", () => {
       await filesService.createMetadata(mockFiles);
       const dbEntry = await filesService.getAllFileMetadata();
 
-      const fileIdentifier = dbEntry[0].identifier;
+      const fileIdentifier = dbEntry[0].id;
       const accessToken = await filesService.createAccessToken(fileIdentifier);
 
       const streamableFile = await filesService.getFile(
@@ -456,12 +454,12 @@ describe("FilesService", () => {
       await filesService.createMetadata(mockFiles);
       const dbEntry = await filesService.getAllFileMetadata();
 
-      await expect(filesService.getFile(dbEntry[0].identifier)).rejects.toThrow(
+      await expect(filesService.getFile(dbEntry[0].id)).rejects.toThrow(
         "Authorization header is required"
       );
 
       await expect(
-        filesService.getFile(dbEntry[0].identifier, "unknown-auth-header")
+        filesService.getFile(dbEntry[0].id, "unknown-auth-header")
       ).rejects.toThrow("Access token is required");
     });
     it("should throw an error if access token is invalid", async () => {
@@ -485,7 +483,7 @@ describe("FilesService", () => {
       const dbEntry = await filesService.getAllFileMetadata();
 
       await expect(
-        filesService.getFile(dbEntry[0].identifier, "Bearer invalid-token")
+        filesService.getFile(dbEntry[0].id, "Bearer invalid-token")
       ).rejects.toThrow("Invalid access token");
     });
   });
@@ -507,7 +505,7 @@ describe("FilesService", () => {
       await filesService.createMetadata([mockFile]);
       const dbEntry = await filesService.getAllFileMetadata();
 
-      const csvw = await filesService.getCSVW(dbEntry[0].identifier);
+      const csvw = await filesService.getCSVW(dbEntry[0].id);
       expect(csvw).toBeDefined();
       await fs.rm(path.join(testUploadDir, mockFile.filename));
     });
@@ -528,7 +526,7 @@ describe("FilesService", () => {
       await filesService.uploadFiles([mockFile]);
       const dbEntry = await filesService.getAllFileMetadata();
 
-      await expect(filesService.getCSVW(dbEntry[0].identifier)).rejects.toThrow(
+      await expect(filesService.getCSVW(dbEntry[0].id)).rejects.toThrow(
         "CSVW not found"
       );
     });
@@ -550,11 +548,11 @@ describe("FilesService", () => {
       const dbEntry = await filesService.getAllFileMetadata();
 
       await expect(
-        filesService.removeFile(dbEntry[0].identifier)
+        filesService.removeFile(dbEntry[0].id)
       ).resolves.toBeUndefined();
-      await expect(
-        filesService.removeFile(dbEntry[0].identifier)
-      ).rejects.toThrow("File not found");
+      await expect(filesService.removeFile(dbEntry[0].id)).rejects.toThrow(
+        "File not found"
+      );
       await expect(
         fs.access(path.join(testUploadDir, mockFile.filename))
       ).rejects.toThrow();
@@ -575,11 +573,11 @@ describe("FilesService", () => {
       const dbEntry = await filesService.getAllFileMetadata();
 
       await expect(
-        filesService.removeFile(dbEntry[0].identifier)
+        filesService.removeFile(dbEntry[0].id)
       ).resolves.toBeUndefined();
-      await expect(
-        filesService.removeFile(dbEntry[0].identifier)
-      ).rejects.toThrow("File not found");
+      await expect(filesService.removeFile(dbEntry[0].id)).rejects.toThrow(
+        "File not found"
+      );
     });
     it("should handle removal of files when no dataset is created", async () => {
       const mockFile = {
@@ -596,11 +594,11 @@ describe("FilesService", () => {
       const dbEntry = await filesService.getAllFileMetadata();
       await fs.rm(path.join(testUploadDir, mockFile.filename));
       await expect(
-        filesService.removeFile(dbEntry[0].identifier)
+        filesService.removeFile(dbEntry[0].id)
       ).resolves.toBeUndefined();
-      await expect(
-        filesService.removeFile(dbEntry[0].identifier)
-      ).rejects.toThrow("File not found");
+      await expect(filesService.removeFile(dbEntry[0].id)).rejects.toThrow(
+        "File not found"
+      );
     });
   });
 });

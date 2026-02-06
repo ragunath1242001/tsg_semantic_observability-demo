@@ -1,17 +1,10 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn
-} from "typeorm";
+import { MetaEntity } from "@tsg-dsp/common-api";
+import { Column, CreateDateColumn, Entity } from "typeorm";
 
 import { LogEntry } from "./logging.dto.js";
 
 @Entity()
-export class IngressLogDao implements LogEntry {
-  @PrimaryGeneratedColumn("increment")
-  identifier!: number;
-
+export class IngressLogDao extends MetaEntity implements LogEntry {
   @CreateDateColumn({ type: String })
   date!: Date;
 
@@ -38,10 +31,7 @@ export class IngressLogDao implements LogEntry {
 }
 
 @Entity()
-export class EgressLogDao implements LogEntry {
-  @PrimaryGeneratedColumn("increment")
-  identifier!: number;
-
+export class EgressLogDao extends MetaEntity implements LogEntry {
   @CreateDateColumn({ type: String })
   date!: Date;
 

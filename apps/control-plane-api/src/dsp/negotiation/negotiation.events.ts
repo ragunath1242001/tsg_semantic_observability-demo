@@ -1,13 +1,13 @@
 import { OfferDto } from "@tsg-dsp/common-dsp";
 
 export class NegotiationCreatedEvent {
-  localId: string;
+  id: string;
   offer: OfferDto;
   datasetId: string;
   remoteParty: string;
 
   constructor(value: NegotiationCreatedEvent) {
-    this.localId = value.localId;
+    this.id = value.id;
     this.offer = value.offer;
     this.datasetId = value.datasetId;
     this.remoteParty = value.remoteParty;

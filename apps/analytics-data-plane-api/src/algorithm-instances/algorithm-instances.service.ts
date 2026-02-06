@@ -18,6 +18,7 @@ import {
 import { parseNetworkError } from "@tsg-dsp/common-api";
 import {
   CatalogClientService,
+  DataPlaneError,
   ITransferHandler
 } from "@tsg-dsp/common-data-plane-api";
 import { OfferDto } from "@tsg-dsp/common-dsp";
@@ -38,7 +39,6 @@ import {
 import { ProjectAgreementDao } from "../project-agreements/project-agreement.dao.js";
 import { ProjectAgreementsService } from "../project-agreements/project-agreements.service.js";
 import { getAxiosConfigFromDataAddress } from "../utils/axios.js";
-import { DataPlaneError } from "../utils/errors/error.js";
 import { promiseAllOrThrow } from "../utils/promises.js";
 import { parseToken } from "../utils/token.js";
 import { AlgorithmInstanceDao } from "./algorithm-instance.dao.js";
@@ -177,7 +177,7 @@ export class AlgorithmInstancesService {
     if (!algorithmInstance) {
       throw new DataPlaneError(
         `AlgorithmInstance for transferId ${transferId} not found`,
-        404
+        HttpStatus.NOT_FOUND
       );
     }
 
@@ -399,17 +399,19 @@ export class AlgorithmInstancesService {
       createAlgorithmInstance
     );
 
-    const algorithmInstance = await this.algorithmInstanceRepository.save({
-      ...createAlgorithmInstance,
-      createdDate: new Date(),
-      status: "pending",
-      startedAt: undefined,
-      finishedAt: undefined,
-      transfers: [],
-      algorithmEvents: [],
-      internalEvents: [],
-      projectAgreement: projectAgreement
-    });
+    const algorithmInstance = await this.algorithmInstanceRepository.save(
+      this.algorithmInstanceRepository.create({
+        ...createAlgorithmInstance,
+        createdDate: new Date(),
+        status: "pending",
+        startedAt: undefined,
+        finishedAt: undefined,
+        transfers: [],
+        algorithmEvents: [],
+        internalEvents: [],
+        projectAgreement: projectAgreement
+      })
+    );
 
     emitInternalEvent(
       this.eventEmitter,
@@ -633,11 +635,27 @@ export class AlgorithmInstancesService {
     );
     const token = parseToken(authorizationHeader);
     const transfer = await this.transferHandler!.getTransferBySecret(token);
+    let projectAgreement: ProjectAgreementDao | undefined = undefined;
+    if (createAlgorithmInstance.projectAgreement) {
+      projectAgreement = await this.projectAgreementsService?.findByProjectId(
+        createAlgorithmInstance.projectAgreement.projectId
+      );
+      if (!projectAgreement) {
+        throw new DataPlaneError(
+          `Project Agreement with project id ${createAlgorithmInstance.projectAgreement.projectId} not found`,
+          HttpStatus.BAD_REQUEST
+        ).andLog(this.logger);
+      }
+      createAlgorithmInstance.projectAgreement.id = projectAgreement.id;
+    }
 
-    await this.algorithmInstanceRepository.save({
-      ...createAlgorithmInstance,
-      transfers: [transfer]
-    });
+    await this.algorithmInstanceRepository.save(
+      this.algorithmInstanceRepository.create({
+        ...createAlgorithmInstance,
+        projectAgreement: projectAgreement,
+        transfers: [transfer]
+      })
+    );
 
     emitInternalEvent(
       this.eventEmitter,
@@ -713,11 +731,13 @@ export class AlgorithmInstancesService {
   private async markInstanceAsRunning(
     algorithmInstance: AlgorithmInstanceDao
   ): Promise<AlgorithmInstanceDao> {
-    return await this.algorithmInstanceRepository.save({
-      ...algorithmInstance,
-      startedAt: new Date(),
-      status: "running"
-    });
+    return await this.algorithmInstanceRepository.save(
+      this.algorithmInstanceRepository.create({
+        ...algorithmInstance,
+        startedAt: new Date(),
+        status: "running"
+      })
+    );
   }
 
   private async spawnJob(

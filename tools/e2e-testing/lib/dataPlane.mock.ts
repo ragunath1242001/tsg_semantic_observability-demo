@@ -17,7 +17,7 @@ export function setupDataPlaneMock(
 ): DataPlaneMock {
   return {
     dataPlane: {
-      identifier: id,
+      id: id,
       dataplaneType: type,
       endpointPrefix: "",
       callbackAddress: `http://127.0.0.1/data-plane/${id}`,
@@ -33,7 +33,7 @@ export function setupDataPlaneMock(
           const id = crypto.randomUUID();
           return HttpResponse.json<DataPlaneRequestResponseDto>({
             accepted: true,
-            identifier: id,
+            id: id,
             callbackAddress: `http://127.0.0.1/data-plane/${id}/callbacks/${id}`
           });
         }

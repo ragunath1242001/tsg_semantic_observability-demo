@@ -78,15 +78,15 @@ describe("Logging Service", () => {
         }
       };
       const log = await loggingService.insertIngressLog({ ...logEntry });
-      expect(log.identifier).toBeDefined();
+      expect(log.id).toBeDefined();
       const log2 = await loggingService.insertIngressLog({
         ...logEntry,
         remoteParty: "did:web:remoteparty2",
         transferId: "b1434c6a-ae44-4c91-9d0a-b7d7a8117933",
         datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6"
       });
-      expect(log2.identifier).toBeDefined();
-      expect(log2.identifier).toBeGreaterThan(log.identifier);
+      expect(log2.id).toBeDefined();
+      expect(log2.id.localeCompare(log.id)).toBeGreaterThan(0);
       for (let i = 0; i < 10; i++) {
         await loggingService.insertIngressLog({ ...logEntry });
         await loggingService.insertIngressLog({
@@ -165,15 +165,15 @@ describe("Logging Service", () => {
         }
       };
       const log = await loggingService.insertEgressLog({ ...logEntry });
-      expect(log.identifier).toBeDefined();
+      expect(log.id).toBeDefined();
       const log2 = await loggingService.insertEgressLog({
         ...logEntry,
         remoteParty: "did:web:remoteparty2",
         transferId: "b1434c6a-ae44-4c91-9d0a-b7d7a8117933",
         datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6"
       });
-      expect(log2.identifier).toBeDefined();
-      expect(log2.identifier).toBeGreaterThan(log.identifier);
+      expect(log2.id).toBeDefined();
+      expect(log2.id.localeCompare(log.id)).toBeGreaterThan(0);
       for (let i = 0; i < 10; i++) {
         await loggingService.insertEgressLog({ ...logEntry });
         await loggingService.insertEgressLog({

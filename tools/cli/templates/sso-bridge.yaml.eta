@@ -45,57 +45,18 @@ config:
     host: "<%= dbHost %>"
     username: app
   kubernetesNamespace: <%= it.general.namespace %>
-  initRoles:
-    - name: "ssobridge_admin"
-      description: "SSO bridge administrator role with full access"
-      isAdminRole: true
-    - name: "ssobridge_user"
-      description: "SSO bridge regular user role with limited access"
-    - name: wallet_view_did
-      description: View DID
-    - name: wallet_manage_keys
-      description: Manage keys
-    - name: wallet_use_keys
-      description: Use keys
-    - name: wallet_view_own_credentials
-      description: View own credentials
-    - name: wallet_view_all_credentials
-      description: View all credentials
-    - name: wallet_manage_own_credentials
-      description: Manage own credentials
-    - name: wallet_manage_all_credentials
-      description: Manage all credentials
-    - name: wallet_issue_credentials
-      description: Issue credentials
-    - name: wallet_view_presentations
-      description: View presentations
-    - name: wallet_manage_clients
-      description: Manage clients
-    - name: controlplane_admin
-      description: Control Plane Admin role
-      isAdminRole: true
-    - name: controlplane_dataplane
-      description: Control Plane Data Plane role
   initUsers:
     - username: <%= it.general.username %>
       password: <%= it.general.password %>
       email: <%= it.general.username %>@example.com
       require2FA: <%= it.general.require2FA %>
-      roles:
-        - ssobridge_admin
-        - ssobridge_user
-        - wallet_view_did
-        - wallet_manage_keys
-        - wallet_use_keys
-        - wallet_view_own_credentials
-        - wallet_view_all_credentials
-        - wallet_manage_own_credentials
-        - wallet_manage_all_credentials
-        - wallet_issue_credentials
-        - wallet_view_presentations
-        - wallet_manage_clients
-        - controlplane_admin
-        - controlplane_dataplane
+      permissions:
+        - manage:sso.*
+        - manage:w.*
+        - manage:cp.*
+        - manage:dp.*
+        - manage:adp.*
+        - manage:hdp.*
   initClients:
     - clientId: wallet
 <% if (it.general.oauthClientAuthMethod === "client_secret_post") { %>
@@ -110,17 +71,8 @@ config:
 <% } %>
       redirectUris:
         - https://.*<%= it.participant.host %>/.*
-      roles:
-        - wallet_view_did
-        - wallet_manage_keys
-        - wallet_use_keys
-        - wallet_view_own_credentials
-        - wallet_view_all_credentials
-        - wallet_manage_own_credentials
-        - wallet_manage_all_credentials
-        - wallet_issue_credentials
-        - wallet_view_presentations
-        - wallet_manage_clients
+      permissions:
+        - execute:sso.config
 <% if (it.participant.hasControlPlane) { %>
     - clientId: control-plane
 <% if (it.general.oauthClientAuthMethod === "client_secret_post") { %>
@@ -135,16 +87,20 @@ config:
 <% } %>
       redirectUris:
         - https://.*<%= it.participant.host %>/.*
-      roles:
-        - wallet_view_did
-        - wallet_issue_credentials
-        - wallet_use_keys
-        - wallet_view_all_credentials
-        - wallet_view_presentations
-        - controlplane_admin
-        - controlplane_dataplane
+      permissions:
+        - execute:sso.config
+        - read:w.did
+        - manage:w.issue_config
+        - execute:w.key
+        - read:w.credential
+        - read:w.presentation
+        - manage:dp.*
 <% } %>
-<%- it.participant.dataPlanes.forEach((value, id) => { %>
+<%- it.participant.dataPlanes.forEach((value, id) => { 
+  const dataPlaneType = value.type ?? id;
+  const isAnalytics = dataPlaneType.includes('analytics');
+  const resourcePrefix = isAnalytics ? 'adp' : 'hdp';
+%>
     - clientId: <%= id %>
 <% if (it.general.oauthClientAuthMethod === "client_secret_post") { %>
       clientSecret: <%= id %>
@@ -158,6 +114,21 @@ config:
 <% } %>
       redirectUris:
         - https://.*<%= it.participant.host %>/.*
-      roles:
-        - controlplane_dataplane
+      permissions:
+        - execute:sso.config
+        - manage:cp.dataplane
+        - manage:cp.catalog
+        - manage:cp.dataset
+        - manage:cp.negotiation
+        - manage:cp.registry
+        - manage:cp.transfer
+        - read:cp.agreement
+        - read:cp.policy
+<% if (isAnalytics) { %>
+        - execute:w.key
+        - create:w.credential
+        - manage:adp.dataplane
+<% } else { %>
+        - manage:hdp.dataplane
+<% } %>
 <%- }); %>

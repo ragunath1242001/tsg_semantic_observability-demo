@@ -10,7 +10,7 @@ export type TransferRole = "provider" | "consumer";
 
 export class TransferStatusDto {
   @ApiProperty({ example: "local-12345" })
-  localId!: string;
+  id!: string;
 
   @ApiPropertyOptional({ example: "remote-98765" })
   remoteId?: string;

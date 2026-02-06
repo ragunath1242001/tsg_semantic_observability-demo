@@ -23,7 +23,6 @@ auth:
     kid: bravo-analytics-data-plane-client-key-1767782798995
     alg: ES256
     use: sig
-  rolePath: "$.roles[*]"
   redirectURL: http://localhost:3653/
 
 controlPlane:

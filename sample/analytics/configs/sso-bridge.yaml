@@ -10,38 +10,6 @@ db:
 
 twoFactorIssuerName: "TSG Local SSO Bridge"
 
-initRoles:
-  - name: ssobridge_admin
-    description: SSO bridge administrator role with full access
-    isAdminRole: true
-  - name: ssobridge_user
-    description: SSO bridge regular user role with limited access
-  - name: wallet_view_did
-    description: View DID
-  - name: wallet_manage_keys
-    description: Manage keys
-  - name: wallet_use_keys
-    description: Use keys
-  - name: wallet_view_own_credentials
-    description: View own credentials
-  - name: wallet_view_all_credentials
-    description: View all credentials
-  - name: wallet_manage_own_credentials
-    description: Manage own credentials
-  - name: wallet_manage_all_credentials
-    description: Manage all credentials
-  - name: wallet_issue_credentials
-    description: Issue credentials
-  - name: wallet_view_presentations
-    description: View presentations
-  - name: wallet_manage_clients
-    description: Manage clients
-  - name: controlplane_admin
-    description: Control Plane Admin role
-    isAdminRole: true
-  - name: controlplane_dataplane
-    description: Control Plane Data Plane role
-
 initClients:
   # Authority clients
   - clientId: authority-wallet
@@ -58,17 +26,8 @@ initClients:
       use: sig
     redirectUris:
       - http://localhost:3450/.*
-    roles:
-      - wallet_view_did
-      - wallet_manage_keys
-      - wallet_use_keys
-      - wallet_view_own_credentials
-      - wallet_view_all_credentials
-      - wallet_manage_own_credentials
-      - wallet_manage_all_credentials
-      - wallet_issue_credentials
-      - wallet_view_presentations
-      - wallet_manage_clients
+    permissions:
+      - execute:sso.config
     secretName: sso-authority-wallet-secret
 
   # Alfa clients
@@ -86,17 +45,8 @@ initClients:
       use: sig
     redirectUris:
       - http://localhost:3550/.*
-    roles:
-      - wallet_view_did
-      - wallet_manage_keys
-      - wallet_use_keys
-      - wallet_view_own_credentials
-      - wallet_view_all_credentials
-      - wallet_manage_own_credentials
-      - wallet_manage_all_credentials
-      - wallet_issue_credentials
-      - wallet_view_presentations
-      - wallet_manage_clients
+    permissions:
+      - execute:sso.config
     secretName: sso-alfa-wallet-secret
 
   - clientId: alfa-control-plane
@@ -113,14 +63,14 @@ initClients:
       use: sig
     redirectUris:
       - http://localhost:3551/.*
-    roles:
-      - wallet_view_did
-      - wallet_issue_credentials
-      - wallet_use_keys
-      - wallet_view_all_credentials
-      - wallet_view_presentations
-      - controlplane_admin
-      - controlplane_dataplane
+    permissions:
+      - execute:sso.config
+      - read:w.did
+      - manage:w.issue_config
+      - execute:w.key
+      - read:w.credential
+      - read:w.presentation
+      - manage:dp.*
     secretName: sso-alfa-control-plane-secret
 
   - clientId: alfa-analytics-data-plane
@@ -137,8 +87,18 @@ initClients:
       use: sig
     redirectUris:
       - http://localhost:3552/.*
-    roles:
-      - controlplane_dataplane
+    permissions:
+      - execute:sso.config
+      - execute:w.key
+      - read:cp.catalog
+      - manage:cp.dataset
+      - manage:cp.dataplane
+      - manage:cp.negotiation
+      - manage:cp.transfer
+      - read:cp.agreement
+      - read:cp.policy
+      - manage:cp.registry
+      - manage:adp.dataplane
     secretName: sso-alfa-analytics-data-plane-secret
 
   # Bravo clients
@@ -156,17 +116,8 @@ initClients:
       use: sig
     redirectUris:
       - http://localhost:3650/.*
-    roles:
-      - wallet_view_did
-      - wallet_manage_keys
-      - wallet_use_keys
-      - wallet_view_own_credentials
-      - wallet_view_all_credentials
-      - wallet_manage_own_credentials
-      - wallet_manage_all_credentials
-      - wallet_issue_credentials
-      - wallet_view_presentations
-      - wallet_manage_clients
+    permissions:
+      - manage:sso.client
     secretName: sso-bravo-wallet-secret
 
   - clientId: bravo-control-plane
@@ -183,14 +134,14 @@ initClients:
       use: sig
     redirectUris:
       - http://localhost:3651/.*
-    roles:
-      - wallet_view_did
-      - wallet_issue_credentials
-      - wallet_use_keys
-      - wallet_view_all_credentials
-      - wallet_view_presentations
-      - controlplane_admin
-      - controlplane_dataplane
+    permissions:
+      - execute:sso.config
+      - read:w.did
+      - manage:w.issue_config
+      - execute:w.key
+      - read:w.credential
+      - read:w.presentation
+      - manage:dp.*
     secretName: sso-bravo-control-plane-secret
 
   - clientId: bravo-analytics-data-plane-server
@@ -207,8 +158,19 @@ initClients:
       use: sig
     redirectUris:
       - http://localhost:3652/.*
-    roles:
-      - controlplane_dataplane
+    permissions:
+      - execute:sso.config
+      - execute:w.key
+      - execute:w.key
+      - read:cp.catalog
+      - manage:cp.dataset
+      - manage:cp.dataplane
+      - manage:cp.negotiation
+      - manage:cp.transfer
+      - read:cp.agreement
+      - read:cp.policy
+      - manage:cp.registry
+      - manage:adp.dataplane
     secretName: sso-bravo-analytics-data-plane-server-secret
 
   - clientId: bravo-analytics-data-plane-client
@@ -225,8 +187,10 @@ initClients:
       use: sig
     redirectUris:
       - http://localhost:3653/.*
-    roles:
-      - controlplane_dataplane
+    permissions:
+      - execute:sso.config
+      - read:cp.catalog
+      - read:adp.dataplane
     secretName: sso-bravo-analytics-data-plane-client-secret
 
 initUsers:
@@ -234,18 +198,10 @@ initUsers:
     password: tsg
     email: tsg@example.com
     require2FA: false
-    roles:
-      - ssobridge_admin
-      - ssobridge_user
-      - wallet_view_did
-      - wallet_manage_keys
-      - wallet_use_keys
-      - wallet_view_own_credentials
-      - wallet_view_all_credentials
-      - wallet_manage_own_credentials
-      - wallet_manage_all_credentials
-      - wallet_issue_credentials
-      - wallet_view_presentations
-      - wallet_manage_clients
-      - controlplane_admin
-      - controlplane_dataplane
+    permissions:
+      - manage:sso.*
+      - manage:w.*
+      - manage:cp.*
+      - manage:dp.*
+      - manage:adp.*
+      - manage:hdp.*

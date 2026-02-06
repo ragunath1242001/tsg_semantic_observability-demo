@@ -9,17 +9,18 @@ import {
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination
 } from "@tsg-dsp/common-api";
 import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 
 import { RegistryService } from "./registry.service.js";
 
 @ApiTags("Registry")
 @ApiBearerAuth()
-@Roles(["controlplane_admin", "controlplane_dataplane"])
+@Requires(Action.READ, Resource.CP_REGISTRY)
 @Controller("registry")
 export class RegistryController {
   constructor(private readonly registryService: RegistryService) {}

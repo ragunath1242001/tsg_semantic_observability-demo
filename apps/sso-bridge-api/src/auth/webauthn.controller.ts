@@ -123,7 +123,7 @@ export class WebAuthnController {
   })
   @HttpCode(HttpStatus.OK)
   async deleteWebAuthnCredential(
-    @Body("id") credentialId: number,
+    @Body("id") credentialId: string,
     @Req() request: Request
   ) {
     return await this.webAuthnService.deleteWebAuthnCredential(

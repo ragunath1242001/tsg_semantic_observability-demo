@@ -87,7 +87,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         "provider",
         ContractNegotiationState.REQUESTED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.agree(negotiation.localId);
+          await negotiationService.agree(negotiation.id);
         }
       )
       .onEvent(
@@ -95,7 +95,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         "consumer",
         ContractNegotiationState.AGREED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.verify(negotiation.localId);
+          await negotiationService.verify(negotiation.id);
         }
       )
       .onEvent(
@@ -103,7 +103,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         "provider",
         ContractNegotiationState.VERIFIED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.finalize(negotiation.localId);
+          await negotiationService.finalize(negotiation.id);
         }
       )
       .onEvent(
@@ -112,7 +112,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         ContractNegotiationState.FINALIZED,
         async ({ negotiation, negotiationService }) => {
           await expect(
-            negotiationService.terminate(negotiation.localId)
+            negotiationService.terminate(negotiation.id)
           ).rejects.toThrow("cannot transition from FINALIZED to TERMINATED");
 
           const dsp: DspClientService = negotiationService["dsp"];
@@ -121,7 +121,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
               `${negotiation.remoteAddress}/termination`,
               new ContractNegotiationTerminationMessage({
                 providerPid: negotiation.remoteId,
-                consumerPid: negotiation.localId,
+                consumerPid: negotiation.id,
                 reason: []
               }),
               negotiation.remoteParty
@@ -158,7 +158,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
                 })
               ]
             }),
-            negotiation.localId
+            negotiation.id
           );
         }
       )
@@ -168,7 +168,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         ContractNegotiationState.OFFERED,
         async ({ negotiation, negotiationService }) => {
           await expect(
-            negotiationService.verify(negotiation.localId)
+            negotiationService.verify(negotiation.id)
           ).rejects.toThrow("cannot transition from OFFERED to VERIFIED");
           const dsp: DspClientService = negotiationService["dsp"];
           await expect(
@@ -176,7 +176,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
               `${negotiation.remoteAddress}/agreement/verification`,
               new ContractAgreementVerificationMessage({
                 providerPid: negotiation.remoteId,
-                consumerPid: negotiation.localId,
+                consumerPid: negotiation.id,
                 hashedMessage: {
                   digest: "dummy-digest",
                   algorithm: "SHA-256"
@@ -216,7 +216,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
                 })
               ]
             }),
-            negotiation.localId
+            negotiation.id
           );
         }
       )
@@ -225,7 +225,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         "consumer",
         ContractNegotiationState.OFFERED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.accept(negotiation.localId);
+          await negotiationService.accept(negotiation.id);
         }
       )
       .onEvent(
@@ -234,7 +234,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         ContractNegotiationState.ACCEPTED,
         async ({ negotiation, negotiationService }) => {
           await expect(
-            negotiationService.verify(negotiation.localId)
+            negotiationService.verify(negotiation.id)
           ).rejects.toThrow("cannot transition from ACCEPTED to VERIFIED");
           const dsp: DspClientService = negotiationService["dsp"];
           await expect(
@@ -242,7 +242,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
               `${negotiation.remoteAddress}/agreement/verification`,
               new ContractAgreementVerificationMessage({
                 providerPid: negotiation.remoteId,
-                consumerPid: negotiation.localId,
+                consumerPid: negotiation.id,
                 hashedMessage: {
                   digest: "dummy-digest",
                   algorithm: "SHA-256"
@@ -282,7 +282,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
                 })
               ]
             }),
-            negotiation.localId
+            negotiation.id
           );
         }
       )
@@ -293,7 +293,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         async ({ negotiation, negotiationService }) => {
           await negotiationService.requestExisting(
             negotiation.offer!,
-            negotiation.localId
+            negotiation.id
           );
         }
       )
@@ -305,7 +305,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
           await expect(
             negotiationService.requestExisting(
               negotiation.offer!,
-              negotiation.localId
+              negotiation.id
             )
           ).rejects.toThrow("cannot transition from REQUESTED to REQUESTED");
           const dsp: DspClientService = negotiationService["dsp"];
@@ -314,7 +314,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
               `${negotiation.remoteAddress}/request`,
               new ContractRequestMessage({
                 providerPid: negotiation.remoteId,
-                consumerPid: negotiation.localId,
+                consumerPid: negotiation.id,
                 offer: negotiation.offer!
               }),
               negotiation.remoteParty

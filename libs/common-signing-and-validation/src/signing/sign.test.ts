@@ -20,7 +20,7 @@ describe("Signing tests", () => {
   };
   const algorithm = "EdDSA";
   const didId = "did:example:123";
-  const identifier = "key-1";
+  const id = "key-1";
 
   describe("signAsJws", () => {
     it("should create a valid JWS signature", async () => {
@@ -44,7 +44,7 @@ describe("Signing tests", () => {
       const payload = { foo: "bar" };
       const jwt = await generateSignedJwt(payload, didId, {
         key: {
-          identifier,
+          id,
           signingKey: ed25519Jwk,
           algorithm
         },
@@ -69,7 +69,7 @@ describe("Signing tests", () => {
     });
     it("should respect expiresIn as number", async () => {
       const jwt = await generateSignedJwt({}, didId, {
-        key: { identifier, signingKey: ed25519Jwk, algorithm },
+        key: { id, signingKey: ed25519Jwk, algorithm },
         expiresIn: 60
       });
       const [, payloadB64] = jwt.split(".");
@@ -81,7 +81,7 @@ describe("Signing tests", () => {
     it("should respect expiresIn as Date", async () => {
       const date = new Date(Date.now() + 60000);
       const jwt = await generateSignedJwt({}, didId, {
-        key: { identifier, signingKey: ed25519Jwk, algorithm },
+        key: { id, signingKey: ed25519Jwk, algorithm },
         expiresIn: date
       });
       const [, payloadB64] = jwt.split(".");
@@ -95,7 +95,7 @@ describe("Signing tests", () => {
     });
     it("should default iat to now if not set", async () => {
       const jwt = await generateSignedJwt({}, didId, {
-        key: { identifier, signingKey: ed25519Jwk, algorithm }
+        key: { id, signingKey: ed25519Jwk, algorithm }
       });
       const [, payloadB64] = jwt.split(".");
       const decodedPayload = JSON.parse(
@@ -105,7 +105,7 @@ describe("Signing tests", () => {
     });
     it("should allow subject=true to set sub to didId", async () => {
       const jwt = await generateSignedJwt({}, didId, {
-        key: { identifier, signingKey: ed25519Jwk, algorithm },
+        key: { id, signingKey: ed25519Jwk, algorithm },
         subject: true
       });
       const [, payloadB64] = jwt.split(".");
@@ -116,7 +116,7 @@ describe("Signing tests", () => {
     });
     it("should not set iat if options.iat is false", async () => {
       const jwt = await generateSignedJwt({}, didId, {
-        key: { identifier, signingKey: ed25519Jwk, algorithm },
+        key: { id, signingKey: ed25519Jwk, algorithm },
         iat: false
       });
       const [, payloadB64] = jwt.split(".");
@@ -128,7 +128,7 @@ describe("Signing tests", () => {
 
     it("should set nonce if provided", async () => {
       const jwt = await generateSignedJwt({}, didId, {
-        key: { identifier, signingKey: ed25519Jwk, algorithm },
+        key: { id, signingKey: ed25519Jwk, algorithm },
         nonce: "test-nonce"
       });
       const [, payloadB64] = jwt.split(".");
@@ -159,7 +159,7 @@ describe("Signing tests", () => {
       const proof = await generateSignedDataIntegrityProof(
         doc,
         didId,
-        identifier,
+        id,
         publicJwk,
         ed25519Jwk,
         algorithm,
@@ -167,7 +167,7 @@ describe("Signing tests", () => {
       );
       expect(proof).toBeDefined();
       expect(proof.type).toBe("DataIntegrityProof");
-      expect(proof.verificationMethod).toContain(identifier);
+      expect(proof.verificationMethod).toContain(id);
       expect(proof.proofPurpose).toBe("assertionMethod");
       expect(proof.cryptosuite).toContain("eddsa");
       expect(proof.proofValue).toBeDefined();
@@ -191,7 +191,7 @@ describe("Signing tests", () => {
       const proof = await generateSignedDataIntegrityProof(
         doc,
         didId,
-        identifier,
+        id,
         publicJwk,
         ed25519Jwk,
         algorithm,
@@ -224,7 +224,7 @@ describe("Signing tests", () => {
       const proof = await generateSignedDataIntegrityProof(
         doc,
         didId,
-        identifier,
+        id,
         publicJwk,
         ed25519Jwk,
         algorithm,
@@ -254,7 +254,7 @@ describe("Signing tests", () => {
       const proof = await generateSignedDataIntegrityProof(
         doc,
         didId,
-        identifier,
+        id,
         publicJwk,
         ed25519Jwk,
         algorithm,

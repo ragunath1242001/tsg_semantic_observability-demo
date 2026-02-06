@@ -13,6 +13,7 @@ interface ClientWithDates extends ClientDto {
 }
 
 import jwkSchema from "../assets/jwk.schema.json";
+import { OAUTH_GRANTS } from "../utils/constants";
 import { injectStrict } from "../utils/injectTyped";
 import {
   type ECCurve,
@@ -39,22 +40,12 @@ const clientObj: ClientDto = {
   clientSecret: undefined,
   tokenEndpointAuthMethod: "client_secret_post",
   jwk: undefined,
-  roles: [],
+  permissions: [],
   grants: [],
   redirectUris: []
 };
 
 const client = ref<ClientDto>(clientObj);
-
-const clientGrants = [
-  "authorization_code",
-  "client_credentials",
-  "password",
-  "refresh_token"
-].map((grant) => ({
-  label: grant,
-  value: grant
-}));
 
 const authMethods: Array<{
   label: string;
@@ -82,22 +73,19 @@ const authMethods: Array<{
   }
 ];
 
-const clientRoles = ref<Array<{ label: string; value: string }>>([]);
-const loadRoles = async () => {
+const clientPermissions = ref<string[]>([]);
+const loadPermissions = async () => {
   try {
-    const response = await http.get("/roles");
-    clientRoles.value = response.data.map((role) => ({
-      label: role.name,
-      value: role.name
-    }));
+    const response = await http.get("/permissions");
+    clientPermissions.value = response.data.map((perm) => perm.permission);
   } catch (error) {
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: "Failed to load roles",
+      detail: "Failed to load permissions",
       life: 3000
     });
-    console.error("Error loading roles:", error);
+    console.error("Error loading permissions:", error);
   }
 };
 
@@ -213,16 +201,6 @@ const editClient = (data: ClientDto) => {
   client.value = { ...data };
   // Initialize JWK JSON string if JWK exists
   jwkJsonString.value = stringifyJwk(data.jwk);
-  // @ts-expect-error Grants should be annotated with label and value
-  client.value.grants = client.value.grants.map((grant) => ({
-    label: grant,
-    value: grant
-  }));
-  // @ts-expect-error Roles should be annotated with label and value
-  client.value.roles = client.value.roles.map((role) => ({
-    label: role,
-    value: role
-  }));
   clientDialog.value = true;
 };
 
@@ -278,7 +256,7 @@ const saveClient = async () => {
   const hasRequiredFields =
     client?.value.name?.trim() &&
     client?.value.clientId?.trim() &&
-    client?.value.roles?.length > 0;
+    client?.value.permissions?.length > 0;
 
   const hasSecretIfNeeded =
     !needsClientSecret.value || client?.value.clientSecret?.trim();
@@ -286,12 +264,6 @@ const saveClient = async () => {
   const hasKeyIfNeeded = !usesPrivateKeyJwt.value || client?.value.jwk;
 
   if (hasRequiredFields && hasSecretIfNeeded && hasKeyIfNeeded) {
-    if (client?.value.grants) {
-      // @ts-expect-error Grants should be strings
-      client.value.grants = client.value.grants.map((grant) => grant.value);
-    }
-    // @ts-expect-error Roles should be annotated with label and value
-    client.value.roles = client.value.roles.map((role) => role.value);
     if (client.value.id) {
       await updateClient();
     } else {
@@ -370,7 +342,7 @@ const copyToClipboard = async (text: string, label: string) => {
 };
 
 onMounted(async () => {
-  await Promise.all([load(), loadRoles()]);
+  await Promise.all([load(), loadPermissions()]);
 });
 </script>
 <template>
@@ -535,27 +507,27 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <!-- Right Section: Roles, Grants & Actions -->
+              <!-- Right Section: Permissions, Grants & Actions -->
               <div
                 class="border-t lg:border-t-0 lg:border-l border-surface-200/60 dark:border-surface-700/60 p-5 lg:w-96 xl:w-120 2xl:w-144 bg-surface-50/30 dark:bg-surface-800/20">
                 <div class="space-y-4">
-                  <!-- Roles -->
-                  <div v-if="item.roles && item.roles.length > 0">
+                  <!-- Permissions -->
+                  <div v-if="item.permissions && item.permissions.length > 0">
                     <span
                       class="text-xs font-semibold text-surface-600 dark:text-surface-300 uppercase tracking-wider block mb-2"
-                      >Roles</span
+                      >Permissions</span
                     >
                     <div class="flex flex-wrap gap-1.5">
                       <Tag
-                        v-for="role in item.roles.slice(0, 5)"
-                        :key="role"
-                        :value="role"
+                        v-for="perm in item.permissions.slice(0, 5)"
+                        :key="perm"
+                        :value="perm"
                         severity="secondary"
                         class="text-xs" />
                       <Tag
-                        v-if="item.roles.length > 5"
+                        v-if="item.permissions.length > 5"
                         v-tooltip.left="{
-                          value: item.roles.slice(5).join('<br />'),
+                          value: item.permissions.slice(5).join('<br />'),
                           escape: false,
                           hideDelay: 500,
                           pt: {
@@ -564,7 +536,7 @@ onMounted(async () => {
                             }
                           }
                         }"
-                        :value="`+${item.roles.length - 5}`"
+                        :value="`+${item.permissions.length - 5}`"
                         severity="secondary"
                         class="text-xs cursor-help" />
                     </div>
@@ -882,22 +854,22 @@ onMounted(async () => {
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="field">
-              <label for="roles" class="block text-sm font-medium mb-2">
-                Roles <span class="text-red-500">*</span>
+              <label for="permissions" class="block text-sm font-medium mb-2">
+                Permissions <span class="text-red-500">*</span>
               </label>
               <MultiSelect
-                id="roles"
-                v-model="client.roles"
-                :options="clientRoles"
-                option-label="label"
-                placeholder="Select roles"
-                :invalid="submitted && client.roles.length === 0"
+                id="permissions"
+                v-model="client.permissions"
+                filter
+                :options="clientPermissions"
+                placeholder="Select permissions"
+                :invalid="submitted && client.permissions.length === 0"
                 display="chip"
                 class="w-full" />
               <small
-                v-if="submitted && client.roles.length === 0"
+                v-if="submitted && client.permissions.length === 0"
                 class="text-red-500">
-                At least one role is required
+                At least one permission is required
               </small>
             </div>
 
@@ -908,8 +880,7 @@ onMounted(async () => {
               <MultiSelect
                 id="grants"
                 v-model="client.grants"
-                :options="clientGrants"
-                option-label="label"
+                :options="OAUTH_GRANTS"
                 placeholder="Select grants"
                 display="chip"
                 class="w-full" />

@@ -2,15 +2,15 @@ import {
   AlgorithmDefinitionDto,
   AlgorithmParticipant
 } from "@tsg-dsp/analytics-data-plane-dtos";
+import { OwnableEntity } from "@tsg-dsp/common-api";
+import { Resource } from "@tsg-dsp/common-dtos";
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
   ManyToOne,
-  OneToMany,
-  PrimaryColumn
+  OneToMany
 } from "typeorm";
 
 import { TransferDao } from "../dataplane/transfer.dao.js";
@@ -19,18 +19,14 @@ import { InternalEventDao } from "../events/internal-event.dao.js";
 import { ProjectAgreementDao } from "../project-agreements/project-agreement.dao.js";
 
 @Entity()
-export class AlgorithmInstanceDao {
-  @PrimaryColumn({ type: String })
-  id!: string;
+export class AlgorithmInstanceDao extends OwnableEntity {
+  readonly resourceType = Resource.ADP_ALGORITHM;
 
   @Column("simple-json")
   algorithmDefinition!: AlgorithmDefinitionDto;
 
   @Column("simple-json")
   participants!: AlgorithmParticipant[];
-
-  @CreateDateColumn({ type: String })
-  createdDate!: Date;
 
   @Column({ type: String })
   status!: string;
@@ -49,7 +45,7 @@ export class AlgorithmInstanceDao {
   @JoinTable()
   algorithmEvents!: AlgorithmEventDao[];
 
-  @ManyToOne(
+  @OneToMany(
     () => InternalEventDao,
     (internalEvent) => internalEvent.algorithmInstance
   )

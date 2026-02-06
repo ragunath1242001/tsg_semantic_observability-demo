@@ -72,11 +72,11 @@ describe("Policy Evaluation Service", () => {
                 data: [
                   {
                     state: TransferState.STARTED,
-                    localId: "urn:uuid:3337c8dc-c512-4653-983a-6ea32277f870"
+                    id: "urn:uuid:3337c8dc-c512-4653-983a-6ea32277f870"
                   } as unknown as TransferStatus,
                   {
                     state: TransferState.STARTED,
-                    localId: "urn:uuid:00000000-0000-0000-0000-000000000000"
+                    id: "urn:uuid:00000000-0000-0000-0000-000000000000"
                   } as unknown as TransferStatus
                 ],
                 total: 2

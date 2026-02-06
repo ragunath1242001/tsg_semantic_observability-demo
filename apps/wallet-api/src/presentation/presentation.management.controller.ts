@@ -8,35 +8,30 @@ import {
   Post,
   Put
 } from "@nestjs/common";
-import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination,
   validationPipe
 } from "@tsg-dsp/common-api";
 import {
+  Action,
   ApiForbiddenResponseDefault,
   CredentialStatusRequest,
+  Resource,
   VerifiedCredentialStatus
 } from "@tsg-dsp/common-dtos";
-import { AddScope, AppRole, ScopeDto } from "@tsg-dsp/wallet-dtos";
+import { AddScope, ScopeDto } from "@tsg-dsp/wallet-dtos";
 import { plainToInstance } from "class-transformer";
 
 import { PresentationService } from "./presentation.service.js";
 
 @Controller("management/presentation")
 @ApiTags("Management Presentation")
-@ApiOAuth2([AppRole.VIEW_PRESENTATIONS])
-@Roles(AppRole.VIEW_PRESENTATIONS)
+@Requires(Action.READ, Resource.W_PRESENTATION)
 export class PresentationManagementController {
   constructor(private readonly presentationService: PresentationService) {}
 

@@ -1,18 +1,19 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
-import { AppError } from "@tsg-dsp/common-api";
-import { Client, validationPipe } from "@tsg-dsp/common-api";
+  AppError,
+  Client,
+  ClientInfo,
+  EffectiveScope,
+  Requires,
+  validationPipe
+} from "@tsg-dsp/common-api";
 import {
+  Action,
   ApiBadRequestResponseDefault,
-  ApiForbiddenResponseDefault
+  ApiForbiddenResponseDefault,
+  Resource
 } from "@tsg-dsp/common-dtos";
-import { AppRole, ClientInfo } from "@tsg-dsp/wallet-dtos";
 import {
   ComplianceRequest,
   LegalRegistrationNumberRequest
@@ -22,44 +23,24 @@ import { RuntimeConfig } from "../../config.js";
 import { CredentialsDto } from "../credentials.schemas.js";
 import { GaiaXService } from "./gaiax.service.js";
 
+function scopeToTargetDid(
+  scope: EffectiveScope,
+  clientDidId?: string
+): string | undefined {
+  if (scope === "*" || scope === null) {
+    return undefined;
+  }
+  return clientDidId;
+}
+
 @Controller("management/credentials/gaiax")
-@ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
+@Requires(Action.CREATE, Resource.W_CREDENTIAL)
 @ApiTags("Management Gaia-X Credentials")
 export class GaiaXManagementController {
   constructor(
     private readonly gaiaXService: GaiaXService,
     private readonly config: RuntimeConfig
   ) {}
-
-  private targetDid(
-    action: "view" | "manage",
-    client: ClientInfo
-  ): string | undefined {
-    switch (action) {
-      case "view":
-        if (client.roles.includes(AppRole.VIEW_ALL_CREDENTIALS)) {
-          return undefined;
-        } else if (client.roles.includes(AppRole.VIEW_OWN_CREDENTIALS)) {
-          return client.didId;
-        } else {
-          throw new AppError(
-            `Not allowed to view credentials`,
-            HttpStatus.FORBIDDEN
-          );
-        }
-      case "manage":
-        if (client.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS)) {
-          return undefined;
-        } else if (client.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS)) {
-          return client.didId;
-        } else {
-          throw new AppError(
-            `Not allowed to manage credentials`,
-            HttpStatus.FORBIDDEN
-          );
-        }
-    }
-  }
 
   @Post("legalRegistrationNumber")
   @ApiOperation({
@@ -83,7 +64,10 @@ export class GaiaXManagementController {
         HttpStatus.SERVICE_UNAVAILABLE
       );
     }
-    const targetDid = this.targetDid("manage", client);
+    const targetDid = scopeToTargetDid(
+      client.getEffectiveScope(Action.MANAGE, Resource.W_CREDENTIAL),
+      client.didId
+    );
     return this.gaiaXService.requestLegalRegistrationNumberCredential(
       credentialConfig,
       targetDid
@@ -112,7 +96,10 @@ export class GaiaXManagementController {
         HttpStatus.SERVICE_UNAVAILABLE
       );
     }
-    const targetDid = this.targetDid("manage", client);
+    const targetDid = scopeToTargetDid(
+      client.getEffectiveScope(Action.MANAGE, Resource.W_CREDENTIAL),
+      client.didId
+    );
     return this.gaiaXService.requestComplianceCredential(
       credentialConfig,
       targetDid

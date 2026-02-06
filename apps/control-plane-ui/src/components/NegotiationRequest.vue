@@ -45,7 +45,7 @@ const getNegotiation = async (negotiationId: string) => {
 
 const agreeNegotiation = async (negotiation: NegotiationDetailDto) => {
   try {
-    await http.post(`management/negotiations/${negotiation.localId}/agreement`);
+    await http.post(`management/negotiations/${negotiation.id}/agreement`);
     toast.add({
       severity: "success",
       summary: "Success",
@@ -67,9 +67,7 @@ const agreeNegotiation = async (negotiation: NegotiationDetailDto) => {
 
 const declineNegotiation = async (negotiation) => {
   try {
-    await http.post(
-      `management/negotiations/${negotiation.localId}/termination`
-    );
+    await http.post(`management/negotiations/${negotiation.id}/termination`);
     toast.add({
       severity: "success",
       summary: "Success",
@@ -151,7 +149,7 @@ const declineNegotiation = async (negotiation) => {
           label="View Contract Negotiation"
           class="text-center p-4"
           style="width: 100%"
-          @click="getNegotiation(negotiation.localId)" />
+          @click="getNegotiation(negotiation.id)" />
       </div>
     </template>
   </Card>

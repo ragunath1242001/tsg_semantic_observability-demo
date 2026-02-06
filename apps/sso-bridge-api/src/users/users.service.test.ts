@@ -12,17 +12,14 @@ import { WebAuthnService } from "../auth/webauthn.service.js";
 import { RootConfig } from "../config.js";
 import { OauthClient } from "../model/client.dao.js";
 import { RecoveryCode } from "../model/recovery-code.dao.js";
-import { OauthRole } from "../model/role.dao.js";
 import { TotpCredential } from "../model/totp-credential.dao.js";
 import { OauthUser } from "../model/user.dao.js";
 import { WebAuthnCredential } from "../model/webauthn-credential.dao.js";
-import { RolesService } from "../roles/roles.service.js";
+import { PermissionsService } from "../permissions/permissions.service.js";
 import { UsersService } from "./users.service.js";
 
 describe("UsersService Tests", () => {
   let usersService: UsersService;
-  let rolesService: RolesService;
-  let userRole: OauthRole;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -30,7 +27,6 @@ describe("UsersService Tests", () => {
       imports: [
         TypeOrmTestHelper.instance.module([
           OauthUser,
-          OauthRole,
           OauthClient,
           TotpCredential,
           WebAuthnCredential,
@@ -38,7 +34,6 @@ describe("UsersService Tests", () => {
         ]),
         TypeOrmModule.forFeature([
           OauthUser,
-          OauthRole,
           OauthClient,
           TotpCredential,
           WebAuthnCredential,
@@ -47,7 +42,7 @@ describe("UsersService Tests", () => {
       ],
       providers: [
         UsersService,
-        RolesService,
+        PermissionsService,
         TotpService,
         WebAuthnService,
         RecoveryCodeService,
@@ -60,11 +55,6 @@ describe("UsersService Tests", () => {
     }).compile();
 
     usersService = module.get<UsersService>(UsersService);
-    rolesService = module.get<RolesService>(RolesService);
-    userRole = await rolesService.createRole({
-      name: "user",
-      description: "User role"
-    });
   });
 
   afterAll(async () => {
@@ -77,7 +67,7 @@ describe("UsersService Tests", () => {
         username: "Alice",
         password: "password",
         email: "alice@example.com",
-        roles: [userRole.name],
+        permissions: ["manage:*"],
         grants: ["authorization_code"]
       };
       const user = await usersService.createUser(userData);
@@ -90,7 +80,7 @@ describe("UsersService Tests", () => {
         username: "Bob",
         password: "password",
         email: "bob@example.com",
-        roles: [userRole.name],
+        permissions: ["manage:*"],
         grants: ["authorization_code"]
       });
       const users = await usersService.getUsers(
@@ -100,7 +90,7 @@ describe("UsersService Tests", () => {
 
       const user = await usersService.getUserByEmail("bob@example.com");
       expect(user.username).toEqual("Bob");
-      expect(user.roles).toContainEqual(userRole);
+      expect(user.permissions).toContain("manage:sso.user");
     });
 
     it("should update an existing user", async () => {
@@ -108,7 +98,7 @@ describe("UsersService Tests", () => {
         username: "Charlie",
         password: "password",
         email: "charlie@example.com",
-        roles: [userRole.name],
+        permissions: ["manage:*"],
         grants: ["authorization_code"]
       });
       const updated = await usersService.updateUser(user.id, {
@@ -119,7 +109,7 @@ describe("UsersService Tests", () => {
 
     it("should throw error when updating non-existent user", async () => {
       await expect(
-        usersService.updateUser(9999, { username: "DoesNotExist" } as any)
+        usersService.updateUser("9999", { username: "DoesNotExist" } as any)
       ).rejects.toThrow();
     });
 
@@ -128,7 +118,7 @@ describe("UsersService Tests", () => {
         username: "Delta",
         password: "password",
         email: "delta@example.com",
-        roles: [userRole.name],
+        permissions: ["manage:*"],
         grants: ["authorization_code"]
       });
       const result = await usersService.deleteUser(
@@ -140,7 +130,7 @@ describe("UsersService Tests", () => {
 
     it("should throw error when deleting non-existent user", async () => {
       await expect(
-        usersService.deleteUser(9999, {} as unknown as Request)
+        usersService.deleteUser("9999", {} as unknown as Request)
       ).rejects.toThrow("not found");
     });
   });

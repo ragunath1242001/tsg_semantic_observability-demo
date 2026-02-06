@@ -9,7 +9,8 @@ import { Repository } from "typeorm";
 import { TwoFactorHelper } from "../auth/two-factor.helper.js";
 import { InitUser, RootConfig } from "../config.js";
 import { OauthUser } from "../model/user.dao.js";
-import { RolesService } from "../roles/roles.service.js";
+import { PermissionsService } from "../permissions/permissions.service.js";
+import { OwnershipFields } from "../utils/ownership.js";
 import { getUser } from "../utils/session.js";
 import { oauthUserToDto } from "../utils/user.js";
 
@@ -19,7 +20,7 @@ export class UsersService {
     private readonly rootConfig: RootConfig,
     @InjectRepository(OauthUser)
     private readonly userRepository: Repository<OauthUser>,
-    private readonly rolesService: RolesService,
+    private readonly permissionsService: PermissionsService,
     private readonly twoFactorHelper: TwoFactorHelper
   ) {
     this.initialized = this.init();
@@ -28,8 +29,6 @@ export class UsersService {
   initialized: Promise<void>;
 
   async init() {
-    await this.rolesService.initialized;
-
     // Skip if no users to initialize or users already exist
     if (
       !this.rootConfig.initUsers.length ||
@@ -67,7 +66,7 @@ export class UsersService {
     };
   }
 
-  async getUser(userId: number): Promise<OauthUser> {
+  async getUser(userId: string): Promise<OauthUser> {
     const user = await this.userRepository.findOne({
       where: { id: userId }
     });
@@ -80,7 +79,7 @@ export class UsersService {
     return user;
   }
 
-  async has2FACredentials(userId: number): Promise<boolean> {
+  async has2FACredentials(userId: string): Promise<boolean> {
     return await this.twoFactorHelper.has2FACredentials(userId);
   }
 
@@ -98,33 +97,38 @@ export class UsersService {
   }
 
   async createUser(
-    createUserData: Partial<UserWithPasswordDto>
+    createUserData: Partial<UserWithPasswordDto>,
+    ownershipFields?: OwnershipFields
   ): Promise<OauthUser> {
-    const user = this.userRepository.create(
-      await this.fromUserInput(createUserData)
-    );
+    const user = this.userRepository.create({
+      ...this.fromUserInput(createUserData),
+      ...ownershipFields
+    });
     user.password = await hash(user.password, 10);
     return await this.userRepository.save(user);
   }
 
   /**
-   * Transforms roles from string[] to OauthRole[] objects.
+   * Transforms permissions from string[] (which may include permission set names)
+   * to expanded permission strings.
    */
-  async fromUserInput(
+  fromUserInput(
     userData: Partial<InitUser> | Partial<UserWithPasswordDto>
-  ): Promise<OauthUser> {
+  ): Partial<OauthUser> {
     return {
       ...userData,
-      roles: await this.rolesService.getRolesByNames(userData.roles || [])
-    } as OauthUser;
+      permissions: this.permissionsService.expandPermissions(
+        userData.permissions || []
+      )
+    } as Partial<OauthUser>;
   }
 
   async deleteUser(
-    id: number,
+    id: string,
     request: Request
   ): Promise<{ deleted: boolean }> {
     const currentUser = getUser(request);
-    if (currentUser && +id === +currentUser.id) {
+    if (currentUser && id === currentUser.id) {
       throw new AppError(
         "You cannot delete your own account",
         HttpStatus.FORBIDDEN
@@ -136,19 +140,21 @@ export class UsersService {
   }
 
   async updateUser(
-    id: number,
+    id: string,
     updateData: Partial<UserWithPasswordDto>
   ): Promise<OauthUser> {
     const user = await this.getUser(id);
     if (updateData.password) {
       updateData.password = await hash(updateData.password, 10);
     }
-    const transformedData = await this.fromUserInput(updateData);
+    const transformedData = this.fromUserInput(updateData);
 
-    return await this.userRepository.save({
-      ...user,
-      ...transformedData
-    });
+    return await this.userRepository.save(
+      this.userRepository.create({
+        ...user,
+        ...transformedData
+      })
+    );
   }
 
   async validateUser(username: string, password: string) {
@@ -182,7 +188,7 @@ export class UsersService {
       id: user.id,
       username: user.username,
       email: user.email,
-      roles: user.roles?.map((role) => role.name) || [],
+      permissions: user.permissions || [],
       require2FA: user.require2FA,
       has2FA
     };
@@ -212,35 +218,18 @@ export class UsersService {
     return { success: true };
   }
 
-  async verifyPassword(userId: number, password: string): Promise<boolean> {
+  async verifyPassword(userId: string, password: string): Promise<boolean> {
     const user = await this.getUser(userId);
     return await compare(password, user.password);
   }
 
-  async setRequire2FA(userId: number, require2FA: boolean): Promise<void> {
+  async setRequire2FA(userId: string, require2FA: boolean): Promise<void> {
     const user = await this.getUser(userId);
     user.require2FA = require2FA;
     await this.userRepository.save(user);
   }
 
-  async getUserWithRelations(
-    userId: number,
-    relations: string[]
-  ): Promise<OauthUser> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations
-    });
-    if (!user) {
-      throw new AppError(
-        `User with id ${userId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
-    return user;
-  }
-
-  async resetUser2FA(userId: number): Promise<void> {
+  async resetUser2FA(userId: string): Promise<void> {
     const user = await this.getUser(userId);
 
     const has2FA = await this.has2FACredentials(user.id);

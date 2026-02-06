@@ -111,7 +111,7 @@ export function validateTrustedAuthorities(
       case "openid_federation": {
         // Validate against OpenID Federation trust anchors
         const federationAnchors = trustAnchors.filter((ta) =>
-          trustAuth.values.includes(ta.identifier)
+          trustAuth.values.includes(ta.id)
         );
         if (federationAnchors.length === 0) {
           throw new AppError(

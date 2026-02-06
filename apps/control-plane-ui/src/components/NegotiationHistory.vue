@@ -93,7 +93,7 @@ const selectDataPlane = async (): Promise<string | undefined> => {
     ...(await dataPlaneStore.getDataPlanes()).map((dp) => {
       return {
         label: `${dp.managementAddress} (${dp.dataplaneType})`,
-        value: dp.identifier
+        value: dp.id
       };
     })
   ];
@@ -172,7 +172,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
         <AccordionPanel
           v-for="(negotiation, index) in negotiations"
           :key="index"
-          :value="negotiation.localId">
+          :value="negotiation.id">
           <AccordionHeader>
             <span class="flex items-center justify-between w-full">
               <div>
