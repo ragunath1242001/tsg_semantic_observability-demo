@@ -31,9 +31,9 @@ const router = createRouter({
           meta: { requiresAdmin: true }
         },
         {
-          path: "/roles",
-          name: "roles",
-          component: () => import("../views/Roles.vue"),
+          path: "/permissions",
+          name: "permissions",
+          component: () => import("../views/PermissionsList.vue"),
           meta: { requiresAdmin: true }
         },
         {
@@ -71,7 +71,10 @@ router.beforeEach(async (to) => {
   // Check if route requires admin role
   if (to.meta.requiresAdmin) {
     if (typeof store.user === "object" && store.user) {
-      const isAdmin = store.user.roles?.includes("ssobridge_admin") || false;
+      const isAdmin =
+        store.user.permissions?.includes("manage:sso.user") ||
+        store.user.permissions?.includes("manage:sso.client") ||
+        false;
       if (!isAdmin) {
         // Redirect non-admin users to dashboard
         return "/";

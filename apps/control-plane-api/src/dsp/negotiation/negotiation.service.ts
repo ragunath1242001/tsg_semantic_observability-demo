@@ -2,6 +2,8 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
+  ClientInfo,
+  getOwnershipFieldsFromClient,
   Paginated,
   PaginationOptionsDto,
   ServerConfig
@@ -23,7 +25,6 @@ import {
   Multilanguage,
   NegotiationDetail,
   NegotiationEvent,
-  NegotiationProcessEvent,
   NegotiationRole,
   Offer
 } from "@tsg-dsp/common-dsp";
@@ -135,17 +136,16 @@ export class NegotiationService {
         negotiation.state
       ].includes(to)
     ) {
-      const event: NegotiationProcessEvent = {
+      const event = this.negotiationProcessEventRepository.create({
         time: new Date(),
         state: to,
-        localMessage: `Negotiation with process ID ${negotiation.localId} cannot transition from ${negotiation.state} to ${to}`,
+        localMessage: `Negotiation with process ID ${negotiation.id} cannot transition from ${negotiation.state} to ${to}`,
         type: direction
-      };
-      const eventObj = this.negotiationProcessEventRepository.create(event);
-      negotiation.events.push(eventObj);
+      });
+      negotiation.events.push(event);
       await this.negotiationDetailRepository.save(negotiation);
       throw new DSPError(
-        `Negotiation with process ID ${negotiation.localId} cannot transition from ${negotiation.state} to ${to}`,
+        `Negotiation with process ID ${negotiation.id} cannot transition from ${negotiation.state} to ${to}`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "warn");
     }
@@ -178,7 +178,7 @@ export class NegotiationService {
     const [negotiations, itemCount] =
       await this.negotiationDetailRepository.findAndCount({
         select: {
-          localId: true,
+          id: true,
           remoteId: true,
           role: true,
           remoteAddress: true,
@@ -229,7 +229,7 @@ export class NegotiationService {
     audience?: string
   ): Promise<NegotiationDetailDto> {
     const negotiation = await this.negotiationDetailRepository.findOneBy({
-      localId: processId,
+      id: processId,
       remoteParty: audience
     });
     if (negotiation) {
@@ -247,7 +247,7 @@ export class NegotiationService {
     audience?: string
   ): Promise<NegotiationDetail> {
     const negotiation = await this.negotiationDetailRepository.findOneBy({
-      localId: processId,
+      id: processId,
       remoteParty: audience
     });
     if (negotiation) {
@@ -275,7 +275,8 @@ export class NegotiationService {
     offer: Offer,
     dataSet: string,
     remoteAddress: string,
-    audience: string
+    audience: string,
+    client?: ClientInfo
   ): Promise<NegotiationDetail> {
     const consumerPid = `urn:uuid:${crypto.randomUUID()}`;
     offer.target = dataSet;
@@ -295,7 +296,7 @@ export class NegotiationService {
       contractNegotiationResponse
     );
     const negotiation: NegotiationDetail = {
-      localId: consumerPid,
+      id: consumerPid,
       remoteId: contractNegotiation.providerPid,
       role: "consumer",
       remoteAddress: `${remoteAddress}/${contractNegotiation.providerPid}`,
@@ -306,12 +307,13 @@ export class NegotiationService {
       events: []
     };
 
-    return await this.createNegotiationDetail(negotiation, "local");
+    return await this.createNegotiationDetail(negotiation, "local", client);
   }
 
   async createNegotiationDetail(
     negotiation: NegotiationDetail,
-    type: "local" | "remote"
+    type: "local" | "remote",
+    client?: ClientInfo
   ) {
     const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
@@ -319,12 +321,14 @@ export class NegotiationService {
       type: type
     });
     negotiation.events.push(event);
-    await this.negotiationDetailRepository.save(negotiation);
+    // Set ownership fields if client context is available
+    const negotiationWithOwnership = {
+      ...negotiation,
+      ...getOwnershipFieldsFromClient(client)
+    };
+    await this.negotiationDetailRepository.save(negotiationWithOwnership);
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:create",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:create", negotiation.id);
     }
     return negotiation;
   }
@@ -349,7 +353,7 @@ export class NegotiationService {
     }
 
     const negotiation: NegotiationDetail = {
-      localId: providerPid,
+      id: providerPid,
       remoteId: requestMessage.consumerPid,
       role: "provider",
       remoteAddress: `${requestMessage.callbackAddress}/negotiations/${requestMessage.consumerPid}`,
@@ -365,7 +369,7 @@ export class NegotiationService {
       this.eventEmitter.emitAsync(
         "negotiation.create",
         new NegotiationCreatedEvent({
-          localId: providerPid,
+          id: providerPid,
           offer: requestMessage.offer.serialize(),
           datasetId: requestMessage.offer.target,
           remoteParty: remoteParty
@@ -390,7 +394,7 @@ export class NegotiationService {
     offer.assignee = this.config.iam.didId;
     const contractRequestMessage = new ContractRequestMessage({
       providerPid: negotiation.remoteId,
-      consumerPid: negotiation.localId,
+      consumerPid: negotiation.id,
       offer: offer
     });
     const contractNegotiationResponse = await this.dsp.requestNegotiation(
@@ -401,18 +405,16 @@ export class NegotiationService {
 
     await deserialize<ContractNegotiation>(contractNegotiationResponse);
     negotiation.state = ContractNegotiationState.REQUESTED;
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.REQUESTED,
       type: "local"
     });
+    negotiation.events.push(event);
     negotiation.offer = offer;
     await this.negotiationDetailRepository.save(negotiation);
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:create",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:create", negotiation.id);
     }
     return negotiation;
   }
@@ -440,22 +442,20 @@ export class NegotiationService {
       negotiation,
       ContractNegotiationState.REQUESTED
     );
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.REQUESTED,
       type: "remote"
     });
+    negotiation.events.push(event);
     negotiation.state = ContractNegotiationState.REQUESTED;
     negotiation.offer = requestMessage.offer;
     await this.negotiationDetailRepository.save(negotiation);
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
     return new ContractNegotiation({
-      providerPid: negotiation.localId,
+      providerPid: negotiation.id,
       consumerPid: negotiation.remoteId,
       state: negotiation.state
     });
@@ -476,15 +476,16 @@ export class NegotiationService {
     offer.assigner = this.config.iam.didId;
     offer.assignee = negotiation.remoteParty;
     const contractOfferMessage = new ContractOfferMessage({
-      providerPid: negotiation.localId,
+      providerPid: negotiation.id,
       consumerPid: negotiation.remoteId,
       offer: offer
     });
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.OFFERED,
       type: "local"
     });
+    negotiation.events.push(event);
 
     await this.dsp.negotiationOffer(
       `${negotiation.remoteAddress}/offers`,
@@ -495,10 +496,7 @@ export class NegotiationService {
     negotiation.state = ContractNegotiationState.OFFERED;
     await this.negotiationDetailRepository.save(negotiation);
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
     return {
       status: "OK"
@@ -523,19 +521,17 @@ export class NegotiationService {
       negotiation,
       ContractNegotiationState.OFFERED
     );
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.OFFERED,
       type: "remote"
     });
+    negotiation.events.push(event);
     negotiation.offer = contractOfferMessage.offer;
     negotiation.state = ContractNegotiationState.OFFERED;
     await this.negotiationDetailRepository.save(negotiation);
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
     return {
       status: "OK"
@@ -549,14 +545,15 @@ export class NegotiationService {
       negotiation,
       ContractNegotiationState.ACCEPTED
     );
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.ACCEPTED,
       type: "local"
     });
+    negotiation.events.push(event);
     const eventMessage = new ContractNegotiationEventMessage({
       providerPid: negotiation.remoteId,
-      consumerPid: negotiation.localId,
+      consumerPid: negotiation.id,
       eventType: NegotiationEvent.ACCEPTED
     });
     await this.dsp.negotiationEvent(
@@ -567,10 +564,7 @@ export class NegotiationService {
     negotiation.state = ContractNegotiationState.ACCEPTED;
     await this.negotiationDetailRepository.save(negotiation);
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
     return {
       status: "OK"
@@ -608,7 +602,7 @@ export class NegotiationService {
       }
       const agreementDao = await this.agreementService.storeAgreement(
         agreement!,
-        negotiation.localId,
+        negotiation.id,
         negotiation.events.find((e) => e.type === "local" && e.hashedMessage)
           ?.hashedMessage,
         remoteHash
@@ -618,20 +612,18 @@ export class NegotiationService {
         agreementDao: agreementDao
       });
     }
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: newState,
       type: "remote",
       hashedMessage: contractNegotiationEventMessage.hashedMessage
     });
+    negotiation.events.push(event);
     negotiation.state = newState;
     await this.negotiationDetailRepository.save(negotiation);
 
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
     return {
       status: "OK"
@@ -666,23 +658,24 @@ export class NegotiationService {
       assigner: this.config.iam.didId
     });
     const agreementMessage = new ContractAgreementMessage({
-      providerPid: negotiation.localId,
+      providerPid: negotiation.id,
       consumerPid: negotiation.remoteId,
       agreement: agreement
     });
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.AGREED,
       agreementMessage: JSON.stringify(agreementMessage.serialize()),
       type: "local"
     });
+    negotiation.events.push(event);
 
     negotiation.state = ContractNegotiationState.AGREED;
     negotiation.agreement = agreement;
     negotiation.agreementId = agreement.id;
     const agreementDao = await this.agreementService.storeAgreement(
       agreement.serialize(),
-      negotiation.localId
+      negotiation.id
     );
     await this.negotiationDetailRepository.save({
       ...negotiation,
@@ -696,10 +689,7 @@ export class NegotiationService {
       negotiation.remoteParty
     );
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
 
     return {
@@ -718,17 +708,18 @@ export class NegotiationService {
       negotiation,
       ContractNegotiationState.AGREED
     );
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.AGREED,
       agreementMessage: JSON.stringify(contractAgreementMessage.serialize()),
       type: "remote"
     });
+    negotiation.events.push(event);
     negotiation.agreement = contractAgreementMessage.agreement;
     negotiation.agreementId = contractAgreementMessage.agreement.id;
     const agreementDao = await this.agreementService.storeAgreement(
       contractAgreementMessage.agreement.serialize(),
-      negotiation.localId
+      negotiation.id
     );
     negotiation.state = ContractNegotiationState.AGREED;
     await this.negotiationDetailRepository.save({
@@ -743,10 +734,7 @@ export class NegotiationService {
         })
       );
     } else {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
 
     return {
@@ -785,13 +773,13 @@ export class NegotiationService {
     const contractAgreementVerificationMessage =
       new ContractAgreementVerificationMessage({
         providerPid: negotiation.remoteId,
-        consumerPid: negotiation.localId,
+        consumerPid: negotiation.id,
         hashedMessage: {
           algorithm: algorithm,
           digest: digest
         }
       });
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.VERIFIED,
       verification: contractAgreementVerificationMessage,
@@ -801,6 +789,7 @@ export class NegotiationService {
         digest: digest
       }
     });
+    negotiation.events.push(event);
 
     negotiation.state = ContractNegotiationState.VERIFIED;
     await this.negotiationDetailRepository.save(negotiation);
@@ -810,10 +799,7 @@ export class NegotiationService {
       negotiation.remoteParty
     );
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
     return {
       status: "OK"
@@ -853,13 +839,14 @@ export class NegotiationService {
         );
       }
     }
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.VERIFIED,
       verification: contractAgreementVerificationMessage,
       hashedMessage: contractAgreementVerificationMessage.hashedMessage,
       type: "remote"
     });
+    negotiation.events.push(event);
     negotiation.state = ContractNegotiationState.VERIFIED;
     await this.negotiationDetailRepository.save(negotiation);
     if (this.config.runtime?.controlPlaneInteractions !== "manual") {
@@ -870,10 +857,7 @@ export class NegotiationService {
         })
       );
     } else {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
 
     return {
@@ -904,14 +888,15 @@ export class NegotiationService {
       algorithm: algorithm,
       digest: digest
     };
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.FINALIZED,
       hashedMessage: hashedMessage,
       type: "local"
     });
+    negotiation.events.push(event);
     const eventMessage = new ContractNegotiationEventMessage({
-      providerPid: negotiation.localId,
+      providerPid: negotiation.id,
       consumerPid: negotiation.remoteId,
       hashedMessage: hashedMessage,
       eventType: NegotiationEvent.FINALIZED
@@ -924,7 +909,7 @@ export class NegotiationService {
     negotiation.state = ContractNegotiationState.FINALIZED;
     const agreementDao = await this.agreementService.storeAgreement(
       agreement!,
-      negotiation.localId,
+      negotiation.id,
       hashedMessage,
       negotiation.events.find((e) => e.type === "remote" && e.hashedMessage)
         ?.hashedMessage
@@ -934,10 +919,7 @@ export class NegotiationService {
       agreementDao: agreementDao
     });
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
     return {
       status: "OK"
@@ -957,23 +939,20 @@ export class NegotiationService {
     );
     const terminationMessage = new ContractNegotiationTerminationMessage({
       providerPid:
-        negotiation.role === "provider"
-          ? negotiation.localId
-          : negotiation.remoteId,
+        negotiation.role === "provider" ? negotiation.id : negotiation.remoteId,
       consumerPid:
-        negotiation.role === "consumer"
-          ? negotiation.localId
-          : negotiation.remoteId,
+        negotiation.role === "consumer" ? negotiation.id : negotiation.remoteId,
       code: code,
       reason: reason ? [new Multilanguage(reason)] : []
     });
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.TERMINATED,
       code: code,
       reason: reason ? [new Multilanguage(reason)] : undefined,
       type: "local"
     });
+    negotiation.events.push(event);
     await this.dsp.negotiationTermination(
       `${negotiation.remoteAddress}/termination`,
       terminationMessage,
@@ -982,10 +961,7 @@ export class NegotiationService {
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
     return {
       status: "OK"
@@ -1003,20 +979,18 @@ export class NegotiationService {
       negotiation,
       ContractNegotiationState.TERMINATED
     );
-    negotiation.events.push({
+    const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
       state: ContractNegotiationState.TERMINATED,
       code: contractNegotiationTerminationMessage.code,
       reason: contractNegotiationTerminationMessage.reason,
       type: "remote"
     });
+    negotiation.events.push(event);
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
     if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients(
-        "negotiation:update",
-        negotiation.localId
-      );
+      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
     return {
       status: "OK"

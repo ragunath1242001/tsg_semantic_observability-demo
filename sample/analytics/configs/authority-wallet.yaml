@@ -23,7 +23,6 @@ auth:
     kid: authority-wallet-key-1767782795718
     alg: ES256
     use: sig
-  rolePath: "$.roles[*]"
   redirectURL: http://localhost:3450/
 
 initKeys:
@@ -38,7 +37,7 @@ runtime:
   issueDebugCredentials: true
 
 trustAnchors:
-  - identifier: did:web:localhost%3A3400
+  - id: did:web:localhost%3A3400
     credentialTypes:
       - ExampleCredential
       - authority:ExampleCredential

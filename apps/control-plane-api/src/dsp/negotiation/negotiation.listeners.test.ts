@@ -89,7 +89,7 @@ describe("NegotiationListener", () => {
   describe("Negotiation created event", () => {
     it("should call agree if offer is included in policy", async () => {
       const mockEvent = new NegotiationCreatedEvent({
-        localId: "localId123",
+        id: "id123",
         datasetId: "datasetId123",
         offer: offer.serialize(),
         remoteParty: "did:web:remoteparty.test"
@@ -98,13 +98,13 @@ describe("NegotiationListener", () => {
       await negotiationListener.handleNegotiationCreatedEvent(mockEvent);
 
       expect(catalogService.getDataset).toHaveBeenCalledWith("datasetId123");
-      expect(negotiationService.agree).toHaveBeenCalledWith("localId123");
+      expect(negotiationService.agree).toHaveBeenCalledWith("id123");
       expect(negotiationService.terminate).not.toHaveBeenCalled();
     });
 
     it("should call terminate if offer is not included in policy and controlPlaneInteractions is automatic", async () => {
       const mockEvent = new NegotiationCreatedEvent({
-        localId: "localId123",
+        id: "id123",
         datasetId: "datasetId123",
         offer: offer.serialize(),
         remoteParty: "did:web:remoteparty.test"
@@ -120,14 +120,14 @@ describe("NegotiationListener", () => {
 
       await negotiationListener.handleNegotiationCreatedEvent(mockEvent);
       expect(catalogService.getDataset).toHaveBeenCalledWith("datasetId123");
-      expect(negotiationService.terminate).toHaveBeenCalledWith("localId123");
+      expect(negotiationService.terminate).toHaveBeenCalledWith("id123");
       expect(negotiationService.agree).not.toHaveBeenCalled();
     });
 
     it("should do nothing if offer is not included in policy and controlPlaneInteractions is not automatic", async () => {
       runtimeConfig.controlPlaneInteractions = "manual";
       const mockEvent = new NegotiationCreatedEvent({
-        localId: "localId123",
+        id: "id123",
         datasetId: "datasetId123",
         offer: offer.serialize(),
         remoteParty: "did:web:remoteparty.test"
@@ -144,7 +144,7 @@ describe("NegotiationListener", () => {
 
     it("should handle case where dataset is not found", async () => {
       const mockEvent = new NegotiationCreatedEvent({
-        localId: "localId123",
+        id: "id123",
         datasetId: "datasetId123",
         offer: offer.serialize(),
         remoteParty: "did:web:remoteparty.test"
@@ -154,7 +154,7 @@ describe("NegotiationListener", () => {
       await negotiationListener.handleNegotiationCreatedEvent(mockEvent);
 
       expect(catalogService.getDataset).toHaveBeenCalledWith("datasetId123");
-      expect(negotiationService.terminate).toHaveBeenCalledWith("localId123");
+      expect(negotiationService.terminate).toHaveBeenCalledWith("id123");
       expect(negotiationService.agree).not.toHaveBeenCalled();
     });
   });

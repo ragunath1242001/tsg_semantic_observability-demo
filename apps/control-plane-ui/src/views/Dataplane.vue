@@ -15,7 +15,7 @@ const userStore = useUserStore();
 import { useDataPlaneStore } from "../stores/dataplane";
 
 const dataPlaneFormDefault: DataPlaneDetailsDto = {
-  identifier: "",
+  id: "",
   title: "Data Plane",
   dataplaneType: "",
   endpointPrefix: undefined,
@@ -39,7 +39,7 @@ const addDataPlane = async () => {
     toast.add({
       severity: "success",
       summary: "Dataplane added",
-      detail: `Dataplane ${dataPlaneForm.value.identifier} successfully added`,
+      detail: `Dataplane ${dataPlaneForm.value.id} successfully added`,
       life: 3000
     });
     await dataPlaneStore.fetchDataPlanes();
@@ -132,10 +132,7 @@ onMounted(async () => {
       or add dataplanes in this view.</template
     >
   </Card>
-  <Card
-    v-for="dataplane in dataPlanes"
-    :key="dataplane.identifier"
-    class="mb-8">
+  <Card v-for="dataplane in dataPlanes" :key="dataplane.id" class="mb-8">
     <template #title>
       <div class="grid grid-cols-12 gap-4 mb-0">
         <div class="col-span-11 lg:col-span-8 mb-0">
@@ -145,14 +142,12 @@ onMounted(async () => {
           <Button
             severity="danger"
             icon="pi pi-trash"
-            @click="deleteDataPlane(dataplane.identifier)" />
+            @click="deleteDataPlane(dataplane.id)" />
         </div></div
     ></template>
     <template #content>
       <div v-if="dataplane" class="grid flex-wrap grid-cols-12 gap-4">
-        <DisplayField label="Identifier">{{
-          dataplane.identifier
-        }}</DisplayField>
+        <DisplayField label="Identifier">{{ dataplane.id }}</DisplayField>
         <DisplayField label="Type">{{ dataplane.dataplaneType }}</DisplayField>
         <DisplayField label="Synchronization">{{
           dataplane.catalogSynchronization
@@ -168,10 +163,10 @@ onMounted(async () => {
           dataplane.managementAddress
         }}</DisplayField>
         <DisplayField label="Dataset Titles">
-          <template v-if="dataPlaneDatasets[dataplane.identifier]">
+          <template v-if="dataPlaneDatasets[dataplane.id]">
             <ul>
               <li
-                v-for="dataset in dataPlaneDatasets[dataplane.identifier]"
+                v-for="dataset in dataPlaneDatasets[dataplane.id]"
                 :key="dataset['@id']">
                 {{ dataset.title }}
               </li>
@@ -181,7 +176,7 @@ onMounted(async () => {
             <Button
               label="Load first 5 datasets"
               severity="secondary"
-              @click="loadDataPlaneDatasets($event, dataplane.identifier)" />
+              @click="loadDataPlaneDatasets($event, dataplane.id)" />
           </template>
         </DisplayField>
       </div>
@@ -211,7 +206,7 @@ onMounted(async () => {
         <FormField v-slot="props" label="Identifier">
           <InputText
             :id="props.id"
-            v-model="dataPlaneForm.identifier"
+            v-model="dataPlaneForm.id"
             class="w-full"
             placeholder="Identifier"></InputText>
         </FormField>

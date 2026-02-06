@@ -87,12 +87,9 @@ export class Pipeline implements PipelineExecute {
       await this.catalogService.addDataset(dataset);
     } else {
       this.logger.log(
-        `Adding dataset to provider dataplane ${providerDataplane.identifier}`
+        `Adding dataset to provider dataplane ${providerDataplane.id}`
       );
-      await this.dataPlaneService.addDataset(
-        providerDataplane.identifier,
-        dataset
-      );
+      await this.dataPlaneService.addDataset(providerDataplane.id, dataset);
     }
     const agreementService: AgreementService =
       this.negotiationService["agreementService"];

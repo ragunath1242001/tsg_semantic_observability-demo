@@ -197,7 +197,7 @@ describe("DCQL Constraints", () => {
 
       const validTrustAnchors: TrustAnchor[] = [
         {
-          identifier: "https://federation.example.com",
+          id: "https://federation.example.com",
           credentialTypes: ["VerifiableCredential"]
         }
       ];
@@ -226,7 +226,7 @@ describe("DCQL Constraints", () => {
       // Test with non-matching trust anchors
       const nonMatchingTrustAnchors: TrustAnchor[] = [
         {
-          identifier: "https://different-federation.example.com",
+          id: "https://different-federation.example.com",
           credentialTypes: ["VerifiableCredential"]
         }
       ];
@@ -630,7 +630,7 @@ describe("DCQL Constraints", () => {
     });
     const trustAnchors: TrustAnchor[] = [
       {
-        identifier: "https://federation.example.com",
+        id: "https://federation.example.com",
         credentialTypes: ["IdentityCredential"]
       }
     ];

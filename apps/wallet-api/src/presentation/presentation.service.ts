@@ -140,7 +140,9 @@ export class PresentationService {
         HttpStatus.CONFLICT
       ).andLog(this.logger);
     }
-    const scopeDao = await this.scopeRepository.save(scope);
+    const scopeDao = await this.scopeRepository.save(
+      this.scopeRepository.create(scope)
+    );
     return plainToInstance(ScopeDto, scopeDao);
   }
 
@@ -164,10 +166,12 @@ export class PresentationService {
         ).andLog(this.logger);
       }
     }
-    const updated = this.scopeRepository.save({
-      id: existing.id,
-      ...scope
-    });
+    const updated = this.scopeRepository.save(
+      this.scopeRepository.create({
+        id: existing.id,
+        ...scope
+      })
+    );
     return plainToInstance(ScopeDto, updated);
   }
 

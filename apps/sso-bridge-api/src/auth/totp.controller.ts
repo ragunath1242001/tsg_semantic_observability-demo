@@ -127,7 +127,7 @@ export class TotpController {
   })
   @HttpCode(HttpStatus.OK)
   async deleteTotpCredential(
-    @Body("id") credentialId: number,
+    @Body("id") credentialId: string,
     @Req() request: Request
   ) {
     return await this.totpService.deleteTotpCredential(request, credentialId);

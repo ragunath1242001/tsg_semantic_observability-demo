@@ -3,6 +3,8 @@ import { Interval } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   AuthClientService,
+  ClientInfo,
+  getOwnershipFieldsFromClient,
   Paginated,
   PaginationOptionsDto,
   promiseMap
@@ -101,11 +103,11 @@ export class DataPlaneService {
     }
   }
 
-  async getDataPlane(identifier: string): Promise<DataPlaneStatus> {
+  async getDataPlane(id: string): Promise<DataPlaneStatus> {
     const dataPlane = await this.dataPlaneRepository.findOne({
-      where: { identifier: identifier },
+      where: { id: id },
       select: {
-        identifier: true,
+        id: true,
         created: true,
         modified: true,
         health: true,
@@ -115,21 +117,21 @@ export class DataPlaneService {
     });
     if (!dataPlane) {
       throw new DSPError(
-        `Dataplane details with identifier ${identifier} not found`,
+        `Dataplane details with id ${id} not found`,
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     } else {
       return new DataPlaneStatus(dataPlane);
     }
   }
-  async getDataPlaneDetails(identifier: string): Promise<DataPlaneDao> {
+  async getDataPlaneDetails(id: string): Promise<DataPlaneDao> {
     const dataPlaneDetails = await this.dataPlaneRepository.findOneBy({
-      identifier: identifier
+      id: id
     });
     if (!dataPlaneDetails) {
       // TODO is DSPError a good error here or do we need a dataplane error of some kind?
       throw new DSPError(
-        `Dataplane details with identifier ${identifier} not found`,
+        `Dataplane details with id ${id} not found`,
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     } else {
@@ -138,11 +140,11 @@ export class DataPlaneService {
   }
 
   async addDataPlane(
-    dataPlaneCreation: DataPlaneCreation
+    dataPlaneCreation: DataPlaneCreation,
+    client?: ClientInfo
   ): Promise<DataPlaneDetailsDto> {
     const dataPlane: DataPlane = {
-      identifier:
-        dataPlaneCreation.identifier || `urn:uuid:${crypto.randomUUID()}`,
+      id: dataPlaneCreation.id || `urn:uuid:${crypto.randomUUID()}`,
       title: dataPlaneCreation.title,
       created: new Date(),
       modified: new Date(),
@@ -155,8 +157,13 @@ export class DataPlaneService {
       catalogSynchronization: dataPlaneCreation.catalogSynchronization,
       role: dataPlaneCreation.role
     };
-    const dataPlaneDao = await this.dataPlaneRepository.save(dataPlane);
-    this.logger.debug(`Added dataplane ${dataPlane.identifier}`);
+    const dataPlaneDao = await this.dataPlaneRepository.save(
+      this.dataPlaneRepository.create({
+        ...dataPlane,
+        ...getOwnershipFieldsFromClient(client)
+      })
+    );
+    this.logger.debug(`Added dataplane ${dataPlane.id}`);
     switch (dataPlaneCreation.catalogSynchronization) {
       case "push":
         await this.healthCheck(dataPlaneDao);
@@ -169,17 +176,19 @@ export class DataPlaneService {
   }
 
   async updateDataPlane(
-    identifier: string,
+    id: string,
     dataPlaneDetails: DataPlaneDetailsDto
   ): Promise<DataPlaneDetailsDto> {
-    const dataPlane = await this.getDataPlaneDetails(identifier);
+    const dataPlane = await this.getDataPlaneDetails(id);
     dataPlane.modified = new Date();
-    await this.dataPlaneRepository.save({
-      ...dataPlane,
-      ...dataPlaneDetails,
-      identifier: identifier
-    });
-    this.logger.debug(`Added dataplane ${dataPlane.identifier}`);
+    await this.dataPlaneRepository.save(
+      this.dataPlaneRepository.create({
+        ...dataPlane,
+        ...dataPlaneDetails,
+        id: id
+      })
+    );
+    this.logger.debug(`Added dataplane ${dataPlane.id}`);
     switch (dataPlane.catalogSynchronization) {
       case "push":
         await this.healthCheck(dataPlane);
@@ -193,7 +202,7 @@ export class DataPlaneService {
 
   async deleteDataplane(dataPlaneId: string) {
     const dataPlane = await this.getDataPlane(dataPlaneId);
-    await this.dataPlaneRepository.delete({ identifier: dataPlane.identifier });
+    await this.dataPlaneRepository.delete({ id: dataPlane.id });
   }
 
   async getDatasets(
@@ -237,18 +246,16 @@ export class DataPlaneService {
   }
 
   async updateCatalog(
-    identifier: string,
+    id: string,
     catalog: Catalog,
     etag?: string
   ): Promise<Catalog> {
-    const dataPlane = await this.getDataPlaneDetails(identifier);
+    const dataPlane = await this.getDataPlaneDetails(id);
     let existingDatasets = dataPlane._datasets || [];
     const datasetDaos: DatasetDao[] = [];
     for (const dataset of catalog.dataset || []) {
       if (existingDatasets.some((d) => d.id === dataset.id)) {
-        this.logger.log(
-          `Updating dataset ${dataset.id} for dataplane ${identifier}`
-        );
+        this.logger.log(`Updating dataset ${dataset.id} for dataplane ${id}`);
         const resp = await this.catalogService.updateDataset(
           dataset.id,
           dataset
@@ -261,9 +268,7 @@ export class DataPlaneService {
           );
         }
       } else {
-        this.logger.log(
-          `Adding dataset ${dataset.id} for dataplane ${identifier}`
-        );
+        this.logger.log(`Adding dataset ${dataset.id} for dataplane ${id}`);
         const resp = await this.catalogService.addDataset(dataset);
         if (resp) {
           datasetDaos.push(resp);
@@ -307,7 +312,7 @@ export class DataPlaneService {
           const catalog = new Catalog(catalogJson.data);
           if (!deepEqual(catalog.dataset, dataPlaneStatus.datasets)) {
             this.updateCatalog(
-              dataPlaneStatus.identifier,
+              dataPlaneStatus.id,
               catalog,
               catalogJson.headers["ETag"]
             );
@@ -320,7 +325,7 @@ export class DataPlaneService {
     } catch (err) {
       this.logger.log(
         new DSPClientError(
-          `Error pulling catalog for data plane ${dataPlaneStatus.identifier}`,
+          `Error pulling catalog for data plane ${dataPlaneStatus.id}`,
           err
         ).message
       );
@@ -347,7 +352,7 @@ export class DataPlaneService {
     } catch (err) {
       this.logger.log(
         new DSPClientError(
-          `Error in health check for data plane ${dataPlaneStatus.identifier}`,
+          `Error in health check for data plane ${dataPlaneStatus.id}`,
           err
         ).message
       );
@@ -384,9 +389,7 @@ export class DataPlaneService {
     if (dataPlane.missedHealthChecks > this.maxHealthCheckMisses) {
       if (dataPlane.datasets !== undefined) {
         this.logger.log(
-          `Data plane with identifier ${
-            dataPlane.identifier
-          } is unresponsive for ${
+          `Data plane with id ${dataPlane.id} is unresponsive for ${
             (dataPlane.missedHealthChecks * DataPlaneService.pullInterval) /
             1000
           } seconds, its catalog is deregistered.`
@@ -403,13 +406,13 @@ export class DataPlaneService {
     processId: string,
     role: "provider" | "consumer",
     remoteParty: string,
-    dataPlaneIdentifier?: string
+    dataPlaneid?: string
   ): Promise<DataPlaneTransferDto> {
     const agreement = await this.agreementService.getAgreement(
       requestDetail.agreementId
     );
     const findOptions: FindOptionsWhere<DataPlaneDao> = {
-      identifier: dataPlaneIdentifier,
+      id: dataPlaneid,
       dataplaneType: requestDetail.format,
       role: In([role, "both"])
     };
@@ -436,7 +439,7 @@ export class DataPlaneService {
           }
         };
         this.logger.debug(
-          `Requesting transfer at ${dataPlane.identifier} at ${dataPlane.managementAddress} for ${remoteParty} with authorization: ${requestConfig.headers?.Authorization}`
+          `Requesting transfer at ${dataPlane.id} at ${dataPlane.managementAddress} for ${remoteParty} with authorization: ${requestConfig.headers?.Authorization}`
         );
         const dataPlaneRequestResponse =
           await this.axios.post<DataPlaneRequestResponseDto>(
@@ -445,11 +448,9 @@ export class DataPlaneService {
             requestConfig
           );
         if (dataPlaneRequestResponse.data.accepted) {
-          this.logger.debug(
-            `Dataplane ${dataPlane.identifier} accepted transfer`
-          );
+          this.logger.debug(`Dataplane ${dataPlane.id} accepted transfer`);
           return {
-            dataPlaneIdentifier: dataPlane.identifier,
+            dataPlaneId: dataPlane.id,
             endpointType: dataPlane.dataplaneType,
             ...dataPlaneRequestResponse.data
           };
@@ -471,11 +472,11 @@ export class DataPlaneService {
     transferStartMessage: TransferStartMessage
   ): Promise<void> {
     const dataPlane = await this.getDataPlaneDetails(
-      dataPlaneTransfer.dataPlaneIdentifier
+      dataPlaneTransfer.dataPlaneId
     );
     if (dataPlane === undefined) {
       throw new DSPError(
-        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`,
+        `Data plane with id ${dataPlaneTransfer.dataPlaneId} not found`,
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     }
@@ -486,11 +487,11 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/start`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.id}/start`,
         transferStartMessage,
         requestConfig
       );
-      this.logger.debug(`Transfer ${dataPlaneTransfer.identifier} started`);
+      this.logger.debug(`Transfer ${dataPlaneTransfer.id} started`);
     } catch (err) {
       throw new DSPClientError("Error starting transfer", err).andLog(
         this.logger,
@@ -503,11 +504,11 @@ export class DataPlaneService {
     transferCompletionMessage: TransferCompletionMessage
   ): Promise<void> {
     const dataPlane = await this.getDataPlaneDetails(
-      dataPlaneTransfer.dataPlaneIdentifier
+      dataPlaneTransfer.dataPlaneId
     );
     if (dataPlane === undefined) {
       throw new DSPError(
-        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`,
+        `Data plane with id ${dataPlaneTransfer.dataPlaneId} not found`,
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     }
@@ -518,11 +519,11 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/completion`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.id}/completion`,
         transferCompletionMessage,
         requestConfig
       );
-      this.logger.debug(`Transfer ${dataPlaneTransfer.identifier} completed`);
+      this.logger.debug(`Transfer ${dataPlaneTransfer.id} completed`);
     } catch (err) {
       throw new DSPClientError("Error completeing transfer", err).andLog(
         this.logger,
@@ -535,11 +536,11 @@ export class DataPlaneService {
     transferTerminationMessage: TransferTerminationMessage
   ): Promise<void> {
     const dataPlane = await this.getDataPlaneDetails(
-      dataPlaneTransfer.dataPlaneIdentifier
+      dataPlaneTransfer.dataPlaneId
     );
     if (dataPlane === undefined) {
       throw new DSPError(
-        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`,
+        `Data plane with id ${dataPlaneTransfer.dataPlaneId} not found`,
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     }
@@ -550,11 +551,11 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/termination`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.id}/termination`,
         transferTerminationMessage,
         requestConfig
       );
-      this.logger.debug(`Transfer ${dataPlaneTransfer.identifier} terminated`);
+      this.logger.debug(`Transfer ${dataPlaneTransfer.id} terminated`);
     } catch (err) {
       throw new DSPClientError("Error terminateing transfer", err).andLog(
         this.logger,
@@ -567,11 +568,11 @@ export class DataPlaneService {
     transferSuspensionMessage: TransferSuspensionMessage
   ): Promise<void> {
     const dataPlane = await this.getDataPlaneDetails(
-      dataPlaneTransfer.dataPlaneIdentifier
+      dataPlaneTransfer.dataPlaneId
     );
     if (dataPlane === undefined) {
       throw new DSPError(
-        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`,
+        `Data plane with id ${dataPlaneTransfer.dataPlaneId} not found`,
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     }
@@ -582,11 +583,11 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/suspension`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.id}/suspension`,
         transferSuspensionMessage,
         requestConfig
       );
-      this.logger.debug(`Transfer ${dataPlaneTransfer.identifier} suspended`);
+      this.logger.debug(`Transfer ${dataPlaneTransfer.id} suspended`);
     } catch (err) {
       throw new DSPClientError("Error suspending transfer", err).andLog(
         this.logger,

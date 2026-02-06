@@ -2,24 +2,22 @@ import { Controller, Get, HttpCode, HttpStatus, Logger } from "@nestjs/common";
 import {
   ApiBadGatewayResponse,
   ApiNotImplementedResponse,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
+import { DisableAbac, DisableOAuthGuard, Requires } from "@tsg-dsp/common-api";
 import {
-  DisableOAuthGuard,
-  DisableRolesGuard,
-  Roles
-} from "@tsg-dsp/common-api";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { DataPlaneService } from "./dataplane.service.js";
 
 @Controller()
 @ApiTags("Data Plane")
-@ApiOAuth2(["controlplane_dataplane"])
-@Roles("controlplane_dataplane")
+@Requires(Action.READ, Resource.ADP_DATAPLANE)
 export class DataPlaneController {
   constructor(private readonly dataPlaneService: DataPlaneService) {}
   private readonly logger = new Logger(this.constructor.name);
@@ -48,7 +46,7 @@ export class DataPlaneController {
   @ApiOkResponse()
   @ApiBadGatewayResponse()
   @DisableOAuthGuard()
-  @DisableRolesGuard()
+  @DisableAbac
   @HttpCode(HttpStatus.OK)
   async healthCheck() {
     return;

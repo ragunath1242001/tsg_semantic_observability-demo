@@ -1,13 +1,14 @@
+import { OwnableEntity } from "@tsg-dsp/common-api";
 import { Dataset, HealthStatus, IDataPlane } from "@tsg-dsp/common-dsp";
-import { Column, Entity, OneToMany, PrimaryColumn, Relation } from "typeorm";
+import { Resource } from "@tsg-dsp/common-dtos";
+import { Column, Entity, OneToMany, Relation } from "typeorm";
 
 import { DatasetDao } from "./catalog.dao.js";
-import { MetaEntity } from "./common.dao.js";
 
 @Entity({ name: "dataplanedetails" })
-export class DataPlaneDao extends MetaEntity implements IDataPlane {
-  @PrimaryColumn({ type: String })
-  identifier!: string;
+export class DataPlaneDao extends OwnableEntity implements IDataPlane {
+  readonly resourceType = Resource.CP_DATAPLANE;
+
   @Column({ type: String })
   title!: string;
   @Column({ type: String, nullable: true })

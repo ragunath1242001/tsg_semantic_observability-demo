@@ -5,31 +5,7 @@ import {
   SerializableClass,
   serialize
 } from "@tsg-dsp/common-dsp";
-import { Exclude } from "class-transformer";
-import {
-  CreateDateColumn,
-  DeleteDateColumn,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-  ValueTransformer
-} from "typeorm";
-
-export class MetaEntity {
-  @CreateDateColumn()
-  createdDate!: Date;
-
-  @UpdateDateColumn()
-  modifiedDate!: Date;
-
-  @DeleteDateColumn()
-  @Exclude()
-  deletedDate!: Date;
-}
-
-export class AutoIdEntity extends MetaEntity {
-  @PrimaryGeneratedColumn({ type: "int" })
-  _id!: number;
-}
+import { ValueTransformer } from "typeorm";
 
 export type Type<T, ParamT> = {
   // new (): T;

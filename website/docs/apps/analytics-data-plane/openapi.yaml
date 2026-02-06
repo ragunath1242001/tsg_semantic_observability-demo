@@ -20,7 +20,7 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security: &a1
         - oauth2:
-            - controlplane_admin
+            - update:adp.config
       summary: Retrieve settings
       tags: &a2
         - Settings
@@ -110,7 +110,7 @@ paths:
           description: ""
       security: &a3
         - oauth2:
-            - controlplane_dataplane
+            - read:adp.dataplane
       summary: Get catalog
       tags: &a4
         - Data Plane
@@ -147,11 +147,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a5
+      security:
         - oauth2:
-            - controlplane_dataplane
+            - read:adp.dataplane
       summary: Get Data Plane state
-      tags: &a6
+      tags: &a5
         - Data Plane Management
   /api/management/catalog:
     get:
@@ -171,9 +171,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security:
+        - oauth2:
+            - read:adp.dataplane
       summary: Get catalog
-      tags: *a6
+      tags: *a5
   /api/management/registry/addresses:
     get:
       description: Get all participant addresses from the Control Plane registry.
@@ -194,9 +196,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security:
+        - oauth2:
+            - read:adp.dataplane
       summary: Get registry addresses
-      tags: *a6
+      tags: *a5
   /api/management/registry/catalog/{participantId}:
     get:
       description: Fetches a specific catalog by its participant ID.
@@ -226,9 +230,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security:
+        - oauth2:
+            - read:adp.dataplane
       summary: Get catalog by participant ID
-      tags: *a6
+      tags: *a5
   /api/management/registry/refresh:
     post:
       description: Force refresh the registry by triggering a re-crawl of all
@@ -244,9 +250,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security:
+        - oauth2:
+            - read:adp.dataplane
       summary: Refresh registry
-      tags: *a6
+      tags: *a5
   /api/management/participant-id:
     get:
       description: Get the ID of the current participant from the Control Plane catalog.
@@ -265,9 +273,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security:
+        - oauth2:
+            - read:adp.dataplane
       summary: Get current participant ID
-      tags: *a6
+      tags: *a5
   /api/management/refresh:
     post:
       description: Use this endpoint to (re)register your data plane. Currently it
@@ -283,9 +293,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security:
+        - oauth2:
+            - update:adp.dataplane
       summary: (Re)register data plane
-      tags: *a6
+      tags: *a5
   /api/management/dataset:
     get:
       description: Get the current dataset configuration.
@@ -300,9 +312,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security:
+        - oauth2:
+            - read:adp.dataplane
       summary: Get dataset
-      tags: *a6
+      tags: *a5
     put:
       description: Update an existing dataset by id.
       operationId: DataPlaneManagementController_updateDatasetConfig
@@ -328,9 +342,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security:
+        - oauth2:
+            - update:adp.dataplane
       summary: Update dataset
-      tags: *a6
+      tags: *a5
     post:
       description: Add a new dataset.
       operationId: DataPlaneManagementController_addDataset
@@ -350,9 +366,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security:
+        - oauth2:
+            - create:adp.dataplane
       summary: Add dataset
-      tags: *a6
+      tags: *a5
     delete:
       description: Delete an existing dataset by id.
       operationId: DataPlaneManagementController_deleteDataset
@@ -371,9 +389,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security:
+        - oauth2:
+            - delete:adp.dataplane
       summary: Delete dataset
-      tags: *a6
+      tags: *a5
   /api/transfers/request/{role}:
     post:
       description: Requests a transfer from control plane to data plane.
@@ -418,11 +438,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a7
+      security:
         - oauth2:
-            - controlplane_dataplane
+            - create:dp.transfer
       summary: Request Transfer
-      tags: &a8
+      tags: &a6
         - Data Plane
   /api/transfers/{id}/start:
     post:
@@ -443,9 +463,11 @@ paths:
       responses:
         "202":
           description: Transfer started successfully
-      security: *a7
+      security:
+        - oauth2:
+            - execute:dp.transfer
       summary: Start transfer process
-      tags: *a8
+      tags: *a6
   /api/transfers/{id}/completion:
     post:
       operationId: TransferController_completeTransfer
@@ -465,9 +487,11 @@ paths:
       responses:
         "202":
           description: Transfer completed successfully
-      security: *a7
+      security:
+        - oauth2:
+            - execute:dp.transfer
       summary: Complete transfer process
-      tags: *a8
+      tags: *a6
   /api/transfers/{id}/termination:
     post:
       operationId: TransferController_terminateTransfer
@@ -487,9 +511,11 @@ paths:
       responses:
         "202":
           description: Transfer terminated successfully
-      security: *a7
+      security:
+        - oauth2:
+            - execute:dp.transfer
       summary: Terminate transfer process
-      tags: *a8
+      tags: *a6
   /api/transfers/{id}/suspension:
     post:
       operationId: TransferController_suspendTransfer
@@ -509,9 +535,11 @@ paths:
       responses:
         "202":
           description: Transfer suspended successfully
-      security: *a7
+      security:
+        - oauth2:
+            - execute:dp.transfer
       summary: Suspend transfer process
-      tags: *a8
+      tags: *a6
   /api/management/transfers:
     get:
       operationId: TransfersManagementController_getTransfers
@@ -531,11 +559,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a9
+      security:
         - oauth2:
-            - controlplane_dataplane
+            - read:dp.transfer
       summary: Get all transfers
-      tags: &a10
+      tags: &a7
         - Data Plane Management
   /api/management/transfers/{id}:
     get:
@@ -560,9 +588,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a9
+      security:
+        - oauth2:
+            - read:dp.transfer
       summary: Get transfer by ID
-      tags: *a10
+      tags: *a7
   /api/management/transfers/{id}/metadata:
     get:
       operationId: TransfersManagementController_getMetadata
@@ -586,9 +616,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a9
+      security:
+        - oauth2:
+            - read:dp.transfer
       summary: Get metadata of transfer by ID
-      tags: *a10
+      tags: *a7
   /api/management/transfers/{id}/start:
     post:
       operationId: TransfersManagementController_startTransfer
@@ -608,9 +640,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a9
+      security:
+        - oauth2:
+            - execute:dp.transfer
       summary: Start a transfer by ID
-      tags: *a10
+      tags: *a7
   /api/management/transfers/{id}/completion:
     post:
       operationId: TransfersManagementController_completeTransfer
@@ -630,9 +664,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a9
+      security:
+        - oauth2:
+            - execute:dp.transfer
       summary: Complete a transfer by ID
-      tags: *a10
+      tags: *a7
   /api/management/transfers/{id}/termination:
     post:
       operationId: TransfersManagementController_terminateTransfer
@@ -662,9 +698,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a9
+      security:
+        - oauth2:
+            - execute:dp.transfer
       summary: Terminate a transfer by ID
-      tags: *a10
+      tags: *a7
   /api/management/transfers/{id}/suspension:
     post:
       operationId: TransfersManagementController_suspendTransfer
@@ -689,9 +727,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a9
+      security:
+        - oauth2:
+            - execute:dp.transfer
       summary: Suspend a transfer by ID
-      tags: *a10
+      tags: *a7
   /api/auth/user:
     get:
       description: Retrieves current user state, whether someone is logged in or not a
@@ -709,7 +749,7 @@ paths:
                   - $ref: "#/components/schemas/AuthenticatedUser"
                   - $ref: "#/components/schemas/UnauthenticatedUser"
       summary: Retrieve current user status
-      tags: &a11
+      tags: &a8
         - Authentication
   /api/auth/login:
     get:
@@ -720,7 +760,7 @@ paths:
         "302":
           description: ""
       summary: Login redirect
-      tags: *a11
+      tags: *a8
   /api/auth/logout:
     get:
       description: Removes session information and redirects user the root of the
@@ -731,7 +771,7 @@ paths:
         "302":
           description: ""
       summary: Logout redirect
-      tags: *a11
+      tags: *a8
   /api/auth/callback:
     get:
       description: Users are redirected from the authorization server to this endpoint
@@ -789,7 +829,7 @@ paths:
         "302":
           description: ""
       summary: Login callback
-      tags: *a11
+      tags: *a8
   /api/files:
     get:
       description: Get all files and their metadata.
@@ -810,11 +850,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a12
+      security:
         - oauth2:
-            - controlplane_dataplane
+            - read:adp.file
       summary: Get all files
-      tags: &a13
+      tags: &a9
         - Files
   /api/files/upload:
     post:
@@ -828,9 +868,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security:
+        - oauth2:
+            - create:adp.file
       summary: Upload files
-      tags: *a13
+      tags: *a9
   /api/files/sync:
     post:
       description: Sync files and their metadata.
@@ -843,9 +885,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security:
+        - oauth2:
+            - execute:adp.file
       summary: Sync files
-      tags: *a13
+      tags: *a9
   /api/files/{id}:
     get:
       description: Get the file by ID.
@@ -875,9 +919,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
       summary: Get file
-      tags: *a13
+      tags: *a9
     post:
       description: Update the file metadata by ID.
       operationId: FilesController_updateFileMetadata
@@ -900,9 +943,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security:
+        - oauth2:
+            - update:adp.file
       summary: Update file metadata
-      tags: *a13
+      tags: *a9
     delete:
       description: Delete the file by ID.
       operationId: FilesController_removeFile
@@ -919,9 +964,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security:
+        - oauth2:
+            - delete:adp.file
       summary: Delete file
-      tags: *a13
+      tags: *a9
   /api/files/{id}/preview:
     get:
       operationId: FilesController_previewFile
@@ -943,9 +990,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security:
+        - oauth2:
+            - read:adp.file
       summary: Preview file
-      tags: *a13
+      tags: *a9
   /api/files/{id}/upload:
     post:
       description: Upload updated file and (re)create metadata.
@@ -963,9 +1012,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security:
+        - oauth2:
+            - update:adp.file
       summary: Upload updated file
-      tags: *a13
+      tags: *a9
   /api/files/{id}/csvw:
     get:
       description: Get the CSVW of a file.
@@ -989,9 +1040,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security:
+        - oauth2:
+            - read:adp.file
       summary: Get CSVW
-      tags: *a13
+      tags: *a9
   /api/files/{id}/dataset:
     get:
       description: Get the dataset of a file.
@@ -1015,9 +1068,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security:
+        - oauth2:
+            - read:adp.file
       summary: Get dataset
-      tags: *a13
+      tags: *a9
   /api/management/k8s/jobs/algorithm-instance/{algorithmInstanceId}:
     get:
       operationId: OrchestrationManagementController_getJobsForAlgorithmInstance
@@ -1044,11 +1099,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a14
+      security:
         - oauth2:
-            - controlplane_dataplane
+            - read:adp.orchestration
       summary: Get jobs for algorithm instance
-      tags: &a15
+      tags: &a10
         - Data Plane Management
   /api/management/k8s/jobs/{jobName}/pods:
     get:
@@ -1074,9 +1129,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a14
+      security:
+        - oauth2:
+            - read:adp.orchestration
       summary: Get job pods
-      tags: *a15
+      tags: *a10
   /api/management/k8s/pods/{podName}/logs:
     get:
       operationId: OrchestrationManagementController_getJobLogs
@@ -1101,9 +1158,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a14
+      security:
+        - oauth2:
+            - read:adp.orchestration
       summary: Get job logs
-      tags: *a15
+      tags: *a10
   /api/management/k8s/spawn-job:
     post:
       operationId: OrchestrationManagementController_spawnJob
@@ -1140,9 +1199,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a14
+      security:
+        - oauth2:
+            - execute:adp.orchestration
       summary: Spawn a job
-      tags: *a15
+      tags: *a10
   /api/management/algorithm-instances:
     get:
       description: Retrieve all algorithm instances
@@ -1163,11 +1224,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a16
+      security:
         - oauth2:
-            - controlplane_dataplane
+            - read:adp.algorithm
       summary: Get all algorithm instances
-      tags: &a17
+      tags: &a11
         - Algorithm Instances
     post:
       description: Create a new algorithm instance
@@ -1193,9 +1254,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a16
+      security:
+        - oauth2:
+            - create:adp.algorithm
       summary: Create algorithm instance
-      tags: *a17
+      tags: *a11
   /api/management/algorithm-instances/transfer/{transferId}:
     get:
       description: Retrieve an algorithm instance by its associated transfer ID
@@ -1219,9 +1282,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a16
+      security:
+        - oauth2:
+            - read:adp.algorithm
       summary: Get an algorithm instance by transfer ID
-      tags: *a17
+      tags: *a11
   /api/management/algorithm-instances/{id}:
     get:
       description: Retrieve an algorithm instance by its ID
@@ -1245,9 +1310,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a16
+      security:
+        - oauth2:
+            - read:adp.algorithm
       summary: Get an algorithm instance by ID
-      tags: *a17
+      tags: *a11
     delete:
       description: Delete an algorithm instance by its ID
       operationId: AlgorithmInstancesManagementController_remove
@@ -1266,9 +1333,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a16
+      security:
+        - oauth2:
+            - delete:adp.algorithm
       summary: Delete an algorithm instance by ID
-      tags: *a17
+      tags: *a11
   /api/algorithm-instances/create:
     post:
       description: Creates a new algorithm instance with the provided details.
@@ -1299,7 +1368,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Create an algorithm instance
-      tags: &a18
+      tags: &a12
         - Algorithm Instances
   /api/algorithm-instances/{algorithmInstanceId}/start:
     post:
@@ -1326,7 +1395,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Start an algorithm instance
-      tags: *a18
+      tags: *a12
   /api/project-agreements/signature-request:
     post:
       description: Receives a signature request message from an initiator via transfer.
@@ -1347,7 +1416,7 @@ paths:
         "201":
           description: Signature request received successfully
       summary: Handle Signature Request Message
-      tags: &a19
+      tags: &a13
         - Project Agreements
   /api/project-agreements/finalization:
     post:
@@ -1369,7 +1438,7 @@ paths:
         "200":
           description: Finalization message received successfully
       summary: Handle Finalization Message
-      tags: *a19
+      tags: *a13
   /api/project-agreements/signature-callback:
     post:
       description: Receives a signature response callback from a participant at the
@@ -1391,7 +1460,7 @@ paths:
         "201":
           description: Signature callback received successfully
       summary: Handle Signature Callback
-      tags: *a19
+      tags: *a13
   /api/management/project-agreements:
     get:
       description: Retrieves all project agreements.
@@ -1412,11 +1481,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a20
+      security:
         - oauth2:
-            - controlplane_dataplane
+            - read:adp.project_agreement
       summary: Get all Project Agreements
-      tags: &a21
+      tags: &a14
         - Project Agreements
     post:
       description: Creates a new project agreement and initiates the signature
@@ -1442,9 +1511,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a20
+      security:
+        - oauth2:
+            - create:adp.project_agreement
       summary: Create Project Agreement
-      tags: *a21
+      tags: *a14
   /api/management/project-agreements/{id}/sign:
     post:
       description: Signs a project agreement with the given ID.
@@ -1455,7 +1526,7 @@ paths:
           in: path
           description: Project Agreement ID
           schema:
-            type: number
+            type: string
       responses:
         "200":
           description: Project agreement signature requested successfully
@@ -1465,9 +1536,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a20
+      security:
+        - oauth2:
+            - execute:adp.project_agreement
       summary: Sign Project Agreement
-      tags: *a21
+      tags: *a14
   /api/management/project-agreements/{id}/link/{datasetId}:
     post:
       description: Links a dataset to the specified project agreement.
@@ -1478,7 +1551,7 @@ paths:
           in: path
           description: Project Agreement ID
           schema:
-            type: number
+            type: string
         - name: datasetId
           required: true
           in: path
@@ -1494,9 +1567,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a20
+      security:
+        - oauth2:
+            - update:adp.project_agreement
       summary: Link Dataset to Project Agreement
-      tags: *a21
+      tags: *a14
   /api/management/project-agreements/{id}/unlink/{datasetId}:
     post:
       description: Unlinks a dataset from the specified project agreement.
@@ -1507,7 +1582,7 @@ paths:
           in: path
           description: Project Agreement ID
           schema:
-            type: number
+            type: string
         - name: datasetId
           required: true
           in: path
@@ -1523,9 +1598,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a20
+      security:
+        - oauth2:
+            - update:adp.project_agreement
       summary: Unlink Dataset from Project Agreement
-      tags: *a21
+      tags: *a14
   /api/events/{algorithmInstanceId}/internal-event:
     post:
       operationId: EventsController_createInternalEvent
@@ -1544,7 +1621,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: &a22
+      tags: &a15
         - Events
   /api/events/{algorithmInstanceId}/algorithm-event:
     post:
@@ -1581,7 +1658,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Create an algorithm event
-      tags: *a22
+      tags: *a15
   /api/events/{algorithmInstanceId}/upload/{eventId}:
     post:
       description: Uploads binary algorithm event data.
@@ -1612,7 +1689,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Upload algorithm event data
-      tags: *a22
+      tags: *a15
   /api/events/{algorithmInstanceId}/data/{eventId}:
     get:
       operationId: EventsController_getEventData
@@ -1635,7 +1712,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a22
+      tags: *a15
   /api/events/{algorithmInstanceId}/poll:
     get:
       description: Long polling endpoint that returns the next available algorithm
@@ -1666,7 +1743,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Poll for the next available algorithm event for this algorithm instance
-      tags: *a22
+      tags: *a15
   /api/events/{algorithmInstanceId}:
     get:
       description: Retrieves all algorithm and internal events for the specified
@@ -1688,7 +1765,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get all events for an algorithm instance
-      tags: *a22
+      tags: *a15
 info:
   title: TSG Analytics Data Plane
   description: This OpenAPI specification shows the endpoints of the Analytics Data Plane.
@@ -1716,16 +1793,46 @@ components:
     oauth2:
       type: oauth2
       flows:
-        password:
-          scopes:
-            analyticsdataplane_admin: analyticsdataplane_admin
-            analyticsdataplane_dataplane: analyticsdataplane_dataplane
-    bearer:
-      scheme: bearer
-      bearerFormat: VP
-      type: http
-      description: Verifiable Presentation needed to communicate between two instances
-        of the control plane.
+        authorizationCode:
+          scopes: &a16
+            create:adp.algorithm: create:adp.algorithm
+            read:adp.algorithm: read:adp.algorithm
+            update:adp.algorithm: update:adp.algorithm
+            delete:adp.algorithm: delete:adp.algorithm
+            execute:adp.algorithm: execute:adp.algorithm
+            manage:adp.algorithm: manage:adp.algorithm
+            create:adp.config: create:adp.config
+            read:adp.config: read:adp.config
+            update:adp.config: update:adp.config
+            delete:adp.config: delete:adp.config
+            execute:adp.config: execute:adp.config
+            manage:adp.config: manage:adp.config
+            create:adp.dataplane: create:adp.dataplane
+            read:adp.dataplane: read:adp.dataplane
+            update:adp.dataplane: update:adp.dataplane
+            delete:adp.dataplane: delete:adp.dataplane
+            execute:adp.dataplane: execute:adp.dataplane
+            manage:adp.dataplane: manage:adp.dataplane
+            create:adp.file: create:adp.file
+            read:adp.file: read:adp.file
+            update:adp.file: update:adp.file
+            delete:adp.file: delete:adp.file
+            execute:adp.file: execute:adp.file
+            manage:adp.file: manage:adp.file
+            create:adp.orchestration: create:adp.orchestration
+            read:adp.orchestration: read:adp.orchestration
+            update:adp.orchestration: update:adp.orchestration
+            delete:adp.orchestration: delete:adp.orchestration
+            execute:adp.orchestration: execute:adp.orchestration
+            manage:adp.orchestration: manage:adp.orchestration
+            create:adp.project_agreement: create:adp.project_agreement
+            read:adp.project_agreement: read:adp.project_agreement
+            update:adp.project_agreement: update:adp.project_agreement
+            delete:adp.project_agreement: delete:adp.project_agreement
+            execute:adp.project_agreement: execute:adp.project_agreement
+            manage:adp.project_agreement: manage:adp.project_agreement
+        clientCredentials:
+          scopes: *a16
   schemas:
     RuntimeConfigDto:
       type: object
@@ -1799,7 +1906,7 @@ components:
             - provider
             - both
           example: consumer
-        identifier:
+        id:
           type: string
           example: dp-12345
       required:
@@ -1810,17 +1917,17 @@ components:
         - managementAddress
         - catalogSynchronization
         - role
-        - identifier
+        - id
     DataPlaneStateDto:
       type: object
       properties:
-        identifier:
+        id:
           type: string
           example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
         details:
           $ref: "#/components/schemas/DataPlaneDetailsDto"
       required:
-        - identifier
+        - id
         - details
     ConstraintSchema:
       type: object
@@ -1864,7 +1971,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: &a23 []
+          example: &a17 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1895,7 +2002,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a23
+          example: *a17
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1921,7 +2028,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a23
+          example: *a17
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1947,17 +2054,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: &a30 []
+          example: &a24 []
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: &a31 []
+          example: &a25 []
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: &a32 []
+          example: &a26 []
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -1989,7 +2096,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: &a24
+          example: &a18
             - keyword1
             - keyword2
           type: array
@@ -1999,14 +2106,14 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: &a25
+          example: &a19
             - theme1
             - theme2
           type: array
           items:
             type: string
         conformsTo:
-          example: &a26
+          example: &a20
             - conformsToExample
           type: array
           items:
@@ -2015,7 +2122,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: &a27
+          example: &a21
             - description1
             - description2
           type: array
@@ -2052,12 +2159,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: &a28 []
+          example: &a22 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: &a29
+          example: &a23
             - version1
             - version2
           type: array
@@ -2117,7 +2224,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a24
+          example: *a18
           type: array
           items:
             type: string
@@ -2125,12 +2232,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a25
+          example: *a19
           type: array
           items:
             type: string
         conformsTo:
-          example: *a26
+          example: *a20
           type: array
           items:
             type: string
@@ -2138,7 +2245,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a27
+          example: *a21
           type: array
           items:
             type: string
@@ -2173,12 +2280,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a28
+          example: *a22
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a29
+          example: *a23
           type: array
           items:
             type: string
@@ -2246,7 +2353,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a24
+          example: *a18
           type: array
           items:
             type: string
@@ -2254,12 +2361,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a25
+          example: *a19
           type: array
           items:
             type: string
         conformsTo:
-          example: *a26
+          example: *a20
           type: array
           items:
             type: string
@@ -2267,7 +2374,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a27
+          example: *a21
           type: array
           items:
             type: string
@@ -2302,12 +2409,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a28
+          example: *a22
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a29
+          example: *a23
           type: array
           items:
             type: string
@@ -2350,7 +2457,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a24
+          example: *a18
           type: array
           items:
             type: string
@@ -2358,12 +2465,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a25
+          example: *a19
           type: array
           items:
             type: string
         conformsTo:
-          example: *a26
+          example: *a20
           type: array
           items:
             type: string
@@ -2371,7 +2478,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a27
+          example: *a21
           type: array
           items:
             type: string
@@ -2406,12 +2513,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a28
+          example: *a22
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a29
+          example: *a23
           type: array
           items:
             type: string
@@ -2595,7 +2702,7 @@ components:
         accepted:
           type: boolean
           example: true
-        identifier:
+        id:
           type: string
           example: req-identifier
         dataAddress:
@@ -2611,7 +2718,7 @@ components:
           example: http://callback-address
       required:
         - accepted
-        - identifier
+        - id
     TransferStartMessageSchema:
       type: object
       properties:
@@ -2790,17 +2897,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: *a30
+          example: *a24
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: *a31
+          example: *a25
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: *a32
+          example: *a26
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -2839,10 +2946,11 @@ components:
         didId:
           type: string
           example: did:example:123456789
-        roles:
+        permissions:
           example:
-            - admin
-            - user
+            - read:credential:own
+            - manage:key
+          description: ABAC permissions
           type: array
           items:
             type: string
@@ -2853,7 +2961,7 @@ components:
         - sub
         - name
         - email
-        - roles
+        - permissions
     AuthenticatedUser:
       type: object
       properties:
@@ -2865,9 +2973,9 @@ components:
             sub: user-id-123
             name: John Doe
             email: john.doe@example.com
-            roles:
-              - admin
-              - user
+            permissions:
+              - read:credential:own
+              - manage:key
             didId: did:example:123456789
             refreshToken: refresh-token-abc123
           allOf:
@@ -2922,7 +3030,7 @@ components:
     FileMetadataDto:
       type: object
       properties:
-        identifier:
+        id:
           type: string
           example: 45f38abb-e7d7-4cf1-ac19-ac447466b8f5
         fileSizeInBytes:
@@ -2962,7 +3070,7 @@ components:
           example: "Failed to generate LLM metadata: API rate limit exceeded"
           description: Error message if metadata generation failed
       required:
-        - identifier
+        - id
         - fileSizeInBytes
         - fileName
         - originalFileName
@@ -3380,7 +3488,7 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: string
           description: Internal identifier of the project agreement
         projectId:
           type: string
@@ -3467,7 +3575,7 @@ components:
           items:
             type: string
         projectAgreementId:
-          type: number
+          type: string
           description: The ID of the project agreement to link to this algorithm instance
       required:
         - id
@@ -3663,7 +3771,7 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: string
           description: Internal identifier of the project agreement
         initiator:
           type: string

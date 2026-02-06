@@ -9,28 +9,23 @@ import {
   Post,
   Put
 } from "@nestjs/common";
-import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination,
   validationPipe
 } from "@tsg-dsp/common-api";
 import {
+  Action,
   ApiBadRequestResponseDefault,
   ApiConflictResponseDefault,
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault
+  ApiNotFoundResponseDefault,
+  Resource
 } from "@tsg-dsp/common-dtos";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 
 import { InitKeyConfig } from "../config.js";
@@ -39,18 +34,16 @@ import { KeysService } from "./keys.service.js";
 
 @Controller("management/keys")
 @ApiTags("Management Keys")
-@ApiOAuth2([AppRole.MANAGE_KEYS, AppRole.READONLY_USER])
-@Roles(AppRole.MANAGE_KEYS)
 export class KeysManagementController {
   constructor(private readonly keyService: KeysService) {}
 
   @Get()
-  @Roles([AppRole.MANAGE_KEYS, AppRole.READONLY_USER])
   @UsePagination()
   @ApiOperation({
     summary: "Retrieve keys",
     description: "Retrieves all keys registered for this wallet"
   })
+  @Requires(Action.READ, Resource.W_KEY)
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [KeyInfoDto] })
   @ApiForbiddenResponseDefault()
@@ -61,6 +54,7 @@ export class KeysManagementController {
   }
 
   @Post()
+  @Requires(Action.CREATE, Resource.W_KEY)
   @ApiOperation({
     summary: "Add key",
     description: "Generates a new key based on the provided configuration"
@@ -86,6 +80,7 @@ export class KeysManagementController {
   }
 
   @Get(":keyId")
+  @Requires(Action.READ, Resource.W_KEY)
   @ApiOperation({
     summary: "Retrieve key",
     description:
@@ -108,6 +103,7 @@ export class KeysManagementController {
   }
 
   @Delete(":keyId")
+  @Requires(Action.DELETE, Resource.W_KEY)
   @ApiOperation({
     summary: "Delete key",
     description: "Deletes an existing key within this wallet"
@@ -121,6 +117,7 @@ export class KeysManagementController {
   }
 
   @Put(":keyId/default")
+  @Requires(Action.UPDATE, Resource.W_KEY)
   @ApiOperation({
     summary: "Set default key",
     description:

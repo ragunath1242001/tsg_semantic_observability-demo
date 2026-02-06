@@ -8,26 +8,21 @@ import {
   Param,
   Post
 } from "@nestjs/common";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Requires, validationPipe } from "@tsg-dsp/common-api";
 import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
-import { Roles, validationPipe } from "@tsg-dsp/common-api";
-import {
+  Action,
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault
+  ApiNotFoundResponseDefault,
+  Resource
 } from "@tsg-dsp/common-dtos";
 
 import { EvaluationContext, EvaluationDecision } from "./evaluation.dto.js";
 import { PolicyEvaluationService } from "./policy.evaluation.service.js";
 
-@Roles(["controlplane_admin"])
+@Requires(Action.READ, Resource.CP_POLICY)
 @Controller("management/policy/evaluation")
 @ApiTags("Evaluation")
-@ApiOAuth2(["controlplane_admin"])
 export class PolicyEvaluationController {
   private readonly logger = new Logger(this.constructor.name);
   constructor(
@@ -66,6 +61,7 @@ export class PolicyEvaluationController {
   }
 
   @Post(":transferId/evaluate")
+  @Requires(Action.EXECUTE, Resource.CP_POLICY)
   @ApiOperation({
     summary: "Retrieve last evaluation context",
     description:

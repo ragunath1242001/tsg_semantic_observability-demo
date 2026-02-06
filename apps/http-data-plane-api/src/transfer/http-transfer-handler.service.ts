@@ -109,21 +109,23 @@ export class HTTPTransferHandler implements ITransferHandler {
       };
     }
 
-    const transfer = await this.transferRepository.save({
-      role: role,
-      id: id,
-      processId: processId,
-      remoteParty: remoteParty,
-      datasetId: datasetId,
-      secret: secret,
-      state: TransferState.REQUESTED,
-      request: transferRequestMessage,
-      response: {
-        accepted: true,
-        identifier: id,
-        dataAddress: dataAddress
-      }
-    });
+    const transfer = await this.transferRepository.save(
+      this.transferRepository.create({
+        role: role,
+        id: id,
+        processId: processId,
+        remoteParty: remoteParty,
+        datasetId: datasetId,
+        secret: secret,
+        state: TransferState.REQUESTED,
+        request: transferRequestMessage,
+        response: {
+          accepted: true,
+          id: id,
+          dataAddress: dataAddress
+        }
+      })
+    );
 
     return transfer.response;
   }
@@ -208,7 +210,7 @@ export class HTTPTransferHandler implements ITransferHandler {
       );
       if (!negotiation.agreement) {
         throw new DataPlaneError(
-          `No agreement found for negotiation ${negotiation.localId} for dataset ${datasetId} with participant ${audience}`,
+          `No agreement found for negotiation ${negotiation.id} for dataset ${datasetId} with participant ${audience}`,
           HttpStatus.BAD_REQUEST
         );
       }

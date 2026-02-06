@@ -4,6 +4,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  AbacModule,
   AuthModule,
   GenericConfigModule,
   LoggerMiddleware,
@@ -69,6 +70,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   imports: [
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
+    AbacModule.forRoot(),
     SplitModeModule,
     ...runtimeModules,
     GenericConfigModule.register(RootConfig),

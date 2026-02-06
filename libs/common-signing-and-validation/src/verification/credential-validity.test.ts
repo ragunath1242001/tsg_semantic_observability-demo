@@ -14,7 +14,7 @@ import { verifyCredentialValidity } from "./credential-validity.js";
 describe("Credential Validity", () => {
   const trustAnchors: TrustAnchor[] = [
     {
-      identifier: testDidId,
+      id: testDidId,
       credentialTypes: ["VerifiableCredential"]
     }
   ];

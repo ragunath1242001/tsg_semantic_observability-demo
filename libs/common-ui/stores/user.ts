@@ -5,7 +5,7 @@ import http from "../utils/http";
 export interface User {
   name: string;
   email: string;
-  roles: string[];
+  permissions: string[];
   sub: string;
   didId?: string;
 }
@@ -36,18 +36,19 @@ export const useUserStore = defineStore("user", {
       if (!state.user) {
         return false;
       }
-      return (
-        state.user.roles.length === 1 &&
-        state.user.roles.includes("readonly_user")
+      return state.user.permissions.every((permission) =>
+        permission.startsWith("read:")
       );
     }
   },
   actions: {
-    hasRole(...roles: string[]) {
+    hasPermission(...permissions: string[]) {
       if (!this.user) {
         return false;
       }
-      return roles.some((role) => this.user.roles.includes(role));
+      return permissions.some((permission) =>
+        this.user?.permissions?.includes(permission)
+      );
     },
     async fetchUserInfo() {
       try {

@@ -41,11 +41,13 @@ export class SecureTokenService {
     };
     if (createAccessToken) {
       const token = crypto.randomBytes(48).toString("hex");
-      this.siTokenRepository.save({
-        accessToken: token,
-        audience: audience,
-        scope: scope
-      });
+      this.siTokenRepository.save(
+        this.siTokenRepository.create({
+          accessToken: token,
+          audience: audience,
+          scope: scope
+        })
+      );
       jwtPayload["token"] = token;
     } else if (existingAccessToken) {
       jwtPayload["token"] = existingAccessToken;

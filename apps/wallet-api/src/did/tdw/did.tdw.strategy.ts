@@ -100,10 +100,12 @@ export class DidTdwStrategy implements DidStrategy {
     });
 
     this.didLogsRepository.clear();
-    await this.didLogsRepository.save({
-      scid: created.log[0][3].scid,
-      logEntry: created.log[0]
-    });
+    await this.didLogsRepository.save(
+      this.didLogsRepository.create({
+        scid: created.log[0][3].scid,
+        logEntry: created.log[0]
+      })
+    );
 
     return { did: created.did, doc: created.doc, log: created.log };
   }
@@ -174,10 +176,12 @@ export class DidTdwStrategy implements DidStrategy {
 
     this.logger.log(`DID document updated for ${updated.did}`);
 
-    await this.didLogsRepository.save({
-      scid: scid,
-      logEntry: updated.log[updated.log.length - 1]
-    });
+    await this.didLogsRepository.save(
+      this.didLogsRepository.create({
+        scid: scid,
+        logEntry: updated.log[updated.log.length - 1]
+      })
+    );
 
     return updated.doc;
   }
@@ -224,10 +228,12 @@ export class DidTdwStrategy implements DidStrategy {
         )
       ]
     });
-    await this.didLogsRepository.save({
-      scid: scid,
-      logEntry: prerotated.log[prerotated.log.length - 1]
-    });
+    await this.didLogsRepository.save(
+      this.didLogsRepository.create({
+        scid: scid,
+        logEntry: prerotated.log[prerotated.log.length - 1]
+      })
+    );
 
     const updated = await updateDID({
       log: prerotated.log,
@@ -239,10 +245,12 @@ export class DidTdwStrategy implements DidStrategy {
       services: didDocument.service,
       updateKeys: [newUpdateKey.publicKeyMultibase!]
     });
-    await this.didLogsRepository.save({
-      scid: scid,
-      logEntry: updated.log[updated.log.length - 1]
-    });
+    await this.didLogsRepository.save(
+      this.didLogsRepository.create({
+        scid: scid,
+        logEntry: updated.log[updated.log.length - 1]
+      })
+    );
 
     this.currUpdateKey = newUpdateKey;
   }

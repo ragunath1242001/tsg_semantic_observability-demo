@@ -44,14 +44,14 @@ class DataPlaneBaseDto {
 export class DataPlaneDetailsDto extends DataPlaneBaseDto {
   @ApiProperty({ example: "dp-12345" })
   @IsString()
-  identifier!: string;
+  id!: string;
 }
 
 export class DataPlaneCreation extends DataPlaneBaseDto {
   @ApiPropertyOptional({ example: "dp-optional-12345" })
   @IsOptional()
   @IsString()
-  identifier?: string;
+  id?: string;
 }
 
 export class DataPlaneAddressDto {
@@ -86,7 +86,7 @@ export class DataPlaneRequestResponseDto {
 
   @ApiProperty({ example: "req-identifier" })
   @IsString()
-  identifier!: string;
+  id!: string;
 
   @ApiPropertyOptional({
     type: () => DataPlaneAddressDto,
@@ -109,7 +109,7 @@ export class DataPlaneRequestResponseDto {
 export class DataPlaneTransferDto extends DataPlaneRequestResponseDto {
   @ApiProperty({ example: "transfer-identifier" })
   @IsString()
-  dataPlaneIdentifier!: string;
+  dataPlaneId!: string;
 
   @ApiProperty({ example: "type1" })
   @IsString()

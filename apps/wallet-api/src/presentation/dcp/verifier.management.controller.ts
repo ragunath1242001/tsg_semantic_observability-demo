@@ -1,22 +1,14 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
-import { Roles, validationPipe } from "@tsg-dsp/common-api";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Requires, validationPipe } from "@tsg-dsp/common-api";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
-import { VerificationRequest } from "@tsg-dsp/common-dtos";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
+import { Action, Resource, VerificationRequest } from "@tsg-dsp/common-dtos";
 
 import { DCPVerifierService } from "./verifier.service.js";
 
 @Controller("management/dcp/verifier")
 @ApiTags("Presentation DCP")
-@ApiOAuth2([AppRole.VIEW_PRESENTATIONS])
-@Roles(AppRole.VIEW_PRESENTATIONS)
+@Requires(Action.READ, Resource.W_PRESENTATION)
 export class DCPVerifierManagementController {
   constructor(private readonly dcpVerifierService: DCPVerifierService) {}
 

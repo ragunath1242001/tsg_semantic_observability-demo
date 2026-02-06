@@ -91,8 +91,7 @@ export async function verifyCredentialValidity(
     }
     const credentialTypes =
       trustAnchors.find(
-        (trustAnchor: TrustAnchor) =>
-          trustAnchor.identifier === plainCredential.issuer
+        (trustAnchor: TrustAnchor) => trustAnchor.id === plainCredential.issuer
       )?.credentialTypes || [];
 
     validTrustAnchors = plainCredential.type

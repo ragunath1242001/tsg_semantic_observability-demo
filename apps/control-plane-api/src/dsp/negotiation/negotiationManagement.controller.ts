@@ -11,7 +11,6 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -20,11 +19,13 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import {
+  Client,
+  ClientInfo,
   nonEmptyStringPipe,
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination
 } from "@tsg-dsp/common-api";
 import {
@@ -35,8 +36,10 @@ import {
   OfferSchema
 } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   NegotiationDetailDto,
-  NegotiationStatusDto
+  NegotiationStatusDto,
+  Resource
 } from "@tsg-dsp/common-dtos";
 
 import { normalizeAddress } from "../../utils/address.js";
@@ -44,15 +47,13 @@ import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { NegotiationService } from "./negotiation.service.js";
 
 @ApiTags("Negotiations Management")
-@Roles(["controlplane_admin", "controlplane_dataplane"])
-@ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/negotiations")
 export class NegotiationManagementController {
   constructor(private readonly negotiationService: NegotiationService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
-  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.CP_NEGOTIATION)
   @UsePagination()
   @ApiOperation({ summary: "Get all negotiations" })
   @ApiResponse({
@@ -67,7 +68,7 @@ export class NegotiationManagementController {
   }
 
   @Get("/dataset/:datasetId")
-  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.CP_NEGOTIATION)
   @ApiOperation({ summary: "Get all negotiations for a dataset" })
   @ApiParam({
     name: "datasetId",
@@ -95,7 +96,7 @@ export class NegotiationManagementController {
   }
 
   @Get(":processId")
-  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.CP_NEGOTIATION)
   @ApiOperation({ summary: "Get a negotiation by process ID" })
   @ApiParam({
     name: "processId",
@@ -116,6 +117,7 @@ export class NegotiationManagementController {
   }
 
   @Post("request")
+  @Requires(Action.CREATE, Resource.CP_NEGOTIATION)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Request a new negotiation" })
   @ApiBody({ description: "Offer details", type: OfferSchema })
@@ -139,7 +141,8 @@ export class NegotiationManagementController {
     @Body(new DeserializePipe(Offer)) body: Offer,
     @Query("dataSet", nonEmptyStringPipe) dataSet: string,
     @Query("address", nonEmptyStringPipe) address: string,
-    @Query("audience", nonEmptyStringPipe) audience: string
+    @Query("audience", nonEmptyStringPipe) audience: string,
+    @Client() client: ClientInfo
   ): Promise<ContractNegotiationDto> {
     this.logger.log(
       `Received negotiation request for ${address} with offer ${JSON.stringify(
@@ -156,16 +159,18 @@ export class NegotiationManagementController {
       body,
       dataSet,
       controlPlaneAddress,
-      audience
+      audience,
+      client
     );
     return new ContractNegotiation({
-      providerPid: negotiationProcess.localId,
+      providerPid: negotiationProcess.id,
       consumerPid: negotiationProcess.remoteId,
       state: negotiationProcess.state
     }).serialize();
   }
 
   @Post(":processId/request")
+  @Requires(Action.EXECUTE, Resource.CP_NEGOTIATION)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Request an existing negotiation" })
   @ApiBody({ description: "Offer details", type: OfferSchema })
@@ -189,13 +194,14 @@ export class NegotiationManagementController {
       processId
     );
     return new ContractNegotiation({
-      providerPid: negotiationProcess.localId,
+      providerPid: negotiationProcess.id,
       consumerPid: negotiationProcess.remoteId,
       state: negotiationProcess.state
     }).serialize();
   }
 
   @Post(":processId/offers")
+  @Requires(Action.EXECUTE, Resource.CP_NEGOTIATION)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Submit an offer for an existing negotiation" })
   @ApiBody({ description: "Offer details", type: OfferSchema })
@@ -238,6 +244,7 @@ export class NegotiationManagementController {
   }
 
   @Post(":processId/agreement")
+  @Requires(Action.EXECUTE, Resource.CP_NEGOTIATION)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Agree to a negotiation" })
   @ApiParam({
@@ -261,6 +268,7 @@ export class NegotiationManagementController {
   }
 
   @Post(":processId/verify")
+  @Requires(Action.EXECUTE, Resource.CP_NEGOTIATION)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Verify a negotiation agreement" })
   @ApiParam({
@@ -286,6 +294,7 @@ export class NegotiationManagementController {
   }
 
   @Post(":processId/finalize")
+  @Requires(Action.EXECUTE, Resource.CP_NEGOTIATION)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Finalize a negotiation" })
   @ApiParam({
@@ -310,6 +319,7 @@ export class NegotiationManagementController {
   }
 
   @Post(":processId/termination")
+  @Requires(Action.EXECUTE, Resource.CP_NEGOTIATION)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Terminate a negotiation" })
   @ApiParam({

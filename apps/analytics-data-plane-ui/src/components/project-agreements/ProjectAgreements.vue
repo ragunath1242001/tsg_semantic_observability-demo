@@ -128,7 +128,7 @@ const linkDataset = async (datasetId: string) => {
   }
 };
 
-const confirmUnlink = async (agreementId: number, datasetId: string) => {
+const confirmUnlink = async (agreementId: string, datasetId: string) => {
   confirm.require({
     message: `Are you sure you want to unlink the dataset from this project agreement?`,
     header: "Confirm Unlink Dataset",

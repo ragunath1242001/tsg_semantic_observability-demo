@@ -81,7 +81,7 @@ describe("TransferController", () => {
         () => {
           return HttpResponse.json({
             accepted: true,
-            identifier: "ABCDEFG",
+            id: "ABCDEFG",
             callbackAddress:
               "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG"
           });
@@ -92,7 +92,7 @@ describe("TransferController", () => {
         () => {
           return HttpResponse.json({
             accepted: true,
-            identifier: "ABCDEFG",
+            id: "ABCDEFG",
             callbackAddress:
               "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG"
           });
@@ -295,7 +295,7 @@ describe("TransferController", () => {
     await moduleRef.get(CatalogService).getCatalogDao();
 
     await dataPlaneService.addDataPlane({
-      identifier: "urn:uuid:b363b656-9f63-4e2b-baab-5376a25bdc0b",
+      id: "urn:uuid:b363b656-9f63-4e2b-baab-5376a25bdc0b",
       title: "Test Data Plane",
       dataplaneType: "tsg:HTTP",
       endpointPrefix: "",
@@ -340,7 +340,7 @@ describe("TransferController", () => {
         "did:web:localhost",
         "tsg:HTTP"
       );
-    transferConsumerUuid = transferConsumerProcess.localId;
+    transferConsumerUuid = transferConsumerProcess.id;
   });
 
   afterEach(() => {

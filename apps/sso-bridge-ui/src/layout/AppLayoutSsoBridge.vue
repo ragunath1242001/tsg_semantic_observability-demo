@@ -28,7 +28,11 @@ const containerClass = computed(() => {
 
 const isAdmin = computed(() => {
   if (!authStore.user || typeof authStore.user === "boolean") return false;
-  return authStore.user.roles?.includes("ssobridge_admin") || false;
+  return (
+    authStore.user.permissions?.includes("manage:sso.user") ||
+    authStore.user.permissions?.includes("manage:sso.client") ||
+    false
+  );
 });
 
 const menuList = computed(() => {
@@ -51,7 +55,7 @@ const menuList = computed(() => {
       items: [
         { label: "Clients", icon: "pi pi-fw pi-desktop", to: "/clients" },
         { label: "Users", icon: "pi pi-fw pi-users", to: "/users" },
-        { label: "Roles", icon: "pi pi-fw pi-id-card", to: "/roles" }
+        { label: "Permissions", icon: "pi pi-fw pi-shield", to: "/permissions" }
       ]
     });
   }

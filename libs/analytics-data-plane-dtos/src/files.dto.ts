@@ -57,7 +57,7 @@ export class CSVW {
 export class FileMetadataDto {
   @ApiProperty({ example: "45f38abb-e7d7-4cf1-ac19-ac447466b8f5" })
   @IsString()
-  identifier!: string;
+  id!: string;
   @ApiProperty({ example: 1000 })
   @IsNumber()
   fileSizeInBytes!: number;

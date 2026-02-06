@@ -66,7 +66,7 @@ const sendTransfer = async (
   try {
     close();
     const endpoint = endpointFor(nextState);
-    await http.post(`management/transfers/${transfer.localId}/${endpoint}`);
+    await http.post(`management/transfers/${transfer.id}/${endpoint}`);
     toast.add({
       severity: "success",
       summary: "Success",
@@ -141,10 +141,7 @@ const terminateTransfer = async (transfer: TransferDetailDto) => {
       reason: reason.value
     };
     const endpoint = endpointFor(word);
-    await http.post(
-      `management/transfers/${transfer.localId}/${endpoint}`,
-      body
-    );
+    await http.post(`management/transfers/${transfer.id}/${endpoint}`, body);
     toast.add({
       severity: "success",
       summary: "Success",
@@ -178,7 +175,7 @@ const terminateTransfer = async (transfer: TransferDetailDto) => {
         </div>
       </div>
     </template>
-    <template #subtitle>{{ transfer.localId }}</template>
+    <template #subtitle>{{ transfer.id }}</template>
     <template #content>
       <span
         class="block text-surface-600 dark:text-surface-200 font-small mb-4">

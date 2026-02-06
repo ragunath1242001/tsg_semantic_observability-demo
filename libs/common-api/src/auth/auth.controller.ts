@@ -20,6 +20,7 @@ import { AuthConfig } from "../config/auth.js";
 import { getSession } from "../utils/session.js";
 import { validationPipe } from "../utils/validation.pipe.js";
 import { AuthorizationResponse } from "./auth.dto.js";
+import { Client } from "./client.decorator.js";
 import {
   AuthenticatedUser,
   ClientInfo,
@@ -27,7 +28,6 @@ import {
 } from "./client.info.js";
 import { DisableOAuthGuard } from "./oauth.guard.js";
 import { OAuthService } from "./oauth.service.js";
-import { Client } from "./roles.guard.js";
 
 @Controller("auth")
 @ApiTags("Authentication")

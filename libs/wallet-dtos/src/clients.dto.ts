@@ -1,3 +1,5 @@
+import { PermissionString } from "@tsg-dsp/common-dtos";
+
 export enum AppRole {
   VIEW_DID = "wallet_view_did",
   MANAGE_KEYS = "wallet_manage_keys",
@@ -16,6 +18,6 @@ export interface ClientInfo {
   name: string;
   email: string;
   didId: string;
-  roles: AppRole[];
+  permissions: PermissionString[];
   refreshToken?: string;
 }

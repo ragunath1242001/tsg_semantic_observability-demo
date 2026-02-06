@@ -11,7 +11,6 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -19,11 +18,13 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import {
+  Client,
+  ClientInfo,
   nonEmptyStringPipe,
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination,
   validateOrRejectSync
 } from "@tsg-dsp/common-api";
@@ -36,20 +37,19 @@ import {
   TransferStatus,
   TransferStatusDto
 } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 
 import { normalizeAddress } from "../../utils/address.js";
 import { TransferService } from "./transfer.service.js";
 
 @ApiTags("Transfers Management")
-@ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
-@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/transfers")
 export class TransferManagementController {
   constructor(private readonly transferService: TransferService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
-  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.CP_TRANSFER)
   @UsePagination()
   @ApiOperation({ summary: "Get all transfers" })
   @ApiResponse({ status: HttpStatus.OK, type: [TransferStatusDto] })
@@ -60,7 +60,7 @@ export class TransferManagementController {
   }
 
   @Get(":processId")
-  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.CP_TRANSFER)
   @ApiOperation({ summary: "Get transfer details by process ID" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
   @ApiResponse({ status: HttpStatus.OK, type: TransferDetailDto })
@@ -72,6 +72,7 @@ export class TransferManagementController {
   }
 
   @Post("request")
+  @Requires(Action.CREATE, Resource.CP_TRANSFER)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Request a new transfer" })
   @ApiQuery({
@@ -92,7 +93,8 @@ export class TransferManagementController {
     @Query("agreementId", nonEmptyStringPipe) agreementId: string,
     @Query("audience", nonEmptyStringPipe) audience: string,
     @Query("format") format?: string,
-    @Query("dataPlaneIdentifier") dataPlaneIdentifier?: string
+    @Query("dataPlaneIdentifier") dataPlaneIdentifier?: string,
+    @Client() client?: ClientInfo
   ): Promise<TransferProcessDto> {
     this.logger.log(
       `Received transfer request for ${address} with agreementId ${agreementId} and format ${format}`
@@ -108,12 +110,14 @@ export class TransferManagementController {
       controlPlaneAddress,
       audience,
       format,
-      dataPlaneIdentifier
+      dataPlaneIdentifier,
+      client
     );
     return internalTransfer.process.serialize();
   }
 
   @Post(":processId/start")
+  @Requires(Action.EXECUTE, Resource.CP_TRANSFER)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Start a transfer process" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
@@ -146,6 +150,7 @@ export class TransferManagementController {
   }
 
   @Post(":processId/completion")
+  @Requires(Action.EXECUTE, Resource.CP_TRANSFER)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Complete a transfer process" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
@@ -166,6 +171,7 @@ export class TransferManagementController {
   }
 
   @Post(":processId/termination")
+  @Requires(Action.EXECUTE, Resource.CP_TRANSFER)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Terminate a transfer process" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
@@ -196,6 +202,7 @@ export class TransferManagementController {
   }
 
   @Post(":processId/suspension")
+  @Requires(Action.EXECUTE, Resource.CP_TRANSFER)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Suspend a transfer process" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })

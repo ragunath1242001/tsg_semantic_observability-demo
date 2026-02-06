@@ -5,14 +5,16 @@ import {
   BridgeJobStatusUpdateDto,
   BridgeUpsertDatasetsDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
-import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
+import {
+  CatalogClientService,
+  DataPlaneError
+} from "@tsg-dsp/common-data-plane-api";
 import { DatasetDto } from "@tsg-dsp/common-dsp";
 
 import { AlgorithmInstancesService } from "../../algorithm-instances/algorithm-instances.service.js";
 import { DataPlaneService } from "../../dataplane/dataplane.service.js";
 import { EventsService } from "../../events/events.service.js";
 import { mergeFileDatasetUpdate } from "../../utils/dataset-file-merge.js";
-import { DataPlaneError } from "../../utils/errors/error.js";
 
 @Injectable()
 export class BridgeService {

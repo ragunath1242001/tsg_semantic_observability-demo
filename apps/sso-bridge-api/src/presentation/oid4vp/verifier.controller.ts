@@ -19,8 +19,8 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import {
+  DisableAbac,
   DisableOAuthGuard,
-  DisableRolesGuard,
   validationPipe
 } from "@tsg-dsp/common-api";
 import {
@@ -33,7 +33,7 @@ import { Request, Response } from "express";
 import { OID4VPVerifierService } from "./verifier.service.js";
 
 @DisableOAuthGuard()
-@DisableRolesGuard()
+@DisableAbac
 @ApiTags("OID4VP")
 @Controller("oid4vp")
 export class OID4VPVerifierController {

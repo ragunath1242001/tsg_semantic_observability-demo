@@ -1,9 +1,9 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
-import { MetaEntity } from "./common.dao.js";
+import { TimestampEntity } from "./common.dao.js";
 
 @Entity()
-export class IssueConfiguration extends MetaEntity {
+export class IssueConfiguration extends TimestampEntity {
   @PrimaryColumn({ type: String })
   id!: string;
 

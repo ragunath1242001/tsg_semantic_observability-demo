@@ -38,79 +38,77 @@ export class RuleRepositoryService implements OnModuleInit {
 
   async insertInitialConstraints() {
     if ((await this.constraintRepository.count()) === 0) {
-      await this.constraintRepository.insert([
-        {
-          id: 0,
-          type: ConstraintType.ATOMIC,
-          title: "Presentation scope",
-          description:
-            "Matches a presentation scope to a presented Verifiable Presentation",
-          leftOperand: "tsg:presentationScope",
-          operator: ODRLOperator.EQ,
-          contextPath: "$.verifiableCredentials[:].scope",
-          evaluable: [
-            EvaluationTrigger.PROVIDER_ON_REQUEST,
-            EvaluationTrigger.PROVIDER_CONTINUOUS,
-            EvaluationTrigger.PROVIDER_ON_EXECUTION
-          ],
-          dataType: DataType.STRING
-        },
-        {
-          id: 1,
-          type: ConstraintType.ATOMIC,
-          title: "Evaluation time",
-          description: "Current time at moment of evaluation",
-          leftOperand: "tsg:evaluationTime",
-          operator: undefined,
-          contextPath: "$.evaluationTime",
-          evaluable: [
-            EvaluationTrigger.PROVIDER_ON_REQUEST,
-            EvaluationTrigger.PROVIDER_CONTINUOUS,
-            EvaluationTrigger.PROVIDER_ON_REQUEST,
-            EvaluationTrigger.PROVIDER_ON_EXECUTION,
-            EvaluationTrigger.CONSUMER_CONTINUOUS,
-            EvaluationTrigger.CONSUMER_ON_EXECUTION
-          ],
-          dataType: DataType.DATETIME
-        },
-        {
-          id: 2,
-          type: ConstraintType.ATOMIC,
-          title: "Signature Status",
-          description: "Status of signature verification of the agreement",
-          leftOperand: "tsg:signatureStatus",
-          operator: ODRLOperator.EQ,
-          contextPath: "$.policy.signatureStatus",
-          evaluable: [
-            EvaluationTrigger.PROVIDER_ON_REQUEST,
-            EvaluationTrigger.PROVIDER_CONTINUOUS,
-            EvaluationTrigger.PROVIDER_ON_EXECUTION,
-            EvaluationTrigger.CONSUMER_ON_REQUEST,
-            EvaluationTrigger.CONSUMER_CONTINUOUS,
-            EvaluationTrigger.CONSUMER_ON_EXECUTION
-          ],
-          dataType: DataType.STRING
-        },
-        {
-          id: 3,
-          type: ConstraintType.ATOMIC,
-          title: "Minimal set size",
-          description: "Status of signature verification of the agreement",
-          leftOperand: "tsg:minSetSize",
-          operator: ODRLOperator.EQ,
-          contextPath: "$.transfer.setSize",
-          evaluable: [EvaluationTrigger.PROVIDER_ON_EXECUTION],
-          dataType: DataType.NUMBER
-        }
-      ]);
+      await this.constraintRepository.insert(
+        this.constraintRepository.create([
+          {
+            type: ConstraintType.ATOMIC,
+            title: "Presentation scope",
+            description:
+              "Matches a presentation scope to a presented Verifiable Presentation",
+            leftOperand: "tsg:presentationScope",
+            operator: ODRLOperator.EQ,
+            contextPath: "$.verifiableCredentials[:].scope",
+            evaluable: [
+              EvaluationTrigger.PROVIDER_ON_REQUEST,
+              EvaluationTrigger.PROVIDER_CONTINUOUS,
+              EvaluationTrigger.PROVIDER_ON_EXECUTION
+            ],
+            dataType: DataType.STRING
+          },
+          {
+            type: ConstraintType.ATOMIC,
+            title: "Evaluation time",
+            description: "Current time at moment of evaluation",
+            leftOperand: "tsg:evaluationTime",
+            operator: undefined,
+            contextPath: "$.evaluationTime",
+            evaluable: [
+              EvaluationTrigger.PROVIDER_ON_REQUEST,
+              EvaluationTrigger.PROVIDER_CONTINUOUS,
+              EvaluationTrigger.PROVIDER_ON_REQUEST,
+              EvaluationTrigger.PROVIDER_ON_EXECUTION,
+              EvaluationTrigger.CONSUMER_CONTINUOUS,
+              EvaluationTrigger.CONSUMER_ON_EXECUTION
+            ],
+            dataType: DataType.DATETIME
+          },
+          {
+            type: ConstraintType.ATOMIC,
+            title: "Signature Status",
+            description: "Status of signature verification of the agreement",
+            leftOperand: "tsg:signatureStatus",
+            operator: ODRLOperator.EQ,
+            contextPath: "$.policy.signatureStatus",
+            evaluable: [
+              EvaluationTrigger.PROVIDER_ON_REQUEST,
+              EvaluationTrigger.PROVIDER_CONTINUOUS,
+              EvaluationTrigger.PROVIDER_ON_EXECUTION,
+              EvaluationTrigger.CONSUMER_ON_REQUEST,
+              EvaluationTrigger.CONSUMER_CONTINUOUS,
+              EvaluationTrigger.CONSUMER_ON_EXECUTION
+            ],
+            dataType: DataType.STRING
+          },
+          {
+            type: ConstraintType.ATOMIC,
+            title: "Minimal set size",
+            description: "Status of signature verification of the agreement",
+            leftOperand: "tsg:minSetSize",
+            operator: ODRLOperator.EQ,
+            contextPath: "$.transfer.setSize",
+            evaluable: [EvaluationTrigger.PROVIDER_ON_EXECUTION],
+            dataType: DataType.NUMBER
+          }
+        ])
+      );
     }
   }
 
-  async getConstraint(id: number): Promise<ConstraintModel>;
-  async getConstraint(id: number, dao: false): Promise<ConstraintModel>;
-  async getConstraint(id: number, dao: true): Promise<ConstraintDao>;
+  async getConstraint(id: string): Promise<ConstraintModel>;
+  async getConstraint(id: string, dao: false): Promise<ConstraintModel>;
+  async getConstraint(id: string, dao: true): Promise<ConstraintDao>;
   async getConstraint(
-    id: number,
+    id: string,
     dao: boolean = false
   ): Promise<ConstraintDao | ConstraintModel> {
     const constraint = await this.constraintRepository.findOne({
@@ -247,7 +245,9 @@ export class RuleRepositoryService implements OnModuleInit {
 
   async addConstraint(constraint: ConstraintModel) {
     try {
-      await this.constraintRepository.save(constraint);
+      await this.constraintRepository.save(
+        this.constraintRepository.create(constraint)
+      );
     } catch (e) {
       throw new DSPError(
         `Could not add new constraint`,
@@ -257,15 +257,15 @@ export class RuleRepositoryService implements OnModuleInit {
     }
   }
 
-  async deleteConstraint(id: number) {
+  async deleteConstraint(id: string) {
     const constraint = await this.getConstraint(id, true);
     await this.constraintRepository.remove(constraint);
   }
 
-  async getRule(id: number): Promise<Rule>;
-  async getRule(id: number, dao: false): Promise<Rule>;
-  async getRule(id: number, dao: true): Promise<RuleDao>;
-  async getRule(id: number, dao: boolean = false): Promise<RuleDao | Rule> {
+  async getRule(id: string): Promise<Rule>;
+  async getRule(id: string, dao: false): Promise<Rule>;
+  async getRule(id: string, dao: true): Promise<RuleDao>;
+  async getRule(id: string, dao: boolean = false): Promise<RuleDao | Rule> {
     const rule = await this.ruleRepository.findOne({
       where: { id },
       relations: {
@@ -371,10 +371,13 @@ export class RuleRepositoryService implements OnModuleInit {
   }
 
   async addRule(rule: Rule) {
-    await this.ruleRepository.save(rule);
+    const ruleDao = await this.ruleRepository.save(
+      this.ruleRepository.create(rule)
+    );
+    return Rule.parse(ruleDao);
   }
 
-  async deleteRule(id: number) {
+  async deleteRule(id: string) {
     const rule = await this.getRule(id, true);
     await this.ruleRepository.remove(rule);
   }

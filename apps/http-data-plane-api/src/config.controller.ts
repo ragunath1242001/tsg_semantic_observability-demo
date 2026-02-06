@@ -11,30 +11,20 @@ import {
   ValidationPipe
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { DisableAbac, DisableOAuthGuard, Requires } from "@tsg-dsp/common-api";
 import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
-import {
-  DisableOAuthGuard,
-  DisableRolesGuard,
-  Roles
-} from "@tsg-dsp/common-api";
-import {
+  Action,
   ApiBadRequestResponseDefault,
-  ApiForbiddenResponseDefault
+  ApiForbiddenResponseDefault,
+  Resource
 } from "@tsg-dsp/common-dtos";
 
 import { RuntimeConfig } from "./config.js";
 import { RuntimeConfigDto } from "./config.schemas.js";
 
-@Roles("controlplane_admin")
 @Controller("settings")
 @ApiTags("Settings")
-@ApiOAuth2(["controlplane_admin"])
 export class ConfigController {
   constructor(private readonly runtimeConfig: RuntimeConfig) {}
 
@@ -46,7 +36,7 @@ export class ConfigController {
   @ApiOkResponse({ type: RuntimeConfigDto })
   @ApiForbiddenResponseDefault()
   @DisableOAuthGuard()
-  @DisableRolesGuard()
+  @DisableAbac
   async getSettings(): Promise<RuntimeConfig> {
     return this.runtimeConfig;
   }
@@ -62,6 +52,7 @@ export class ConfigController {
   @ApiOkResponse({ type: RuntimeConfigDto })
   @ApiBadRequestResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.UPDATE, Resource.HDP_CONFIG)
   async updateSettings(
     @Body() settings: RuntimeConfig
   ): Promise<RuntimeConfig> {
@@ -79,6 +70,7 @@ export class ConfigController {
     description:
       "Uploads logo for the control plane, receive a base64 encoded url."
   })
+  @Requires(Action.UPDATE, Resource.HDP_CONFIG)
   uploadFile(@UploadedFile() file: Express.Multer.File) {
     return `data:image/svg+xml;base64,${file.buffer.toString("base64")}`;
   }

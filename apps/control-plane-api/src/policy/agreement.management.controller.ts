@@ -1,20 +1,19 @@
 import { Controller, Get, Logger, Param } from "@nestjs/common";
 import {
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags
 } from "@nestjs/swagger";
-import { Roles } from "@tsg-dsp/common-api";
+import { Requires } from "@tsg-dsp/common-api";
 import { AgreementDto, AgreementSchema } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 
 import { AgreementService } from "./agreement.service.js";
 
-@Roles(["controlplane_admin"])
+@Requires(Action.READ, Resource.CP_AGREEMENT)
 @Controller("management/agreements")
 @ApiTags("Agreement")
-@ApiOAuth2(["controlplane_admin"])
 export class AgreementManagementController {
   private readonly logger = new Logger(this.constructor.name);
   constructor(private readonly agreementService: AgreementService) {}

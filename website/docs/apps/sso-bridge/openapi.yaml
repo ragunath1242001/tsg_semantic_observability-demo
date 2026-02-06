@@ -538,6 +538,9 @@ paths:
               description: Web Linking to other pages of this resource
               schema:
                 type: string
+      security:
+        - oauth2:
+            - read:sso.user
       summary: Get all users
       tags: &a7
         - Users
@@ -548,6 +551,9 @@ paths:
       responses:
         "201":
           description: The user has been successfully created.
+      security:
+        - oauth2:
+            - create:sso.user
       summary: Create a new user
       tags: *a7
   /api/users/{id}:
@@ -563,6 +569,9 @@ paths:
       responses:
         "200":
           description: User successfully deleted.
+      security:
+        - oauth2:
+            - delete:sso.user
       summary: Delete a user
       tags: *a7
   /api/users/update/{id}:
@@ -578,6 +587,9 @@ paths:
       responses:
         "200":
           description: User successfully updated.
+      security:
+        - oauth2:
+            - update:sso.user
       summary: Update an existing user
       tags: *a7
   /api/users/{id}/reset-2fa:
@@ -595,6 +607,9 @@ paths:
       responses:
         "200":
           description: 2FA successfully reset for the user.
+      security:
+        - oauth2:
+            - execute:sso.user
       summary: Reset 2FA for a user
       tags: *a7
   /api/profile:
@@ -616,9 +631,9 @@ paths:
           description: Password successfully updated.
       summary: Change current user password
       tags: *a8
-  /api/roles:
+  /api/permissions:
     get:
-      operationId: RolesController_getRoles
+      operationId: PermissionsController_getPermissions
       parameters:
         - name: order
           required: false
@@ -652,7 +667,7 @@ paths:
             type: number
       responses:
         "200":
-          description: List of roles returned.
+          description: List of permissions returned.
           headers:
             x-page:
               description: Index of the current page (starting at 1)
@@ -684,48 +699,12 @@ paths:
               description: Web Linking to other pages of this resource
               schema:
                 type: string
-      summary: Get all roles
-      tags: &a9
-        - Roles
-  /api/roles/create:
-    post:
-      operationId: RolesController_createUser
-      parameters: []
-      responses:
-        "201":
-          description: The role has been successfully created.
-      summary: Create a new role
-      tags: *a9
-  /api/roles/{id}:
-    delete:
-      operationId: RolesController_deleteRole
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Role id
-          schema:
-            type: number
-      responses:
-        "200":
-          description: Role successfully deleted.
-      summary: Delete a role
-      tags: *a9
-  /api/roles/update/{id}:
-    patch:
-      operationId: RolesController_updateRole
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Role id
-          schema:
-            type: number
-      responses:
-        "200":
-          description: Role successfully updated.
-      summary: Update an existing role
-      tags: *a9
+      security:
+        - oauth2:
+            - read:sso.config
+      summary: Get all available permissions
+      tags:
+        - Permissions
   /api/oauth/authorize:
     get:
       description: Authorize a client and redirect to the client's redirect_uri.
@@ -804,7 +783,7 @@ paths:
         "200":
           description: ""
       summary: Authorize
-      tags: &a10
+      tags: &a9
         - Oauth
   /api/oauth/login:
     post:
@@ -889,7 +868,7 @@ paths:
         "201":
           description: ""
       summary: Login
-      tags: *a10
+      tags: *a9
   /api/oauth/token:
     post:
       description: Get a token for the client.
@@ -899,7 +878,7 @@ paths:
         "200":
           description: ""
       summary: Token
-      tags: *a10
+      tags: *a9
   /api/oauth/userinfo:
     get:
       description: Get the userinfo for the token.
@@ -914,7 +893,7 @@ paths:
         "200":
           description: ""
       summary: Get Userinfo
-      tags: *a10
+      tags: *a9
     post:
       description: Get the userinfo for the token.
       operationId: OauthController_userinfoPost
@@ -923,7 +902,7 @@ paths:
         "200":
           description: ""
       summary: Get Userinfo
-      tags: *a10
+      tags: *a9
   /api/oauth/introspect:
     post:
       description: Introspect the token.
@@ -932,8 +911,11 @@ paths:
       responses:
         "200":
           description: ""
+      security:
+        - oauth2:
+            - execute:sso.config
       summary: Introspect
-      tags: *a10
+      tags: *a9
   /api/oauth/device_authorization:
     post:
       description: Device Authorization
@@ -943,7 +925,7 @@ paths:
         "200":
           description: ""
       summary: Device Authorization
-      tags: *a10
+      tags: *a9
   /api/oauth/revocation:
     post:
       description: Revocation of the token.
@@ -952,8 +934,11 @@ paths:
       responses:
         "200":
           description: ""
+      security:
+        - oauth2:
+            - execute:sso.config
       summary: Revocation
-      tags: *a10
+      tags: *a9
   /api/oauth/jwks:
     get:
       description: Get the JWKS for the OAuth server
@@ -969,7 +954,7 @@ paths:
         "502":
           description: ""
       summary: Get JWKS
-      tags: *a10
+      tags: *a9
   /api/.well-known/openid-configuration:
     get:
       description: Find all the open ID metadata for the OAuth server
@@ -994,7 +979,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: &a11
+      tags: &a10
         - IngressAuth
   /api/ingress-auth/auth-signin:
     get:
@@ -1013,7 +998,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a11
+      tags: *a10
   /api/ingress-auth/auth-logout:
     post:
       operationId: IngressAuthController_authLogout
@@ -1021,7 +1006,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a11
+      tags: *a10
   /api/ingress-auth/callback:
     get:
       operationId: IngressAuthController_authCallback
@@ -1076,7 +1061,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a11
+      tags: *a10
   /api/clients:
     get:
       operationId: ClientsController_getClients
@@ -1145,8 +1130,11 @@ paths:
               description: Web Linking to other pages of this resource
               schema:
                 type: string
+      security:
+        - oauth2:
+            - read:sso.client
       summary: Retrieve all clients
-      tags: &a12
+      tags: &a11
         - Clients
   /api/clients/create:
     post:
@@ -1162,8 +1150,11 @@ paths:
       responses:
         "201":
           description: Client created successfully.
+      security:
+        - oauth2:
+            - create:sso.client
       summary: Create a new client
-      tags: *a12
+      tags: *a11
   /api/clients/{id}:
     delete:
       operationId: ClientsController_deleteClient
@@ -1172,12 +1163,15 @@ paths:
           required: true
           in: path
           schema:
-            type: number
+            type: string
       responses:
         "200":
           description: Client deleted successfully.
+      security:
+        - oauth2:
+            - delete:sso.client
       summary: Delete a client by id
-      tags: *a12
+      tags: *a11
   /api/clients/update/{id}:
     patch:
       operationId: ClientsController_updateClient
@@ -1186,7 +1180,7 @@ paths:
           required: true
           in: path
           schema:
-            type: number
+            type: string
       requestBody:
         required: true
         description: Updated client data
@@ -1197,8 +1191,11 @@ paths:
       responses:
         "200":
           description: Client updated successfully.
+      security:
+        - oauth2:
+            - update:sso.client
       summary: Update an existing client
-      tags: *a12
+      tags: *a11
   /api/oid4vp/ar/{id}:
     get:
       description: Get the Authorization Request according to the OID4VP specification.
@@ -1219,7 +1216,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get the Authorization Request
-      tags: &a13
+      tags: &a12
         - OID4VP
   /api/oid4vp/status/{id}:
     get:
@@ -1241,7 +1238,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get the Authorization Request Status
-      tags: *a13
+      tags: *a12
   /api/oid4vp/redirect/{id}:
     get:
       description: Redirect to the Authorization Request.
@@ -1256,7 +1253,7 @@ paths:
         "200":
           description: ""
       summary: Redirect to the Authorization Request
-      tags: *a13
+      tags: *a12
   /api/oid4vp/authorize:
     post:
       description: Add an Authorization Request according to the OID4VP specification.
@@ -1272,7 +1269,7 @@ paths:
         "200":
           description: ""
       summary: Add an Authorization Request
-      tags: *a13
+      tags: *a12
   /api/management/oid4vp/verifier/{id}:
     get:
       description: Obtain an Authorization Request according to the OID4VP
@@ -1396,6 +1393,44 @@ tags:
     description: Clients controller
 servers: []
 components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          scopes: &a13
+            create:sso.client: create:sso.client
+            read:sso.client: read:sso.client
+            update:sso.client: update:sso.client
+            delete:sso.client: delete:sso.client
+            execute:sso.client: execute:sso.client
+            manage:sso.client: manage:sso.client
+            create:sso.config: create:sso.config
+            read:sso.config: read:sso.config
+            update:sso.config: update:sso.config
+            delete:sso.config: delete:sso.config
+            execute:sso.config: execute:sso.config
+            manage:sso.config: manage:sso.config
+            create:sso.logs: create:sso.logs
+            read:sso.logs: read:sso.logs
+            update:sso.logs: update:sso.logs
+            delete:sso.logs: delete:sso.logs
+            execute:sso.logs: execute:sso.logs
+            manage:sso.logs: manage:sso.logs
+            create:sso.role: create:sso.role
+            read:sso.role: read:sso.role
+            update:sso.role: update:sso.role
+            delete:sso.role: delete:sso.role
+            execute:sso.role: execute:sso.role
+            manage:sso.role: manage:sso.role
+            create:sso.user: create:sso.user
+            read:sso.user: read:sso.user
+            update:sso.user: update:sso.user
+            delete:sso.user: delete:sso.user
+            execute:sso.user: execute:sso.user
+            manage:sso.user: manage:sso.user
+        clientCredentials:
+          scopes: *a13
   schemas:
     JsonWebKeyDto:
       type: object
@@ -1540,8 +1575,8 @@ components:
       type: object
       properties:
         id:
-          type: number
-          example: 1
+          type: string
+          example: "1"
         name:
           type: string
           example: Example Client
@@ -1577,10 +1612,12 @@ components:
             kid: client-key-1
           description: Public key in JWK format for asymmetric authentication. Required
             when tokenEndpointAuthMethod is private_key_jwt.
-        roles:
+        permissions:
           example:
-            - admin
-            - user
+            - manage:catalog
+            - read:dataset
+          description: Client permissions (can be permission strings or permission set
+            names)
           type: array
           items:
             type: string
@@ -1602,7 +1639,7 @@ components:
         - secretName
         - description
         - clientId
-        - roles
+        - permissions
         - grants
         - redirectUris
     ErrorDto:

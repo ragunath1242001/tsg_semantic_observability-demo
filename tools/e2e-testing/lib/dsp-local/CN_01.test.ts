@@ -94,7 +94,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
                 })
               ]
             }),
-            negotiation.localId
+            negotiation.id
           );
         }
       )
@@ -103,7 +103,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
         "consumer",
         ContractNegotiationState.OFFERED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.terminate(negotiation.localId);
+          await negotiationService.terminate(negotiation.id);
         }
       )
       .onEvent(
@@ -145,7 +145,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
                 })
               ]
             }),
-            negotiation.localId
+            negotiation.id
           );
         }
       )
@@ -156,7 +156,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
         async ({ negotiation, negotiationService }) => {
           await negotiationService.requestExisting(
             negotiation.offer!,
-            negotiation.localId
+            negotiation.id
           );
         }
       )
@@ -165,7 +165,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
         "provider",
         ContractNegotiationState.REQUESTED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.terminate(negotiation.localId);
+          await negotiationService.terminate(negotiation.id);
         }
       )
       .onEvent(
@@ -207,7 +207,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
                 })
               ]
             }),
-            negotiation.localId
+            negotiation.id
           );
         }
       )
@@ -216,7 +216,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
         "consumer",
         ContractNegotiationState.OFFERED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.accept(negotiation.localId);
+          await negotiationService.accept(negotiation.id);
         }
       )
       .onEvent(
@@ -224,7 +224,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
         "provider",
         ContractNegotiationState.ACCEPTED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.agree(negotiation.localId);
+          await negotiationService.agree(negotiation.id);
         }
       )
       .onEvent(
@@ -232,7 +232,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
         "consumer",
         ContractNegotiationState.AGREED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.verify(negotiation.localId);
+          await negotiationService.verify(negotiation.id);
         }
       )
       .onEvent(
@@ -240,7 +240,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
         "provider",
         ContractNegotiationState.VERIFIED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.finalize(negotiation.localId);
+          await negotiationService.finalize(negotiation.id);
         }
       )
       .onEvent(
@@ -272,7 +272,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
         "provider",
         ContractNegotiationState.REQUESTED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.agree(negotiation.localId);
+          await negotiationService.agree(negotiation.id);
         }
       )
       .onEvent(
@@ -280,7 +280,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
         "consumer",
         ContractNegotiationState.AGREED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.verify(negotiation.localId);
+          await negotiationService.verify(negotiation.id);
         }
       )
       .onEvent(
@@ -288,7 +288,7 @@ describe("Local - CN_01: Contract request scenarios", () => {
         "provider",
         ContractNegotiationState.VERIFIED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.finalize(negotiation.localId);
+          await negotiationService.finalize(negotiation.id);
         }
       )
       .onEvent(

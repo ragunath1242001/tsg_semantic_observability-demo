@@ -95,7 +95,7 @@ config:
       default: true
   
   trustAnchors:
-    - identifier: did:web:<%= it.general.authorityDomain %>
+    - id: did:web:<%= it.general.authorityDomain %>
       credentialTypes:
         - "<%= it.general.credentialType %>"
         - "<%= it.participant.id %>:<%= it.general.credentialType %>"

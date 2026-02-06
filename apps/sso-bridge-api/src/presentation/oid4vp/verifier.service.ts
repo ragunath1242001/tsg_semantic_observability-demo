@@ -23,7 +23,7 @@ import { RootConfig } from "../../config.js";
 import { AuthorizationRequestDao } from "../../model/oid4vp.dao.js";
 import { OauthUser } from "../../model/user.dao.js";
 import { OauthService } from "../../oauth/oauth.service.js";
-import { RolesService } from "../../roles/roles.service.js";
+import { PermissionsService } from "../../permissions/permissions.service.js";
 import { UsersService } from "../../users/users.service.js";
 import { getSession } from "../../utils/session.js";
 
@@ -34,7 +34,7 @@ export class OID4VPVerifierService {
     @InjectRepository(AuthorizationRequestDao)
     public authorizationRequestRepository: Repository<AuthorizationRequestDao>,
     private readonly oauthService: OauthService,
-    private readonly rolesService: RolesService,
+    private readonly permissionsService: PermissionsService,
     private readonly usersService: UsersService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
@@ -45,7 +45,7 @@ export class OID4VPVerifierService {
     const authorizationRequest =
       await this.authorizationRequestRepository.findOne({
         where: {
-          identifier: id
+          id: id
         },
         relations: ["user"]
       });
@@ -58,22 +58,22 @@ export class OID4VPVerifierService {
     return authorizationRequest;
   }
 
-  private getOid4vpUri(identifier: string): string {
-    return `oid4vp://?client_id=${this.config.server.publicAddress}&request_uri=${this.config.server.publicAddress}/api/oid4vp/ar/${identifier}`;
+  private getOid4vpUri(id: string): string {
+    return `oid4vp://?client_id=${this.config.server.publicAddress}&request_uri=${this.config.server.publicAddress}/api/oid4vp/ar/${id}`;
   }
 
   async getOrCreateAuthorizationRequestUrl(
-    identifier: string,
+    id: string,
     authorizationRequest: AuthorizationRequest,
     dcqlQueryId?: string
   ): Promise<string> {
     try {
-      await this.getAuthorizationRequestFromDB(identifier);
-      return this.getOid4vpUri(identifier);
+      await this.getAuthorizationRequestFromDB(id);
+      return this.getOid4vpUri(id);
     } catch (err: unknown) {
       if (err instanceof AppError && err.getStatus() === HttpStatus.NOT_FOUND) {
         return await this.createAuthorizationRequest(
-          identifier,
+          id,
           authorizationRequest,
           dcqlQueryId || "User"
         );
@@ -84,22 +84,24 @@ export class OID4VPVerifierService {
   }
 
   async createAuthorizationRequest(
-    identifier: string,
+    id: string,
     authorizationRequest: AuthorizationRequest,
     dcqlQueryId: string
   ): Promise<string> {
     const dcqlQuery = this.getDcqlQuery(dcqlQueryId);
 
-    await this.authorizationRequestRepository.save({
-      identifier: identifier,
-      nonce: crypto.randomBytes(48).toString("hex"),
-      dcqlQuery: dcqlQuery,
-      authorizationRequest: authorizationRequest,
-      response_mode: "direct_post",
-      response_type: "vp_token",
-      response_uri: `${this.config.server.publicAddress}/api/oid4vp/authorize`
-    });
-    return this.getOid4vpUri(identifier);
+    await this.authorizationRequestRepository.save(
+      this.authorizationRequestRepository.create({
+        id: id,
+        nonce: crypto.randomBytes(48).toString("hex"),
+        dcqlQuery: dcqlQuery,
+        authorizationRequest: authorizationRequest,
+        response_mode: "direct_post",
+        response_type: "vp_token",
+        response_uri: `${this.config.server.publicAddress}/api/oid4vp/authorize`
+      })
+    );
+    return this.getOid4vpUri(id);
   }
 
   async getAuthorizationRequest(
@@ -121,7 +123,7 @@ export class OID4VPVerifierService {
         `${this.config.server.publicAddress}/api/oid4vp/authorize`,
       response_type: authorizationRequest.response_type || "vp_token",
       response_mode: authorizationRequest.response_mode || "direct_post",
-      state: authorizationRequest.identifier,
+      state: authorizationRequest.id,
       nonce: authorizationRequest.nonce,
       response_uri:
         authorizationRequest.response_uri ||
@@ -308,15 +310,14 @@ export class OID4VPVerifierService {
     email: string,
     isAdmin: boolean
   ): Promise<OauthUser> {
-    const roles = isAdmin
-      ? await this.rolesService.getAdminUserRoles()
-      : await this.rolesService.getReadOnlyUserRole();
+    // For users created via OID4VP, assign ssobridge_admin for admins, or no permissions for regular users
+    const permissions = isAdmin ? ["manage:sso.*"] : ["read:*"];
 
     return this.usersService.createUser({
       username: email,
       email: email,
       password: "password",
-      roles,
+      permissions,
       grants: ["authorization_code"]
     });
   }

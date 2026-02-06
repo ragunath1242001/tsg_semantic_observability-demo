@@ -43,12 +43,6 @@ export class RootConfig {
   @IsOptional()
   public readonly server: ServerConfig = new ServerConfig();
 
-  @Description("Initial role configurations")
-  @ValidateNested({ each: true })
-  @Type(() => InitRole)
-  @IsOptional()
-  public readonly initRoles: InitRole[] = [];
-
   @Description("Initial client configurations")
   @ValidateNested({ each: true })
   @Type(() => InitClient)
@@ -117,18 +111,6 @@ export class RootConfig {
   };
 }
 
-export class InitRole {
-  @Description("Role name")
-  @IsString()
-  name!: string;
-  @Description("Role description")
-  @IsString()
-  description!: string;
-  @Description("Whether this role should be assigned to admin users")
-  @IsOptional()
-  isAdminRole?: boolean = false;
-}
-
 export class InitClient {
   @Description("Client ID")
   @IsString()
@@ -153,10 +135,12 @@ export class InitClient {
   @Description("Kubernetes secret name")
   @IsString()
   secretName!: string;
-  @Description("Client roles")
+  @Description(
+    "Client permissions (can be permission strings or permission set names)"
+  )
   @IsString({ each: true })
   @ArrayNotEmpty()
-  roles!: string[];
+  permissions!: string[];
   @Description("Client grants types supported")
   @IsString({ each: true })
   @ArrayNotEmpty()
@@ -184,10 +168,12 @@ export class InitUser {
   @IsString()
   @IsEmail()
   email!: string;
-  @Description("User roles")
+  @Description(
+    "User permissions (can be permission strings or permission set names)"
+  )
   @IsString({ each: true })
   @ArrayNotEmpty()
-  roles!: string[];
+  permissions!: string[];
   @Description("Grant types supported")
   @IsString({ each: true })
   @ArrayNotEmpty()

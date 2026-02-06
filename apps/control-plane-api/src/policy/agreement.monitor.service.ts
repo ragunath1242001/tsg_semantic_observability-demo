@@ -42,11 +42,11 @@ export class AgreementMonitorService implements OnApplicationBootstrap {
     // TODO: Use pagination to fetch batches of transfers instead of all at once
     for (const transfer of transfers.data) {
       const transferMonitor = await this.transferMonitorRepository.findOneBy({
-        id: transfer.localId
+        id: transfer.id
       });
       if (!transferMonitor) {
         this.logger.warn(
-          `No transfer monitor found for transfer ${transfer.localId}!`
+          `No transfer monitor found for transfer ${transfer.id}!`
         );
         continue;
       }
@@ -63,7 +63,7 @@ export class AgreementMonitorService implements OnApplicationBootstrap {
           `Policy evaluation for transfer ${transferMonitor.id} resulted in a DENY, suspending the transfer`
         );
         await this.transferService.suspend(
-          transfer.localId,
+          transfer.id,
           "Continuous agreement check failed",
           false
         );

@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { Resource } from "@tsg-dsp/common-dtos";
 import fs from "fs/promises";
 import { stringify } from "yaml";
 
@@ -14,6 +15,20 @@ async function bootstrap() {
   app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
     exclude: [".well-known/*paths", "health"]
   });
+  const actions = ["create", "read", "update", "delete", "execute", "manage"];
+  const scopes: Record<string, string> = Object.fromEntries(
+    [
+      Resource.CP_AGREEMENT,
+      Resource.CP_CATALOG,
+      Resource.CP_CONFIG,
+      Resource.CP_DATAPLANE,
+      Resource.CP_DATASET,
+      Resource.CP_NEGOTIATION,
+      Resource.CP_POLICY,
+      Resource.CP_REGISTRY,
+      Resource.CP_TRANSFER
+    ].flatMap((r) => actions.map((a) => [`${a}:${r}`, `${a}:${r}`]))
+  );
   const config = new DocumentBuilder()
     .setTitle("TSG Control Plane")
     .setVersion("")
@@ -44,11 +59,11 @@ async function bootstrap() {
     .addOAuth2({
       type: "oauth2",
       flows: {
-        password: {
-          scopes: {
-            controlplane_admin: "controlplane_admin",
-            controlplane_dataplane: "controlplane_dataplane"
-          }
+        authorizationCode: {
+          scopes: scopes
+        },
+        clientCredentials: {
+          scopes: scopes
         }
       }
     })

@@ -15,7 +15,7 @@ const negotiations = toRef(props, "negotiations");
   <div v-if="negotiations.length > 0" class="grid grid-cols-12 gap-4">
     <div
       v-for="negotiation in negotiations"
-      :key="negotiation.localId"
+      :key="negotiation.id"
       class="col-span-12 lg:col-span-6 xl:col-span-3">
       <NegotiationRequest
         v-if="negotiation.state === 'REQUESTED'"

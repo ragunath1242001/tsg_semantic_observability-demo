@@ -10,31 +10,30 @@ import {
   Query
 } from "@nestjs/common";
 import {
-  ApiOAuth2,
   ApiOperation,
   ApiParam,
   ApiQuery,
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
-import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
+import { nonEmptyStringPipe, Requires } from "@tsg-dsp/common-api";
 import {
   ITransferHandler,
   TransferClientService
 } from "@tsg-dsp/common-data-plane-api";
 import { AgreementDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   ApiForbiddenResponseDefault,
   MetadataDto,
+  Resource,
   TransferDto
 } from "@tsg-dsp/common-dtos";
 
 import { AnalyticsTransferHandler } from "./analytics-transfer-handler.service.js";
 
 @ApiTags("Data Plane Management")
-@ApiOAuth2(["controlplane_dataplane"])
 @Controller("management/transfers")
-@Roles("controlplane_dataplane")
 export class TransfersManagementController {
   constructor(
     @Inject(ITransferHandler)
@@ -47,6 +46,7 @@ export class TransfersManagementController {
   @ApiOperation({ summary: "Get all transfers" })
   @ApiResponse({ status: HttpStatus.OK, type: [TransferDto] })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.DP_TRANSFER)
   async getTransfers(): Promise<TransferDto[]> {
     return await this.transferHandler.getTransfers();
   }
@@ -56,6 +56,7 @@ export class TransfersManagementController {
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiResponse({ status: HttpStatus.OK, type: TransferDto })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.DP_TRANSFER)
   async getTransfer(@Param("id") id: string): Promise<TransferDto> {
     return await this.transferHandler.getTransferById(id);
   }
@@ -68,6 +69,7 @@ export class TransfersManagementController {
     type: MetadataDto
   })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.DP_TRANSFER)
   async getMetadata(
     @Param("id") id: string
   ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
@@ -79,6 +81,7 @@ export class TransfersManagementController {
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiResponse({ status: HttpStatus.ACCEPTED })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @HttpCode(HttpStatus.ACCEPTED)
   async startTransfer(@Param("id") id: string): Promise<void> {
     const transfer = await this.transferHandler.getTransferById(id);
@@ -90,6 +93,7 @@ export class TransfersManagementController {
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiResponse({ status: HttpStatus.ACCEPTED })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @HttpCode(HttpStatus.ACCEPTED)
   async completeTransfer(@Param("id") id: string): Promise<void> {
     const transfer = await this.transferHandler.getTransferById(id);
@@ -103,6 +107,7 @@ export class TransfersManagementController {
   @ApiQuery({ name: "reason", type: String })
   @ApiResponse({ status: HttpStatus.ACCEPTED })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @HttpCode(HttpStatus.ACCEPTED)
   async terminateTransfer(
     @Param("id") id: string,
@@ -119,6 +124,7 @@ export class TransfersManagementController {
   @ApiQuery({ name: "reason", type: String })
   @ApiResponse({ status: HttpStatus.ACCEPTED })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @HttpCode(HttpStatus.ACCEPTED)
   async suspendTransfer(
     @Param("id") id: string,

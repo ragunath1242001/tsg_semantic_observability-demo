@@ -6,7 +6,7 @@ export enum HealthStatus {
   UNKNOWN
 }
 export interface IDataPlaneStatus {
-  identifier: string;
+  id: string;
   title: string;
   created?: Date;
   modified?: Date;
@@ -16,7 +16,7 @@ export interface IDataPlaneStatus {
 }
 
 export class DataPlaneStatus {
-  identifier: string;
+  id: string;
   title: string;
   created?: Date;
   modified?: Date;
@@ -25,7 +25,7 @@ export class DataPlaneStatus {
   etag?: string;
 
   constructor(value: IDataPlaneStatus) {
-    this.identifier = value.identifier;
+    this.id = value.id;
     this.title = value.title;
     this.created = value.created;
     this.modified = value.modified;

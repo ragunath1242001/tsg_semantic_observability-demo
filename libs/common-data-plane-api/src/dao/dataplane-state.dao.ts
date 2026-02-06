@@ -10,7 +10,7 @@ export class DataPlaneStateDao {
   _id!: number;
 
   @Column({ type: String })
-  identifier!: string;
+  id!: string;
 
   @Column("simple-json")
   details!: DataPlaneDetailsDto;

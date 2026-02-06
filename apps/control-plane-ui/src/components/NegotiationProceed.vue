@@ -14,7 +14,7 @@ const toast = useToast();
 const proceedNegotiation = async (negotiation: NegotiationStatusDto) => {
   try {
     await http.post(
-      `management/negotiations/${negotiation.localId}/${props.endState}`
+      `management/negotiations/${negotiation.id}/${props.endState}`
     );
     toast.add({
       severity: "success",
@@ -36,13 +36,10 @@ const proceedNegotiation = async (negotiation: NegotiationStatusDto) => {
 
 const declineNegotiation = async (negotiation: NegotiationStatusDto) => {
   try {
-    await http.post(
-      `management/negotiations/${negotiation.localId}/termination`,
-      {
-        code: "USER_DECLINED",
-        reason: "Declined by user"
-      }
-    );
+    await http.post(`management/negotiations/${negotiation.id}/termination`, {
+      code: "USER_DECLINED",
+      reason: "Declined by user"
+    });
     toast.add({
       severity: "success",
       summary: "Success",

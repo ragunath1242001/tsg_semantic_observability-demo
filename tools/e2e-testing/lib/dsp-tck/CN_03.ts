@@ -14,7 +14,7 @@ export async function CN_03_01(pipelineExecutor: PipelineExecutor) {
       "provider",
       ContractNegotiationState.REQUESTED,
       async ({ negotiation, negotiationService }) => {
-        await negotiationService.agree(negotiation.localId);
+        await negotiationService.agree(negotiation.id);
       }
     )
     .onEvent(
@@ -22,7 +22,7 @@ export async function CN_03_01(pipelineExecutor: PipelineExecutor) {
       "provider",
       ContractNegotiationState.VERIFIED,
       async ({ negotiation, negotiationService }) => {
-        negotiationService.finalize(negotiation.localId);
+        negotiationService.finalize(negotiation.id);
       }
     )
     .onComplete(async ({ logger }) => {
@@ -52,7 +52,7 @@ export async function CN_03_02(pipelineExecutor: PipelineExecutor) {
               })
             ]
           }),
-          negotiation.localId
+          negotiation.id
         );
       }
     )
@@ -83,7 +83,7 @@ export async function CN_03_03(pipelineExecutor: PipelineExecutor) {
               })
             ]
           }),
-          negotiation.localId
+          negotiation.id
         );
       }
     )
@@ -122,7 +122,7 @@ export async function CN_03_04(pipelineExecutor: PipelineExecutor) {
               })
             ]
           }),
-          negotiation.localId
+          negotiation.id
         );
       }
     )

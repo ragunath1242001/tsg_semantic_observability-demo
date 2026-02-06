@@ -13,28 +13,27 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
-import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
+import { nonEmptyStringPipe, Requires } from "@tsg-dsp/common-api";
 import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import { CatalogDto, CatalogSchema, DatasetDto } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault,
-  DataPlaneStateDto
+  DataPlaneStateDto,
+  Resource
 } from "@tsg-dsp/common-dtos";
 
 import { DataPlaneService } from "./dataplane.service.js";
 
 @ApiTags("Data Plane Management")
-@ApiOAuth2(["controlplane_dataplane"])
 @Controller("/management")
-@Roles("controlplane_dataplane")
 export class DataPlaneManagementController {
   constructor(
     private readonly dataPlaneService: DataPlaneService,
@@ -50,6 +49,7 @@ export class DataPlaneManagementController {
   })
   @ApiOkResponse({ type: DataPlaneStateDto })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.ADP_DATAPLANE)
   async getState(): Promise<DataPlaneStateDto> {
     return await this.dataPlaneService.getStateDto();
   }
@@ -61,6 +61,7 @@ export class DataPlaneManagementController {
   })
   @ApiOkResponse({ type: CatalogSchema })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.ADP_DATAPLANE)
   async getCatalog(): Promise<CatalogDto> {
     return await this.catalog.getOwnCatalog();
   }
@@ -73,6 +74,7 @@ export class DataPlaneManagementController {
   })
   @ApiOkResponse({ type: [Object] })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.ADP_DATAPLANE)
   async getRegistryAddresses(): Promise<{ didId: string; address: string }[]> {
     return await this.catalog.getRegistryAddresses();
   }
@@ -86,6 +88,7 @@ export class DataPlaneManagementController {
   @ApiOkResponse({ type: CatalogSchema })
   @ApiForbiddenResponseDefault()
   @ApiNotFoundResponseDefault()
+  @Requires(Action.READ, Resource.ADP_DATAPLANE)
   async getCatalogByParticipantId(
     @Param("participantId") participantId: string
   ): Promise<CatalogDto> {
@@ -103,6 +106,7 @@ export class DataPlaneManagementController {
     description: "Registry refresh initiated successfully"
   })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.ADP_DATAPLANE)
   async refreshRegistry(): Promise<{ message: string }> {
     this.logger.log("Triggering registry refresh on Control Plane");
     return await this.catalog.refreshRegistry();
@@ -116,6 +120,7 @@ export class DataPlaneManagementController {
   })
   @ApiOkResponse({ type: String })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.ADP_DATAPLANE)
   async getParticipantId(): Promise<string> {
     return await this.catalog.getParticipantId();
   }
@@ -128,6 +133,7 @@ export class DataPlaneManagementController {
   })
   @ApiResponse({ status: HttpStatus.ACCEPTED })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.UPDATE, Resource.ADP_DATAPLANE)
   @HttpCode(HttpStatus.ACCEPTED)
   async refreshRegistration() {
     return await this.dataPlaneService.registerDataplane();
@@ -140,6 +146,7 @@ export class DataPlaneManagementController {
   })
   @ApiOkResponse()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.ADP_DATAPLANE)
   async getDatasetConfig(): Promise<DatasetDto[]> {
     return await this.dataPlaneService.getDatasets();
   }
@@ -153,6 +160,7 @@ export class DataPlaneManagementController {
   @ApiQuery({ name: "datasetId", required: true, description: "Dataset ID" })
   @ApiOkResponse()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.UPDATE, Resource.ADP_DATAPLANE)
   async updateDatasetConfig(
     @Body()
     updatedDataset: DatasetDto,
@@ -170,6 +178,7 @@ export class DataPlaneManagementController {
   @ApiBody({})
   @ApiOkResponse()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.CREATE, Resource.ADP_DATAPLANE)
   async addDataset(@Body() dataset: DatasetDto) {
     return await this.dataPlaneService.addDataset(dataset);
   }
@@ -181,6 +190,7 @@ export class DataPlaneManagementController {
   })
   @ApiOkResponse()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.DELETE, Resource.ADP_DATAPLANE)
   async deleteDataset(
     @Query("datasetId", nonEmptyStringPipe) datasetId: string
   ) {

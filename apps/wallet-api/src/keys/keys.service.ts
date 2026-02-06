@@ -159,14 +159,16 @@ export class KeysService {
       publicKeyJwk.x5u = `${
         this.config.server.publicAddress
       }${API_PREFIX}/keys/${encodeURIComponent(key.id)}`;
-      return await this.keyRepository.save({
-        id: key.id,
-        type: key.type,
-        default: key.default,
-        privateKey: await exportJWK(privateKey),
-        publicKey: publicKeyJwk,
-        caChain: key.existingCertificate
-      });
+      return await this.keyRepository.save(
+        this.keyRepository.create({
+          id: key.id,
+          type: key.type,
+          default: key.default,
+          privateKey: await exportJWK(privateKey),
+          publicKey: publicKeyJwk,
+          caChain: key.existingCertificate
+        })
+      );
     } else {
       this.logger.log(`Creating new keypair with ${key.type}`);
       const keypair = await generateKeyPair(key.type, { extractable: true });
@@ -174,13 +176,15 @@ export class KeysService {
       publicKey = keypair.publicKey;
     }
 
-    return await this.keyRepository.save({
-      id: key.id,
-      type: key.type,
-      default: key.default,
-      privateKey: await exportJWK(privateKey),
-      publicKey: await exportJWK(publicKey),
-      caChain: key.existingCertificate
-    });
+    return await this.keyRepository.save(
+      this.keyRepository.create({
+        id: key.id,
+        type: key.type,
+        default: key.default,
+        privateKey: await exportJWK(privateKey),
+        publicKey: await exportJWK(publicKey),
+        caChain: key.existingCertificate
+      })
+    );
   }
 }

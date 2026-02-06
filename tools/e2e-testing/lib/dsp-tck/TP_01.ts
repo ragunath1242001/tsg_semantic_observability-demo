@@ -16,7 +16,7 @@ export async function TP_01_01(pipelineExecutor: PipelineExecutor) {
       TransferState.REQUESTED,
       async ({ transfer, transferService }) => {
         await transferService.start(
-          transfer.localId,
+          transfer.id,
           {
             endpoint: "http://dataplane.test",
             properties: [
@@ -37,7 +37,7 @@ export async function TP_01_01(pipelineExecutor: PipelineExecutor) {
       async ({ transfer, transferService }) => {
         setTimeout(() => {
           transferService.terminate(
-            transfer.localId,
+            transfer.id,
             "500",
             "Termination test",
             true
@@ -69,7 +69,7 @@ export async function TP_01_02(pipelineExecutor: PipelineExecutor) {
       TransferState.REQUESTED,
       async ({ transfer, transferService }) => {
         await transferService.start(
-          transfer.localId,
+          transfer.id,
           {
             endpoint: "http://dataplane.test",
             properties: [
@@ -89,7 +89,7 @@ export async function TP_01_02(pipelineExecutor: PipelineExecutor) {
       TransferState.STARTED,
       async ({ transfer, transferService }) => {
         setTimeout(() => {
-          transferService.complete(transfer.localId, true);
+          transferService.complete(transfer.id, true);
         }, 100);
       }
     )
@@ -118,7 +118,7 @@ export async function TP_01_03(pipelineExecutor: PipelineExecutor) {
       TransferState.REQUESTED,
       async ({ transfer, transferService }) => {
         await transferService.start(
-          transfer.localId,
+          transfer.id,
           {
             endpoint: "http://dataplane.test",
             properties: [
@@ -138,7 +138,7 @@ export async function TP_01_03(pipelineExecutor: PipelineExecutor) {
       TransferState.STARTED,
       async ({ transfer, transferService }) => {
         setTimeout(() => {
-          transferService.suspend(transfer.localId, "Test suspension", true);
+          transferService.suspend(transfer.id, "Test suspension", true);
         }, 100);
       }
     )
@@ -149,7 +149,7 @@ export async function TP_01_03(pipelineExecutor: PipelineExecutor) {
       async ({ transfer, transferService }) => {
         setTimeout(() => {
           transferService.terminate(
-            transfer.localId,
+            transfer.id,
             "500",
             "Test termination",
             true
@@ -182,7 +182,7 @@ export async function TP_01_04(pipelineExecutor: PipelineExecutor) {
       TransferState.REQUESTED,
       async ({ transfer, transferService }) => {
         await transferService.start(
-          transfer.localId,
+          transfer.id,
           {
             endpoint: "http://dataplane.test",
             properties: [
@@ -202,7 +202,7 @@ export async function TP_01_04(pipelineExecutor: PipelineExecutor) {
       TransferState.STARTED,
       async ({ transfer, transferService }) => {
         setTimeout(() => {
-          transferService.suspend(transfer.localId, "Test suspension", true);
+          transferService.suspend(transfer.id, "Test suspension", true);
         }, 100);
       }
     )
@@ -213,7 +213,7 @@ export async function TP_01_04(pipelineExecutor: PipelineExecutor) {
       async ({ transfer, transferService }) => {
         setTimeout(() => {
           transferService.start(
-            transfer.localId,
+            transfer.id,
             {
               endpoint: "http://dataplane.test",
               properties: [
@@ -234,7 +234,7 @@ export async function TP_01_04(pipelineExecutor: PipelineExecutor) {
       TransferState.STARTED,
       async ({ transfer, transferService }) => {
         setTimeout(() => {
-          transferService.complete(transfer.localId, true);
+          transferService.complete(transfer.id, true);
         }, 100);
       }
     )
@@ -267,7 +267,7 @@ export async function TP_01_05(pipelineExecutor: PipelineExecutor) {
       async ({ transfer, transferService }) => {
         setTimeout(() => {
           transferService.terminate(
-            transfer.localId,
+            transfer.id,
             "500",
             "Test termination",
             true

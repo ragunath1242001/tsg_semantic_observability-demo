@@ -1,22 +1,19 @@
+import { MetaEntity, OwnableEntity } from "@tsg-dsp/common-api";
 import { Credential, DataIntegrityProof, OrArray } from "@tsg-dsp/common-dsp";
+import { Resource } from "@tsg-dsp/common-dtos";
 import { JWK } from "jose";
 import {
+  AfterLoad,
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToOne,
-  PrimaryColumn,
   Relation
 } from "typeorm";
 
-import { MetaEntity } from "./common.dao.js";
-
 @Entity({ name: "key_materials" })
 export class KeyMaterialDao extends MetaEntity {
-  @PrimaryColumn({ type: String })
-  id!: string;
-
   @Column({ type: String })
   type!: "EdDSA" | "ES384" | "X509";
 
@@ -34,9 +31,8 @@ export class KeyMaterialDao extends MetaEntity {
 }
 
 @Entity({ name: "credentials" })
-export class CredentialDao extends MetaEntity {
-  @PrimaryColumn({ type: String })
-  id!: string;
+export class CredentialDao extends OwnableEntity {
+  readonly resourceType = Resource.W_CREDENTIAL;
 
   @Column({ type: String })
   targetDid!: string;
@@ -62,13 +58,17 @@ export class CredentialDao extends MetaEntity {
   @ManyToOne(() => StatusListCredentialDao, { nullable: true, eager: true })
   @JoinColumn()
   statusListCredential?: Relation<StatusListCredentialDao>;
+
+  @AfterLoad()
+  syncOwnerIdentifier() {
+    if (!this.ownerIdentifier) {
+      this.ownerIdentifier = this.targetDid;
+    }
+  }
 }
 
 @Entity()
 export class StatusListCredentialDao extends MetaEntity {
-  @PrimaryColumn({ type: String })
-  id!: string;
-
   @Column({ type: "simple-json" })
   revoked!: Array<number>;
 

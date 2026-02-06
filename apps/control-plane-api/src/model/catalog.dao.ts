@@ -1,3 +1,4 @@
+import { BaseEntity } from "@tsg-dsp/common-api";
 import {
   DataService,
   Dataset,
@@ -25,11 +26,11 @@ import {
   Relation
 } from "typeorm";
 
-import { jsonLdTransformer, mapToInstances, MetaEntity } from "./common.dao.js";
+import { jsonLdTransformer, mapToInstances } from "./common.dao.js";
 import { DataPlaneDao } from "./dataPlanes.dao.js";
 
 @Entity({ name: "resource" })
-export class ResourceDao extends MetaEntity implements IResource {
+export class ResourceDao extends BaseEntity implements IResource {
   @PrimaryColumn({ type: String })
   id!: string;
   @Column({ type: String, nullable: true })
@@ -86,7 +87,7 @@ export class ResourceDao extends MetaEntity implements IResource {
   hasPolicy?: Array<Policy>;
 }
 
-export abstract class ResourceChild extends MetaEntity {
+export abstract class ResourceChild extends BaseEntity {
   _resource: ResourceDao | undefined;
 
   get contactPoint() {
@@ -111,7 +112,7 @@ export abstract class ResourceChild extends MetaEntity {
     return this._resource?.description;
   }
   get identifier() {
-    return this._resource?.identifier;
+    return this._resource?.id;
   }
   get isReferencedBy() {
     return this._resource?.isReferencedBy;
@@ -186,7 +187,7 @@ export class DataServiceDao extends ResourceChild implements IDataService {
 }
 
 @Entity({ name: "distribution" })
-export class DistributionDao extends MetaEntity implements IDistribution {
+export class DistributionDao extends BaseEntity implements IDistribution {
   @PrimaryColumn({ type: String })
   id!: string;
   @ManyToOne(() => DataServiceDao, { nullable: true, cascade: true })
@@ -239,6 +240,7 @@ export class DistributionDao extends MetaEntity implements IDistribution {
 export class DatasetDao extends ResourceChild implements IDataset {
   @PrimaryColumn({ type: String })
   id!: string;
+
   @OneToOne(() => ResourceDao, { cascade: true, eager: true })
   @JoinColumn()
   declare _resource: ResourceDao | undefined;
@@ -284,7 +286,7 @@ export class DatasetDao extends ResourceChild implements IDataset {
 }
 
 @Entity({ name: "catalogrecord" })
-export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
+export class CatalogRecordDao extends BaseEntity implements ICatalogRecord {
   @PrimaryColumn({ type: String })
   id!: string;
   @ManyToOne(() => CatalogDao, { nullable: true })
@@ -309,7 +311,7 @@ export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
   }
 }
 
-export abstract class DatasetChild extends MetaEntity {
+export abstract class DatasetChild extends BaseEntity {
   _dataset: DatasetDao | undefined;
 
   get distribution() {
@@ -356,7 +358,7 @@ export abstract class DatasetChild extends MetaEntity {
     return this._dataset?.description;
   }
   get identifier() {
-    return this._dataset?.identifier;
+    return this._dataset?.id;
   }
   get isReferencedBy() {
     return this._dataset?.isReferencedBy;

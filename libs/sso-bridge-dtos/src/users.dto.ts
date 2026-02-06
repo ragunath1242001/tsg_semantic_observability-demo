@@ -4,7 +4,6 @@ import {
   IsBoolean,
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString
 } from "class-validator";
@@ -12,10 +11,10 @@ import {
 import { GrantType } from "./grants.js";
 
 export class UserDto {
-  @ApiProperty({ example: 1 })
-  @IsNumber()
+  @ApiProperty({ example: "1" })
+  @IsString()
   @IsOptional()
-  id?: number;
+  id?: string;
 
   @ApiProperty({ example: "johndoe" })
   @IsString()
@@ -27,10 +26,14 @@ export class UserDto {
   @IsNotEmpty()
   email!: string;
 
-  @ApiProperty({ example: ["admin", "user"] })
+  @ApiProperty({
+    example: ["manage:user", "read:config"],
+    description:
+      "User permissions (can be permission strings or permission set names)"
+  })
   @IsArray()
   @IsNotEmpty()
-  roles!: string[];
+  permissions!: string[];
 
   @ApiProperty({ example: ["read", "write"] })
   @IsArray()

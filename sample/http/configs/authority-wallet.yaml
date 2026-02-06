@@ -23,7 +23,7 @@ runtime:
   issueDebugCredentials: true
 
 trustAnchors:
-  - identifier: did:web:localhost%3A3400
+  - id: did:web:localhost%3A3400
     credentialTypes:
       - ExampleCredential
       - authority:ExampleCredential

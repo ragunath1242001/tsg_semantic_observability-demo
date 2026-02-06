@@ -48,7 +48,6 @@ config:
     openIdConfigurationURL: "https://{{ .Values.host }}/.well-known/openid-configuration"
     callbackURL: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}/api/auth/callback
     redirectURL: https://{{ .Values.host }}{{ template "tsg-core.subPath" $ }}/
-    rolePath: "$.roles[*]"
     # For private_key_jwt authentication, use one of the following:
     # Option 1: File-based private key (recommended)
     # privateKeyJwkFile: "/var/secrets/private-key.jwk"

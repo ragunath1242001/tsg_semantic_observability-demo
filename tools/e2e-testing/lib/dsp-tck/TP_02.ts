@@ -16,7 +16,7 @@ export async function TP_02_01(pipelineExecutor: PipelineExecutor) {
       TransferState.REQUESTED,
       async ({ transfer, transferService }) => {
         await transferService.start(
-          transfer.localId,
+          transfer.id,
           {
             endpoint: "http://dataplane.test",
             properties: [
@@ -59,7 +59,7 @@ export async function TP_02_02(pipelineExecutor: PipelineExecutor) {
       TransferState.REQUESTED,
       async ({ transfer, transferService }) => {
         await transferService.start(
-          transfer.localId,
+          transfer.id,
           {
             endpoint: "http://dataplane.test",
             properties: [
@@ -101,7 +101,7 @@ export async function TP_02_03(pipelineExecutor: PipelineExecutor) {
       TransferState.REQUESTED,
       async ({ transfer, transferService }) => {
         await transferService.start(
-          transfer.localId,
+          transfer.id,
           {
             endpoint: "http://dataplane.test",
             properties: [
@@ -152,7 +152,7 @@ export async function TP_02_04(pipelineExecutor: PipelineExecutor) {
       TransferState.REQUESTED,
       async ({ transfer, transferService }) => {
         await transferService.start(
-          transfer.localId,
+          transfer.id,
           {
             endpoint: "http://dataplane.test",
             properties: [

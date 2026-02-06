@@ -29,7 +29,7 @@ export async function TP_C_02_01(
       TransferState.STARTED,
       async ({ transfer, transferService }) => {
         await transferService.terminate(
-          transfer.localId,
+          transfer.id,
           "500",
           "Termination test",
           true
@@ -75,7 +75,7 @@ export async function TP_C_02_02(
       "consumer",
       TransferState.STARTED,
       async ({ transfer, transferService }) => {
-        await transferService.complete(transfer.localId, true);
+        await transferService.complete(transfer.id, true);
       }
     )
     .onEvent(
@@ -117,11 +117,7 @@ export async function TP_C_02_03(
       "consumer",
       TransferState.STARTED,
       async ({ transfer, transferService }) => {
-        await transferService.suspend(
-          transfer.localId,
-          "Test suspension",
-          true
-        );
+        await transferService.suspend(transfer.id, "Test suspension", true);
       }
     )
     .onEvent(
@@ -131,7 +127,7 @@ export async function TP_C_02_03(
       async ({ transfer, transferService }) => {
         setTimeout(() => {
           transferService.terminate(
-            transfer.localId,
+            transfer.id,
             "500",
             "Test termination",
             true
@@ -178,11 +174,7 @@ export async function TP_C_02_04(
       "consumer",
       TransferState.STARTED,
       async ({ transfer, transferService }) => {
-        await transferService.suspend(
-          transfer.localId,
-          "Test suspension",
-          true
-        );
+        await transferService.suspend(transfer.id, "Test suspension", true);
       }
     )
     .onEvent(
@@ -191,7 +183,7 @@ export async function TP_C_02_04(
       TransferState.SUSPENDED,
       async ({ transfer, transferService }) => {
         setTimeout(() => {
-          transferService.start(transfer.localId, undefined, true);
+          transferService.start(transfer.id, undefined, true);
         }, 100);
       }
     )
@@ -201,7 +193,7 @@ export async function TP_C_02_04(
       TransferState.STARTED,
       async ({ transfer, transferService }) => {
         setTimeout(() => {
-          transferService.complete(transfer.localId, true);
+          transferService.complete(transfer.id, true);
         }, 100);
       }
     )
@@ -246,7 +238,7 @@ export async function TP_C_02_05(
       async ({ transfer, transferService }) => {
         setTimeout(() => {
           transferService.terminate(
-            transfer.localId,
+            transfer.id,
             "500",
             "Test suspension",
             true

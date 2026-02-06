@@ -164,7 +164,9 @@ export class DidService {
         HttpStatus.CONFLICT
       );
     }
-    const service = await this.serviceRepository.save(config);
+    const service = await this.serviceRepository.save(
+      this.serviceRepository.create(config)
+    );
     if (!init) {
       await this.updateDidDocumentServices(await this.getServices());
     }
@@ -174,10 +176,12 @@ export class DidService {
 
   async updateService(id: string, config: DidServiceConfig) {
     if (await this.serviceRepository.existsBy({ id: id })) {
-      const service = await this.serviceRepository.save({
-        ...config,
-        id: id
-      });
+      const service = await this.serviceRepository.save(
+        this.serviceRepository.create({
+          ...config,
+          id: id
+        })
+      );
       await this.updateDidDocumentServices(await this.getServices());
       return service;
     } else {
@@ -205,9 +209,11 @@ export class DidService {
         existing.map(async (e) => await this.didRepository.delete(e.id))
       );
     }
-    await this.didRepository.save({
-      document: didDocument
-    });
+    await this.didRepository.save(
+      this.didRepository.create({
+        document: didDocument
+      })
+    );
     this.cachedDocument = undefined;
   }
 

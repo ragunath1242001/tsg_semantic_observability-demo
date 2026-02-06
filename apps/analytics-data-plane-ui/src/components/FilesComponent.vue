@@ -156,9 +156,7 @@ const removeFile = async (fileId: string) => {
     rejectClass: "p-button-secondary p-button-outlined",
     accept: async () => {
       try {
-        filesList.value = filesList.value.filter(
-          (file) => file.identifier !== fileId
-        );
+        filesList.value = filesList.value.filter((file) => file.id !== fileId);
         await http.delete(`files/${fileId}`);
         toast.add({
           severity: "success",
@@ -536,7 +534,7 @@ onMounted(async () => {
         <div class="flex flex-col">
           <div
             v-for="(file, index) in slotProps.items"
-            :key="file.identifier"
+            :key="file.id"
             class="flex flex-col sm:flex-row sm:items-center p-2 gap-6 border-surface-200 dark:border-surface-700"
             :class="{
               'border-t ': index !== 0,
@@ -584,11 +582,7 @@ onMounted(async () => {
                     severity="info"
                     size="small"
                     @click="
-                      showCSVWDetails(
-                        file.identifier,
-                        file.csvw,
-                        file.originalFileName
-                      )
+                      showCSVWDetails(file.id, file.csvw, file.originalFileName)
                     " />
                   <Button
                     v-if="file.inlineCsvw"
@@ -606,7 +600,7 @@ onMounted(async () => {
                     severity="success"
                     size="small"
                     @click="
-                      showDatasetDetails(file.identifier, file.originalFileName)
+                      showDatasetDetails(file.id, file.originalFileName)
                     " />
                 </div>
               </div>
@@ -621,7 +615,7 @@ onMounted(async () => {
                   rounded
                   outlined
                   @click.capture="
-                    previewFile(file.identifier, file.originalFileName)
+                    previewFile(file.id, file.originalFileName)
                   " />
                 <Button
                   v-tooltip.bottom="'Download file'"
@@ -632,7 +626,7 @@ onMounted(async () => {
                   rounded
                   outlined
                   @click.capture="
-                    downloadFile(file.identifier, file.originalFileName)
+                    downloadFile(file.id, file.originalFileName)
                   " />
                 <Button
                   v-tooltip.bottom="'Re-upload file'"
@@ -657,7 +651,7 @@ onMounted(async () => {
                   size="small"
                   rounded
                   outlined
-                  @click.capture="removeFile(file.identifier)" />
+                  @click.capture="removeFile(file.id)" />
               </div>
             </div>
           </div>
@@ -669,7 +663,7 @@ onMounted(async () => {
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 p-5">
           <div
             v-for="file in slotProps.items"
-            :key="file.identifier"
+            :key="file.id"
             class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             :class="{ 'opacity-60': !file.presentInLastCheck }">
             <!-- Card Header -->
@@ -683,7 +677,7 @@ onMounted(async () => {
                   rounded
                   outlined
                   @click.capture="
-                    previewFile(file.identifier, file.originalFileName)
+                    previewFile(file.id, file.originalFileName)
                   " />
                 <Button
                   v-tooltip.bottom="'Download file'"
@@ -693,7 +687,7 @@ onMounted(async () => {
                   rounded
                   outlined
                   @click.capture="
-                    downloadFile(file.identifier, file.originalFileName)
+                    downloadFile(file.id, file.originalFileName)
                   " />
               </div>
               <div class="absolute top-2 right-2 flex gap-2">
@@ -720,7 +714,7 @@ onMounted(async () => {
                   size="small"
                   rounded
                   outlined
-                  @click.capture="removeFile(file.identifier)" />
+                  @click.capture="removeFile(file.id)" />
               </div>
 
               <div class="flex flex-col items-center text-center">
@@ -770,11 +764,7 @@ onMounted(async () => {
                     severity="info"
                     size="small"
                     @click="
-                      showCSVWDetails(
-                        file.identifier,
-                        file.csvw,
-                        file.originalFileName
-                      )
+                      showCSVWDetails(file.id, file.csvw, file.originalFileName)
                     " />
                   <Button
                     v-if="file.inlineCsvw"
@@ -792,7 +782,7 @@ onMounted(async () => {
                     severity="success"
                     size="small"
                     @click="
-                      showDatasetDetails(file.identifier, file.originalFileName)
+                      showDatasetDetails(file.id, file.originalFileName)
                     " />
                 </div>
 

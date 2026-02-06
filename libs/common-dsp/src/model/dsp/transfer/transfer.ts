@@ -36,7 +36,7 @@ export class TransferEvent {
 }
 
 export interface ITransferStatus {
-  localId: string;
+  id: string;
   remoteId?: string;
   role: TransferRole;
   remoteAddress: string;
@@ -48,7 +48,7 @@ export interface ITransferStatus {
 }
 
 export class TransferStatus {
-  localId: string;
+  id: string;
   remoteId?: string;
   role: TransferRole;
   remoteAddress: string;
@@ -59,7 +59,7 @@ export class TransferStatus {
   modifiedDate: Date;
 
   constructor(value: ITransferStatus) {
-    this.localId = value.localId;
+    this.id = value.id;
     this.remoteId = value.remoteId;
     this.role = value.role;
     this.remoteAddress = value.remoteAddress;

@@ -1,23 +1,19 @@
 import { Controller, Get, HttpStatus, Param, Res } from "@nestjs/common";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { nonEmptyStringPipe, Requires } from "@tsg-dsp/common-api";
 import {
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
-import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
-import {
+  Action,
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault
+  ApiNotFoundResponseDefault,
+  Resource
 } from "@tsg-dsp/common-dtos";
 import { Response } from "express";
 
 import { EventsService } from "./events.service.js";
 
 @ApiTags("Algorithm Instances")
-@ApiOAuth2(["controlplane_dataplane"])
 @Controller("management/algorithm-instances/:algorithmInstanceId/events")
-@Roles("controlplane_dataplane")
+@Requires(Action.READ, Resource.ADP_ORCHESTRATION)
 export class EventsManagementController {
   constructor(private readonly eventsService: EventsService) {}
 

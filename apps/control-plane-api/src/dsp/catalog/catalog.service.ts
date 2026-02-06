@@ -2,6 +2,8 @@ import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   AppError,
+  ClientInfo,
+  getOwnershipFieldsFromClient,
   Paginated,
   PaginationOptionsDto,
   ServerConfig
@@ -201,7 +203,8 @@ export class CatalogService {
 
   async addDataset(
     dataset: Dataset,
-    dataPlaneDao: DataPlaneDao | undefined = undefined
+    dataPlaneDao: DataPlaneDao | undefined = undefined,
+    client?: ClientInfo
   ): Promise<DatasetDao> {
     const catalog = await this.getCatalogDao();
     const exist = await this.datasetRepository.findOne({
@@ -273,6 +276,8 @@ export class CatalogService {
 
     const newResource = this.resourceRepository.create(dataset);
     const newDataset = this.datasetRepository.create(dataset);
+    // Set ownership fields
+    Object.assign(newDataset, getOwnershipFieldsFromClient(client));
     newDataset._resource = newResource;
     newDataset._distribution = dataset.distribution?.map((distribution) => {
       if (typeof distribution.accessService === "string") {
@@ -337,54 +342,53 @@ export class CatalogService {
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     }
-    if (
-      dataPlaneDao &&
-      existingDataset._dataPlane?.identifier !== dataPlaneDao.identifier
-    ) {
+    if (dataPlaneDao && existingDataset._dataPlane?.id !== dataPlaneDao.id) {
       throw new DSPError(
-        `Can't update a dataset, as dataset with id ${datasetId} is not associated with the data plane with id ${dataPlaneDao.identifier}`,
+        `Can't update a dataset, as dataset with id ${datasetId} is not associated with the data plane with id ${dataPlaneDao.id}`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "warn");
     }
     const newResource = this.resourceRepository.create(dataset);
     const catalog = await this.getCatalogDao();
     this.logger.debug(`Updated dataset ${datasetId}`);
-    return await this.datasetRepository.save({
-      ...dataset,
-      _resource: newResource,
-      _distribution: dataset.distribution?.map((distribution) => {
-        const { accessService, ...distributionRemainder } = distribution;
-        let accessServiceDao: DeepPartial<DataServiceDao | undefined> =
-          undefined;
-        if (typeof accessService === "string") {
-          accessServiceDao = this.dataservicesRepository.create({
-            _resource: this.resourceRepository.create({
-              id: accessService
-            })
-          });
-        } else if (accessService) {
-          if (
-            accessService.endpointDescription === "dspace:connector" &&
-            catalog.data?._services?.[0]
-          ) {
-            accessServiceDao = catalog.data?._services?.[0];
-          } else {
+    return await this.datasetRepository.save(
+      this.datasetRepository.create({
+        ...dataset,
+        _resource: newResource,
+        _distribution: dataset.distribution?.map((distribution) => {
+          const { accessService, ...distributionRemainder } = distribution;
+          let accessServiceDao: DeepPartial<DataServiceDao | undefined> =
+            undefined;
+          if (typeof accessService === "string") {
             accessServiceDao = this.dataservicesRepository.create({
-              ...accessService,
               _resource: this.resourceRepository.create({
-                id: accessService.id
+                id: accessService
               })
             });
+          } else if (accessService) {
+            if (
+              accessService.endpointDescription === "dspace:connector" &&
+              catalog.data?._services?.[0]
+            ) {
+              accessServiceDao = catalog.data?._services?.[0];
+            } else {
+              accessServiceDao = this.dataservicesRepository.create({
+                ...accessService,
+                _resource: this.resourceRepository.create({
+                  id: accessService.id
+                })
+              });
+            }
+          } else {
+            accessServiceDao = catalog.data?._services?.[0];
           }
-        } else {
-          accessServiceDao = catalog.data?._services?.[0];
-        }
-        return this.distributionRepository.create({
-          ...distributionRemainder,
-          _accessService: accessServiceDao
-        });
+          return this.distributionRepository.create({
+            ...distributionRemainder,
+            _accessService: accessServiceDao
+          });
+        })
       })
-    });
+    );
   }
 
   async removeDataset(datasetId: string): Promise<void> {
@@ -421,7 +425,7 @@ export class CatalogService {
     const [datasets, itemCount] = await this.datasetRepository.findAndCount({
       where: {
         _dataPlane: {
-          identifier: dataPlaneId
+          id: dataPlaneId
         }
       },
       relations: {

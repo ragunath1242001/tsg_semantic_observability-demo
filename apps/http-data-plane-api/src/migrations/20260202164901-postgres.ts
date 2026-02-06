@@ -1,0 +1,128 @@
+import { MigrationInterface, QueryRunner } from "typeorm";
+
+export class Postgres20260202164901 implements MigrationInterface {
+    name = 'Postgres20260202164901'
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "data_plane_state_dao" RENAME COLUMN "identifier" TO "id"`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" DROP CONSTRAINT "PK_2e9009b70b3a5b7e3cb7f0c8ec1"`);
+        // await queryRunner.query(`ALTER TABLE "ingress_log_dao" DROP COLUMN "identifier"`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" DROP CONSTRAINT "PK_3e872213c2d3e3efcf4920f968a"`);
+        // await queryRunner.query(`ALTER TABLE "egress_log_dao" DROP COLUMN "identifier"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP CONSTRAINT "PK_4d5c0a3a4c2535a9730c07ddcee"`);
+        // await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP COLUMN "identifier"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP CONSTRAINT "PK_6a48a6059338ebdfab151520a8b"`);
+        // await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP COLUMN "identifier"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" ADD "ownerId" character varying`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" ADD "ownerIdentifier" character varying`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" ADD "createdBy" character varying`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" ADD "tenantId" character varying`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" ADD "createdDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" ADD "modifiedDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" ADD "deletedDate" TIMESTAMP`);
+        // await queryRunner.query(`ALTER TABLE "ingress_log_dao" ADD "id" character varying NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" RENAME COLUMN "identifier" TO "id"`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" ALTER COLUMN "id" TYPE character varying`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" ALTER COLUMN "id" DROP DEFAULT`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" ADD CONSTRAINT "PK_99727665bae9ef6f41ea7d76990" PRIMARY KEY ("id")`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" ADD "createdDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" ADD "modifiedDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" ADD "deletedDate" TIMESTAMP`);
+        // await queryRunner.query(`ALTER TABLE "egress_log_dao" ADD "id" character varying NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" RENAME COLUMN "identifier" TO "id"`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" ALTER COLUMN "id" TYPE character varying`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" ALTER COLUMN "id" DROP DEFAULT`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" ADD CONSTRAINT "PK_0f71866c487d9c1a2e2cd93b8ea" PRIMARY KEY ("id")`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD "createdDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD "modifiedDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD "deletedDate" TIMESTAMP`);
+        // await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD "id" character varying NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" RENAME COLUMN "identifier" TO "id"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD CONSTRAINT "PK_7adc541f40731b378eb8c54608d" PRIMARY KEY ("id")`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD "ownerId" character varying`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD "ownerIdentifier" character varying`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD "createdBy" character varying`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD "tenantId" character varying`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD "createdDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD "modifiedDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD "deletedDate" TIMESTAMP`);
+        // await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD "id" character varying NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" RENAME COLUMN "identifier" TO "id"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD CONSTRAINT "PK_68f995c61e7537a497d4427f7ea" PRIMARY KEY ("id")`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD "ownerId" character varying`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD "ownerIdentifier" character varying`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD "createdBy" character varying`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD "tenantId" character varying`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" ADD "createdDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" ADD "modifiedDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" ADD "deletedDate" TIMESTAMP`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" ADD "ownerId" character varying`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" ADD "ownerIdentifier" character varying`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" ADD "createdBy" character varying`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" ADD "tenantId" character varying`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" DROP COLUMN "createdDate"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" ADD "createdDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" DROP COLUMN "modifiedDate"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" ADD "modifiedDate" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" DROP COLUMN "deletedDate"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" ADD "deletedDate" TIMESTAMP`);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "transfer_dao" DROP COLUMN "deletedDate"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" ADD "deletedDate" character varying`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" DROP COLUMN "modifiedDate"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" ADD "modifiedDate" character varying NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" DROP COLUMN "createdDate"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" ADD "createdDate" character varying NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" DROP COLUMN "tenantId"`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" DROP COLUMN "createdBy"`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" DROP COLUMN "ownerIdentifier"`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" DROP COLUMN "ownerId"`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" DROP COLUMN "deletedDate"`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" DROP COLUMN "modifiedDate"`);
+        await queryRunner.query(`ALTER TABLE "dataset_item_dao" DROP COLUMN "createdDate"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP COLUMN "tenantId"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP COLUMN "createdBy"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP COLUMN "ownerIdentifier"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP COLUMN "ownerId"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP CONSTRAINT "PK_68f995c61e7537a497d4427f7ea"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP COLUMN "id"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP COLUMN "deletedDate"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP COLUMN "modifiedDate"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" DROP COLUMN "createdDate"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP COLUMN "tenantId"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP COLUMN "createdBy"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP COLUMN "ownerIdentifier"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP COLUMN "ownerId"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP CONSTRAINT "PK_7adc541f40731b378eb8c54608d"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP COLUMN "id"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP COLUMN "deletedDate"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP COLUMN "modifiedDate"`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" DROP COLUMN "createdDate"`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" DROP CONSTRAINT "PK_0f71866c487d9c1a2e2cd93b8ea"`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" DROP COLUMN "id"`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" DROP COLUMN "deletedDate"`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" DROP COLUMN "modifiedDate"`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" DROP COLUMN "createdDate"`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" DROP CONSTRAINT "PK_99727665bae9ef6f41ea7d76990"`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" DROP COLUMN "id"`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" DROP COLUMN "deletedDate"`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" DROP COLUMN "modifiedDate"`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" DROP COLUMN "createdDate"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" DROP COLUMN "tenantId"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" DROP COLUMN "createdBy"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" DROP COLUMN "ownerIdentifier"`);
+        await queryRunner.query(`ALTER TABLE "transfer_dao" DROP COLUMN "ownerId"`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD "identifier" character varying NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "versioned_dataset_dao" ADD CONSTRAINT "PK_6a48a6059338ebdfab151520a8b" PRIMARY KEY ("identifier")`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD "identifier" character varying NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "http_dataset_config_dao" ADD CONSTRAINT "PK_4d5c0a3a4c2535a9730c07ddcee" PRIMARY KEY ("identifier")`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" ADD "identifier" SERIAL NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "egress_log_dao" ADD CONSTRAINT "PK_3e872213c2d3e3efcf4920f968a" PRIMARY KEY ("identifier")`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" ADD "identifier" SERIAL NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "ingress_log_dao" ADD CONSTRAINT "PK_2e9009b70b3a5b7e3cb7f0c8ec1" PRIMARY KEY ("identifier")`);
+        await queryRunner.query(`ALTER TABLE "data_plane_state_dao" RENAME COLUMN "id" TO "identifier"`);
+    }
+
+}

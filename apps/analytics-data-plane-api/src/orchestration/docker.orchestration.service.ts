@@ -197,12 +197,10 @@ export class DockerOrchestrationService
         env.push(`DATA_FILE=/data/${fileMetadata.fileName}`);
       } else {
         const dataAccessToken = await this.filesService.createAccessToken(
-          fileMetadata.identifier
+          fileMetadata.id
         );
         env.push("DATA_TYPE=url");
-        env.push(
-          `DATA_URL=${localDataPlaneAddress}/files/${fileMetadata.identifier}`
-        );
+        env.push(`DATA_URL=${localDataPlaneAddress}/files/${fileMetadata.id}`);
         env.push(`DATA_ACCESS_TOKEN=${dataAccessToken}`);
       }
     }

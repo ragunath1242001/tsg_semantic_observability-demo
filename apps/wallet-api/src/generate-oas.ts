@@ -1,6 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
+import { Resource } from "@tsg-dsp/common-dtos";
 import fs from "fs/promises";
 import { stringify } from "yaml";
 
@@ -22,8 +22,17 @@ async function bootstrap() {
       "health"
     ]
   });
-  const appRoles = Object.entries(AppRole).map((r) => [r[1], r[1]]);
-  const scopes = Object.fromEntries(appRoles);
+  const actions = ["create", "read", "update", "delete", "execute", "manage"];
+  const scopes: Record<string, string> = Object.fromEntries(
+    [
+      Resource.W_CONFIG,
+      Resource.W_CREDENTIAL,
+      Resource.W_DID,
+      Resource.W_ISSUE_CONFIG,
+      Resource.W_KEY,
+      Resource.W_PRESENTATION
+    ].flatMap((r) => actions.map((a) => [`${a}:${r}`, `${a}:${r}`]))
+  );
   const config = new DocumentBuilder()
     .setTitle("TSG Wallet")
     .setVersion("")
@@ -64,7 +73,10 @@ async function bootstrap() {
     .addOAuth2({
       type: "oauth2",
       flows: {
-        password: {
+        authorizationCode: {
+          scopes: scopes
+        },
+        clientCredentials: {
           scopes: scopes
         }
       }

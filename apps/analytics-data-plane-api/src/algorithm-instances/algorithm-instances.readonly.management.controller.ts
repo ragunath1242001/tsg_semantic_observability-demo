@@ -1,20 +1,18 @@
 import { Controller, Get, Param } from "@nestjs/common";
-import {
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AlgorithmInstanceDto } from "@tsg-dsp/analytics-data-plane-dtos";
-import { Roles } from "@tsg-dsp/common-api";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { Requires } from "@tsg-dsp/common-api";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 
 @Controller("management/algorithm-instances")
 @ApiTags("Algorithm Instances")
-@ApiOAuth2(["controlplane_dataplane"])
-@Roles("controlplane_dataplane")
+@Requires(Action.READ, Resource.ADP_ALGORITHM)
 export class AlgorithmInstancesReadOnlyManagementController {
   constructor(
     private readonly algorithmInstancesService: AlgorithmInstancesService

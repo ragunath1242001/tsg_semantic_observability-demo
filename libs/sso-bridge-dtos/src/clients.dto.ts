@@ -3,7 +3,6 @@ import {
   IsArray,
   IsIn,
   IsNotEmpty,
-  IsNumber,
   IsObject,
   IsOptional,
   IsString
@@ -12,10 +11,10 @@ import {
 import { ClientAuthMethod, GrantType } from "./grants.js";
 
 export class ClientDto {
-  @ApiPropertyOptional({ example: 1 })
-  @IsNumber()
+  @ApiPropertyOptional({ example: "1" })
+  @IsString()
   @IsOptional()
-  id?: number;
+  id?: string;
 
   @ApiProperty({ example: "Example Client" })
   @IsString()
@@ -71,10 +70,14 @@ export class ClientDto {
   @IsOptional()
   jwk?: Record<string, any>;
 
-  @ApiProperty({ example: ["admin", "user"] })
+  @ApiProperty({
+    example: ["manage:catalog", "read:dataset"],
+    description:
+      "Client permissions (can be permission strings or permission set names)"
+  })
   @IsArray()
   @IsNotEmpty()
-  roles!: string[];
+  permissions!: string[];
 
   @ApiProperty({ example: ["authorization_code", "client_credentials"] })
   @IsArray()

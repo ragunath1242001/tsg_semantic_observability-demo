@@ -31,7 +31,7 @@ issuance:
       preAuthorizedCode: 84f3eb915ac95caf5ab5edf03359d0424e3c546a51ed0a4f96691c63f24b92cd3f58c97aa35e52bc7f6429157b5d4c7b
 
 trustAnchors:
-  - identifier: did:web:localhost%3A3400
+  - id: did:web:localhost%3A3400
     credentialTypes:
       - ExampleCredential
       - bravo:ExampleCredential

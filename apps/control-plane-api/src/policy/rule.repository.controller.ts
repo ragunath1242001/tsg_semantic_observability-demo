@@ -8,22 +8,16 @@ import {
   Logger,
   Param,
   ParseEnumPipe,
-  ParseIntPipe,
   Post,
   Put
 } from "@nestjs/common";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
-import {
+  nonEmptyStringPipe,
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination,
   validationPipe
 } from "@tsg-dsp/common-api";
@@ -35,10 +29,12 @@ import {
   PolicyRuleDto
 } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   ApiBadRequestResponseDefault,
   ApiConflictResponseDefault,
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault
+  ApiNotFoundResponseDefault,
+  Resource
 } from "@tsg-dsp/common-dtos";
 
 import { DSPError } from "../utils/errors/error.js";
@@ -46,10 +42,8 @@ import { ConstraintModel } from "./constraint.dto.js";
 import { Rule, RuleType } from "./rule.dto.js";
 import { RuleRepositoryService } from "./rule.repository.service.js";
 
-@Roles(["controlplane_admin"])
 @Controller("management/policy")
 @ApiTags("Evaluation")
-@ApiOAuth2(["controlplane_admin"])
 export class RuleRepositoryController {
   private readonly logger = new Logger(this.constructor.name);
   constructor(private readonly ruleRepositoryService: RuleRepositoryService) {}
@@ -64,6 +58,7 @@ export class RuleRepositoryController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [ConstraintModel] })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.CP_POLICY)
   async getConstraints(
     @PaginationQuery() paginationOptions: PaginationOptionsDto
   ): Promise<Paginated<ConstraintModel[]>> {
@@ -80,6 +75,7 @@ export class RuleRepositoryController {
   @ApiOkResponse({ type: ConstraintModel })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.CP_POLICY)
   async getConstraintByOdrl(
     @Body() constraint: ConstraintDto
   ): Promise<ConstraintModel> {
@@ -107,6 +103,7 @@ export class RuleRepositoryController {
   @ApiBadRequestResponseDefault()
   @ApiConflictResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.CREATE, Resource.CP_POLICY)
   async addConstraint(
     @Body(validationPipe) constraint: ConstraintModel
   ): Promise<ConstraintModel> {
@@ -124,8 +121,9 @@ export class RuleRepositoryController {
   @ApiOkResponse({ type: ConstraintModel })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.CP_POLICY)
   async getConstraint(
-    @Param("id", new ParseIntPipe()) id: number
+    @Param("id", nonEmptyStringPipe) id: string
   ): Promise<ConstraintModel> {
     return this.ruleRepositoryService.getConstraint(id);
   }
@@ -138,8 +136,9 @@ export class RuleRepositoryController {
   @ApiOkResponse({ type: ConstraintModel })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.CP_POLICY)
   async getConstraintOdrl(
-    @Param("id", new ParseIntPipe()) id: number
+    @Param("id", nonEmptyStringPipe) id: string
   ): Promise<ConstraintDto> {
     const constraint = await this.ruleRepositoryService.getConstraint(id);
     return this.ruleRepositoryService.constraintToOdrl(constraint);
@@ -154,8 +153,9 @@ export class RuleRepositoryController {
   @ApiOkResponse()
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.DELETE, Resource.CP_POLICY)
   async deleteConstraint(
-    @Param("id", new ParseIntPipe()) id: number
+    @Param("id", nonEmptyStringPipe) id: string
   ): Promise<void> {
     return this.ruleRepositoryService.deleteConstraint(id);
   }
@@ -172,8 +172,9 @@ export class RuleRepositoryController {
   @ApiBadRequestResponseDefault()
   @ApiConflictResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.UPDATE, Resource.CP_POLICY)
   async updateConstraint(
-    @Param("id", new ParseIntPipe()) id: number,
+    @Param("id", nonEmptyStringPipe) id: string,
     @Body(validationPipe) constraint: ConstraintModel
   ): Promise<ConstraintModel> {
     constraint.id = id;
@@ -190,6 +191,7 @@ export class RuleRepositoryController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [Rule] })
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.CP_POLICY)
   async getRules(
     @PaginationQuery() paginationOptions: PaginationOptionsDto
   ): Promise<Paginated<Rule[]>> {
@@ -207,6 +209,7 @@ export class RuleRepositoryController {
   @ApiBadRequestResponseDefault()
   @ApiConflictResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.CREATE, Resource.CP_POLICY)
   async addRule(@Body(validationPipe) rule: Rule): Promise<Rule> {
     rule.id = undefined;
     await this.ruleRepositoryService.addRule(rule);
@@ -222,7 +225,8 @@ export class RuleRepositoryController {
   @ApiOkResponse({ type: Rule })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
-  async getRule(@Param("id", new ParseIntPipe()) id: number): Promise<Rule> {
+  @Requires(Action.READ, Resource.CP_POLICY)
+  async getRule(@Param("id", nonEmptyStringPipe) id: string): Promise<Rule> {
     return this.ruleRepositoryService.getRule(id);
   }
   @Get("rule/:id/odrl")
@@ -234,8 +238,9 @@ export class RuleRepositoryController {
   @ApiOkResponse({ type: Rule })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.CP_POLICY)
   async getRuleOdrl(
-    @Param("id", new ParseIntPipe()) id: number,
+    @Param("id", nonEmptyStringPipe) id: string,
     @Param("ruleType", new ParseEnumPipe(RuleType)) ruleType?: RuleType,
     @Param("target") target?: string
   ): Promise<PolicyRuleDto> {
@@ -252,7 +257,8 @@ export class RuleRepositoryController {
   @ApiOkResponse()
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
-  async deleteRule(@Param("id", new ParseIntPipe()) id: number): Promise<void> {
+  @Requires(Action.DELETE, Resource.CP_POLICY)
+  async deleteRule(@Param("id", nonEmptyStringPipe) id: string): Promise<void> {
     return this.ruleRepositoryService.deleteRule(id);
   }
 
@@ -268,8 +274,9 @@ export class RuleRepositoryController {
   @ApiBadRequestResponseDefault()
   @ApiConflictResponseDefault()
   @ApiForbiddenResponseDefault()
+  @Requires(Action.UPDATE, Resource.CP_POLICY)
   async updateRule(
-    @Param("id", new ParseIntPipe()) id: number,
+    @Param("id", nonEmptyStringPipe) id: string,
     @Body(validationPipe) rule: Rule
   ): Promise<Rule> {
     rule.id = id;

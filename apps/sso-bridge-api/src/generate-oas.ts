@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { Resource } from "@tsg-dsp/common-dtos";
 import fs from "fs/promises";
 import { stringify } from "yaml";
 
@@ -14,6 +15,16 @@ async function bootstrap() {
   app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
     exclude: ["health"]
   });
+  const actions = ["create", "read", "update", "delete", "execute", "manage"];
+  const scopes: Record<string, string> = Object.fromEntries(
+    [
+      Resource.SSO_CLIENT,
+      Resource.SSO_CONFIG,
+      Resource.SSO_LOGS,
+      Resource.SSO_ROLE,
+      Resource.SSO_USER
+    ].flatMap((r) => actions.map((a) => [`${a}:${r}`, `${a}:${r}`]))
+  );
   const config = new DocumentBuilder()
     .setTitle("TSG SSO Bridge")
     .setVersion("")
@@ -31,7 +42,17 @@ async function bootstrap() {
     .addTag("Users", "Users controller")
     .addTag("Oauth", "Oauth controller")
     .addTag("Clients", "Clients controller")
-
+    .addOAuth2({
+      type: "oauth2",
+      flows: {
+        authorizationCode: {
+          scopes: scopes
+        },
+        clientCredentials: {
+          scopes: scopes
+        }
+      }
+    })
     .build();
   const document = SwaggerModule.createDocument(app, config);
 

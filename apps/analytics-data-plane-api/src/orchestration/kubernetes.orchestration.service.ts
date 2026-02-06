@@ -233,7 +233,7 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
         });
       } else {
         const dataAccessToken = await this.filesService.createAccessToken(
-          fileMetadata.identifier
+          fileMetadata.id
         );
 
         env.push({
@@ -242,7 +242,7 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
         });
         env.push({
           name: "DATA_URL",
-          value: `${localDataPlaneAddress}/files/${fileMetadata.identifier}`
+          value: `${localDataPlaneAddress}/files/${fileMetadata.id}`
         });
         env.push({
           name: "DATA_ACCESS_TOKEN",

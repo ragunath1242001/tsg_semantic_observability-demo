@@ -1,13 +1,11 @@
 import { Controller, Get, Query } from "@nestjs/common";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { nonEmptyStringPipe, Requires } from "@tsg-dsp/common-api";
 import {
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
-import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { SecureTokenService } from "../../keys/token.service.js";
 
@@ -22,8 +20,7 @@ export class DCPHolderManagementController {
     description:
       "Generates a SIOP token for the provided audience to allow it to request presentations"
   })
-  @Roles(AppRole.VIEW_PRESENTATIONS)
-  @ApiOAuth2([AppRole.VIEW_PRESENTATIONS])
+  @Requires(Action.READ, Resource.W_PRESENTATION)
   @ApiOkResponse({
     schema: {
       type: "object",

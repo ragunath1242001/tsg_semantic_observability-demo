@@ -215,6 +215,21 @@ export class Deploy {
           this.cwd
         );
       }
+      if (general.postgresDeploymentMode === "per-namespace") {
+        await execPromise(
+          `kubectl delete -f ${options.config}/postgres.yaml -n ${this.general.namespace} --ignore-not-found=true`,
+          options.dryRun,
+          this.cwd
+        );
+      } else if (general.postgresDeploymentMode === "per-participant") {
+        for (const participant of participants) {
+          await execPromise(
+            `kubectl delete -f ${options.config}/${participant.id}/postgres.yaml -n ${this.general.namespace} --ignore-not-found=true`,
+            options.dryRun,
+            this.cwd
+          );
+        }
+      }
       // Clear deploy state section but keep other sections
       this.writeState(statePath, {
         ...state,
@@ -251,11 +266,13 @@ export class Deploy {
         );
       }
       await Promise.all(promises);
-      await execPromise(
-        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
-        options.dryRun,
-        this.cwd
-      );
+      if (general.oauthClientAuthMethod !== "private_key_jwt") {
+        await execPromise(
+          `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
+          options.dryRun,
+          this.cwd
+        );
+      }
 
       if (
         options.cleanDatabase &&
@@ -392,11 +409,20 @@ export class Deploy {
         state.deploy?.participants[participant.id]?.releases ?? [];
       const releases = Array.from(new Set([...fromYaml, ...fromState]));
       await this.uninstallReleases(releases, options.dryRun);
-      await execPromise(
-        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
-        options.dryRun,
-        this.cwd
-      );
+      if (general.oauthClientAuthMethod !== "private_key_jwt") {
+        await execPromise(
+          `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
+          options.dryRun,
+          this.cwd
+        );
+      }
+      if (general.postgresDeploymentMode === "per-participant") {
+        await execPromise(
+          `kubectl delete -f ${options.config}/${participant.id}/postgres.yaml -n ${this.general.namespace} --ignore-not-found=true`,
+          options.dryRun,
+          this.cwd
+        );
+      }
       // Remove only this participant from state
       if (!options.dryRun) {
         const newState: TsgState = { ...state };
@@ -432,11 +458,13 @@ export class Deploy {
         options.dryRun,
         options.cleanDatabase
       );
-      await execPromise(
-        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
-        options.dryRun,
-        this.cwd
-      );
+      if (general.oauthClientAuthMethod !== "private_key_jwt") {
+        await execPromise(
+          `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
+          options.dryRun,
+          this.cwd
+        );
+      }
     }
     // Prune removed services for this participant
     await this.pruneStale(

@@ -47,7 +47,7 @@ export class SignatureService {
     const didId = await this.didService.getDidId();
     return await generateSignedJwt(body, didId, {
       key: {
-        identifier: signingKey.id,
+        id: signingKey.id,
         signingKey: signingKey.privateKey,
         algorithm: signingKey.type
       },
@@ -87,7 +87,7 @@ export class SignatureService {
     const didId = await this.didService.getDidId();
     return await generateSignedJwt(container, didId, {
       key: {
-        identifier: signingKey.id,
+        id: signingKey.id,
         signingKey: signingKey.privateKey,
         algorithm: signingKey.type
       },

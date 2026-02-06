@@ -142,7 +142,7 @@ describe("TransfersService", () => {
         "did:web:localhost",
         "urn:uuid:test"
       );
-      transferProcessId = result.identifier;
+      transferProcessId = result.id;
       expect(result.dataAddress).toBeDefined();
     });
 
@@ -245,7 +245,7 @@ describe("TransfersService", () => {
         "did:web:localhost",
         "urn:uuid:test"
       );
-      transferProcessId = result.identifier;
+      transferProcessId = result.id;
     });
 
     it("Transfer start", async () => {

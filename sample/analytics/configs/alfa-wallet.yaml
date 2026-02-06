@@ -23,7 +23,6 @@ auth:
     kid: alfa-wallet-key-1767782612424
     alg: ES256
     use: sig
-  rolePath: "$.roles[*]"
   redirectURL: http://localhost:3550/
 
 initKeys:
@@ -46,7 +45,7 @@ issuance:
       preAuthorizedCode: 386527fd21960fd8bd3aa0208c9275a4437fde1bdae9469daaf91fb7cace67d827ff152e5f89c02ccdbde1766387feb2
 
 trustAnchors:
-  - identifier: did:web:localhost%3A3400
+  - id: did:web:localhost%3A3400
     credentialTypes:
       - ExampleCredential
       - alfa:ExampleCredential

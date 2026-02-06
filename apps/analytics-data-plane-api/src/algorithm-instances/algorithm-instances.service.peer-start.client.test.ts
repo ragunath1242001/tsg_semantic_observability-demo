@@ -1,5 +1,6 @@
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
+import { randomUUID } from "crypto";
 import { Repository } from "typeorm";
 import { vi } from "vitest";
 
@@ -13,9 +14,9 @@ describe("AlgorithmInstancesService (client peer start)", () => {
   it("spawns a job when started by peer in client mode", async () => {
     const repo = {
       findOne: vi.fn(),
-      save: vi.fn()
+      save: vi.fn(),
+      create: vi.fn().mockImplementation((x) => ({ id: randomUUID(), ...x }))
     } as unknown as Repository<AlgorithmInstanceDao>;
-
     const eventEmitter = {
       emit: vi.fn()
     } as unknown as EventEmitter2;

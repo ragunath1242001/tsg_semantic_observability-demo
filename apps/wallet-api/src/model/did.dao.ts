@@ -1,11 +1,11 @@
 import { DIDLogEntry } from "@tsg-dsp/common-signing-and-validation";
 import { DIDDocument } from "did-resolver";
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-import { MetaEntity } from "./common.dao.js";
+import { MetaEntity, TimestampEntity } from "./common.dao.js";
 
 @Entity()
-export class DIDDocuments extends MetaEntity {
+export class DIDDocuments extends TimestampEntity {
   @PrimaryGeneratedColumn({ type: "integer" })
   id!: number;
 
@@ -15,9 +15,6 @@ export class DIDDocuments extends MetaEntity {
 
 @Entity()
 export class DIDService extends MetaEntity {
-  @PrimaryColumn({ type: String })
-  id!: string;
-
   @Column({ type: String })
   type!: string;
 
@@ -26,7 +23,7 @@ export class DIDService extends MetaEntity {
 }
 
 @Entity()
-export class DIDLogs extends MetaEntity {
+export class DIDLogs extends TimestampEntity {
   @PrimaryGeneratedColumn("increment")
   id!: number;
 

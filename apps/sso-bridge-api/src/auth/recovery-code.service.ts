@@ -25,7 +25,7 @@ export class RecoveryCodeService {
   private readonly logger: Logger = new Logger(this.constructor.name);
 
   async verifyAndUseRecoveryCode(
-    userId: number,
+    userId: string,
     code: string
   ): Promise<boolean> {
     const recoveryCodes = await this.recoveryCodeRepository.find({
@@ -56,14 +56,14 @@ export class RecoveryCodeService {
     return { remainingCount };
   }
 
-  async getRemainingCodesCount(userId: number): Promise<number> {
+  async getRemainingCodesCount(userId: string): Promise<number> {
     return await this.recoveryCodeRepository.count({
       where: { userId, used: false }
     });
   }
 
   async generateRecoveryCodesForInitial2FASetup(
-    userId: number,
+    userId: string,
     credentialType: "totp" | "webauthn"
   ): Promise<{ recoveryCodes: string[]; message: string } | undefined> {
     const isInitialSetup = await this.twoFactorHelper.isInitial2FASetup(
@@ -125,9 +125,8 @@ export class RecoveryCodeService {
       );
     }
 
-    const user = await this.usersService.getUserWithRelations(
-      session.pendingTwoFactor.userId,
-      ["roles"]
+    const user = await this.usersService.getUser(
+      session.pendingTwoFactor.userId
     );
 
     session.user = user;
@@ -136,7 +135,7 @@ export class RecoveryCodeService {
     return oauthUserToDto(user);
   }
 
-  private async generateRecoveryCodes(userId: number): Promise<string[]> {
+  private async generateRecoveryCodes(userId: string): Promise<string[]> {
     await this.recoveryCodeRepository.delete({ userId, used: false });
 
     const codes: string[] = [];

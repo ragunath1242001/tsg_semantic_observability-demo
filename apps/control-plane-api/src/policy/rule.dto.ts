@@ -1,13 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { validateOrRejectSync } from "@tsg-dsp/common-api";
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
-import {
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-  ValidateNested
-} from "class-validator";
+import { IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
 
 import {
   AtomicConstraint,
@@ -24,11 +18,11 @@ export enum RuleType {
 
 @Exclude()
 export class Rule {
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @Expose()
   @ApiPropertyOptional()
-  id?: number;
+  id?: string;
 
   @IsString({ each: true })
   @Expose()

@@ -107,7 +107,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
           await transferService.start(
-            transfer.localId,
+            transfer.id,
             {
               endpoint: "http://dataplane.test",
               properties: [
@@ -127,7 +127,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
           await transferService.terminate(
-            transfer.localId,
+            transfer.id,
             "500",
             "Test termination",
             true
@@ -163,7 +163,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
           await transferService.start(
-            transfer.localId,
+            transfer.id,
             {
               endpoint: "http://dataplane.test",
               properties: [
@@ -182,7 +182,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         "provider",
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
-          await transferService.complete(transfer.localId, true);
+          await transferService.complete(transfer.id, true);
         }
       )
       .onEvent(
@@ -214,7 +214,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
           await transferService.start(
-            transfer.localId,
+            transfer.id,
             {
               endpoint: "http://dataplane.test",
               properties: [
@@ -233,11 +233,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         "provider",
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
-          await transferService.suspend(
-            transfer.localId,
-            "Test suspension",
-            true
-          );
+          await transferService.suspend(transfer.id, "Test suspension", true);
         }
       )
       .onEvent(
@@ -246,7 +242,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         TransferState.SUSPENDED,
         async ({ transfer, transferService }) => {
           await transferService.terminate(
-            transfer.localId,
+            transfer.id,
             "500",
             "Test termination",
             true
@@ -282,7 +278,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
           await transferService.start(
-            transfer.localId,
+            transfer.id,
             {
               endpoint: "http://dataplane.test",
               properties: [
@@ -301,11 +297,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         "provider",
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
-          await transferService.suspend(
-            transfer.localId,
-            "Test suspension",
-            true
-          );
+          await transferService.suspend(transfer.id, "Test suspension", true);
         }
       )
       .onEvent(
@@ -314,7 +306,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         TransferState.SUSPENDED,
         async ({ transfer, transferService }) => {
           await transferService.start(
-            transfer.localId,
+            transfer.id,
             {
               endpoint: "http://dataplane.test",
               properties: [
@@ -333,7 +325,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         "provider",
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
-          await transferService.complete(transfer.localId, true);
+          await transferService.complete(transfer.id, true);
         }
       )
       .onEvent(
@@ -365,7 +357,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
           transferService.terminate(
-            transfer.localId,
+            transfer.id,
             "500",
             "Test termination",
             true

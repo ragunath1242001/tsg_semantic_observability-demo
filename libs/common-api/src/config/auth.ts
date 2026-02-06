@@ -76,8 +76,9 @@ export class AuthConfig {
   @IsString()
   @IsOptional()
   public readonly privateKeyJwkFile?: string;
-  @Description("JSON path to extract roles from the token")
+  @Description("JSON path to extract permissions from the token")
   @ValidateIf((c) => c.enabled)
   @IsString()
-  public readonly rolePath: string = "$.roles[*]";
+  @IsOptional()
+  public readonly permissionPath: string = "$.permissions[*]";
 }

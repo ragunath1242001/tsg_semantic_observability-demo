@@ -13,31 +13,33 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags
 } from "@nestjs/swagger";
-import { AppError } from "@tsg-dsp/common-api";
 import {
   Client,
+  ClientInfo,
+  DisableAbac,
   DisableOAuthGuard,
-  DisableRolesGuard,
+  EffectiveScope,
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
+  Requires,
   UsePagination,
   validationPipe
 } from "@tsg-dsp/common-api";
 import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   ApiBadRequestResponseDefault,
   ApiConflictResponseDefault,
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault
+  ApiNotFoundResponseDefault,
+  Resource
 } from "@tsg-dsp/common-dtos";
-import { AppRole, ClientInfo } from "@tsg-dsp/wallet-dtos";
 
 import { InitCredentialConfig, RootConfig } from "../config.js";
 import { IssueConfigurationService } from "../issue-configurations/issue-configuration.service.js";
@@ -49,12 +51,18 @@ import {
 } from "./credentials.schemas.js";
 import { CredentialsService } from "./credentials.service.js";
 
+function scopeToTargetDid(
+  scope: EffectiveScope,
+  clientDidId?: string
+): string | undefined {
+  if (scope === "*" || scope === null) {
+    return undefined;
+  }
+  return clientDidId;
+}
+
 @ApiTags("Management Credentials")
-@ApiOAuth2([
-  AppRole.VIEW_ALL_CREDENTIALS,
-  AppRole.VIEW_OWN_CREDENTIALS,
-  AppRole.READONLY_USER
-])
+@Requires(Action.READ, Resource.W_CREDENTIAL)
 @Controller("management/credentials")
 export class CredentialsManagementController {
   constructor(
@@ -62,39 +70,6 @@ export class CredentialsManagementController {
     private readonly issueConfigurationService: IssueConfigurationService,
     private readonly config: RootConfig
   ) {}
-
-  private targetDid(
-    action: "view" | "manage",
-    client: ClientInfo
-  ): string | undefined {
-    switch (action) {
-      case "view":
-        if (
-          client.roles.includes(AppRole.VIEW_ALL_CREDENTIALS) ||
-          client.roles.includes(AppRole.READONLY_USER)
-        ) {
-          return undefined;
-        } else if (client.roles.includes(AppRole.VIEW_OWN_CREDENTIALS)) {
-          return client.didId;
-        } else {
-          throw new AppError(
-            `Not allowed to view credentials`,
-            HttpStatus.FORBIDDEN
-          );
-        }
-      case "manage":
-        if (client.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS)) {
-          return undefined;
-        } else if (client.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS)) {
-          return client.didId;
-        } else {
-          throw new AppError(
-            `Not allowed to manage credentials`,
-            HttpStatus.FORBIDDEN
-          );
-        }
-    }
-  }
 
   @Get()
   @UsePagination()
@@ -118,7 +93,10 @@ export class CredentialsManagementController {
         paginationOptions
       );
     }
-    const targetDid = this.targetDid("view", client);
+    const targetDid = scopeToTargetDid(
+      client.getEffectiveScope(Action.READ, Resource.W_CREDENTIAL),
+      client.didId
+    );
     return this.credentialsService.getPaginatedCredentials(
       paginationOptions,
       targetDid
@@ -158,7 +136,7 @@ export class CredentialsManagementController {
     type: CredentialConfigDto
   })
   @DisableOAuthGuard()
-  @DisableRolesGuard()
+  @DisableAbac
   @UsePipes(validationPipe)
   async getConfig(): Promise<CredentialsConfigDto> {
     return {
@@ -178,15 +156,22 @@ export class CredentialsManagementController {
   @ApiForbiddenResponseDefault()
   @ApiConflictResponseDefault()
   @ApiBadRequestResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
+  @Requires(Action.CREATE, Resource.W_CREDENTIAL)
   @HttpCode(HttpStatus.OK)
   async addCredential(
     @Body(validationPipe)
     credentialConfig: InitCredentialConfig,
     @Client() client: ClientInfo
   ): Promise<CredentialDao> {
-    const targetDid = this.targetDid("manage", client);
-    return this.credentialsService.issueCredential(credentialConfig, targetDid);
+    const targetDid = scopeToTargetDid(
+      client.getEffectiveScope(Action.CREATE, Resource.W_CREDENTIAL),
+      client.didId
+    );
+    return this.credentialsService.issueCredential(
+      credentialConfig,
+      targetDid,
+      client
+    );
   }
 
   @Post("import")
@@ -199,13 +184,20 @@ export class CredentialsManagementController {
   @ApiOkResponse({ type: CredentialsDto })
   @ApiConflictResponseDefault()
   @ApiForbiddenResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
+  @Requires(Action.CREATE, Resource.W_CREDENTIAL)
   async importCredential(
     @Body() credential: VerifiableCredential,
     @Client() client: ClientInfo
   ): Promise<CredentialDao> {
-    const targetDid = this.targetDid("manage", client);
-    return this.credentialsService.importCredential(credential, targetDid);
+    const targetDid = scopeToTargetDid(
+      client.getEffectiveScope(Action.CREATE, Resource.W_CREDENTIAL),
+      client.didId
+    );
+    return this.credentialsService.importCredential(
+      credential,
+      targetDid,
+      client
+    );
   }
 
   @Get(":credentialId")
@@ -217,12 +209,15 @@ export class CredentialsManagementController {
   @ApiOkResponse({ type: CredentialsDto })
   @ApiForbiddenResponseDefault()
   @ApiNotFoundResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
+  @Requires(Action.READ, Resource.W_CREDENTIAL)
   async getCredential(
     @Param("credentialId") credentialId: string,
     @Client() client: ClientInfo
   ): Promise<CredentialsDto> {
-    const targetDid = this.targetDid("manage", client);
+    const targetDid = scopeToTargetDid(
+      client.getEffectiveScope(Action.READ, Resource.W_CREDENTIAL),
+      client.didId
+    );
     return this.credentialsService.getCredential(credentialId, targetDid);
   }
 
@@ -237,18 +232,22 @@ export class CredentialsManagementController {
   @ApiOkResponse({ type: CredentialsDto })
   @ApiForbiddenResponseDefault()
   @ApiNotFoundResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
+  @Requires(Action.UPDATE, Resource.W_CREDENTIAL)
   async updateCredential(
     @Body(validationPipe)
     credentialConfig: InitCredentialConfig,
     @Param("credentialId") credentialId: string,
     @Client() client: ClientInfo
   ): Promise<CredentialDao> {
-    const targetDid = this.targetDid("manage", client);
+    const targetDid = scopeToTargetDid(
+      client.getEffectiveScope(Action.UPDATE, Resource.W_CREDENTIAL),
+      client.didId
+    );
     return this.credentialsService.updateCredential(
       credentialId,
       credentialConfig,
-      targetDid
+      targetDid,
+      client
     );
   }
 
@@ -261,12 +260,15 @@ export class CredentialsManagementController {
   @ApiOkResponse()
   @ApiForbiddenResponseDefault()
   @ApiNotFoundResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
+  @Requires(Action.UPDATE, Resource.W_CREDENTIAL)
   async revokeCredential(
     @Param("credentialId") credentialId: string,
     @Client() client: ClientInfo
   ): Promise<void> {
-    const targetDid = this.targetDid("manage", client);
+    const targetDid = scopeToTargetDid(
+      client.getEffectiveScope(Action.UPDATE, Resource.W_CREDENTIAL),
+      client.didId
+    );
     return this.credentialsService.revokeCredential(credentialId, targetDid);
   }
 
@@ -278,12 +280,15 @@ export class CredentialsManagementController {
   @HttpCode(HttpStatus.OK)
   @ApiForbiddenResponseDefault()
   @ApiNotFoundResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
+  @Requires(Action.DELETE, Resource.W_CREDENTIAL)
   async deleteCredential(
     @Param("credentialId") credentialId: string,
     @Client() client: ClientInfo
   ): Promise<void> {
-    const targetDid = this.targetDid("manage", client);
+    const targetDid = scopeToTargetDid(
+      client.getEffectiveScope(Action.DELETE, Resource.W_CREDENTIAL),
+      client.didId
+    );
     return this.credentialsService.deleteCredential(credentialId, targetDid);
   }
 }

@@ -11,7 +11,6 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -20,18 +19,21 @@ import {
 } from "@nestjs/swagger";
 import {
   AppError,
+  DisableAbac,
   DisableOAuthGuard,
-  DisableRolesGuard,
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination,
   validationPipe
 } from "@tsg-dsp/common-api";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import {
-  AppRole,
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
+import {
   CredentialOffer,
   CredentialOfferRequest,
   CredentialOfferStatus,
@@ -45,7 +47,6 @@ import { IssuanceService } from "./issuance.service.js";
 
 @Controller("management/issuance")
 @ApiTags("Issuance Management")
-@Roles(AppRole.MANAGE_ALL_CREDENTIALS)
 export class IssuanceManagementController {
   constructor(
     private readonly issuanceService: IssuanceService,
@@ -62,6 +63,7 @@ export class IssuanceManagementController {
   @ApiOkResponse()
   @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.OK)
+  @Requires(Action.CREATE, Resource.W_CREDENTIAL)
   async requestDCPCredential(
     @Body(validationPipe) request: DCPCredentialRequestInitiation
   ): Promise<void> {
@@ -78,6 +80,7 @@ export class IssuanceManagementController {
   @ApiOkResponse({ type: [CredentialsDto] })
   @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.OK)
+  @Requires(Action.CREATE, Resource.W_CREDENTIAL)
   async requestOID4VCICredential(
     @Body(validationPipe) request: OID4VCICredentialRequestInitiation
   ): Promise<CredentialsDto[]> {
@@ -93,8 +96,8 @@ export class IssuanceManagementController {
   })
   @ApiOkResponse({ type: [CredentialOfferStatus] })
   @ApiForbiddenResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
   @HttpCode(HttpStatus.OK)
+  @Requires(Action.READ, Resource.W_CREDENTIAL)
   async listOffers(
     @PaginationQuery() paginationOptions: PaginationOptionsDto
   ): Promise<Paginated<CredentialOfferStatus[]>> {
@@ -108,7 +111,7 @@ export class IssuanceManagementController {
   })
   @ApiParam({ name: "id", required: true, type: String })
   @DisableOAuthGuard()
-  @DisableRolesGuard()
+  @DisableAbac
   @ApiOkResponse({ type: [CredentialOfferStatus] })
   @HttpCode(HttpStatus.OK)
   async listGeneralOffers(
@@ -122,7 +125,6 @@ export class IssuanceManagementController {
     summary: "Add offer",
     description: "Creates a new credential offer"
   })
-  @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiBody({ type: CredentialOffer })
   @ApiOkResponse({ type: CredentialOfferStatus })
   @ApiQuery({
@@ -133,6 +135,7 @@ export class IssuanceManagementController {
     description: "Whether the offer is for mobile or server applications"
   })
   @HttpCode(HttpStatus.OK)
+  @Requires(Action.CREATE, Resource.W_CREDENTIAL)
   async offerEndpoint(
     @Body() offerRequest: CredentialOfferRequest,
     @Query("mobile") mobile: boolean = true
@@ -156,7 +159,7 @@ export class IssuanceManagementController {
     description: "Whether the offer is for mobile or server applications"
   })
   @DisableOAuthGuard()
-  @DisableRolesGuard()
+  @DisableAbac
   @HttpCode(HttpStatus.OK)
   async publicOfferEndpoint(
     @Body() offerRequest: CredentialOfferRequest,
@@ -178,10 +181,8 @@ export class IssuanceManagementController {
       "Revokes an existing credential offer, so that it cannot be used anymore by the holder"
   })
   @ApiParam({ name: "id", required: true, type: String })
-  @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiOkResponse({ type: CredentialOfferStatus })
   @ApiForbiddenResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
   @HttpCode(HttpStatus.OK)
   async revokeOffer(@Param("id") id: string): Promise<CredentialOfferStatus> {
     return this.issuanceService.revokeOffer(id);

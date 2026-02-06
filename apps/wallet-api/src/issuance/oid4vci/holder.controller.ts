@@ -1,17 +1,12 @@
 import { Body, Controller, Post } from "@nestjs/common";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Requires } from "@tsg-dsp/common-api";
 import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
-import { Roles } from "@tsg-dsp/common-api";
-import {
+  Action,
   ApiBadRequestResponseDefault,
-  ApiForbiddenResponseDefault
+  ApiForbiddenResponseDefault,
+  Resource
 } from "@tsg-dsp/common-dtos";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
 
 import { CredentialsDto } from "../../credentials/credentials.schemas.js";
 import { CredentialDao } from "../../model/credentials.dao.js";
@@ -19,8 +14,7 @@ import { OID4VCIHolderService } from "./holder.service.js";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")
-@ApiOAuth2([AppRole.MANAGE_OWN_CREDENTIALS, AppRole.MANAGE_ALL_CREDENTIALS])
-@Roles([AppRole.MANAGE_OWN_CREDENTIALS, AppRole.MANAGE_ALL_CREDENTIALS])
+@Requires(Action.CREATE, Resource.W_CREDENTIAL)
 export class OID4VCIHolderController {
   constructor(private readonly holderService: OID4VCIHolderService) {}
 

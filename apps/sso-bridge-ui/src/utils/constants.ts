@@ -10,7 +10,4 @@ export const OAUTH_GRANTS = [
   "client_credentials",
   "password",
   "refresh_token"
-].map((grant) => ({
-  label: grant,
-  value: grant
-}));
+];

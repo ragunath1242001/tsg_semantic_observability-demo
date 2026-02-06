@@ -50,8 +50,8 @@ export class NegotiationListener {
 
   async terminate(event: NegotiationCreatedEvent) {
     if (this.runtimeConfig.controlPlaneInteractions === "automatic") {
-      this.logger.log(`Terminating contract negotiation for ${event.localId}.`);
-      await this.negotiationService.terminate(event.localId);
+      this.logger.log(`Terminating contract negotiation for ${event.id}.`);
+      await this.negotiationService.terminate(event.id);
     }
   }
 
@@ -84,10 +84,10 @@ export class NegotiationListener {
     ]);
 
     if (offerIncludedInPolicy) {
-      await this.negotiationService.agree(event.localId);
+      await this.negotiationService.agree(event.id);
     } else {
       this.logger.warn(
-        `Offered contract in negotiation ${event.localId} does not match the policy of the dataset ${event.datasetId}. Terminating negotiation.`
+        `Offered contract in negotiation ${event.id} does not match the policy of the dataset ${event.datasetId}. Terminating negotiation.`
       );
       this.logger.debug(
         `Offered contract: ${JSON.stringify(event.offer, null, 2)}`

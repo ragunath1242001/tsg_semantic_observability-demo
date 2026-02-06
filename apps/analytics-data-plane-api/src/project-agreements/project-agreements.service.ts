@@ -66,13 +66,13 @@ export class ProjectAgreementsService {
       hash: agreement.hash,
       status: agreement.status,
       datasets: agreement.datasets.map((ds) => ({
-        id: ds.identifier,
-        title: ds.dataset.title ?? ds.identifier
+        id: ds.id,
+        title: ds.dataset.title ?? ds.id
       }))
     }));
   }
 
-  async findById(id: number): Promise<ProjectAgreementDao> {
+  async findById(id: string): Promise<ProjectAgreementDao> {
     const projectAgreement = await this.projectAgreementsRepository.findOne({
       where: { id }
     });
@@ -112,7 +112,7 @@ export class ProjectAgreementsService {
   }
 
   async linkDatasetToProjectAgreement(
-    projectAgreementId: number,
+    projectAgreementId: string,
     datasetId: string
   ): Promise<void> {
     const projectAgreement = await this.findById(projectAgreementId);
@@ -123,7 +123,7 @@ export class ProjectAgreementsService {
       ).andLog(this.logger);
     }
 
-    if (projectAgreement.datasets.find((ds) => ds.identifier === datasetId)) {
+    if (projectAgreement.datasets.find((ds) => ds.id === datasetId)) {
       throw new DataPlaneError(
         `Dataset with id ${datasetId} is already linked to project agreement ${projectAgreementId}`,
         400
@@ -162,13 +162,13 @@ export class ProjectAgreementsService {
       ...projectAgreement,
       datasets: [
         ...projectAgreement.datasets,
-        { identifier: datasetId, dataset: datasetDto }
+        { id: datasetId, dataset: datasetDto }
       ]
     });
   }
 
   async unlinkDatasetFromProjectAgreement(
-    projectAgreementId: number,
+    projectAgreementId: string,
     datasetId: string
   ): Promise<void> {
     const projectAgreement = await this.findById(projectAgreementId);
@@ -187,9 +187,7 @@ export class ProjectAgreementsService {
     await this.dataplaneService.updateDataset(datasetId, datasetDto);
     await this.projectAgreementsRepository.save({
       ...projectAgreement,
-      datasets: projectAgreement.datasets.filter(
-        (ds) => ds.identifier !== datasetId
-      )
+      datasets: projectAgreement.datasets.filter((ds) => ds.id !== datasetId)
     });
   }
 
@@ -211,14 +209,16 @@ export class ProjectAgreementsService {
         });
       });
     const projectAgreement: ProjectAgreementDao =
-      await this.projectAgreementsRepository.save({
-        projectId: projectAgreementDto.id,
-        projectAgreement: projectAgreementDto,
-        initiator: ownParticipantId,
-        status: "WAITING_FOR_SIGNATURES",
-        signatures: {},
-        callbacks
-      });
+      await this.projectAgreementsRepository.save(
+        this.projectAgreementsRepository.create({
+          projectId: projectAgreementDto.id,
+          projectAgreement: projectAgreementDto,
+          initiator: ownParticipantId,
+          status: "WAITING_FOR_SIGNATURES",
+          signatures: {},
+          callbacks
+        })
+      );
 
     setImmediate(() => {
       this.requestSignatures(projectAgreement);
@@ -260,7 +260,7 @@ export class ProjectAgreementsService {
     );
     if (!negotiation.agreement) {
       throw new DataPlaneError(
-        `No agreement found for negotiation ${negotiation.localId}`,
+        `No agreement found for negotiation ${negotiation.id}`,
         400
       ).andLog(this.logger);
     }
@@ -326,23 +326,25 @@ export class ProjectAgreementsService {
   ): Promise<void> {
     const token = parseToken(authorizationHeader);
     const transfer = await this.transferHandler.getTransferBySecret(token);
-    await this.projectAgreementsRepository.save({
-      projectId: message.projectAgreement.id,
-      projectAgreement: message.projectAgreement,
-      initiator: transfer.remoteParty,
-      status: "SIGNATURE_REQUESTED",
-      signatures: {},
-      callbacks: [
-        this.callbackRepository.create({
-          participantId: transfer.remoteParty,
-          url: message.callback.url,
-          authToken: message.callback.authToken
-        })
-      ]
-    });
+    await this.projectAgreementsRepository.save(
+      this.projectAgreementsRepository.create({
+        projectId: message.projectAgreement.id,
+        projectAgreement: message.projectAgreement,
+        initiator: transfer.remoteParty,
+        status: "SIGNATURE_REQUESTED",
+        signatures: {},
+        callbacks: [
+          this.callbackRepository.create({
+            participantId: transfer.remoteParty,
+            url: message.callback.url,
+            authToken: message.callback.authToken
+          })
+        ]
+      })
+    );
   }
 
-  async signProjectAgreement(id: number) {
+  async signProjectAgreement(id: string) {
     const projectAgreement = await this.findById(id);
     const ownParticipantId = await this.catalog.getParticipantId();
 
@@ -440,9 +442,13 @@ export class ProjectAgreementsService {
     const allSignaturesReceived = requiredSignatures.every((participantId) =>
       signaturesReceived.includes(participantId)
     );
-    if (allSignaturesReceived) {
-      projectAgreement.status = "SIGNED";
+    if (!allSignaturesReceived) {
+      await this.projectAgreementsRepository.save(projectAgreement);
+      return;
     }
+
+    projectAgreement.status = "SIGNED";
+
     const { jwt } = await this.wallet.requestSignature({
       body: {
         projectAgreement: projectAgreement.projectAgreement

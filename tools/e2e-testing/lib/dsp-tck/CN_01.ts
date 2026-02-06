@@ -26,7 +26,7 @@ export async function CN_01_01(pipelineExecutor: PipelineExecutor) {
               })
             ]
           }),
-          negotiation.localId
+          negotiation.id
         );
       }
     )
@@ -61,7 +61,7 @@ export async function CN_01_02(pipelineExecutor: PipelineExecutor) {
               })
             ]
           }),
-          negotiation.localId
+          negotiation.id
         );
       }
     )
@@ -71,7 +71,7 @@ export async function CN_01_02(pipelineExecutor: PipelineExecutor) {
       ContractNegotiationState.REQUESTED,
       async ({ negotiation, negotiationService, logger }) => {
         logger.debug("Received counter-offer");
-        await negotiationService.terminate(negotiation.localId);
+        await negotiationService.terminate(negotiation.id);
       }
     )
     .onEvent(
@@ -105,7 +105,7 @@ export async function CN_01_03(pipelineExecutor: PipelineExecutor) {
               })
             ]
           }),
-          negotiation.localId
+          negotiation.id
         );
       }
     )
@@ -115,7 +115,7 @@ export async function CN_01_03(pipelineExecutor: PipelineExecutor) {
       ContractNegotiationState.ACCEPTED,
       async ({ negotiation, negotiationService, logger }) => {
         logger.debug("Received accept");
-        await negotiationService.agree(negotiation.localId);
+        await negotiationService.agree(negotiation.id);
       }
     )
     .onEvent(
@@ -124,7 +124,7 @@ export async function CN_01_03(pipelineExecutor: PipelineExecutor) {
       ContractNegotiationState.VERIFIED,
       async ({ negotiation, negotiationService, logger }) => {
         logger.debug("Received verified");
-        await negotiationService.finalize(negotiation.localId);
+        await negotiationService.finalize(negotiation.id);
       }
     )
     .onEvent(
@@ -147,7 +147,7 @@ export async function CN_01_04(pipelineExecutor: PipelineExecutor) {
       ContractNegotiationState.REQUESTED,
       async ({ negotiation, negotiationService, logger }) => {
         logger.debug("Received request");
-        await negotiationService.agree(negotiation.localId);
+        await negotiationService.agree(negotiation.id);
       }
     )
     .onEvent(
@@ -156,7 +156,7 @@ export async function CN_01_04(pipelineExecutor: PipelineExecutor) {
       ContractNegotiationState.VERIFIED,
       async ({ negotiation, negotiationService, logger }) => {
         logger.debug("Received verified");
-        await negotiationService.finalize(negotiation.localId);
+        await negotiationService.finalize(negotiation.id);
       }
     )
     .onEvent(

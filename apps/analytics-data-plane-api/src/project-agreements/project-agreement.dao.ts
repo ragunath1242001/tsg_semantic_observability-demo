@@ -1,4 +1,6 @@
 import { ProjectAgreementDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import { OwnableEntity } from "@tsg-dsp/common-api";
+import { Resource } from "@tsg-dsp/common-dtos";
 import {
   Column,
   Entity,
@@ -12,9 +14,8 @@ import {
 import { DatasetDao } from "../dataplane/dataset.dao.js";
 
 @Entity()
-export class ProjectAgreementDao {
-  @PrimaryGeneratedColumn()
-  id!: number;
+export class ProjectAgreementDao extends OwnableEntity {
+  readonly resourceType = Resource.ADP_PROJECT_AGREEMENT;
 
   @Column({ type: String, unique: true })
   projectId!: string;

@@ -43,7 +43,7 @@ const save = async () => {
     data.value.csvw = undefined;
   }
   try {
-    await http.post(`files/${data.value.identifier}`, formData.value);
+    await http.post(`files/${data.value.id}`, formData.value);
     toast.add({
       severity: "success",
       summary: "File updated",

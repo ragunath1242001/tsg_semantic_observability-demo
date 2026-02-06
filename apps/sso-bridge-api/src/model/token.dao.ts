@@ -1,12 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-
-import { MetaEntity } from "./common.dao.js";
+import { MetaEntity } from "@tsg-dsp/common-api";
+import { Column, Entity } from "typeorm";
 
 @Entity()
 export class TokenDao extends MetaEntity {
-  @PrimaryGeneratedColumn()
-  id!: number;
-
   @Column({ type: String })
   accessToken!: string;
 
@@ -25,8 +21,8 @@ export class TokenDao extends MetaEntity {
   @Column({ type: String, nullable: true })
   clientId!: string;
 
-  @Column({ type: Number, nullable: true })
-  userId?: number;
+  @Column({ type: String, nullable: true })
+  userId?: string;
 
   @Column({ type: Boolean })
   revoked!: boolean;

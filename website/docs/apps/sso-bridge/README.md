@@ -24,7 +24,8 @@ The SSO Bridge provides unified authentication and authorization services across
 - **[Module Architecture](./modules.md)** - Technical overview of SSO Bridge modules and their responsibilities
 - **[Configuration](./configuration.md)** - Configuration options and environment setup
 - **[Build Process](./build-process.md)** - Development workflow and build instructions
-- **[Integration Guide](./usage.md)** - Using SSO Bridge in your applications
+- **[ABAC Authorization](./abac-authorization.md)** - Role and permission management with ABAC
+- **[Ingress Authentication](./ingress-authentication.md)** - Using SSO Bridge in your applications
 
 ### For System Architects
 - **[System Architecture](../../architecture/README.md)** - Overall TSG architecture and design principles

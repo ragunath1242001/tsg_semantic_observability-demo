@@ -1,27 +1,24 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags
-} from "@nestjs/swagger";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
   AppError,
+  DisableAbac,
   DisableOAuthGuard,
-  DisableRolesGuard,
-  Roles
+  Requires
 } from "@tsg-dsp/common-api";
-import { ApiForbiddenResponseDefault, DcqlQuery } from "@tsg-dsp/common-dtos";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  DcqlQuery,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { RuntimeConfig } from "../../config.js";
 import { OID4VPVerifierService } from "./verifier.service.js";
 
 @Controller("management/oid4vp/verifier")
 @ApiTags("OID4VP")
-@ApiOAuth2([AppRole.VIEW_PRESENTATIONS])
-@Roles(AppRole.VIEW_PRESENTATIONS)
+@Requires(Action.READ, Resource.W_PRESENTATION)
 export class OID4VPVerifierManagementController {
   constructor(
     private readonly oid4vpVerifierService: OID4VPVerifierService,
@@ -51,7 +48,7 @@ export class OID4VPVerifierManagementController {
   @ApiBody({ type: DcqlQuery })
   @ApiOkResponse({ type: String })
   @DisableOAuthGuard()
-  @DisableRolesGuard()
+  @DisableAbac
   @ApiForbiddenResponseDefault()
   async createPublic(@Body() dcqlQuery: DcqlQuery): Promise<string> {
     if (this.runtimeConfig.acceptUnauthenticatedCredentialRequests !== true) {

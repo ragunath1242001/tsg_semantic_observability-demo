@@ -23,7 +23,6 @@ auth:
     kid: alfa-control-plane-key-1767782613388
     alg: ES256
     use: sig
-  rolePath: "$.roles[*]"
   redirectURL: http://localhost:3551/
 
 runtime:

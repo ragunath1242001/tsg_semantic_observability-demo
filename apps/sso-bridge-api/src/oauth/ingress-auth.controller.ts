@@ -33,7 +33,7 @@ export class IngressAuthController {
           id: user.id,
           username: user.username,
           email: user.email,
-          roles: user.roles,
+          permissions: user.permissions,
           grants: user.grants
         }
       };

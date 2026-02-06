@@ -25,11 +25,13 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import {
+  Client,
+  ClientInfo,
   nonEmptyStringPipe,
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
-  Roles,
+  Requires,
   UsePagination
 } from "@tsg-dsp/common-api";
 import {
@@ -40,14 +42,17 @@ import {
   DatasetDto,
   DatasetSchema
 } from "@tsg-dsp/common-dsp";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { normalizeAddress } from "../../utils/address.js";
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { DspClientService } from "../client/client.service.js";
 import { CatalogService } from "./catalog.service.js";
 
-@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/catalog")
 @ApiTags("Catalog Management")
 @ApiBearerAuth()
@@ -59,7 +64,7 @@ export class CatalogManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("request")
-  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.CP_CATALOG)
   @HttpCode(HttpStatus.OK)
   @UsePagination()
   @ApiOperation({
@@ -105,7 +110,7 @@ export class CatalogManagementController {
   }
 
   @Get("dataset")
-  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
+  @Requires(Action.READ, Resource.CP_DATASET)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request dataset",
@@ -152,6 +157,7 @@ export class CatalogManagementController {
   }
 
   @Post("dataset")
+  @Requires(Action.CREATE, Resource.CP_DATASET)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Add dataset",
@@ -162,13 +168,19 @@ export class CatalogManagementController {
   @ApiBadRequestResponse({ description: "Invalid dataset data" })
   @ApiForbiddenResponseDefault()
   async addDataset(
-    @Body(new DeserializePipe(Dataset)) dataset: Dataset
+    @Body(new DeserializePipe(Dataset)) dataset: Dataset,
+    @Client() client: ClientInfo
   ): Promise<DatasetDto> {
-    const datasetdao = await this.catalogService.addDataset(dataset);
+    const datasetdao = await this.catalogService.addDataset(
+      dataset,
+      undefined,
+      client
+    );
     return new Dataset(datasetdao).serialize();
   }
 
   @Put("dataset/:id")
+  @Requires(Action.UPDATE, Resource.CP_DATASET)
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: "Update dataset",
@@ -187,11 +199,16 @@ export class CatalogManagementController {
     @Param("id") id: string,
     @Body(new DeserializePipe(Dataset)) dataset: Dataset
   ): Promise<DatasetDto> {
-    const datasetdao = await this.catalogService.updateDataset(id, dataset);
+    const datasetdao = await this.catalogService.updateDataset(
+      id,
+      dataset,
+      undefined
+    );
     return new Dataset(datasetdao).serialize();
   }
 
   @Delete("dataset/:id")
+  @Requires(Action.DELETE, Resource.CP_DATASET)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: "Delete dataset",

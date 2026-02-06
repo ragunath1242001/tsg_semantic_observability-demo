@@ -22,7 +22,7 @@ import { ScopeDao } from "../../model/scopes.dao.js";
 import { PresentationService } from "../presentation.service.js";
 import { OID4VPVerifierService } from "./verifier.service.js";
 
-describe("OID4VPVerifierService", () => {
+describe("Wallet OID4VPVerifierService", () => {
   let service: OID4VPVerifierService;
   let presentationService: PresentationService;
   let server: SetupServer;
@@ -146,7 +146,7 @@ describe("OID4VPVerifierService", () => {
     it("should return the authorization request if found", async () => {
       const id = "test-id";
       const authorizationRequest = {
-        identifier: id,
+        id: id,
         nonce: "test-nonce",
         dcqlQuery: {
           credentials: [
@@ -158,7 +158,9 @@ describe("OID4VPVerifierService", () => {
           ]
         }
       };
-      await service.authorizationRequestRepository.save(authorizationRequest);
+      await service.authorizationRequestRepository.save(
+        service.authorizationRequestRepository.create(authorizationRequest)
+      );
 
       const result = await service.getAuthorizationRequest(id);
 
@@ -198,7 +200,7 @@ describe("OID4VPVerifierService", () => {
         vp_token: { testDefinition: [vpJwt.vp] }
       };
       const authorizationRequest = {
-        identifier: "test-state",
+        id: "test-state",
         nonce: "test-nonce",
         dcqlQuery: {
           credentials: [
@@ -235,7 +237,7 @@ describe("OID4VPVerifierService", () => {
         vp_token: { invalidDefinition: [vpJwt.vp] }
       };
       const authorizationRequest = {
-        identifier: "test-state",
+        id: "test-state",
         nonce: "test-nonce",
         dcqlQuery: {
           credentials: [

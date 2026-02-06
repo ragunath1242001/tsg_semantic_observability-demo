@@ -11,6 +11,7 @@ import { promiseMap } from "@tsg-dsp/common-api";
 import {
   CatalogClientService,
   createInitPromise,
+  DataPlaneError,
   DataPlaneRegistrationService,
   DataPlaneStateDao,
   InitPromise
@@ -46,7 +47,6 @@ import { IsNull, Not, Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
 import { defArray } from "../utils/arrays.js";
-import { DataPlaneError } from "../utils/errors/error.js";
 import {
   DatasetItemDao,
   HttpDatasetConfigDao,
@@ -127,16 +127,18 @@ export class DataPlaneService implements OnModuleInit {
       const catalogDto: CatalogDto = {
         "@context": defaultContext(),
         "@type": "Catalog",
-        "@id": details.identifier,
+        "@id": details.id,
         participantId: "",
         dataset: datasets
       };
-      await this.catalog.syncCatalog(details.identifier, catalogDto);
+      await this.catalog.syncCatalog(details.id, catalogDto);
     }
-    this.activeConfig = await this.configRepository.save({
-      identifier: details.identifier,
-      datasetConfig: this.activeConfig?.datasetConfig || this.config.dataset
-    });
+    this.activeConfig = await this.configRepository.save(
+      this.configRepository.create({
+        id: details.id,
+        datasetConfig: this.activeConfig?.datasetConfig || this.config.dataset
+      })
+    );
   }
 
   async getState(): Promise<DataPlaneStateDao> {
@@ -239,7 +241,7 @@ export class DataPlaneService implements OnModuleInit {
 
   async getVersionedDataset(id: string): Promise<VersionedDatasetDao> {
     const item = await this.versionedItemRepository.findOneBy({
-      identifier: id
+      id: id
     });
     if (!item) {
       throw new HttpException(
@@ -283,15 +285,17 @@ export class DataPlaneService implements OnModuleInit {
     const catalogDto: CatalogDto = {
       "@context": defaultContext(),
       "@type": "Catalog",
-      "@id": currentState.details.identifier,
+      "@id": currentState.details.id,
       participantId: "",
       dataset: datasets
     };
-    await this.catalog.syncCatalog(currentState.details.identifier, catalogDto);
-    this.activeConfig = await this.configRepository.save({
-      ...currentState,
-      datasetConfig: datasetConfig
-    });
+    await this.catalog.syncCatalog(currentState.details.id, catalogDto);
+    this.activeConfig = await this.configRepository.save(
+      this.configRepository.create({
+        ...currentState,
+        datasetConfig: datasetConfig
+      })
+    );
   }
 
   async getBackendConfig(dataset: DatasetDto) {
@@ -336,7 +340,7 @@ export class DataPlaneService implements OnModuleInit {
         itemDao,
         datasetConfig
       );
-      await this.catalog.syncDataset(state.details.identifier, dataset);
+      await this.catalog.syncDataset(state.details.id, dataset);
       return itemDao;
     }
     throw new DataPlaneError(
@@ -363,7 +367,7 @@ export class DataPlaneService implements OnModuleInit {
         itemDao,
         datasetConfig
       );
-      await this.catalog.updateDataset(state.details.identifier, id, dataset);
+      await this.catalog.updateDataset(state.details.id, id, dataset);
       return itemDao;
     }
     throw new DataPlaneError(
@@ -377,7 +381,7 @@ export class DataPlaneService implements OnModuleInit {
     const datasetConfig = this.getDatasetConfig();
     if (datasetConfig instanceof CollectionDatasetConfig) {
       const itemDao = await this.getDatasetItem(id);
-      await this.catalog.deleteDataset(state.details.identifier, id);
+      await this.catalog.deleteDataset(state.details.id, id);
       await this.itemRepository.remove(itemDao);
       return itemDao;
     }
@@ -514,10 +518,12 @@ export class DataPlaneService implements OnModuleInit {
       );
     }
     await this.versionedItemRepository.save(
-      datasets.map((dataset) => ({
-        identifier: dataset["@id"],
-        dataset: dataset
-      }))
+      datasets.map((dataset) =>
+        this.versionedItemRepository.create({
+          id: dataset["@id"],
+          dataset: dataset
+        })
+      )
     );
     return datasets;
   }

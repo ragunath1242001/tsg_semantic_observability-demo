@@ -36,7 +36,7 @@ export async function CN_C_01_01(
       "consumer",
       ContractNegotiationState.OFFERED,
       async ({ negotiation, negotiationService }) => {
-        await negotiationService.accept(negotiation.localId);
+        await negotiationService.accept(negotiation.id);
       }
     )
     .onEvent(
@@ -44,7 +44,7 @@ export async function CN_C_01_01(
       "consumer",
       ContractNegotiationState.AGREED,
       async ({ negotiation, negotiationService }) => {
-        await negotiationService.verify(negotiation.localId);
+        await negotiationService.verify(negotiation.id);
       }
     )
     .onEvent(
@@ -88,7 +88,7 @@ export async function CN_C_01_02(
       async ({ negotiation, negotiationService }) => {
         await negotiationService.requestExisting(
           negotiation.offer!,
-          negotiation.localId
+          negotiation.id
         );
       }
     )
@@ -132,7 +132,7 @@ export async function CN_C_01_03(
       "consumer",
       ContractNegotiationState.OFFERED,
       async ({ negotiation, negotiationService }) => {
-        await negotiationService.terminate(negotiation.localId);
+        await negotiationService.terminate(negotiation.id);
       }
     )
     .onEvent(
@@ -174,7 +174,7 @@ export async function CN_C_01_04(
       "consumer",
       ContractNegotiationState.AGREED,
       async ({ negotiation, negotiationService }) => {
-        await negotiationService.verify(negotiation.localId);
+        await negotiationService.verify(negotiation.id);
       }
     )
     .onEvent(

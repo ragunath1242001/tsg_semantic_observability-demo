@@ -117,6 +117,9 @@ export class BridgeWsGateway {
   async clientUpsertDatasets(
     @MessageBody() body: BridgeUpsertDatasetsDto
   ): Promise<{ ok: true }> {
+    this.logger.log(
+      `Received upsert dataset via bridge WS: ${body.dataset["@id"]}`
+    );
     await this.bridge.clientUpsertDatasets(body);
     return { ok: true };
   }
@@ -125,6 +128,7 @@ export class BridgeWsGateway {
   async clientDeleteDatasets(
     @MessageBody() body: BridgeDeleteDatasetsDto
   ): Promise<{ ok: true }> {
+    this.logger.log(`Received delete dataset via bridge WS: ${body.datasetId}`);
     await this.bridge.clientDeleteDatasets(body);
     return { ok: true };
   }
@@ -133,6 +137,9 @@ export class BridgeWsGateway {
   async clientPushJobStatus(
     @MessageBody() body: BridgeJobStatusUpdateDto
   ): Promise<{ ok: true }> {
+    this.logger.log(
+      `Received job status update via bridge WS: ${body.algorithmInstanceId} (${body.jobName}) -> ${body.status}`
+    );
     await this.bridge.clientPushJobStatus(body);
     return { ok: true };
   }
@@ -141,6 +148,9 @@ export class BridgeWsGateway {
   async clientCreateAlgorithmEvent(
     @MessageBody() body: BridgeCreateAlgorithmEventDto
   ) {
+    this.logger.log(
+      `Received algorithm event creation via bridge WS: ${body.algorithmInstanceId} (eventId: ${body.event.eventId})`
+    );
     return await this.bridge.clientCreateAlgorithmEvent(body);
   }
 

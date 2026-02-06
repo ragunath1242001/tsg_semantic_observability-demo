@@ -11,18 +11,18 @@ export type AuthSession = Session &
   Partial<SessionData> & {
     user?: OauthUser;
     pendingTwoFactor?: {
-      userId: number;
+      userId: string;
       username: string;
       passwordVerified: boolean;
     };
     webAuthnChallenge?: string;
     webAuthnRegistration?: {
-      userId: number;
+      userId: string;
       challenge: string;
     };
     totpRegistration?: {
-      userId: number;
-      credentialId: number;
+      userId: string;
+      credentialId: string;
       secret: string;
     };
   };
@@ -57,11 +57,11 @@ export function requireAuthenticatedUser(
 export function getUserIdentity(
   request: Request,
   logger?: Logger
-): { userId: number; username: string } {
+): { userId: string; username: string } {
   const user = getUser(request);
   const session = getSession(request);
 
-  let userId: number;
+  let userId: string;
   let username: string;
 
   if (user) {

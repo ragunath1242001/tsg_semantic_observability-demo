@@ -56,13 +56,15 @@ export class AgreementService {
     localSignature?: HashedMessage,
     remoteSignature?: HashedMessage
   ): Promise<AgreementDao> {
-    return await this.agreementRepository.save({
-      id: agreement["@id"],
-      agreement: agreement,
-      negotiationId: negotiationId,
-      localSignature: localSignature,
-      remoteSignature: remoteSignature,
-      transfers: []
-    });
+    return await this.agreementRepository.save(
+      this.agreementRepository.create({
+        id: agreement["@id"],
+        agreement: agreement,
+        negotiationId: negotiationId,
+        localSignature: localSignature,
+        remoteSignature: remoteSignature,
+        transfers: []
+      })
+    );
   }
 }

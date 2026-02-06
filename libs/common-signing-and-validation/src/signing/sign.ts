@@ -28,7 +28,7 @@ export async function generateSignedJwt(
   didId: string,
   options: {
     key: {
-      identifier: string;
+      id: string;
       signingKey: JWK;
       algorithm: "EdDSA" | "ES384" | "X509";
     };
@@ -73,7 +73,7 @@ export async function generateSignedJwt(
   }
   const jwt = new SignJWT(payload).setProtectedHeader({
     alg: signingAlgorithm(options.key.algorithm),
-    kid: `${didId}#${options.key.identifier}`,
+    kid: `${didId}#${options.key.id}`,
     typ: options.typ,
     cty: options.cty
   });
@@ -84,7 +84,7 @@ export async function generateSignedJwt(
 export async function generateSignedDataIntegrityProof(
   document: any,
   didId: string,
-  identifier: string,
+  id: string,
   publicKey: JWK,
   privateKey: JWK,
   algorithm: "EdDSA" | "ES384" | "X509",
@@ -98,7 +98,7 @@ export async function generateSignedDataIntegrityProof(
     const multibase = jwkToMultibase(publicKey, false);
     verificationMethod = `did:key:${multibase}#${multibase}`;
   } else {
-    verificationMethod = `${didId}#${identifier}`;
+    verificationMethod = `${didId}#${id}`;
   }
   const documentHash = await canonizeAndHash(document, normalization);
   const proof: Omit<DataIntegrityProof, "proofValue"> = {

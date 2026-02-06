@@ -4,6 +4,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { TerminusModule } from "@nestjs/terminus";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  AbacModule,
   AuthModule,
   GenericConfigModule,
   HealthController,
@@ -51,6 +52,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       KeyMaterialDao
     ]),
     TerminusModule,
+    AbacModule.forRoot(),
     PresentationModule,
     AuthModule,
     IssueConfigurationModule,

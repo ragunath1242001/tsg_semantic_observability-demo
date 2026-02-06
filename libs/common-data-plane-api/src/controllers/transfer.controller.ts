@@ -12,14 +12,13 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
-import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
+import { nonEmptyStringPipe, Requires } from "@tsg-dsp/common-api";
 import {
   DataPlaneRequestResponseDto,
   TransferCompletionMessageDto,
@@ -33,21 +32,16 @@ import {
   TransferTerminationMessageDto,
   TransferTerminationMessageSchema
 } from "@tsg-dsp/common-dsp";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { ITransferHandler } from "../interfaces/index.js";
 
-/**
- * Shared transfer controller for data plane implementations
- * Handles all transfer lifecycle endpoints
- *
- * Usage: Import this controller in your data plane module along with
- * a TransferHandlerService implementation injected via ITransferHandler token
- */
 @Controller("transfers")
 @ApiTags("Data Plane")
-@ApiOAuth2(["controlplane_dataplane"])
-@Roles("controlplane_dataplane")
 export class TransferController {
   private readonly logger = new Logger(this.constructor.name);
 
@@ -56,6 +50,7 @@ export class TransferController {
   ) {}
 
   @Post("request/:role")
+  @Requires(Action.CREATE, Resource.DP_TRANSFER)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request Transfer",
@@ -85,6 +80,7 @@ export class TransferController {
   }
 
   @Post(":id/start")
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: "Start transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -102,6 +98,7 @@ export class TransferController {
   }
 
   @Post(":id/completion")
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: "Complete transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -119,6 +116,7 @@ export class TransferController {
   }
 
   @Post(":id/termination")
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: "Terminate transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -136,6 +134,7 @@ export class TransferController {
   }
 
   @Post(":id/suspension")
+  @Requires(Action.EXECUTE, Resource.DP_TRANSFER)
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: "Suspend transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })

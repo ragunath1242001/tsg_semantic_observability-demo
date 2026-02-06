@@ -1,3 +1,4 @@
+import { MetaEntity, OwnableEntity } from "@tsg-dsp/common-api";
 import {
   ContractAgreementVerificationMessage,
   ContractNegotiationState,
@@ -9,21 +10,15 @@ import {
   NegotiationRole,
   Offer
 } from "@tsg-dsp/common-dsp";
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryColumn,
-  Relation
-} from "typeorm";
+import { Resource } from "@tsg-dsp/common-dtos";
+import { Column, Entity, ManyToOne, OneToMany, Relation } from "typeorm";
 
 import { AgreementDao } from "./agreement.dao.js";
-import { AutoIdEntity, jsonLdTransformer, MetaEntity } from "./common.dao.js";
+import { jsonLdTransformer } from "./common.dao.js";
 
 @Entity({ name: "negotationProcessEvent" })
 export class NegotiationProcessEventDao
-  extends AutoIdEntity
+  extends MetaEntity
   implements INegotiationProcessEvent
 {
   @Column({ type: String })
@@ -53,11 +48,11 @@ export class NegotiationProcessEventDao
 
 @Entity({ name: "negotiationDetail" })
 export class NegotiationDetailDao
-  extends MetaEntity
+  extends OwnableEntity
   implements INegotiationDetail
 {
-  @PrimaryColumn({ type: String })
-  localId!: string;
+  readonly resourceType = Resource.CP_NEGOTIATION;
+
   @Column({ type: String })
   remoteId!: string;
   @Column({ type: String })

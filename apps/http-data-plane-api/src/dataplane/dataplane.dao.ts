@@ -1,12 +1,13 @@
+import { OwnableEntity } from "@tsg-dsp/common-api";
 import { DatasetDto } from "@tsg-dsp/common-dsp";
+import { Resource } from "@tsg-dsp/common-dtos";
 import { DatasetConfig, PolicyConfig } from "@tsg-dsp/http-data-plane-dtos";
 import { instanceToPlain, plainToInstance } from "class-transformer";
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity } from "typeorm";
 
 @Entity()
-export class HttpDatasetConfigDao {
-  @PrimaryColumn({ type: String })
-  identifier!: string;
+export class HttpDatasetConfigDao extends OwnableEntity {
+  readonly resourceType = Resource.HDP_CONFIG;
 
   @Column("simple-json", {
     nullable: true,
@@ -19,18 +20,16 @@ export class HttpDatasetConfigDao {
 }
 
 @Entity()
-export class VersionedDatasetDao {
-  @PrimaryColumn({ type: String })
-  identifier!: string;
+export class VersionedDatasetDao extends OwnableEntity {
+  readonly resourceType = Resource.HDP_CONFIG;
 
   @Column("simple-json")
   dataset!: DatasetDto;
 }
 
 @Entity()
-export class DatasetItemDao {
-  @PrimaryColumn({ type: String })
-  id!: string;
+export class DatasetItemDao extends OwnableEntity {
+  readonly resourceType = Resource.HDP_CONFIG;
 
   @Column({ type: String })
   title!: string;

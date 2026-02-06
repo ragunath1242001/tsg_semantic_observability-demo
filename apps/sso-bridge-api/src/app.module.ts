@@ -3,6 +3,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { TerminusModule } from "@nestjs/terminus";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  AbacModule,
   GenericConfigModule,
   HealthController,
   LoggerMiddleware,
@@ -10,12 +11,13 @@ import {
 } from "@tsg-dsp/common-api";
 
 import { AuthModule } from "./auth/auth.module.js";
+import { SessionAbacMiddleware } from "./auth/session-abac.middleware.js";
 import { ClientsModule } from "./clients/clients.module.js";
 import { RootConfig } from "./config.js";
 import { KubernetesModule } from "./k8s/kubernetes.module.js";
 import { OauthModule } from "./oauth/oauth.module.js";
+import { PermissionsModule } from "./permissions/permissions.module.js";
 import { PresentationModule } from "./presentation/presentation.module.js";
-import { RolesModule } from "./roles/roles.module.js";
 import { UsersModule } from "./users/users.module.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
@@ -31,6 +33,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 @Module({
   imports: [
     TerminusModule,
+    AbacModule.forRoot(),
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
       ...GenericConfigModule.get(RootConfig).db,
@@ -44,7 +47,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     OauthModule,
     KubernetesModule,
     UsersModule,
-    RolesModule,
+    PermissionsModule,
     PresentationModule,
     ClientsModule,
     ...embeddedFrontend
@@ -54,6 +57,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RequestContextMiddleware).forRoutes("{*path}");
+    consumer.apply(SessionAbacMiddleware).forRoutes("{*path}");
     consumer.apply(LoggerMiddleware).forRoutes("{*path}");
   }
 }

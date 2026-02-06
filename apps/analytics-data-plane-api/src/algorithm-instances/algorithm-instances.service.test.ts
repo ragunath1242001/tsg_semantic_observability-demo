@@ -436,7 +436,7 @@ describe("AlgorithmInstancesService", () => {
         algorithmInstancesService.createAlgorithmInstance({
           ...sampleAlgorithmInstanceDto,
           id: "test-pa-not-found-instance",
-          projectAgreementId: 9999
+          projectAgreementId: "9999"
         })
       ).rejects.toThrow("Project Agreement with id 9999 not found");
     });
@@ -480,7 +480,7 @@ describe("AlgorithmInstancesService", () => {
           participants: [
             { didId: "did:web:localhost", role: "participant", dataset: "ds1" }
           ],
-          projectAgreementId: 1
+          projectAgreementId: "1"
         })
       ).rejects.toThrow("not finalized");
     });
@@ -490,7 +490,7 @@ describe("AlgorithmInstancesService", () => {
         algorithmInstancesService["projectAgreementsService"]!,
         "findById"
       ).mockResolvedValue({
-        id: 2,
+        id: "2",
         projectId: "test-invalid-participants-pa",
         projectAgreement: {
           id: "test-invalid-participants-pa",
@@ -527,7 +527,7 @@ describe("AlgorithmInstancesService", () => {
               dataset: "ds2"
             }
           ],
-          projectAgreementId: 2
+          projectAgreementId: "2"
         })
       ).rejects.toThrow("not part of the project agreement");
     });
@@ -542,7 +542,7 @@ describe("AlgorithmInstancesService", () => {
           "getRepository"
         ](DatasetDao);
       const savedDataset = await datasetRepo.save({
-        identifier: "valid-dataset-id",
+        id: "valid-dataset-id",
         dataset: {
           "@id": "valid-dataset-id",
           "@type": "Dataset",
@@ -554,7 +554,7 @@ describe("AlgorithmInstancesService", () => {
           "getRepository"
         ](ProjectAgreementDao);
       const savedProjectAgreement = await projectAgreementRepo.save({
-        id: 4,
+        id: "4",
         projectId: "test-valid-pa",
         projectAgreement: {
           id: "test-valid-pa",
@@ -595,12 +595,12 @@ describe("AlgorithmInstancesService", () => {
             dataset: "valid-dataset-id"
           }
         ],
-        projectAgreementId: 4
+        projectAgreementId: "4"
       });
 
       expect(result).toBeDefined();
       expect(result.projectAgreement).toBeDefined();
-      expect(result.projectAgreement?.id).toBe(4);
+      expect(result.projectAgreement?.id).toBe("4");
       expect(result.projectAgreement?.projectId).toBe("test-valid-pa");
       expect(result.projectAgreement?.hash).toBe("ghi789");
       expect(result.projectAgreement?.status).toBe("FINALIZED");

@@ -4,6 +4,7 @@ import { promiseMap } from "@tsg-dsp/common-api";
 import {
   CatalogClientService,
   createInitPromise,
+  DataPlaneError,
   DataPlaneRegistrationService,
   DataPlaneStateDao,
   InitPromise
@@ -21,7 +22,6 @@ import crypto from "crypto";
 import { Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
-import { DataPlaneError } from "../utils/errors/error.js";
 import { DatasetDao } from "./dataset.dao.js";
 
 @Injectable()
@@ -149,7 +149,7 @@ export class DataPlaneService implements OnModuleInit {
       this.logger.log("Using stored datasets");
       const datasets = await this.getDatasets();
       await promiseMap(datasets, async (datasetDto) => {
-        await this.catalog.syncDataset(details.identifier, datasetDto);
+        await this.catalog.syncDataset(details.id, datasetDto);
       });
     } else {
       this.logger.log("Creating new datasets");
@@ -170,7 +170,7 @@ export class DataPlaneService implements OnModuleInit {
 
   async getDataset(datasetId: string): Promise<DatasetDto> {
     const dataset = await this.datasetRepository.findOneBy({
-      identifier: datasetId
+      id: datasetId
     });
     if (!dataset) {
       throw new DataPlaneError(
@@ -183,11 +183,13 @@ export class DataPlaneService implements OnModuleInit {
 
   async addDataset(dataset: DatasetDto) {
     const currentState = await this.getState();
-    await this.datasetRepository.save({
-      identifier: dataset["@id"],
-      dataset
-    });
-    await this.catalog.syncDataset(currentState.details.identifier, dataset);
+    await this.datasetRepository.save(
+      this.datasetRepository.create({
+        id: dataset["@id"],
+        dataset
+      })
+    );
+    await this.catalog.syncDataset(currentState.details.id, dataset);
   }
 
   async updateDataset(datasetId: string, updatedDataset: DatasetDto) {
@@ -196,24 +198,23 @@ export class DataPlaneService implements OnModuleInit {
     // Check if the dataset exists and fail early if not
     await this.getDataset(datasetId);
     await this.catalog.updateDataset(
-      currentState.details.identifier,
+      currentState.details.id,
       datasetId,
       updatedDataset
     );
-    await this.datasetRepository.save({
-      identifier: datasetId,
-      dataset: updatedDataset
-    });
+    await this.datasetRepository.save(
+      this.datasetRepository.create({
+        id: datasetId,
+        dataset: updatedDataset
+      })
+    );
   }
 
   async deleteDataset(datasetId: string) {
     const currentState = await this.getState();
     await this.getDataset(datasetId);
-    await this.datasetRepository.delete({ identifier: datasetId });
-    await this.catalog.deleteDataset(
-      currentState.details.identifier,
-      datasetId
-    );
+    await this.datasetRepository.delete({ id: datasetId });
+    await this.catalog.deleteDataset(currentState.details.id, datasetId);
   }
 
   async getState(): Promise<DataPlaneStateDao> {

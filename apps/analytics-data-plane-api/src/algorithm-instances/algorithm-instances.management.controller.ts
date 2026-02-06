@@ -10,7 +10,6 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
@@ -20,16 +19,18 @@ import {
   AlgorithmInstanceDto,
   CreateAlgorithmInstanceDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
-import { Roles } from "@tsg-dsp/common-api";
+import { Requires } from "@tsg-dsp/common-api";
 import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 
 @Controller("management/algorithm-instances")
 @ApiTags("Algorithm Instances")
-@ApiOAuth2(["controlplane_dataplane"])
-@Roles("controlplane_dataplane")
 export class AlgorithmInstancesManagementController {
   constructor(
     private readonly algorithmInstancesService: AlgorithmInstancesService,
@@ -37,6 +38,7 @@ export class AlgorithmInstancesManagementController {
   ) {}
 
   @Get()
+  @Requires(Action.READ, Resource.ADP_ALGORITHM)
   @ApiOperation({
     summary: "Get all algorithm instances",
     description: "Retrieve all algorithm instances"
@@ -48,6 +50,7 @@ export class AlgorithmInstancesManagementController {
   }
 
   @Post()
+  @Requires(Action.CREATE, Resource.ADP_ALGORITHM)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Create algorithm instance",
@@ -71,6 +74,7 @@ export class AlgorithmInstancesManagementController {
   }
 
   @Get("transfer/:transferId")
+  @Requires(Action.READ, Resource.ADP_ALGORITHM)
   @ApiOperation({
     summary: "Get an algorithm instance by transfer ID",
     description: "Retrieve an algorithm instance by its associated transfer ID"
@@ -84,6 +88,7 @@ export class AlgorithmInstancesManagementController {
   }
 
   @Get(":id")
+  @Requires(Action.READ, Resource.ADP_ALGORITHM)
   @ApiOperation({
     summary: "Get an algorithm instance by ID",
     description: "Retrieve an algorithm instance by its ID"
@@ -95,6 +100,7 @@ export class AlgorithmInstancesManagementController {
   }
 
   @Delete(":id")
+  @Requires(Action.DELETE, Resource.ADP_ALGORITHM)
   @ApiOperation({
     summary: "Delete an algorithm instance by ID",
     description: "Delete an algorithm instance by its ID"

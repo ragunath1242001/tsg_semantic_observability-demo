@@ -17,6 +17,7 @@ import {
 import { parseNetworkError } from "@tsg-dsp/common-api";
 import {
   CatalogClientService,
+  DataPlaneError,
   ITransferHandler,
   TransferClientService
 } from "@tsg-dsp/common-data-plane-api";
@@ -32,7 +33,6 @@ import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handle
 import { TransferDao } from "../dataplane/transfer.dao.js";
 import { INTERNAL_EVENTS } from "../internal-events/internal-events.js";
 import { getAxiosConfigFromDataAddress } from "../utils/axios.js";
-import { DataPlaneError } from "../utils/errors/error.js";
 import { parseToken } from "../utils/token.js";
 import { AlgorithmEventDao } from "./algorithm-event.dao.js";
 import { InternalEventDao } from "./internal-event.dao.js";
@@ -269,18 +269,20 @@ export class EventsService {
       isOwnEvent = false;
       createdBy = transfer.remoteParty;
     }
-    const savedEvent = await this.algorithmEventsRepository.save({
-      id: `urn:uuid:${crypto.randomUUID()}`,
-      eventId: createEvent.eventId,
-      algorithmInstance: algorithmInstance,
-      name: createEvent.name,
-      number: createEvent.number,
-      timestamp: createEvent.timestamp,
-      createdBy,
-      isOwnEvent: isOwnEvent,
-      transferIds: transferIds,
-      recipients: createEvent.recipients
-    });
+    const savedEvent = await this.algorithmEventsRepository.save(
+      this.algorithmEventsRepository.create({
+        id: `urn:uuid:${crypto.randomUUID()}`,
+        eventId: createEvent.eventId,
+        algorithmInstance: algorithmInstance,
+        name: createEvent.name,
+        number: createEvent.number,
+        timestamp: createEvent.timestamp,
+        createdBy,
+        isOwnEvent: isOwnEvent,
+        transferIds: transferIds,
+        recipients: createEvent.recipients
+      })
+    );
 
     if (
       this.splitMode.isClientMode &&
@@ -339,18 +341,20 @@ export class EventsService {
     });
 
     const createdBy = await this.catalog.getParticipantId();
-    return await this.algorithmEventsRepository.save({
-      id: `urn:uuid:${crypto.randomUUID()}`,
-      eventId: createEvent.eventId,
-      algorithmInstance: algorithmInstance,
-      name: createEvent.name,
-      number: createEvent.number,
-      timestamp: createEvent.timestamp,
-      createdBy,
-      isOwnEvent: true,
-      transferIds,
-      recipients: createEvent.recipients
-    });
+    return await this.algorithmEventsRepository.save(
+      this.algorithmEventsRepository.create({
+        id: `urn:uuid:${crypto.randomUUID()}`,
+        eventId: createEvent.eventId,
+        algorithmInstance: algorithmInstance,
+        name: createEvent.name,
+        number: createEvent.number,
+        timestamp: createEvent.timestamp,
+        createdBy,
+        isOwnEvent: true,
+        transferIds,
+        recipients: createEvent.recipients
+      })
+    );
   }
 
   async uploadAlgorithmEventData({
@@ -828,18 +832,20 @@ export class EventsService {
       return;
     }
 
-    await this.algorithmEventsRepository.save({
-      id: `urn:uuid:${crypto.randomUUID()}`,
-      eventId: body.event.eventId,
-      algorithmInstance,
-      name: body.event.name,
-      number: body.event.number,
-      timestamp: body.event.timestamp,
-      createdBy: body.createdBy,
-      isOwnEvent: false,
-      transferIds: body.transferIds,
-      recipients: body.event.recipients
-    });
+    await this.algorithmEventsRepository.save(
+      this.algorithmEventsRepository.create({
+        id: `urn:uuid:${crypto.randomUUID()}`,
+        eventId: body.event.eventId,
+        algorithmInstance,
+        name: body.event.name,
+        number: body.event.number,
+        timestamp: body.event.timestamp,
+        createdBy: body.createdBy,
+        isOwnEvent: false,
+        transferIds: body.transferIds,
+        recipients: body.event.recipients
+      })
+    );
 
     this.eventEmitter.emit(`event.created.${body.algorithmInstanceId}`);
   }

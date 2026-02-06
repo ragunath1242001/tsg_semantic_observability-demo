@@ -8,7 +8,7 @@ export const oauthUserToDto = (user: OauthUser): UserDto => {
     username: user.username,
     email: user.email,
     require2FA: user.require2FA,
-    roles: user.roles.map((role) => role.name),
+    permissions: user.permissions || [],
     grants: user.grants
   };
 };
