@@ -231,6 +231,29 @@ paths:
             - execute:hdp.dataplane
       summary: Refresh registry
       tags: *a4
+  /api/management/participant-id:
+    get:
+      description: Get the ID of the current participant from the Control Plane catalog.
+      operationId: DataPlaneManagementController_getParticipantId
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:adp.dataplane
+      summary: Get current participant ID
+      tags: *a4
   /api/management/refresh:
     post:
       description: Use this endpoint to (re)register your data plane. Currently it
@@ -250,6 +273,25 @@ paths:
         - oauth2:
             - execute:hdp.dataplane
       summary: (Re)register data plane
+      tags: *a4
+  /api/management/openapi:
+    get:
+      description: Fetch an OpenAPI document from a given URL and return it as JSON.
+      operationId: DataPlaneManagementController_fetchOpenApiDocument
+      parameters:
+        - name: url
+          required: true
+          in: query
+          description: URL of the OpenAPI document
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - oauth2:
+            - read:hdp.dataplane
+      summary: Fetch OpenAPI document
       tags: *a4
   /api/management/config:
     get:

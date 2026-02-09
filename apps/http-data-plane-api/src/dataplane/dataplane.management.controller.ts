@@ -8,12 +8,15 @@ import {
   Logger,
   Param,
   Post,
-  Put
+  Put,
+  Query,
+  Res
 } from "@nestjs/common";
 import {
   ApiBody,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
@@ -38,6 +41,7 @@ import {
   DatasetItemWithDto
 } from "@tsg-dsp/http-data-plane-dtos";
 import { plainToInstance } from "class-transformer";
+import { Response } from "express";
 
 import { DatasetItemDao } from "./dataplane.dao.js";
 import { DataPlaneService } from "./dataplane.service.js";
@@ -127,6 +131,19 @@ export class DataPlaneManagementController {
     return await this.catalog.refreshRegistry();
   }
 
+  @Get("/participant-id")
+  @ApiOperation({
+    summary: "Get current participant ID",
+    description:
+      "Get the ID of the current participant from the Control Plane catalog."
+  })
+  @ApiOkResponse({ type: String })
+  @ApiForbiddenResponseDefault()
+  @Requires(Action.READ, Resource.ADP_DATAPLANE)
+  async getParticipantId(): Promise<string> {
+    return await this.catalog.getParticipantId();
+  }
+
   @Post("/refresh")
   @Requires(Action.EXECUTE, Resource.HDP_DATAPLANE)
   @ApiOperation({
@@ -139,6 +156,26 @@ export class DataPlaneManagementController {
   @HttpCode(HttpStatus.ACCEPTED)
   async refreshRegistration() {
     return await this.dataPlaneService.registerDataplane();
+  }
+
+  @Get("/openapi")
+  @Requires(Action.READ, Resource.HDP_DATAPLANE)
+  @ApiQuery({
+    name: "url",
+    type: String,
+    required: true,
+    description: "URL of the OpenAPI document"
+  })
+  @ApiOperation({
+    summary: "Fetch OpenAPI document",
+    description:
+      "Fetch an OpenAPI document from a given URL and return it as JSON."
+  })
+  async fetchOpenApiDocument(
+    @Query("url", nonEmptyStringPipe) url: string,
+    @Res() response: Response
+  ): Promise<void> {
+    await this.dataPlaneService.fetchOpenApiDocument(url, response);
   }
 
   @Get("/config")
