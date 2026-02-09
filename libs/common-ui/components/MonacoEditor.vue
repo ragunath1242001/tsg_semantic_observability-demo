@@ -31,6 +31,11 @@ const props = defineProps({
   },
   static: {
     required: false
+  },
+  language: {
+    type: String,
+    required: false,
+    default: "json"
   }
 });
 
@@ -105,7 +110,7 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
       },
       scrollBeyondLastLine: false
     }"
-    language="json"
+    :language="language"
     :height="editorHeight"
     @before-mount="handleBeforeMount" />
 </template>

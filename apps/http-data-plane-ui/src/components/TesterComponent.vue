@@ -5,18 +5,26 @@ import KeyValuePairEdit from "@tsg-dsp/common-ui/components/KeyValuePairEdit.vue
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { httpStatusNames } from "@tsg-dsp/common-ui/utils/httpStatus";
 import axios, { AxiosResponse } from "axios";
+import { DynamicDialogCloseOptions } from "primevue/dynamicdialogoptions";
+import { useDialog } from "primevue/usedialog";
 import { useToast } from "primevue/usetoast";
-import { computed, ref, toRefs } from "vue";
+import { computed, nextTick, onMounted, ref, toRefs, watch } from "vue";
+
+import PathParametersDialog from "../components/PathParametersDialog.vue";
+import { DereferencedParameterObject } from "../utils/openapi.parser";
+import { type Operation, requestBodyToTester } from "../utils/openapi.utils";
 
 const toast = useToast();
+const dialog = useDialog();
 
 const properties = defineProps<{
   headers: { key: string; value: string }[];
   url: string;
   transfer?: TransferDto;
+  operation?: Operation;
 }>();
 
-const { headers, url, transfer } = toRefs(properties);
+const { headers, url, transfer, operation } = toRefs(properties);
 const interaction = ref<"direct" | "proxy">("direct");
 const path = ref<string>("");
 const methods = ref<string[]>([
@@ -39,6 +47,9 @@ const bodyType = ref<"none" | "form-data" | "x-www-form-urlencoded" | "raw">(
   "none"
 );
 
+const bodySchema = ref();
+const bodyLanguage = ref<string>("json");
+
 const loading = ref(false);
 
 const setHeader = (header: string, value: string) => {
@@ -54,6 +65,7 @@ const setHeader = (header: string, value: string) => {
     });
   }
 };
+
 const execute = async () => {
   loading.value = true;
   response.value = undefined;
@@ -200,13 +212,138 @@ const removeHeader = (header: string) => {
     (h) => h.key.toLowerCase() !== header.toLowerCase()
   );
 };
+
+const showPathParamDialog = async (
+  operation: Operation,
+  pathParams: DereferencedParameterObject[]
+) => {
+  const dialogResult = await new Promise<Record<string, string> | null>(
+    (resolve) => {
+      dialog.open(PathParametersDialog, {
+        props: {
+          header: `Fill in path parameters - ${operation.method.toUpperCase()} ${
+            operation.path
+          }`,
+          modal: true,
+          dismissableMask: true,
+          closable: true
+        },
+        data: { parameters: pathParams },
+        onClose: (options?: DynamicDialogCloseOptions) => {
+          resolve(options?.data || null);
+        }
+      });
+    }
+  );
+
+  if (!dialogResult) {
+    // User cancelled
+    return operation.path;
+  }
+  let finalPath = operation.path;
+  // Replace path parameters with provided values
+  for (const [name, value] of Object.entries(dialogResult)) {
+    finalPath = finalPath.replace(`{${name}}`, encodeURIComponent(value));
+  }
+  return finalPath;
+};
+
+const selectOperation = async (operation: Operation) => {
+  // Extract path, query, and header parameters
+  const pathParams =
+    operation.operation.parameters?.filter((p) => p.in === "path") || [];
+  const queryParams =
+    operation.operation.parameters?.filter((p) => p.in === "query") || [];
+  const headerParams =
+    operation.operation.parameters?.filter((p) => p.in === "header") || [];
+
+  // Set the path
+  path.value =
+    pathParams.length > 0
+      ? await showPathParamDialog(operation, pathParams)
+      : operation.path;
+
+  // Set the HTTP method
+  method.value = operation.method.toUpperCase() as
+    | "GET"
+    | "POST"
+    | "PUT"
+    | "PATCH"
+    | "DELETE"
+    | "HEAD"
+    | "OPTIONS";
+
+  // Add headers
+  for (const headerParam of headerParams) {
+    const value = headerParam.example
+      ? String(headerParam.example)
+      : headerParam.schema?.example
+        ? String(headerParam.schema.example)
+        : "";
+
+    setHeader(headerParam.name, value);
+  }
+
+  // Add query parameters
+  query.value = queryParams.map((param) => ({
+    key: param.name,
+    value: param.example
+      ? String(param.example)
+      : param.schema?.example
+        ? String(param.schema.example)
+        : param.schema?.default
+          ? String(param.schema.default)
+          : ""
+  }));
+
+  // Handle request body
+  const requestBody = operation.operation.requestBody;
+  if (requestBody && requestBody.content) {
+    const {
+      bodyLanguage: newBodyLanguage,
+      bodyType: newBodyType,
+      bodySchema: newBodySchema,
+      headers: newHeaders
+    } = requestBodyToTester(requestBody, bodyRaw, toast);
+    bodyType.value = newBodyType;
+    bodyLanguage.value = newBodyLanguage;
+    bodySchema.value = newBodySchema;
+    newHeaders.forEach((h) => setHeader(h.key, h.value));
+  } else {
+    bodyType.value = "none";
+  }
+
+  // scroll to TesterComponent
+  await nextTick();
+  const testerElement = document.getElementById("tester-form");
+  testerElement?.scrollIntoView({ behavior: "smooth" });
+};
+
+watch(
+  () => operation.value,
+  () => {
+    if (operation.value) {
+      selectOperation(operation.value);
+    }
+  }
+);
+
+onMounted(async () => {
+  if (operation.value) {
+    await selectOperation(operation.value);
+  }
+});
 </script>
 <template>
   <Card class="mt-8">
     <template #title>HTTP Tester</template>
     <template #subtitle>HTTP Test Utility for testing transfers</template>
     <template #content>
-      <form class="flex flex-col gap-4" @submit.prevent="execute">
+      <form
+        id="tester-form"
+        class="flex flex-col gap-4"
+        style="scroll-margin-top: 12rem"
+        @submit.prevent="execute">
         <FormField v-if="transfer" label="Transfer">
           {{ transfer.id }}
         </FormField>
@@ -255,6 +392,9 @@ const removeHeader = (header: string) => {
           <MonacoEditorVue
             v-if="bodyType === 'raw'"
             v-model="bodyRaw"
+            :schema="bodySchema"
+            :language="bodyLanguage"
+            :max-lines="30"
             :raw="true" />
         </FormField>
         <FormField no-label class="mt-8">

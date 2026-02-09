@@ -6,7 +6,14 @@ import Lara from "@primevue/themes/lara";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { createPinia } from "pinia";
-import { ColorPicker, FileUpload } from "primevue";
+import {
+  ColorPicker,
+  DataView,
+  FileUpload,
+  IconField,
+  InputIcon,
+  Message
+} from "primevue";
 import AutoComplete from "primevue/autocomplete";
 import Badge from "primevue/badge";
 import Button from "primevue/button";
@@ -79,6 +86,7 @@ app.component("Badge", Badge);
 app.component("Button", Button);
 app.component("ColorPicker", ColorPicker);
 app.component("ConfirmDialog", ConfirmDialog);
+app.component("DataView", DataView);
 app.component("Dialog", Dialog);
 app.component("Drawer", Drawer);
 app.component("FileUpload", FileUpload);
@@ -87,9 +95,12 @@ app.component("DynamicDialog", DynamicDialog);
 app.component("Card", Card);
 app.component("Column", Column);
 app.component("DataTable", DataTable);
+app.component("Message", Message);
 app.component("MultiSelect", MultiSelect);
 app.component("SelectButton", SelectButton);
+app.component("IconField", IconField);
 app.component("InputNumber", InputNumber);
+app.component("InputIcon", InputIcon);
 app.component("InputText", InputText);
 app.component("Inplace", Inplace);
 app.component("Panel", Panel);

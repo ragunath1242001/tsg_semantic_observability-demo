@@ -7,7 +7,7 @@ import {
   UnprocessableEntityException
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { promiseMap } from "@tsg-dsp/common-api";
+import { parseNetworkError, promiseMap } from "@tsg-dsp/common-api";
 import {
   CatalogClientService,
   createInitPromise,
@@ -42,7 +42,9 @@ import {
   RuleConstraintConfig,
   VersionedDatasetConfig
 } from "@tsg-dsp/http-data-plane-dtos";
+import axios from "axios";
 import crypto from "crypto";
+import { Response } from "express";
 import { IsNull, Not, Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
@@ -139,6 +141,21 @@ export class DataPlaneService implements OnModuleInit {
         datasetConfig: this.activeConfig?.datasetConfig || this.config.dataset
       })
     );
+  }
+
+  async fetchOpenApiDocument(url: string, response: Response): Promise<void> {
+    try {
+      const axiosResponse = await axios.get(url, {
+        responseType: "stream"
+      });
+      response.setHeader(
+        "content-type",
+        axiosResponse.headers["content-type"] || "application/json"
+      );
+      axiosResponse.data.pipe(response);
+    } catch (error) {
+      throw parseNetworkError(error, "fetching OpenAPI document");
+    }
   }
 
   async getState(): Promise<DataPlaneStateDao> {
