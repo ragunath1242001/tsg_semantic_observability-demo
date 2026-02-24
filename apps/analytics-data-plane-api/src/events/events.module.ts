@@ -26,6 +26,7 @@ import { InternalEventDao } from "./internal-event.dao.js";
   ],
   controllers: splitModules(
     [EventsController],
+    [EventsController, EventsManagementController],
     [EventsController, EventsManagementController]
   ),
   providers: [EventsService, EventsGateway],

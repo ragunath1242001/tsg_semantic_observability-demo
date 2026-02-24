@@ -4,7 +4,10 @@ import {
   OnModuleDestroy,
   OnModuleInit
 } from "@nestjs/common";
-import type { BridgeAlgorithmEventDataChunkDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import type {
+  BridgeAlgorithmEventDataChunkDto,
+  CreateAlgorithmEventDto
+} from "@tsg-dsp/analytics-data-plane-dtos";
 import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
 import crypto from "crypto";
 import { io, Socket } from "socket.io-client";
@@ -113,13 +116,7 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
    */
   async emitAlgorithmEventCreate(payload: {
     algorithmInstanceId: string;
-    event: {
-      eventId: string;
-      name: string;
-      number: number;
-      timestamp: string;
-      recipients?: string[];
-    };
+    event: CreateAlgorithmEventDto;
   }): Promise<void> {
     if (!this.socket?.connected) {
       this.logger.warn(

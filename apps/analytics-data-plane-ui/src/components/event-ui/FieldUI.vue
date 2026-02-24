@@ -19,7 +19,11 @@ const latestEvent = computed(() => {
       ? current
       : latest;
   }, data[0]);
-  if ("value" in last.data && typeof last.data.value !== "undefined") {
+  if (
+    last.data !== undefined &&
+    "value" in last.data &&
+    typeof last.data.value !== "undefined"
+  ) {
     return {
       value: last.data.value,
       timestamp: last.timestamp
@@ -41,7 +45,9 @@ const sortedEventsData = computed(() => {
     .map((event) => ({
       timestamp: event.timestamp,
       value:
-        "value" in event.data && typeof event.data.value !== "undefined"
+        event.data !== undefined &&
+        "value" in event.data &&
+        typeof event.data.value !== "undefined"
           ? event.data.value
           : "Not available"
     }));

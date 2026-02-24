@@ -14,9 +14,11 @@ export class CreateAlgorithmEventDto {
   @IsNumber()
   number!: number;
 
+  /** @deprecated timestamps of algorithm events are generated server-side */
   @ApiProperty()
   @IsString()
-  timestamp!: string;
+  @IsOptional()
+  timestamp?: string;
 
   @ApiPropertyOptional({
     type: [String],
