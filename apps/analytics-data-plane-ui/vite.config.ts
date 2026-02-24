@@ -12,6 +12,7 @@ const swaggerShimFile =
 interface DevSession {
   local: boolean;
   target?: string;
+  socketIoTarget?: string;
   sessionCookie?: string;
 }
 let devSessions: DevSession = { local: true };
@@ -48,7 +49,8 @@ export default defineConfig({
       ? {
           "/api": {
             target: process.env.BACKEND ?? "http://localhost:3001/",
-            rewrite: (path) => path.replace(/^\/api/, "")
+            rewrite: (path) => path.replace(/^\/api/, ""),
+            ws: true
           }
         }
       : {
@@ -58,7 +60,17 @@ export default defineConfig({
             headers: {
               Cookie: devSessions.sessionCookie!
             }
-          }
+          },
+          ...(devSessions.socketIoTarget && {
+            "/api/socket.io": {
+              target: devSessions.socketIoTarget,
+              changeOrigin: true,
+              ws: true,
+              headers: {
+                Cookie: devSessions.sessionCookie!
+              }
+            }
+          })
         }
   }
 });

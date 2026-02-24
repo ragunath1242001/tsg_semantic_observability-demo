@@ -1,9 +1,11 @@
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { AppLogger, ServerConfig } from "@tsg-dsp/common-api";
-import crypto from "crypto";
+import {
+  AppLogger,
+  ServerConfig,
+  SESSION_MIDDLEWARE
+} from "@tsg-dsp/common-api";
 import { json, urlencoded } from "express";
-import session from "express-session";
 
 import { AppModule } from "./app.module.js";
 
@@ -25,14 +27,7 @@ async function bootstrap() {
   }
   app.use(json({ limit: "1mb" }));
   app.use(urlencoded({ extended: true, limit: "1mb" }));
-  app.use(
-    session({
-      name: process.env["SESSION_NAME"] || "connect.sid.tsgadp",
-      secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
-      resave: false,
-      saveUninitialized: false
-    })
-  );
+  app.use(app.get(SESSION_MIDDLEWARE));
   app.enableCors({
     allowedHeaders: "*",
     origin: "*"

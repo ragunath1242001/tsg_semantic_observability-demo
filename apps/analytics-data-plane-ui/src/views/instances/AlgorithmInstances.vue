@@ -13,6 +13,8 @@ const runtimeStore = useRuntimeStore();
 const toast = useToast();
 const router = useRouter();
 
+algorithmStore.bindEvents();
+
 const isReadOnly = computed(() => runtimeStore.isClientMode);
 
 const selectedAlgorithmInstance = ref();

@@ -7,3 +7,4 @@ export * from "./client.decorator.js";
 export * from "./client.info.js";
 export * from "./oauth.guard.js";
 export * from "./oauth.service.js";
+export * from "./ws-auth.middleware.js";

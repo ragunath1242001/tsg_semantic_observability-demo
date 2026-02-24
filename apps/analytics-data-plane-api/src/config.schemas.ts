@@ -15,4 +15,11 @@ export class RuntimeConfigDto implements RuntimeConfig {
     example: false
   })
   requireProjectAgreement: boolean = false;
+
+  @ApiPropertyOptional({
+    description:
+      "Interval in milliseconds for auto-refreshing the jobs table in the UI (0 to disable)",
+    example: 10000
+  })
+  jobRefreshIntervalMs: number = 10000;
 }

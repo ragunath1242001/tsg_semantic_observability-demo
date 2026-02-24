@@ -1,5 +1,6 @@
 {
   "local": false,
   "target": "https://example.com/analytics-data-plane",
+  "socketIoTarget": "https://example.com/socket.io",
   "sessionCookie": "connect.sid.tsgadp=..."
 }

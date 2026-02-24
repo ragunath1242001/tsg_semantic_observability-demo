@@ -7,6 +7,7 @@ import {
 import http from "@tsg-dsp/common-ui/utils/http";
 import { defineStore } from "pinia";
 
+import { socket } from "../socket";
 import { useRuntimeStore } from "./runtime";
 
 export interface AlgorithmInstanceEvents {
@@ -20,7 +21,8 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
     events: {} as Record<string, AlgorithmInstanceEvents>,
     loading: false,
     eventsLoading: false,
-    error: null as string | null
+    error: null as string | null,
+    _bound: false
   }),
 
   getters: {
@@ -241,6 +243,48 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
 
     clearError() {
       this.error = null;
+    },
+
+    /**
+     * Refreshes the algorithm instance in the store when a WebSocket event
+     * arrives, so the list view stays up-to-date (e.g. status changes).
+     */
+    async refreshAlgorithmInstance(algorithmInstanceId: string) {
+      try {
+        await this.fetchAlgorithmInstanceById(algorithmInstanceId);
+      } catch {
+        // Instance may not be in the list (e.g. belongs to another view); ignore
+      }
+    },
+
+    _onInternalEvent(data: any) {
+      this.addEventToAlgorithmInstance(
+        data.algorithmInstance.id,
+        data,
+        "internal"
+      );
+      this.refreshAlgorithmInstance(data.algorithmInstance.id);
+    },
+
+    _onAlgorithmEvent(data: any) {
+      this.addEventToAlgorithmInstance(
+        data.algorithmInstance.id,
+        data,
+        "algorithm"
+      );
+      this.refreshAlgorithmInstance(data.algorithmInstance.id);
+    },
+
+    bindEvents() {
+      // Only bind once — listeners persist for the lifetime of the store
+      if (this._bound) return;
+      this._bound = true;
+
+      const onInternal = this._onInternalEvent.bind(this);
+      const onAlgorithm = this._onAlgorithmEvent.bind(this);
+
+      socket.on("event:internal:create", onInternal);
+      socket.on("event:algorithm:create", onAlgorithm);
     }
   }
 });

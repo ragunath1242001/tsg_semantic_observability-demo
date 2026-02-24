@@ -89,6 +89,13 @@ export class RuntimeConfig {
   @IsOptional()
   @Transform(valueToBoolean)
   public readonly requireProjectAgreement: boolean = false;
+
+  @Description(
+    "Interval in milliseconds for auto-refreshing the jobs table in the UI (0 to disable)"
+  )
+  @IsInt()
+  @IsOptional()
+  public readonly jobRefreshIntervalMs: number = 10000;
 }
 
 export type OrchestrationType = "kubernetes" | "docker";

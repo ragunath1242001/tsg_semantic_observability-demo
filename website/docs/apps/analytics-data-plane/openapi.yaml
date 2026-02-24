@@ -1851,6 +1851,11 @@ components:
           description: Whether a project agreement is required when creating an algorithm
             instance
           example: false
+        jobRefreshIntervalMs:
+          type: number
+          description: Interval in milliseconds for auto-refreshing the jobs table in the
+            UI (0 to disable)
+          example: 10000
       required:
         - color
     ErrorDto:

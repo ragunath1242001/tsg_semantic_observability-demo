@@ -41,6 +41,7 @@ import {
 } from "../project-agreements/project-agreement.dao.js";
 import { ProjectAgreementsService } from "../project-agreements/project-agreements.service.js";
 import { AlgorithmEventDao } from "./algorithm-event.dao.js";
+import { EventsGateway } from "./events.gateway.js";
 import { EventsService } from "./events.service.js";
 import { InternalEventDao } from "./internal-event.dao.js";
 
@@ -126,6 +127,12 @@ describe("EventsService", () => {
           useValue: {
             emit: vi.fn(),
             on: vi.fn()
+          }
+        },
+        {
+          provide: EventsGateway,
+          useValue: {
+            sendUpdateToClients: vi.fn()
           }
         },
         {

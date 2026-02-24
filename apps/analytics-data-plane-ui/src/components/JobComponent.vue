@@ -10,9 +10,10 @@ import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { DataTableRowSelectEvent, useToast } from "primevue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 import { useK8sStore } from "../stores/k8s";
+import { useRuntimeStore } from "../stores/runtime";
 
 interface CreateJob {
   imageName: string;
@@ -21,12 +22,69 @@ interface CreateJob {
 }
 
 const k8sStore = useK8sStore();
+const runtimeStore = useRuntimeStore();
 const toast = useToast();
 
 const { algorithmInstanceId, debug } = defineProps<{
   algorithmInstanceId: string;
   debug: boolean;
 }>();
+
+const autoRefreshEnabled = ref(true);
+const countdownTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+const countdownSeconds = ref(0);
+
+const refreshIntervalMs = computed(
+  () => runtimeStore.jobRefreshIntervalMs ?? 10000
+);
+
+const refreshIntervalSeconds = computed(() =>
+  Math.round(refreshIntervalMs.value / 1000)
+);
+
+const autoRefreshLabel = computed(() => {
+  if (!autoRefreshEnabled.value) return "Off";
+  return `${countdownSeconds.value}s`;
+});
+
+const scheduleTick = () => {
+  countdownTimeout.value = setTimeout(async () => {
+    if (!autoRefreshEnabled.value) return;
+
+    if (countdownSeconds.value > 1) {
+      countdownSeconds.value--;
+      scheduleTick();
+    } else {
+      await getJobs(algorithmInstanceId);
+      countdownSeconds.value = refreshIntervalSeconds.value;
+      scheduleTick();
+    }
+  }, 1000);
+};
+
+const startAutoRefresh = () => {
+  stopAutoRefresh();
+  if (refreshIntervalMs.value > 0) {
+    countdownSeconds.value = refreshIntervalSeconds.value;
+    scheduleTick();
+  }
+};
+
+const stopAutoRefresh = () => {
+  if (countdownTimeout.value) {
+    clearTimeout(countdownTimeout.value);
+    countdownTimeout.value = null;
+  }
+  countdownSeconds.value = 0;
+};
+
+watch(autoRefreshEnabled, (enabled) => {
+  if (enabled) {
+    startAutoRefresh();
+  } else {
+    stopAutoRefresh();
+  }
+});
 
 const jobs = ref<V1Job[]>([]);
 
@@ -211,6 +269,13 @@ const getFiles = async () => {
 
 onMounted(async () => {
   await Promise.allSettled([getJobs(algorithmInstanceId), getFiles()]);
+  if (autoRefreshEnabled.value) {
+    startAutoRefresh();
+  }
+});
+
+onUnmounted(() => {
+  stopAutoRefresh();
 });
 </script>
 <template>
@@ -280,20 +345,31 @@ onMounted(async () => {
       <template #title>
         <div class="flex justify-between items-center">
           <span>Jobs</span>
-          <div>
+          <div class="flex items-center gap-2">
             <Button
               v-if="debug"
               icon="pi pi-plus"
               label="Create Job"
-              class="mb-2"
               size="small"
               @click="creating = true" />
             <Button
               icon="pi pi-refresh"
               label="Refresh"
-              class="ml-2"
               size="small"
               @click="getJobs(algorithmInstanceId)" />
+            <ToggleButton
+              v-model="autoRefreshEnabled"
+              v-tooltip.bottom="
+                autoRefreshEnabled
+                  ? `Auto-refresh every ${refreshIntervalMs / 1000}s`
+                  : 'Auto-refresh disabled'
+              "
+              :on-label="autoRefreshLabel"
+              off-label="Off"
+              on-icon="pi pi-sync"
+              off-icon="pi pi-pause"
+              :severity="autoRefreshEnabled ? undefined : 'secondary'"
+              size="small" />
           </div>
         </div>
       </template>

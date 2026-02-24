@@ -293,7 +293,7 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
               {
                 name: this.containerName,
                 image: imageName,
-                imagePullPolicy: "Always",
+                imagePullPolicy: "IfNotPresent",
                 env,
                 command: finalCommand,
                 volumeMounts
