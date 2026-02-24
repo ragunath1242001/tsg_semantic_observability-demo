@@ -10,21 +10,22 @@ import { WsAuthMiddleware } from "@tsg-dsp/common-api";
 import { Server, Socket } from "socket.io";
 
 @WebSocketGateway({
+  path: `${process.env["SUBPATH"] || ""}${process.env["EMBEDDED_FRONTEND"] ? "/api" : ""}/socket.io`,
   cors: {
     origin: [/http:\/\/localhost:\d+/]
   }
 })
-export class DspGateway
+export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  private readonly logger = new Logger(DspGateway.name);
+  private readonly logger = new Logger(EventsGateway.name);
   @WebSocketServer() server!: Server;
 
   constructor(private readonly wsAuth: WsAuthMiddleware) {}
 
   afterInit(server: Server) {
     server.use(this.wsAuth.createMiddleware());
-    this.logger.log("Initialized Dsp Gateway.");
+    this.logger.log("Initialized events gateway");
   }
 
   handleConnection(client: Socket) {
@@ -37,6 +38,11 @@ export class DspGateway
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sendUpdateToClients(event: string, data: any) {
-    this.server?.emit(event, data);
+    try {
+      this.logger.log(`Emitting event ${event} to clients`);
+      this.server?.emit(event, data);
+    } catch (err) {
+      this.logger.error(`Failed to emit ${event}`, err as Error);
+    }
   }
 }

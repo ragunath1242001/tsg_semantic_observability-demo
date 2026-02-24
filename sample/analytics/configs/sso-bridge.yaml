@@ -98,7 +98,8 @@ initClients:
       - read:cp.agreement
       - read:cp.policy
       - manage:cp.registry
-      - manage:adp.dataplane
+      - create:w.credential
+      - manage:adp.project_agreement
     secretName: sso-alfa-analytics-data-plane-secret
 
   # Bravo clients
@@ -171,6 +172,8 @@ initClients:
       - read:cp.policy
       - manage:cp.registry
       - manage:adp.dataplane
+      - create:w.credential
+      - manage:adp.project_agreement
     secretName: sso-bravo-analytics-data-plane-server-secret
 
   - clientId: bravo-analytics-data-plane-client

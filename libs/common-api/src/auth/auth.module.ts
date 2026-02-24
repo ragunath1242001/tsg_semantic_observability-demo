@@ -6,6 +6,7 @@ import { AuthController } from "./auth.controller.js";
 import { OAuthGuard } from "./oauth.guard.js";
 import { OAuthService } from "./oauth.service.js";
 import { OpenIDConfigurationService } from "./openid.configuration.service.js";
+import { WsAuthMiddleware } from "./ws-auth.middleware.js";
 
 @Module({
   imports: [],
@@ -15,8 +16,14 @@ import { OpenIDConfigurationService } from "./openid.configuration.service.js";
     OpenIDConfigurationService,
     OAuthService,
     OAuthGuard.asGlobalGuard(),
-    AbacGuard.asGlobalGuard()
+    AbacGuard.asGlobalGuard(),
+    WsAuthMiddleware
   ],
-  exports: [AuthClientService, OpenIDConfigurationService, OAuthService]
+  exports: [
+    AuthClientService,
+    OpenIDConfigurationService,
+    OAuthService,
+    WsAuthMiddleware
+  ]
 })
 export class AuthModule {}

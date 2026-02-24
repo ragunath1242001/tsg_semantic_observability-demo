@@ -76,7 +76,10 @@ describe("Negotiation Service (Provider)", () => {
         NegotiationService,
         DspClientService,
         EventEmitter2,
-        DspGateway,
+        {
+          provide: DspGateway,
+          useValue: { sendUpdateToClients: vi.fn() }
+        },
         {
           provide: VCAuthService,
           useValue: new (class {

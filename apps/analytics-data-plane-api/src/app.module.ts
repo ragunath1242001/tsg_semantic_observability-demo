@@ -22,6 +22,7 @@ import { EventsModule } from "./events/events.module.js";
 import { FilesModule } from "./files/files.module.js";
 import { OrchestrationModule } from "./orchestration/orchestration.module.js";
 import { ProjectAgreementsModule } from "./project-agreements/project-agreements.module.js";
+import { SessionModule } from "./session.module.js";
 import { splitModules } from "./utils/split-mode.js";
 
 const moduleExports = splitModules([DataPlaneModule]);
@@ -68,6 +69,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 
 @Module({
   imports: [
+    SessionModule,
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
     AbacModule.forRoot(),

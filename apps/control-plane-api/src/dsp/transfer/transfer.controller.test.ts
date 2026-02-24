@@ -196,7 +196,10 @@ describe("TransferController", () => {
         TransferService,
         CatalogService,
         DspClientService,
-        DspGateway,
+        {
+          provide: DspGateway,
+          useValue: { sendUpdateToClients: vi.fn() }
+        },
         AuthClientService,
         {
           provide: AgreementService,

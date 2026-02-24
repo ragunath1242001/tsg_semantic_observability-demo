@@ -118,7 +118,10 @@ describe("Transfer service", () => {
       providers: [
         TransferService,
         DspClientService,
-        DspGateway,
+        {
+          provide: DspGateway,
+          useValue: { sendUpdateToClients: vi.fn() }
+        },
         DataPlaneService,
         CatalogService,
         AuthClientService,

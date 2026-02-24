@@ -51,13 +51,15 @@ export default defineConfig({
             rewrite: (path) => path.replace(/^\/api/, "")
           },
           "/socket.io/": {
-            target: process.env.BACKEND ?? "http://localhost:3000/"
+            target: process.env.BACKEND ?? "http://localhost:3000/",
+            ws: true
           }
         }
       : {
           "/socket.io/": {
             target: devSessions.socketIoTarget,
             changeOrigin: true,
+            ws: true,
             headers: {
               Cookie: devSessions.sessionCookie!
             }

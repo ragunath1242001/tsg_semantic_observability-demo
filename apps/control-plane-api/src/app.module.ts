@@ -23,6 +23,7 @@ import { TransferModule } from "./dsp/transfer/transfer.module.js";
 import { NegotiationDetailDao } from "./model/negotiation.dao.js";
 import { TransferDetailDao } from "./model/transfer.dao.js";
 import { RegistryModule } from "./registry/registry.module.js";
+import { SessionModule } from "./session.module.js";
 import { StatusController } from "./status.controller.js";
 import { VCAuthModule } from "./vc-auth/vc.auth.module.js";
 import { VersionsController } from "./versions.controller.js";
@@ -39,6 +40,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 
 @Module({
   imports: [
+    SessionModule,
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
     GenericConfigModule.register(RootConfig),

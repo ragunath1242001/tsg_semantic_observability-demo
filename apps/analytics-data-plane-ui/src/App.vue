@@ -4,7 +4,10 @@ import { updateColorPalette } from "@tsg-dsp/common-ui/utils/color";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { onBeforeMount } from "vue";
 
+import { socket } from "./socket";
 const userStore = useUserStore();
+
+socket.off();
 
 const initialPreset = async () => {
   const settings = await http.get("/settings");

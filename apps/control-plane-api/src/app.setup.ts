@@ -1,8 +1,6 @@
 import { INestApplication, Logger } from "@nestjs/common";
-import { ServerConfig } from "@tsg-dsp/common-api";
-import crypto from "crypto";
+import { ServerConfig, SESSION_MIDDLEWARE } from "@tsg-dsp/common-api";
 import { json, urlencoded } from "express";
-import session from "express-session";
 
 export function setupApp(app: INestApplication) {
   const config = app.get(ServerConfig);
@@ -13,14 +11,7 @@ export function setupApp(app: INestApplication) {
   }
   app.use(json({ limit: "1mb" }));
   app.use(urlencoded({ extended: true, limit: "1mb" }));
-  app.use(
-    session({
-      name: process.env["SESSION_NAME"] || "connect.sid.tsgcp",
-      secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
-      resave: false,
-      saveUninitialized: false
-    })
-  );
+  app.use(app.get(SESSION_MIDDLEWARE));
   Logger.log(
     `Listening on ${config.listen}:${config.port} with public address ${config.publicAddress}`,
     "App"

@@ -9,7 +9,7 @@ import { formatDate, formatRelative } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import AlgorithmUIComponent from "../../components/event-ui/AlgorithmUIComponent.vue";
@@ -23,6 +23,7 @@ const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 const algorithmInstancesStore = useAlgorithmInstancesStore();
+algorithmInstancesStore.bindEvents();
 const runtimeStore = useRuntimeStore();
 
 const showAlgorithmEvents = ref(true);
@@ -30,9 +31,8 @@ const showInternalEvents = ref(false);
 
 const algorithmInstanceId = route.params.id as string;
 const algorithmInstance = ref<AlgorithmInstanceDto>();
+
 const refreshing = ref(false);
-const autoRefresh = ref(true);
-const refreshInterval = ref<ReturnType<typeof setTimeout>>();
 const lastEventCount = ref(0);
 
 const events = computed(() => {
@@ -146,48 +146,6 @@ const refreshData = async () => {
   }
 };
 
-const refreshEventsOnly = async () => {
-  // Silent refresh for polling - only load events without showing loading state
-  try {
-    await algorithmInstancesStore.fetchEventsForAlgorithmInstance(
-      algorithmInstanceId,
-      true
-    ); // silent = true
-
-    // Check if new events were added and show notification
-    const currentEventCount = events.value.length;
-    if (lastEventCount.value > 0 && currentEventCount > lastEventCount.value) {
-      const newEventsCount = currentEventCount - lastEventCount.value;
-      toast.add({
-        severity: "info",
-        summary: "New Events",
-        detail: `${newEventsCount} new event${newEventsCount > 1 ? "s" : ""} added to the algorithm instance`,
-        life: 3000
-      });
-    }
-    lastEventCount.value = currentEventCount;
-  } catch (error) {
-    // Silently handle errors during polling
-    console.warn("Failed to refresh events:", error);
-  }
-};
-
-const setupAutoRefresh = () => {
-  if (refreshInterval.value) {
-    clearInterval(refreshInterval.value);
-  }
-
-  if (autoRefresh.value) {
-    // Poll for new events every five seconds
-    refreshInterval.value = setInterval(refreshEventsOnly, 5000);
-  }
-};
-
-const toggleAutoRefresh = () => {
-  autoRefresh.value = !autoRefresh.value;
-  setupAutoRefresh();
-};
-
 const goBack = () => {
   router.push({ name: "algorithm-instances" });
 };
@@ -278,13 +236,6 @@ onMounted(async () => {
   await refreshData();
   // Set initial event count for future comparison
   lastEventCount.value = events.value.length;
-  setupAutoRefresh();
-});
-
-onUnmounted(() => {
-  if (refreshInterval.value) {
-    clearInterval(refreshInterval.value);
-  }
 });
 </script>
 
@@ -296,21 +247,6 @@ onUnmounted(() => {
         label="Back to Instances"
         outlined
         @click="goBack" />
-
-      <div class="flex gap-2">
-        <Button
-          :icon="autoRefresh ? 'pi pi-pause' : 'pi pi-play'"
-          :label="autoRefresh ? 'Stop Auto-refresh' : 'Start Auto-refresh'"
-          :severity="autoRefresh ? 'secondary' : 'success'"
-          outlined
-          @click="toggleAutoRefresh" />
-
-        <Button
-          icon="pi pi-refresh"
-          label="Refresh Now"
-          :loading="refreshing"
-          @click="refreshData" />
-      </div>
     </div>
     <Card class="col-span-12">
       <template #title>

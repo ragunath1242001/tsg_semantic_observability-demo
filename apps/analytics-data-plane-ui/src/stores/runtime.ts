@@ -10,6 +10,7 @@ interface RuntimeStore {
   darkThemeUrl?: string;
   lightThemeUrl?: string;
   requireProjectAgreement?: boolean;
+  jobRefreshIntervalMs?: number;
   mode?: AnalyticsDataPlaneMode;
   loaded?: boolean;
 }
@@ -20,6 +21,7 @@ export const useRuntimeStore = defineStore("runtime", {
     darkThemeUrl: undefined,
     lightThemeUrl: undefined,
     requireProjectAgreement: false,
+    jobRefreshIntervalMs: 10000,
     mode: "standalone",
     loaded: false
   }),
@@ -42,6 +44,7 @@ export const useRuntimeStore = defineStore("runtime", {
         this.lightThemeUrl = response.data.lightThemeUrl;
         this.requireProjectAgreement =
           response.data.requireProjectAgreement ?? false;
+        this.jobRefreshIntervalMs = response.data.jobRefreshIntervalMs ?? 10000;
 
         this.mode = modeResponse.data.mode ?? "standalone";
         this.loaded = true;

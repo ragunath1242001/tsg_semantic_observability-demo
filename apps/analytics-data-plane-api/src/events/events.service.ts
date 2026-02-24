@@ -35,12 +35,14 @@ import { INTERNAL_EVENTS } from "../internal-events/internal-events.js";
 import { getAxiosConfigFromDataAddress } from "../utils/axios.js";
 import { parseToken } from "../utils/token.js";
 import { AlgorithmEventDao } from "./algorithm-event.dao.js";
+import { EventsGateway } from "./events.gateway.js";
 import { InternalEventDao } from "./internal-event.dao.js";
 
 @Injectable()
 export class EventsService {
   constructor(
     private readonly catalog: CatalogClientService,
+    private readonly eventsGateway: EventsGateway,
     private readonly transfer: TransferClientService,
     private readonly algorithmInstancesService: AlgorithmInstancesService,
     private readonly eventEmitter: EventEmitter2,
@@ -72,6 +74,8 @@ export class EventsService {
       algorithmInstance,
       ...createInternalEvent
     });
+
+    this.eventsGateway.sendUpdateToClients("event:internal:create", event);
 
     return await this.internalEventsRepository.save(event);
   }
@@ -282,6 +286,11 @@ export class EventsService {
         transferIds: transferIds,
         recipients: createEvent.recipients
       })
+    );
+
+    this.eventsGateway.sendUpdateToClients(
+      "event:algorithm:create",
+      savedEvent
     );
 
     if (
