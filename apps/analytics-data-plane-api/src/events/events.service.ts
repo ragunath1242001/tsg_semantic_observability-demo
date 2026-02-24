@@ -22,8 +22,8 @@ import {
   TransferClientService
 } from "@tsg-dsp/common-data-plane-api";
 import axios from "axios";
-import crypto from "crypto";
 import { MoreThan, Repository } from "typeorm";
+import { v7 } from "uuid";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
@@ -275,12 +275,12 @@ export class EventsService {
     }
     const savedEvent = await this.algorithmEventsRepository.save(
       this.algorithmEventsRepository.create({
-        id: `urn:uuid:${crypto.randomUUID()}`,
+        id: v7(),
         eventId: createEvent.eventId,
         algorithmInstance: algorithmInstance,
         name: createEvent.name,
         number: createEvent.number,
-        timestamp: createEvent.timestamp,
+        timestamp: new Date(),
         createdBy,
         isOwnEvent: isOwnEvent,
         transferIds: transferIds,
@@ -352,12 +352,12 @@ export class EventsService {
     const createdBy = await this.catalog.getParticipantId();
     return await this.algorithmEventsRepository.save(
       this.algorithmEventsRepository.create({
-        id: `urn:uuid:${crypto.randomUUID()}`,
+        id: v7(),
         eventId: createEvent.eventId,
         algorithmInstance: algorithmInstance,
         name: createEvent.name,
         number: createEvent.number,
-        timestamp: createEvent.timestamp,
+        timestamp: new Date(),
         createdBy,
         isOwnEvent: true,
         transferIds,
@@ -807,13 +807,7 @@ export class EventsService {
    */
   async upsertRemoteAlgorithmEventFromBridge(body: {
     algorithmInstanceId: string;
-    event: {
-      eventId: string;
-      name?: string;
-      number?: number;
-      timestamp: string;
-      recipients?: string[];
-    };
+    event: CreateAlgorithmEventDto;
     createdBy: string;
     transferIds?: string[];
   }): Promise<void> {
@@ -843,12 +837,12 @@ export class EventsService {
 
     await this.algorithmEventsRepository.save(
       this.algorithmEventsRepository.create({
-        id: `urn:uuid:${crypto.randomUUID()}`,
+        id: v7(),
         eventId: body.event.eventId,
         algorithmInstance,
         name: body.event.name,
         number: body.event.number,
-        timestamp: body.event.timestamp,
+        timestamp: new Date(),
         createdBy: body.createdBy,
         isOwnEvent: false,
         transferIds: body.transferIds,

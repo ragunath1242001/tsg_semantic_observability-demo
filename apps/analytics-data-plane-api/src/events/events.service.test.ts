@@ -488,8 +488,6 @@ describe("EventsService", () => {
 
   it("should create an algorithm event from another party", async () => {
     const ALGORITHM_EVENT_ID_2 = "algorithm-event-2";
-    const EVENT_TIMESTAMP = new Date().toISOString();
-    const EVENT_TIMESTAMP_2 = new Date(Date.now() + 1000).toISOString();
     const EVENT_NAME = "Test Event";
     const EVENT_NUMBER = 2;
     const authorizationHeader = `Bearer FAKE_TOKEN`;
@@ -535,7 +533,7 @@ describe("EventsService", () => {
         eventId: ALGORITHM_EVENT_ID,
         name: EVENT_NAME,
         number: EVENT_NUMBER,
-        timestamp: EVENT_TIMESTAMP
+        timestamp: new Date().toISOString()
       }
     });
 
@@ -554,6 +552,7 @@ describe("EventsService", () => {
         10
       )
     ).rejects.toThrow();
+    await new Promise((resolve) => setTimeout(resolve, 10));
     const event2 = await eventsService.createAlgorithmEvent({
       algorithmInstanceId: algorithmInstanceId,
       authorizationHeader,
@@ -561,7 +560,7 @@ describe("EventsService", () => {
         eventId: ALGORITHM_EVENT_ID_2,
         name: EVENT_NAME,
         number: EVENT_NUMBER + 1,
-        timestamp: EVENT_TIMESTAMP_2
+        timestamp: new Date().toISOString()
       }
     });
 
@@ -578,7 +577,7 @@ describe("EventsService", () => {
 
     const polledEvent2 = await eventsService.pollForAlgorithmEvent(
       algorithmInstanceId,
-      EVENT_TIMESTAMP,
+      event.timestamp.toISOString(),
       10
     );
     expect(polledEvent2).toBeDefined();
