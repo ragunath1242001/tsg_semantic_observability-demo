@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { Dataset, deserialize } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue";
 import type { DynamicDialogInstance } from "primevue/dynamicdialogoptions";
-import { inject, onMounted, Ref, ref } from "vue";
+import { computed, inject, onMounted, Ref, ref } from "vue";
 
 const dialogRef = inject<Ref<DynamicDialogInstance>>("dialogRef");
 const toast = useToast();
+const userStore = useUserStore();
 
 const data = ref();
 const fileId = ref();
@@ -17,7 +20,21 @@ const edit = ref(false);
 const loading = ref(false);
 const type = ref<"csvw" | "dcat" | "preview">();
 
+const canEditFileMetadata = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.ADP_FILE)
+);
+
 const save = async () => {
+  if (!canEditFileMetadata.value) {
+    toast.add({
+      severity: "warn",
+      summary: "Not authorized",
+      detail: "You do not have permission to update file metadata.",
+      life: 5000
+    });
+    return;
+  }
+
   loading.value = true;
   try {
     if (type.value === "dcat") {
@@ -111,7 +128,7 @@ onMounted(() => {
       rounded
       @click="edit = !edit" />
     <Button
-      v-if="!edit"
+      v-if="!edit && canEditFileMetadata"
       icon="pi pi-pencil"
       severity="warn"
       size="small"

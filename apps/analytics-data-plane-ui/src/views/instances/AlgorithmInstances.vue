@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { useToast } from "primevue";
 import { computed, onMounted, ref } from "vue";
@@ -10,12 +12,19 @@ import { getStatusSeverity } from "../../utils/algorithm-instance-status";
 
 const algorithmStore = useAlgorithmInstancesStore();
 const runtimeStore = useRuntimeStore();
+const userStore = useUserStore();
 const toast = useToast();
 const router = useRouter();
 
 algorithmStore.bindEvents();
 
-const isReadOnly = computed(() => runtimeStore.isClientMode);
+const isClientMode = computed(() => runtimeStore.isClientMode);
+const canCreateAlgorithmInstances = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.ADP_ALGORITHM)
+);
+const canDeleteAlgorithmInstances = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.ADP_ALGORITHM)
+);
 
 const selectedAlgorithmInstance = ref();
 
@@ -164,7 +173,9 @@ onMounted(async () => {
             </template>
           </Column>
 
-          <Column v-if="!isReadOnly" header="Actions">
+          <Column
+            v-if="!isClientMode && canDeleteAlgorithmInstances"
+            header="Actions">
             <template #body="props">
               <div class="flex gap-2">
                 <Button
@@ -180,7 +191,7 @@ onMounted(async () => {
             <div class="text-center py-8">
               <p class="text-gray-500 mb-4">No algorithm instances found</p>
               <Button
-                v-if="!isReadOnly"
+                v-if="!isClientMode && canCreateAlgorithmInstances"
                 icon="pi pi-plus"
                 label="Create your first algorithm instance"
                 @click="router.push('/algorithms/create-instance')" />

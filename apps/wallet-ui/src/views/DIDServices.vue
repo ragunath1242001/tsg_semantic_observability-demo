@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
@@ -7,7 +8,7 @@ import http from "@tsg-dsp/common-ui/utils/http";
 import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 interface DIDService {
   id: string;
@@ -19,6 +20,12 @@ const toast = useToast();
 const confirm = useConfirm();
 
 const userStore = useUserStore();
+const canDeleteDIDService = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.W_DID)
+);
+const canCreateDIDService = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.W_DID)
+);
 
 const serviceForm = ref<DIDService>({
   id: `${userStore.user?.didId}#`,
@@ -152,7 +159,7 @@ onMounted(async () => {
               {{ formatRelative(props.data.updatedDate) }}
             </template>
           </Column>
-          <Column v-if="!userStore.isReadOnly" field="actions" header="Actions">
+          <Column v-if="canDeleteDIDService" field="actions" header="Actions">
             <template #body="props">
               <Button
                 severity="danger"
@@ -163,7 +170,7 @@ onMounted(async () => {
         </DataTable>
       </template>
     </Card>
-    <Card v-if="!userStore.isReadOnly" class="mt-8">
+    <Card v-if="canCreateDIDService" class="mt-8">
       <template #title>Add service</template>
       <template #subtitle>
         <p>

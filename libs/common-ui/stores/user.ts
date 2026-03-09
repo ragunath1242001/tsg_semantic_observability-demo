@@ -1,5 +1,7 @@
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import { defineStore } from "pinia";
 
+import { canAccessRoute as canAccessRouteHelper } from "../router/route-permissions";
 import http from "../utils/http";
 
 export interface User {
@@ -32,24 +34,15 @@ export const useUserStore = defineStore("user", {
     returnUrl: null
   }),
   getters: {
-    isReadOnly: (state) => {
-      if (!state.user) {
-        return false;
-      }
-      return state.user.permissions.every((permission) =>
-        permission.startsWith("read:")
-      );
-    }
+    canAccessRoute:
+      (state) =>
+      (action: Action, resource: Resource): boolean =>
+        canAccessRouteHelper(
+          { action, resource },
+          state.user?.permissions ?? []
+        )
   },
   actions: {
-    hasPermission(...permissions: string[]) {
-      if (!this.user) {
-        return false;
-      }
-      return permissions.some((permission) =>
-        this.user?.permissions?.includes(permission)
-      );
-    },
     async fetchUserInfo() {
       try {
         const response = await http.get<UserInfo>("/auth/user");

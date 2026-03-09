@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
 import { UserDto, UserWithPasswordDto } from "@tsg-dsp/sso-bridge-dtos";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import { usePermissions } from "../composables/usePermissions";
 import { OAUTH_GRANTS } from "../utils/constants";
@@ -14,6 +16,16 @@ import { AxiosKey } from "../utils/symbols";
 const http = injectStrict(AxiosKey);
 
 const toast = useToast();
+const userStore = useUserStore();
+const canCreateUser = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.SSO_USER)
+);
+const canEditUser = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.SSO_USER)
+);
+const canDeleteUser = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.SSO_USER)
+);
 
 const submitted = ref(false);
 
@@ -193,6 +205,7 @@ onMounted(async () => {
         <Toolbar class="mb-6">
           <template #start>
             <Button
+              v-if="canCreateUser"
               label="New"
               icon="pi pi-plus"
               class="mr-2"
@@ -282,12 +295,13 @@ onMounted(async () => {
             <template #body="props">
               <div class="flex flex-wrap gap-1.5">
                 <Button
+                  v-if="canEditUser"
                   outlined
                   rounded
                   icon="pi pi-pencil"
                   @click="editUser(props.data)" />
                 <Button
-                  v-if="props.data.require2FA"
+                  v-if="props.data.require2FA && canEditUser"
                   v-tooltip.top="'Reset 2FA'"
                   outlined
                   rounded
@@ -295,6 +309,7 @@ onMounted(async () => {
                   icon="pi pi-shield"
                   @click="openReset2FADialog(props.data)" />
                 <Button
+                  v-if="canDeleteUser"
                   outlined
                   rounded
                   severity="danger"

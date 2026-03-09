@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { storeToRefs } from "pinia";
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 
 const userStore = useUserStore();
+const canManageTransfers = computed(() =>
+  userStore.canAccessRoute(Action.EXECUTE, Resource.CP_TRANSFER)
+);
 
 import CTATransfer from "../components/CTATransfer.vue";
 import TransferHistory from "../components/TransferHistory.vue";
@@ -32,7 +36,7 @@ onMounted(async () => {
       </template>
     </Card>
     <CTATransfer
-      v-if="!userStore.isReadOnly"
+      v-if="canManageTransfers"
       :transfers="ctaTransfers"></CTATransfer>
     <TransferHistory :transfers="transfers"></TransferHistory>
   </div>

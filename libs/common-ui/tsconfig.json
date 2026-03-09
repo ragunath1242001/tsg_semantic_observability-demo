@@ -1,8 +1,8 @@
 {
   "include": [
     "env.d.ts",
-    "{components,layout,store,utils}/**/*",
-    "{components,layout,store,utils}/**/*.vue"
+    "{components,layout,router,store,utils}/**/*",
+    "{components,layout,router,store,utils}/**/*.vue"
   ],
   "compilerOptions": {
     "target": "esnext",

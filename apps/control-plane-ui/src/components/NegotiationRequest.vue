@@ -1,13 +1,15 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import {
   NegotiationDetailDto,
   NegotiationStatusDto
 } from "@tsg-dsp/common-dtos";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue/usetoast";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 defineProps<{
   negotiation: NegotiationStatusDto;
@@ -18,6 +20,11 @@ const stringifiedOffer = ref("");
 const ctaNegotiation = ref<NegotiationDetailDto>();
 
 const toast = useToast();
+const userStore = useUserStore();
+
+const canUpdateNegotiation = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.CP_NEGOTIATION)
+);
 
 const open = () => {
   display.value = true;
@@ -44,6 +51,7 @@ const getNegotiation = async (negotiationId: string) => {
 };
 
 const agreeNegotiation = async (negotiation: NegotiationDetailDto) => {
+  if (!canUpdateNegotiation.value) return;
   try {
     await http.post(`management/negotiations/${negotiation.id}/agreement`);
     toast.add({
@@ -66,6 +74,7 @@ const agreeNegotiation = async (negotiation: NegotiationDetailDto) => {
 };
 
 const declineNegotiation = async (negotiation) => {
+  if (!canUpdateNegotiation.value) return;
   try {
     await http.post(`management/negotiations/${negotiation.id}/termination`);
     toast.add({
@@ -128,20 +137,22 @@ const declineNegotiation = async (negotiation) => {
             </div>
           </div>
           <template #footer>
-            <Button
-              label="Decline"
-              severity="danger"
-              icon="pi pi-times"
-              type="submit"
-              class="p-button-outlined"
-              @click="declineNegotiation(ctaNegotiation)" />
-            <Button
-              label="Accept"
-              severity="success"
-              icon="pi pi-check"
-              type="submit"
-              class="p-button-outlined"
-              @click="agreeNegotiation(ctaNegotiation)" />
+            <template v-if="canUpdateNegotiation">
+              <Button
+                label="Decline"
+                severity="danger"
+                icon="pi pi-times"
+                type="submit"
+                class="p-button-outlined"
+                @click="declineNegotiation(ctaNegotiation)" />
+              <Button
+                label="Accept"
+                severity="success"
+                icon="pi pi-check"
+                type="submit"
+                class="p-button-outlined"
+                @click="agreeNegotiation(ctaNegotiation)" />
+            </template>
           </template>
         </Dialog>
         <Button

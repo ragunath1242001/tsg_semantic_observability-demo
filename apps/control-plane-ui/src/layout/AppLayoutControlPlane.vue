@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import AppLayout from "@tsg-dsp/common-ui/layout/AppLayout.vue";
 import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { generateMenuFromRoutes } from "../router/route-permissions";
 import { useDspStore } from "../stores/dsp";
 import { useRuntimeStore } from "../stores/runtime";
 import AppConfig from "./AppConfig.vue";
@@ -15,6 +18,11 @@ const runtimeStore = useRuntimeStore();
 runtimeStore.getRuntimeSettings();
 
 const { negotiationsCount, ownCatalog } = storeToRefs(useDspStore());
+const userStore = useUserStore();
+
+const canManageSettings = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.CP_CONFIG)
+);
 
 const logoUrl = computed(() => {
   if (layoutConfig.darkTheme && runtimeStore.darkThemeUrl) {
@@ -39,61 +47,34 @@ const containerClass = computed(() => {
   };
 });
 
-const menuList: Menu[] = [
-  {
-    label: "Home",
-    items: [
-      {
-        label: "Dashboard",
-        icon: "pi pi-fw pi-home",
-        to: "/"
-      },
-      {
-        label: "Own Catalog",
-        icon: "pi pi-fw pi-warehouse",
-        to: "/catalog"
-      },
-      {
-        label: "Dataplanes",
-        icon: "pi pi-fw pi-database",
-        to: "/dataplanes"
-      },
-      {
-        label: "Federated Catalog",
-        icon: "pi pi-fw pi-address-book",
-        to: "/registry"
+// Generate menu dynamically from route configuration, filtered by user permissions
+const negotiationsBadge = computed(() => negotiationsCount.value);
+
+const menuList = computed<Menu[]>(() => {
+  const menus = generateMenuFromRoutes(
+    userStore.user?.permissions ?? []
+  ) as Menu[];
+
+  // Inject reactive badge for negotiations count
+  menus.forEach((group) =>
+    group.items.forEach((item) => {
+      if (item.to === "/negotiations") {
+        item.badge = negotiationsBadge;
       }
-    ]
-  },
-  {
-    label: "Dataspace Protocol",
-    items: [
-      {
-        label: "Catalog Request",
-        icon: "pi pi-fw pi-book",
-        to: "/catalog/request"
-      },
-      {
-        label: "Negotiations",
-        icon: "pi pi-fw pi-comments",
-        to: "/negotiations",
-        badge: negotiationsCount
-      },
-      {
-        label: "Transfers",
-        icon: "pi pi-fw pi-arrow-right-arrow-left",
-        to: "/transfers"
-      }
-    ]
-  }
-];
+    })
+  );
+
+  return menus;
+});
 
 const route = useRoute();
 
-const sidebar: MenuProps = {
-  menu: menuList,
-  route: route
-};
+const sidebar = computed(
+  (): MenuProps => ({
+    menu: menuList.value,
+    route: route
+  })
+);
 </script>
 <template>
   <div class="layout-wrapper" :class="containerClass">
@@ -102,7 +83,8 @@ const sidebar: MenuProps = {
         title: 'Control Plane',
         name: ownCatalog.title,
         logoUrl: logoUrl,
-        router: useRouter()
+        router: useRouter(),
+        showSettings: canManageSettings
       }"
       :footer="{
         logoUrl: logoUrl,

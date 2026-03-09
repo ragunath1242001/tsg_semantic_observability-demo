@@ -13,6 +13,7 @@
   "dependencies": {
     "@nestjs/swagger": "^11.2.3",
     "@primevue/themes": "^4.3.7",
+    "@tsg-dsp/common-dtos": "workspace:*",
     "@tsg-dsp/common-ui": "workspace:*",
     "@tsg-dsp/sso-bridge-dtos": "workspace:*",
     "axios": "^1.13.2",

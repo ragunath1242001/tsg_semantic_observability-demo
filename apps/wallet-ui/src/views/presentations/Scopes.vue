@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import presentationDefinitionSchema from "@tsg-dsp/common-ui/assets/presentation-definition.schema.json";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
@@ -7,11 +8,19 @@ import http from "@tsg-dsp/common-ui/utils/http";
 import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
 import { ScopeDto } from "@tsg-dsp/wallet-dtos";
 import { useConfirm, useToast } from "primevue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const toast = useToast();
 const confirm = useConfirm();
 const userStore = useUserStore();
+const canManageScopes = computed(
+  () =>
+    userStore.canAccessRoute(Action.DELETE, Resource.W_PRESENTATION) ||
+    userStore.canAccessRoute(Action.UPDATE, Resource.W_PRESENTATION)
+);
+const canCreateScope = computed(() =>
+  userStore.canAccessRoute(Action.MANAGE, Resource.W_PRESENTATION)
+);
 
 const expandedRows = ref();
 
@@ -176,7 +185,7 @@ const addScope = async () => {
           <Column field="alias" header="Alias" sortable />
           <Column field="discriminator" header="Discriminator" sortable />
           <Column field="description" header="Description" sortable />
-          <Column v-if="!userStore.isReadOnly" field="actions" header="Actions">
+          <Column v-if="canManageScopes" field="actions" header="Actions">
             <template #body="props">
               <Button
                 class="ml-4"
@@ -217,7 +226,7 @@ const addScope = async () => {
       </template>
     </Card>
 
-    <Card v-if="!userStore.isReadOnly" class="mt-8">
+    <Card v-if="canCreateScope" class="mt-8">
       <template #title>Add scope</template>
       <template #subtitle>
         <p>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
@@ -10,6 +11,18 @@ import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 
 const userStore = useUserStore();
+const canEditIssueConfig = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.W_ISSUE_CONFIG)
+);
+const canDeleteIssueConfig = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.W_ISSUE_CONFIG)
+);
+const canCreateIssueConfig = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.W_ISSUE_CONFIG)
+);
+const canManageIssueConfig = computed(
+  () => canEditIssueConfig.value || canDeleteIssueConfig.value
+);
 
 import IssueMetaSchema from "@/assets/issue-meta-schema.json";
 import CredentialPreview from "@/components/CredentialPreview.vue";
@@ -340,14 +353,16 @@ onMounted(async () => {
               <span v-else>Referenced</span>
             </template>
           </Column>
-          <Column field="actions" header="Actions">
+          <Column v-if="canManageIssueConfig" field="actions" header="Actions">
             <template #body="props">
               <Button
+                v-if="canEditIssueConfig"
                 severity="warn"
                 icon="pi pi-pencil"
                 class="mr-2"
                 @click="editConfiguration(props.data)" />
               <Button
+                v-if="canDeleteIssueConfig"
                 severity="danger"
                 icon="pi pi-times"
                 @click="deleteConfiguration(props.data.id)" />
@@ -439,7 +454,7 @@ onMounted(async () => {
         </DataTable>
       </template>
     </Card>
-    <Card v-if="!userStore.isReadOnly" class="mt-8">
+    <Card v-if="canCreateIssueConfig" class="mt-8">
       <template #title>Add/update configuration</template>
       <template #subtitle>
         <p>

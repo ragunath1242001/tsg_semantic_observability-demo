@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import {
@@ -7,9 +9,13 @@ import {
   OID4VCICredentialRequestInitiation
 } from "@tsg-dsp/wallet-dtos";
 import { useToast } from "primevue/usetoast";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 const toast = useToast();
+const userStore = useUserStore();
+const canRequestCredential = computed(() =>
+  userStore.canAccessRoute(Action.MANAGE, Resource.W_CREDENTIAL)
+);
 
 const flows = ref([
   {
@@ -215,7 +221,7 @@ const retrieveCredential = async () => {
         </p>
       </template>
     </Card>
-    <Card class="mt-8">
+    <Card v-if="canRequestCredential" class="mt-8">
       <template #title>Request credential</template>
       <template #subtitle>
         <p>

@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { TransferDetailDto } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { endpointFor, TransferAction } from "@tsg-dsp/common-ui/utils/transfer";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 defineProps<{
   transfer: TransferDetailDto;
@@ -20,6 +22,11 @@ const reason = ref("");
 const confirm = useConfirm();
 
 const toast = useToast();
+
+const userStore = useUserStore();
+const canUpdateTransfer = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.CP_TRANSFER)
+);
 
 const determineNextHappyState = (
   transfer: TransferDetailDto
@@ -189,71 +196,76 @@ const terminateTransfer = async (transfer: TransferDetailDto) => {
         class="block text-surface-600 dark:text-surface-200 font-small mb-4">
         {{ determineWord(transfer) }}, what do you want to do?
       </span>
-      <div class="flex justify-between mb-0">
-        <Button
-          v-tooltip.top="'Terminate'"
-          severity="danger"
-          icon="pi pi-times"
-          type="submit"
-          class="p-button-outlined"
-          @click="openDialog('terminate')" />
-        <Button
-          v-if="transfer.state === 'STARTED'"
-          v-tooltip.top="'Suspend'"
-          severity="warn"
-          icon="pi pi-pause"
-          type="submit"
-          class="p-button-outlined"
-          @click="openDialog('suspend')" />
-        <Button
-          v-tooltip.top="determineTooltip(transfer)"
-          severity="success"
-          icon="pi pi-check"
-          type="submit"
-          class="p-button-outlined"
-          @click="proceedTransfer(transfer)" />
-        <Dialog
-          v-model:visible="display"
-          :header="determineHeader()"
-          :breakpoints="{ '840px': '75vw' }"
-          :modal="true">
-          <Card
-            style="
-              border-radius: 12px;
-              border: 1px solid var(--surface-border);
-            ">
-            <template #content>
-              <div class="flex flex-col gap-4">
-                <FormField label="Code">
-                  <InputText v-model="code" class="w-full" placeholder="Code" />
-                </FormField>
-                <FormField label="Reason">
-                  <InputText
-                    v-model="reason"
-                    class="w-full"
-                    placeholder="Reason" />
-                </FormField>
-              </div>
+      <template v-if="canUpdateTransfer">
+        <div class="flex justify-between mb-0">
+          <Button
+            v-tooltip.top="'Terminate'"
+            severity="danger"
+            icon="pi pi-times"
+            type="submit"
+            class="p-button-outlined"
+            @click="openDialog('terminate')" />
+          <Button
+            v-if="transfer.state === 'STARTED'"
+            v-tooltip.top="'Suspend'"
+            severity="warn"
+            icon="pi pi-pause"
+            type="submit"
+            class="p-button-outlined"
+            @click="openDialog('suspend')" />
+          <Button
+            v-tooltip.top="determineTooltip(transfer)"
+            severity="success"
+            icon="pi pi-check"
+            type="submit"
+            class="p-button-outlined"
+            @click="proceedTransfer(transfer)" />
+          <Dialog
+            v-model:visible="display"
+            :header="determineHeader()"
+            :breakpoints="{ '840px': '75vw' }"
+            :modal="true">
+            <Card
+              style="
+                border-radius: 12px;
+                border: 1px solid var(--surface-border);
+              ">
+              <template #content>
+                <div class="flex flex-col gap-4">
+                  <FormField label="Code">
+                    <InputText
+                      v-model="code"
+                      class="w-full"
+                      placeholder="Code" />
+                  </FormField>
+                  <FormField label="Reason">
+                    <InputText
+                      v-model="reason"
+                      class="w-full"
+                      placeholder="Reason" />
+                  </FormField>
+                </div>
+              </template>
+            </Card>
+            <template #footer>
+              <Button
+                label="Cancel"
+                severity="secondary"
+                icon="pi pi-times"
+                type="submit"
+                class="p-button-outlined"
+                @click="close()" />
+              <Button
+                label="Proceed"
+                severity="success"
+                icon="pi pi-check"
+                type="submit"
+                class="p-button-outlined"
+                @click="terminateTransfer(transfer)" />
             </template>
-          </Card>
-          <template #footer>
-            <Button
-              label="Cancel"
-              severity="secondary"
-              icon="pi pi-times"
-              type="submit"
-              class="p-button-outlined"
-              @click="close()" />
-            <Button
-              label="Proceed"
-              severity="success"
-              icon="pi pi-check"
-              type="submit"
-              class="p-button-outlined"
-              @click="terminateTransfer(transfer)" />
-          </template>
-        </Dialog>
-      </div>
+          </Dialog>
+        </div>
+      </template>
     </template>
   </Card>
 </template>

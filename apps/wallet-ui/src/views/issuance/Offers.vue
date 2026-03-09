@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { formatDate } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
@@ -32,6 +34,10 @@ type CredentialOfferStatusEnhanced = CredentialOfferStatus & {
 };
 
 const toast = useToast();
+const userStore = useUserStore();
+const canManageCredentialOffers = computed(() =>
+  userStore.canAccessRoute(Action.MANAGE, Resource.W_CREDENTIAL)
+);
 
 const offers = ref<CredentialOfferStatusEnhanced[]>();
 const config = ref<CredentialConfig>();
@@ -335,7 +341,7 @@ onMounted(async () => {
                 label="Revoked"
                 disabled />
               <Button
-                v-else
+                v-else-if="canManageCredentialOffers"
                 severity="danger"
                 label="&nbsp;Revoke&nbsp;"
                 @click="revokeOffer(props.data.id)" />
@@ -380,7 +386,7 @@ onMounted(async () => {
         </DataTable>
       </template>
     </Card>
-    <Card v-if="isIssuer" class="mt-8">
+    <Card v-if="isIssuer && canManageCredentialOffers" class="mt-8">
       <template #title>Create credential offer</template>
       <template #subtitle>
         <p>

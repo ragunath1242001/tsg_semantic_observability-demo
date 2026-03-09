@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { ProjectAgreementDetailDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { useToast } from "primevue/usetoast";
-import { ref, useTemplateRef } from "vue";
+import { computed, ref, useTemplateRef } from "vue";
 
 import CreateProjectAgreement from "../components/project-agreements/CreateProjectAgreement.vue";
 import ProjectAgreements from "../components/project-agreements/ProjectAgreements.vue";
@@ -9,6 +11,10 @@ import ProjectAgreements from "../components/project-agreements/ProjectAgreement
 const toast = useToast();
 const activeTab = ref("0");
 const projectAgreements = useTemplateRef("project-agreements");
+const userStore = useUserStore();
+const canCreateAgreement = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.ADP_PROJECT_AGREEMENT)
+);
 const handleCreated = (agreement: ProjectAgreementDetailDto) => {
   toast.add({
     severity: "success",
@@ -37,7 +43,7 @@ const handleCancel = () => {
         <Tabs v-model:value="activeTab">
           <TabList>
             <Tab value="0">Project Agreements</Tab>
-            <Tab value="1">Create Agreement</Tab>
+            <Tab v-if="canCreateAgreement" value="1">Create Agreement</Tab>
           </TabList>
           <TabPanels>
             <TabPanel value="0">

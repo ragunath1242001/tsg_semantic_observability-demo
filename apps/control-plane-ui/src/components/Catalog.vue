@@ -6,8 +6,10 @@ import {
   OfferDto,
   PolicyDto
 } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { obtainValues } from "@tsg-dsp/common-ui/utils/common";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { useToast } from "primevue/usetoast";
@@ -54,6 +56,11 @@ const datasetVersionList = computed(() => {
 const http = injectStrict(AxiosKey);
 
 const toast = useToast();
+
+const userStore = useUserStore();
+const canDeleteDataset = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.CP_DATASET)
+);
 
 const getDataset = async (datasetId: string) => {
   try {
@@ -301,11 +308,13 @@ const getFormatInfo = (dataset: DatasetDto) => {
                   <li v-for="version in dataset.versions" :key="version['@id']">
                     <div>
                       {{ version.distribution?.[0]?.title ?? version.title }}
-                      <i
-                        v-if="version['@id'] !== dataset.current['@id']"
-                        class="mx-1 pi pi-trash text-red-500 cursor-pointer"
-                        @click="deleteDataset(version['@id'])"></i>
-                      <i v-else class="mx-1 pi pi-trash text-blue-200"></i>
+                      <template v-if="ownCatalog && canDeleteDataset">
+                        <i
+                          v-if="version['@id'] !== dataset.current['@id']"
+                          class="mx-1 pi pi-trash text-red-500 cursor-pointer"
+                          @click="deleteDataset(version['@id'])"></i>
+                        <i v-else class="mx-1 pi pi-trash text-blue-200"></i>
+                      </template>
                       <i
                         class="mx-1 pi pi-info-circle text-blue-500 cursor-pointer"
                         @click="getDataset(version['@id'])">

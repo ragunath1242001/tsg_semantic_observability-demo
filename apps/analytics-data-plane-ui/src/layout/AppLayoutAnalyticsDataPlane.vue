@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import AppLayout from "@tsg-dsp/common-ui/layout/AppLayout.vue";
 import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { generateMenuFromRoutes } from "../router/route-permissions";
 import { useCatalogStore } from "../stores/catalog";
 import { useRuntimeStore } from "../stores/runtime";
 import AppConfig from "./AppConfig.vue";
@@ -15,6 +18,11 @@ const runtimeStore = useRuntimeStore();
 runtimeStore.getRuntimeSettings();
 
 const catalogStore = useCatalogStore();
+const userStore = useUserStore();
+
+const canManageSettings = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.ADP_CONFIG)
+);
 
 const logoUrl = computed(() => {
   if (layoutConfig.darkTheme && runtimeStore.darkThemeUrl) {
@@ -37,81 +45,14 @@ const containerClass = computed(() => {
     "layout-mobile-active": layoutState.staticMenuMobileActive
   };
 });
-const menuList = computed<Menu[]>(() => {
-  const menus: Menu[] = [
-    {
-      label: "Home",
-      items: [
-        {
-          label: "Dashboard",
-          icon: "pi pi-fw pi-id-card",
-          to: "/"
-        },
-        ...(runtimeStore.isClientMode
-          ? []
-          : [
-              {
-                label: "Metadata",
-                icon: "pi pi-fw pi-file",
-                to: "/metadata"
-              }
-            ])
-      ]
-    }
-  ];
-
-  if (!runtimeStore.isServerMode) {
-    menus.push({
-      label: "Files",
-      items: [
-        {
-          label: "Files",
-          icon: "pi pi-fw pi-folder-open",
-          to: "/files"
-        }
-      ]
-    });
-  }
-
-  menus.push({
-    label: "Algorithms",
-    items: runtimeStore.isClientMode
-      ? [
-          {
-            label: "Instances",
-            icon: "pi pi-fw pi-chart-line",
-            to: "/algorithms/instances"
-          }
-        ]
-      : [
-          {
-            label: "Create instance",
-            icon: "pi pi-fw pi-sparkles",
-            to: "/algorithms/create-instance"
-          },
-          {
-            label: "Instances",
-            icon: "pi pi-fw pi-chart-line",
-            to: "/algorithms/instances"
-          }
-        ]
-  });
-
-  if (!runtimeStore.isClientMode) {
-    menus.push({
-      label: "Collaboration",
-      items: [
-        {
-          label: "Project Agreements",
-          icon: "pi pi-fw pi-file-edit",
-          to: "/project-agreements"
-        }
-      ]
-    });
-  }
-
-  return menus;
-});
+// Generate menu dynamically from route configuration, filtered by user permissions and runtime mode
+const menuList = computed<Menu[]>(
+  () =>
+    generateMenuFromRoutes(
+      userStore.user?.permissions ?? [],
+      runtimeStore
+    ) as Menu[]
+);
 
 const route = useRoute();
 
@@ -131,7 +72,8 @@ onMounted(async () => {
         title: 'Analytics Data Plane',
         name: catalogStore.title,
         logoUrl: logoUrl,
-        router: useRouter()
+        router: useRouter(),
+        showSettings: canManageSettings
       }"
       :footer="{
         logoUrl: logoUrl,

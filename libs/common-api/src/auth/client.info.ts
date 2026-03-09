@@ -44,14 +44,6 @@ export class ClientInfo {
   @IsOptional()
   refreshToken?: string;
 
-  hasPermission(permission: PermissionString): boolean {
-    return this.permissions.includes(permission);
-  }
-
-  hasAnyPermission(permissions: PermissionString[]): boolean {
-    return permissions.some((p) => this.permissions.includes(p));
-  }
-
   getEffectiveScope(action: Action, resource: Resource): EffectiveScope {
     let effectiveScope: EffectiveScope = null;
 

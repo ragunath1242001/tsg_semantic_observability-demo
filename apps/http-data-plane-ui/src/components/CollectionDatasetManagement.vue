@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
+import { Action, DataPlaneStateDto, Resource } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
@@ -10,9 +10,7 @@ import {
   DatasetItemWithDto
 } from "@tsg-dsp/http-data-plane-dtos";
 import { useConfirm, useDialog, useToast } from "primevue";
-import { onMounted, ref } from "vue";
-
-const userStore = useUserStore();
+import { computed, onMounted, ref } from "vue";
 
 import { pushOrCreate } from "../utils/arrays";
 import { cleanPolicyConfig } from "../utils/policyconfig";
@@ -35,6 +33,19 @@ const refreshLoading = ref(false);
 
 const editConfigModal = ref(false);
 const configForm = ref<CollectionDatasetConfig>();
+const userStore = useUserStore();
+const canRefreshControlplane = computed(() =>
+  userStore.canAccessRoute(Action.EXECUTE, Resource.HDP_DATAPLANE)
+);
+const canUpdateConfig = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.HDP_CONFIG)
+);
+const canCreateDataset = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.HDP_CONFIG)
+);
+const canDeleteDataset = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.HDP_CONFIG)
+);
 
 const editDatasetModal = ref(false);
 const editModalLoading = ref(false);
@@ -294,6 +305,7 @@ onMounted(async () => {
         <div class="col-span-12 min-[1024px]:col-span-4">
           <div>
             <Button
+              v-if="canRefreshControlplane"
               icon="pi pi-refresh"
               severity="info"
               label="Refresh state at Control Plane"
@@ -302,7 +314,7 @@ onMounted(async () => {
           </div>
           <div class="mt-4">
             <Button
-              v-if="!userStore.isReadOnly"
+              v-if="canUpdateConfig"
               label="Update configuration"
               :loading="updateLoading"
               severity="warn"
@@ -311,7 +323,7 @@ onMounted(async () => {
           </div>
           <div class="mt-4">
             <Button
-              v-if="!userStore.isReadOnly"
+              v-if="canCreateDataset"
               label="Add new dataset"
               severity="success"
               type="submit"
@@ -333,13 +345,13 @@ onMounted(async () => {
             severity="info"
             @click="openDatasetDto(dataset)" />
           <Button
-            v-if="!userStore.isReadOnly"
+            v-if="canUpdateConfig"
             class="ml-2"
             icon="pi pi-pencil"
             severity="warn"
             @click="openDatasetEditModal(dataset)" />
           <Button
-            v-if="!userStore.isReadOnly"
+            v-if="canDeleteDataset"
             class="ml-2"
             icon="pi pi-trash"
             severity="danger"

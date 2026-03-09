@@ -1,13 +1,11 @@
+import { RouteRequirement } from "@tsg-dsp/common-ui/router/route-permissions";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { createRouter, createWebHashHistory } from "vue-router";
 
 import AppLayout from "@/layout/AppLayoutHttpDataPlane.vue";
 
-import Dashboard from "../views/Dashboard.vue";
-import Logging from "../views/Logging.vue";
 import LoginVue from "../views/Login.vue";
-import Metadata from "../views/Metadata.vue";
-import Tester from "../views/Tester.vue";
+import { createRouteRecords } from "./route-permissions";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -15,36 +13,7 @@ const router = createRouter({
     {
       path: "/",
       component: AppLayout,
-      children: [
-        {
-          path: "/",
-          name: "dashboard",
-          component: Dashboard
-        },
-        {
-          path: "/tester/:id",
-          name: "tester",
-          component: Tester,
-          props: {
-            default: true
-          }
-        },
-        {
-          path: "/metadata",
-          name: "metadata",
-          component: Metadata
-        },
-        {
-          path: "/logging",
-          name: "logging",
-          component: Logging
-        },
-        {
-          path: "/tester",
-          name: "tester",
-          component: Tester
-        }
-      ]
+      children: createRouteRecords()
     },
     {
       path: "/login",
@@ -66,6 +35,13 @@ router.beforeEach(async (to) => {
   if (authRequired && !store.user) {
     store.returnUrl = to.fullPath;
     return "/login";
+  }
+
+  if (store.user && store.user.permissions.length > 0 && to.meta?.requires) {
+    const requirement = to.meta.requires as RouteRequirement;
+    if (!store.canAccessRoute(requirement.action, requirement.resource)) {
+      return "/";
+    }
   }
 });
 

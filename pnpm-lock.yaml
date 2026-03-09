@@ -1141,6 +1141,9 @@ importers:
       '@primevue/themes':
         specifier: ^4.3.7
         version: 4.5.4
+      '@tsg-dsp/common-dtos':
+        specifier: workspace:*
+        version: link:../../libs/common-dtos
       '@tsg-dsp/common-ui':
         specifier: workspace:*
         version: link:../../libs/common-ui
@@ -1945,6 +1948,9 @@ importers:
       '@tsg-dsp/common-dsp':
         specifier: workspace:*
         version: link:../common-dsp
+      '@tsg-dsp/common-dtos':
+        specifier: workspace:*
+        version: link:../common-dtos
       '@types/dom-view-transitions':
         specifier: ^1.0.5
         version: 1.0.6

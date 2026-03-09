@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
@@ -11,6 +12,8 @@ interface ClientWithDates extends ClientDto {
   createdDate?: Date;
   modifiedDate?: Date;
 }
+
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 
 import jwkSchema from "../assets/jwk.schema.json";
 import { OAUTH_GRANTS } from "../utils/constants";
@@ -28,6 +31,18 @@ import { AxiosKey } from "../utils/symbols";
 const http = injectStrict(AxiosKey);
 
 const toast = useToast();
+
+const userStore = useUserStore();
+
+const canCreateClient = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.SSO_CLIENT)
+);
+const canEditClient = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.SSO_CLIENT)
+);
+const canDeleteClient = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.SSO_CLIENT)
+);
 
 const submitted = ref(false);
 
@@ -361,6 +376,7 @@ onMounted(async () => {
           </p>
         </div>
         <Button
+          v-if="canCreateClient"
           label="Add Client"
           icon="pi pi-plus"
           class="w-full md:w-auto"
@@ -405,7 +421,7 @@ onMounted(async () => {
             }}
           </p>
           <Button
-            v-if="!searchQuery"
+            v-if="!searchQuery && canCreateClient"
             label="Create Client"
             icon="pi pi-plus"
             @click="openNew" />
@@ -562,6 +578,7 @@ onMounted(async () => {
                   <div
                     class="flex items-center gap-2 pt-3 border-t border-surface-200/60 dark:border-surface-700/60">
                     <Button
+                      v-if="canEditClient"
                       label="Edit"
                       icon="pi pi-pencil"
                       size="small"
@@ -569,6 +586,7 @@ onMounted(async () => {
                       class="flex-1"
                       @click="editClient(item)" />
                     <Button
+                      v-if="canDeleteClient"
                       icon="pi pi-trash"
                       size="small"
                       severity="danger"

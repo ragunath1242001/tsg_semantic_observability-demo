@@ -5,6 +5,8 @@ import {
   MetadataStatus
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { DatasetDto } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useDialog } from "primevue";
@@ -42,6 +44,14 @@ const sortOptions = ref([
 const toast = useToast();
 const confirm = useConfirm();
 const dialog = useDialog();
+
+const userStore = useUserStore();
+const canEditFiles = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.ADP_FILE)
+);
+const canDeleteFiles = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.ADP_FILE)
+);
 
 // Filter states
 const globalFilterValue = ref("");
@@ -629,6 +639,7 @@ onMounted(async () => {
                     downloadFile(file.id, file.originalFileName)
                   " />
                 <Button
+                  v-if="canEditFiles"
                   v-tooltip.bottom="'Re-upload file'"
                   icon="pi pi-upload"
                   severity="info"
@@ -637,6 +648,7 @@ onMounted(async () => {
                   outlined
                   @click.capture="reUploadFile(file)" />
                 <Button
+                  v-if="canEditFiles"
                   v-tooltip.bottom="'Edit file metadata'"
                   icon="pi pi-pencil"
                   severity="warn"
@@ -645,6 +657,7 @@ onMounted(async () => {
                   outlined
                   @click.capture="editFile(file)" />
                 <Button
+                  v-if="canDeleteFiles"
                   v-tooltip.bottom="'Delete file'"
                   icon="pi pi-trash"
                   severity="danger"
@@ -692,6 +705,7 @@ onMounted(async () => {
               </div>
               <div class="absolute top-2 right-2 flex gap-2">
                 <Button
+                  v-if="canEditFiles"
                   v-tooltip.bottom="'Re-upload file'"
                   icon="pi pi-upload"
                   severity="info"
@@ -700,6 +714,7 @@ onMounted(async () => {
                   outlined
                   @click.capture="reUploadFile(file)" />
                 <Button
+                  v-if="canEditFiles"
                   v-tooltip.bottom="'Edit file metadata'"
                   icon="pi pi-pencil"
                   severity="warn"
@@ -708,6 +723,7 @@ onMounted(async () => {
                   outlined
                   @click.capture="editFile(file)" />
                 <Button
+                  v-if="canDeleteFiles"
                   v-tooltip.bottom="'Delete file'"
                   icon="pi pi-trash"
                   severity="danger"

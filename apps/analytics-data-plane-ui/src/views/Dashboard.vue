@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
+import {
+  Action,
+  DataPlaneStateDto,
+  Resource,
+  TransferDto
+} from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { formatDate } from "@tsg-dsp/common-ui/utils/date.js";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http.js";
@@ -19,6 +25,11 @@ const runtimeStore = useRuntimeStore();
 
 const toast = useToast();
 const confirm = useConfirm();
+
+const userStore = useUserStore();
+const canExecuteTransfers = computed(() =>
+  userStore.canAccessRoute(Action.EXECUTE, Resource.DP_TRANSFER)
+);
 
 const state = ref<DataPlaneStateDto>();
 const transfers = ref<TransferDto[]>();
@@ -235,7 +246,7 @@ onMounted(async () => {
               {{ new Date(props.data.createdDate).toLocaleString() }}
             </template>
           </Column>
-          <Column header="Quick actions">
+          <Column v-if="canExecuteTransfers" header="Quick actions">
             <template #body="props">
               <Button
                 v-tooltip.bottom="'Terminate'"
@@ -368,7 +379,7 @@ onMounted(async () => {
               {{ new Date(props.data.createdDate).toLocaleString() }}
             </template>
           </Column>
-          <Column header="Quick actions">
+          <Column v-if="canExecuteTransfers" header="Quick actions">
             <template #body="props">
               <Button
                 v-tooltip.bottom="'Terminate'"
