@@ -144,7 +144,7 @@ const logout = () => {
             <span>Sign in</span>
           </button>
           <button
-            v-if="!needSignin && !userStore.isReadOnly && showSettings"
+            v-if="!needSignin && showSettings"
             class="layout-topbar-action"
             @click="onConfigButtonClick">
             <i class="pi pi-cog"></i>

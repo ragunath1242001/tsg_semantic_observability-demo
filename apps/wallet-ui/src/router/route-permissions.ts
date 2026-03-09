@@ -1,4 +1,10 @@
-import { Menu } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
+import {
+  createRouteRecords as commonCreateRouteRecords,
+  generateMenuFromRoutes as commonGenerateMenuFromRoutes,
+  MenuGroup,
+  RouteConfig
+} from "@tsg-dsp/common-ui/router/route-permissions";
 import { RouteRecordRaw } from "vue-router";
 
 import CredentialGaiaX from "@/views/credentials/GaiaX.vue";
@@ -16,25 +22,12 @@ import OID4VP from "@/views/presentations/OID4VP.vue";
 import Scopes from "@/views/presentations/Scopes.vue";
 import SignatureVue from "@/views/Signature.vue";
 
-export interface RouteConfig {
-  path: string;
-  name: string;
-  component: unknown;
-  requiresWrite?: boolean;
-  meta?: {
-    title?: string;
-    icon?: string;
-    group?: string;
-    menuLabel?: string;
-    requiresGaiaX?: boolean;
-  };
-}
-
 export const routeConfigs: RouteConfig[] = [
   {
     path: "",
     name: "dashboard",
     component: DashboardVue,
+    // No requires — accessible to all authenticated users
     meta: {
       title: "Dashboard",
       icon: "pi pi-fw pi-id-card",
@@ -46,6 +39,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "services",
     name: "services",
     component: DIDServiceView,
+    requires: { action: Action.READ, resource: Resource.W_DID },
     meta: {
       title: "DID Services",
       icon: "pi pi-fw pi-code",
@@ -57,6 +51,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "keys",
     name: "keys",
     component: KeysVue,
+    requires: { action: Action.READ, resource: Resource.W_KEY },
     meta: {
       title: "Keys",
       icon: "pi pi-fw pi-key",
@@ -68,7 +63,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "signature",
     name: "signature",
     component: SignatureVue,
-    requiresWrite: true,
+    requires: { action: Action.CREATE, resource: Resource.W_DID },
     meta: {
       title: "Signature",
       icon: "pi pi-fw pi-verified",
@@ -80,6 +75,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "credentials",
     name: "credentials",
     component: CredentialOverview,
+    requires: { action: Action.READ, resource: Resource.W_CREDENTIAL },
     meta: {
       title: "Credentials",
       icon: "pi pi-fw pi-home",
@@ -91,7 +87,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "credentials/import",
     name: "credentials-import",
     component: CredentialImport,
-    requiresWrite: true,
+    requires: { action: Action.CREATE, resource: Resource.W_CREDENTIAL },
     meta: {
       title: "Import Credentials",
       icon: "pi pi-fw pi-file-import",
@@ -104,7 +100,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "credentials/gaiax",
     name: "credentials-gaiax",
     component: CredentialGaiaX,
-    requiresWrite: true,
+    requires: { action: Action.CREATE, resource: Resource.W_CREDENTIAL },
     meta: {
       title: "Gaia-X Credentials",
       icon: "pi pi-fw pi-verified",
@@ -117,7 +113,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "issuance/manual",
     name: "issuance-manual",
     component: Manual,
-    requiresWrite: true,
+    requires: { action: Action.CREATE, resource: Resource.W_CREDENTIAL },
     meta: {
       title: "Manual Issuance",
       icon: "pi pi-fw pi-pencil",
@@ -129,7 +125,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "issuance/offers",
     name: "issuance-offers",
     component: Offers,
-    requiresWrite: true,
+    requires: { action: Action.MANAGE, resource: Resource.W_CREDENTIAL },
     meta: {
       title: "Issuance Offers",
       icon: "pi pi-fw pi-upload",
@@ -141,7 +137,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "issuance/requests",
     name: "issuance-requests",
     component: Requests,
-    requiresWrite: true,
+    requires: { action: Action.MANAGE, resource: Resource.W_CREDENTIAL },
     meta: {
       title: "Issuance Requests",
       icon: "pi pi-fw pi-download",
@@ -153,7 +149,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "presentations/scopes",
     name: "scopes",
     component: Scopes,
-    requiresWrite: true,
+    requires: { action: Action.MANAGE, resource: Resource.W_PRESENTATION },
     meta: {
       title: "Scopes",
       icon: "pi pi-fw pi-globe",
@@ -165,7 +161,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "presentations/dcp",
     name: "dcp",
     component: DCP,
-    requiresWrite: true,
+    requires: { action: Action.CREATE, resource: Resource.W_PRESENTATION },
     meta: {
       title: "DCP",
       icon: "pi pi-fw pi-wrench",
@@ -177,7 +173,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "presentations/oid4vp",
     name: "oid4vp",
     component: OID4VP,
-    requiresWrite: true,
+    requires: { action: Action.CREATE, resource: Resource.W_PRESENTATION },
     meta: {
       title: "OID4VP",
       icon: "pi pi-fw pi-qrcode",
@@ -189,7 +185,7 @@ export const routeConfigs: RouteConfig[] = [
     path: "issue-configuration",
     name: "issue-configuration",
     component: IssueConfigurationView,
-    requiresWrite: true,
+    requires: { action: Action.MANAGE, resource: Resource.W_ISSUE_CONFIG },
     meta: {
       title: "Issue Configuration",
       icon: "pi pi-fw pi-search-plus",
@@ -199,88 +195,30 @@ export const routeConfigs: RouteConfig[] = [
   }
 ];
 
-export function createRouteRecords(): RouteRecordRaw[] {
-  return routeConfigs.map((config) => ({
-    path: config.path,
-    name: config.name,
-    component: config.component,
-    meta: config.requiresWrite ? { requiresWrite: true } : undefined
-  }));
-}
-
-export function getWriteRestrictedPaths(): string[] {
-  return routeConfigs
-    .filter((config) => config.requiresWrite)
-    .map((config) => (config.path === "" ? "/" : `/${config.path}`));
-}
-
-export function requiresWritePermission(routeName: string): boolean {
-  const config = routeConfigs.find((config) => config.name === routeName);
-  return config?.requiresWrite ?? false;
-}
-
-export function getNavigationRoutes(isReadOnly: boolean): RouteConfig[] {
-  return routeConfigs.filter((config) => !isReadOnly || !config.requiresWrite);
-}
+export const walletMenuGroups: MenuGroup[] = [
+  { key: "home", label: "Home" },
+  { key: "did", label: "DID" },
+  { key: "credentials", label: "Credentials" },
+  { key: "issuance", label: "Issuance" },
+  { key: "presentations", label: "Presentation" }
+];
 
 interface RuntimeStore {
   gaiaXSupport?: boolean;
 }
 
+export function createRouteRecords(): RouteRecordRaw[] {
+  return commonCreateRouteRecords(routeConfigs);
+}
+
 export function generateMenuFromRoutes(
-  isReadOnly: boolean,
+  userPermissions: string[],
   runtimeStore: RuntimeStore
-): Menu[] {
-  const availableRoutes = getNavigationRoutes(isReadOnly);
-
-  // Filter routes based on runtime settings
-  const filteredRoutes = availableRoutes.filter((route) => {
-    if (route.meta?.requiresGaiaX && !runtimeStore.gaiaXSupport) {
-      return false;
-    }
-    return true;
-  });
-
-  // Group routes by their group metadata
-  const groupedRoutes = {
-    home: filteredRoutes.filter((route) => route.meta?.group === "home"),
-    did: filteredRoutes.filter((route) => route.meta?.group === "did"),
-    credentials: filteredRoutes.filter(
-      (route) => route.meta?.group === "credentials"
-    ),
-    issuance: filteredRoutes.filter(
-      (route) => route.meta?.group === "issuance"
-    ),
-    presentations: filteredRoutes.filter(
-      (route) => route.meta?.group === "presentations"
-    )
-  };
-
-  // Convert routes to menu items
-  const createMenuItem = (route: RouteConfig) => ({
-    label: route.meta?.menuLabel || route.meta?.title || route.name,
-    icon: route.meta?.icon || "pi pi-fw pi-circle",
-    to: route.path === "" ? "/" : `/${route.path}`
-  });
-
-  const groups = [
-    { key: "home", label: "Home" },
-    { key: "did", label: "DID" },
-    { key: "credentials", label: "Credentials" },
-    { key: "issuance", label: "Issuance" },
-    { key: "presentations", label: "Presentation" }
-  ];
-
-  return groups
-    .filter(
-      (group) =>
-        groupedRoutes[group.key as keyof typeof groupedRoutes].length > 0
-    )
-    .map((group) => ({
-      label: group.label,
-      items:
-        groupedRoutes[group.key as keyof typeof groupedRoutes].map(
-          createMenuItem
-        )
-    }));
+) {
+  return commonGenerateMenuFromRoutes(
+    routeConfigs,
+    userPermissions,
+    walletMenuGroups,
+    (route) => !route.meta?.requiresGaiaX || !!runtimeStore.gaiaXSupport
+  );
 }

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { TransferDto } from "@tsg-dsp/common-dtos";
+import { Action, Resource, TransferDto } from "@tsg-dsp/common-dtos";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue/usetoast";
-import { nextTick, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import CatalogViewer from "../components/CatalogViewer.vue";
@@ -14,6 +14,9 @@ import { useTransferStore } from "../stores/transfer";
 import { Operation } from "../utils/openapi.utils";
 
 const userStore = useUserStore();
+const canExecuteTransfer = computed(() =>
+  userStore.canAccessRoute(Action.EXECUTE, Resource.DP_TRANSFER)
+);
 
 const toast = useToast();
 const route = useRoute();
@@ -104,7 +107,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="!userStore.isReadOnly">
+  <div v-if="canExecuteTransfer">
     <TransferMetadata v-if="transfer" :transfer="transfer" />
     <CatalogViewer
       v-else

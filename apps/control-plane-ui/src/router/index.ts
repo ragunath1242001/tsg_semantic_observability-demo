@@ -1,16 +1,11 @@
+import { RouteRequirement } from "@tsg-dsp/common-ui/router/route-permissions";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { createRouter, createWebHashHistory } from "vue-router";
 
 import AppLayout from "@/layout/AppLayoutControlPlane.vue";
 
-import CatalogVue from "../views/Catalog.vue";
-import DashboardVue from "../views/Dashboard.vue";
-import DataplaneVue from "../views/Dataplane.vue";
 import LoginVue from "../views/Login.vue";
-import NegotiationsVue from "../views/Negotiations.vue";
-import OwnCatalog from "../views/OwnCatalog.vue";
-import Registry from "../views/Registry.vue";
-import TransfersVue from "../views/Transfers.vue";
+import { createRouteRecords } from "./route-permissions";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -18,43 +13,7 @@ const router = createRouter({
     {
       path: "/",
       component: AppLayout,
-      children: [
-        {
-          path: "/",
-          name: "dashboard",
-          component: DashboardVue
-        },
-        {
-          path: "/catalog",
-          name: "owncatalog",
-          component: OwnCatalog
-        },
-        {
-          path: "/catalog/request",
-          name: "catalogrequest",
-          component: CatalogVue
-        },
-        {
-          path: "/negotiations",
-          name: "negotiations",
-          component: NegotiationsVue
-        },
-        {
-          path: "/transfers",
-          name: "transfers",
-          component: TransfersVue
-        },
-        {
-          path: "/dataplanes",
-          name: "dataplanes",
-          component: DataplaneVue
-        },
-        {
-          path: "/registry",
-          name: "registry",
-          component: Registry
-        }
-      ]
+      children: createRouteRecords()
     },
     {
       path: "/login",
@@ -73,6 +32,13 @@ router.beforeEach(async (to) => {
   if (authRequired && !store.user) {
     store.returnUrl = to.fullPath;
     return "/login";
+  }
+
+  if (store.user && store.user.permissions.length > 0 && to.meta?.requires) {
+    const requirement = to.meta.requires as RouteRequirement;
+    if (!store.canAccessRoute(requirement.action, requirement.resource)) {
+      return "/";
+    }
   }
 });
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import AppLayout from "@tsg-dsp/common-ui/layout/AppLayout.vue";
 import { MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
@@ -16,6 +17,10 @@ const runtimeStore = useRuntimeStore();
 runtimeStore.getRuntimeSettings();
 
 const userStore = useUserStore();
+
+const canManageSettings = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.W_CONFIG)
+);
 
 const logoUrl = computed(() => {
   if (layoutConfig.darkTheme && runtimeStore.darkThemeUrl) {
@@ -42,7 +47,7 @@ const containerClass = computed(() => {
 
 // Generate menu dynamically from route configuration
 const menuList = computed(() =>
-  generateMenuFromRoutes(userStore.isReadOnly, runtimeStore)
+  generateMenuFromRoutes(userStore.user?.permissions ?? [], runtimeStore)
 );
 
 const route = useRoute();
@@ -61,7 +66,8 @@ const sidebar = computed(
         title: 'Wallet',
         name: runtimeStore.title ?? '',
         logoUrl: logoUrl,
-        router: useRouter()
+        router: useRouter(),
+        showSettings: canManageSettings
       }"
       :footer="{
         logoUrl: logoUrl,

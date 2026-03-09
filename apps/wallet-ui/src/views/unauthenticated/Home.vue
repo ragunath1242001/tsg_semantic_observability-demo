@@ -11,7 +11,6 @@ import {
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 
-import CredentialOverview from "@/components/CredentialOverview.vue";
 import WalletStatus from "@/components/WalletStatus.vue";
 
 const toast = useToast();
@@ -182,5 +181,4 @@ onMounted(async () => {
         @click="showDialog = true" />
     </template>
   </Card>
-  <CredentialOverview class="mt-8" :authenticated="false" />
 </template>

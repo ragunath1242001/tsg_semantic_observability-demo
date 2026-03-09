@@ -4,8 +4,13 @@ import {
   CredentialStatus,
   DataIntegrityProof
 } from "@tsg-dsp/common-dsp";
-import { VerifiedCredentialStatus } from "@tsg-dsp/common-dtos";
+import {
+  Action,
+  Resource,
+  VerifiedCredentialStatus
+} from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { formatDate, formatRelative } from "@tsg-dsp/common-ui/utils/date.js";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
@@ -17,15 +22,9 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { DataTableSortEvent } from "primevue/datatable";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref, toRef } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 dayjs.extend(relativeTime);
-
-const props = defineProps({
-  authenticated: Boolean
-});
-
-const authenticated = toRef(props, "authenticated");
 
 interface CredentialDto {
   id: string;
@@ -58,6 +57,11 @@ interface CredentialParsed {
 
 const toast = useToast();
 const confirm = useConfirm();
+
+const userStore = useUserStore();
+const canDeleteCredentials = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.W_CREDENTIAL)
+);
 
 const expandedRows = ref();
 
@@ -433,9 +437,9 @@ onMounted(async () => {
                 @click="copyCredential(props.data.raw)" />
               <Button
                 v-if="
-                  authenticated &&
                   props.data.raw.selfIssued &&
-                  props.data.raw.statusListIndex
+                  props.data.raw.statusListIndex &&
+                  canDeleteCredentials
                 "
                 severity="danger"
                 icon="pi pi-times"
@@ -568,7 +572,7 @@ onMounted(async () => {
             </Tabs>
 
             <Button
-              v-if="authenticated"
+              v-if="canDeleteCredentials"
               severity="danger"
               icon="pi pi-trash"
               label="Delete credential"

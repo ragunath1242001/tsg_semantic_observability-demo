@@ -1,19 +1,12 @@
+import { RouteRequirement } from "@tsg-dsp/common-ui/router/route-permissions";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { createRouter, createWebHashHistory } from "vue-router";
 
 import AppLayout from "@/layout/AppLayoutAnalyticsDataPlane.vue";
 
 import { useRuntimeStore } from "../stores/runtime";
-import Dashboard from "../views/Dashboard.vue";
-import Files from "../views/Files.vue";
-import AlgorithmInstances from "../views/instances/AlgorithmInstances.vue";
-import CreateAlgorithmInstance from "../views/instances/CreateAlgorithmInstance.vue";
-import InstanceDetails from "../views/instances/InstanceDetails.vue";
 import LoginVue from "../views/Login.vue";
-import Metadata from "../views/Metadata.vue";
-import ProjectAgreements from "../views/ProjectAgreements.vue";
-import ConsumerView from "../views/transfers/ConsumerView.vue";
-import ProviderView from "../views/transfers/ProviderView.vue";
+import { createRouteRecords } from "./route-permissions";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -21,51 +14,7 @@ const router = createRouter({
     {
       path: "/",
       component: AppLayout,
-      children: [
-        {
-          path: "/",
-          name: "dashboard",
-          component: Dashboard
-        },
-        {
-          path: "/metadata",
-          name: "metadata",
-          component: Metadata
-        },
-        {
-          path: "/files",
-          component: Files
-        },
-        {
-          path: "/algorithms/instances",
-          name: "algorithm-instances",
-          component: AlgorithmInstances
-        },
-        {
-          path: "/algorithms/create-instance",
-          component: CreateAlgorithmInstance
-        },
-        {
-          path: "/algorithms/instances/:id",
-          name: "algorithm-instance-details",
-          component: InstanceDetails
-        },
-        {
-          path: "/project-agreements",
-          name: "project-agreements",
-          component: ProjectAgreements
-        },
-        {
-          path: "/provider/:id",
-          name: "provider",
-          component: ProviderView
-        },
-        {
-          path: "/consumer/:id",
-          name: "consumer",
-          component: ConsumerView
-        }
-      ]
+      children: createRouteRecords()
     },
     {
       path: "/login",
@@ -88,46 +37,20 @@ router.beforeEach(async (to) => {
     return "/login";
   }
 
+  if (store.user && store.user.permissions.length > 0 && to.meta?.requires) {
+    const requirement = to.meta.requires as RouteRequirement;
+    if (!store.canAccessRoute(requirement.action, requirement.resource)) {
+      return "/";
+    }
+  }
+
   if (to.path === "/login") return;
 
   const runtimeStore = useRuntimeStore();
   await runtimeStore.ensureLoaded();
 
-  // Declarative route restrictions by mode
-  // Each pattern is checked - if path matches and condition is true, redirect to home
-  const restrictions: Array<{
-    pattern: string | ((path: string) => boolean);
-    restrictedIn: "client" | "server";
-  }> = [
-    // Client mode restrictions
-    { pattern: "/algorithms/create-instance", restrictedIn: "client" },
-    { pattern: "/project-agreements", restrictedIn: "client" },
-    { pattern: "/metadata", restrictedIn: "client" },
-    {
-      pattern: (path) =>
-        path.startsWith("/provider/") || path.startsWith("/consumer/"),
-      restrictedIn: "client"
-    },
-    // Server mode restrictions
-    { pattern: "/files", restrictedIn: "server" }
-  ];
-
-  const isRestricted = restrictions.some((restriction) => {
-    const pathMatches =
-      typeof restriction.pattern === "string"
-        ? to.path.startsWith(restriction.pattern)
-        : restriction.pattern(to.path);
-
-    const modeMatches =
-      (restriction.restrictedIn === "client" && runtimeStore.isClientMode) ||
-      (restriction.restrictedIn === "server" && runtimeStore.isServerMode);
-
-    return pathMatches && modeMatches;
-  });
-
-  if (isRestricted) {
-    return "/";
-  }
+  if (to.meta?.restrictedInClientMode && runtimeStore.isClientMode) return "/";
+  if (to.meta?.restrictedInServerMode && runtimeStore.isServerMode) return "/";
 });
 
 export default router;

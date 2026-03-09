@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
@@ -8,9 +9,18 @@ import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
 import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const userStore = useUserStore();
+const canUpdateKeys = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.W_KEY)
+);
+const canDeleteKeys = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.W_KEY)
+);
+const canCreateKey = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.W_KEY)
+);
 
 interface KeyForm {
   type: "EdDSA" | "ES384" | "X509";
@@ -191,15 +201,17 @@ onMounted(async () => {
               {{ formatRelative(props.data.createdDate) }}
             </template>
           </Column>
-          <Column v-if="!userStore.isReadOnly" field="actions" header="Actions">
+          <Column field="actions" header="Actions">
             <template #body="props">
               <Button
+                v-if="canUpdateKeys"
                 severity="primary"
                 :disabled="props.data.default"
                 @click="setDefaultKey(props.data.id)"
                 >Default</Button
               >
               <Button
+                v-if="canDeleteKeys"
                 class="ml-4"
                 severity="danger"
                 icon="pi pi-times"
@@ -218,7 +230,7 @@ onMounted(async () => {
         </Dialog>
       </template>
     </Card>
-    <Card v-if="!userStore.isReadOnly" class="mt-8">
+    <Card v-if="canCreateKey" class="mt-8">
       <template #title>Add key</template>
       <template #subtitle>
         <p>

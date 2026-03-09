@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { HashedMessage } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   NegotiationDetailDto,
-  NegotiationStatusDto
+  NegotiationStatusDto,
+  Resource
 } from "@tsg-dsp/common-dtos";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
@@ -10,7 +12,7 @@ import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { ConfirmDialog, useConfirm } from "primevue";
 import { useToast } from "primevue/usetoast";
-import { ref, toRef } from "vue";
+import { computed, ref, toRef } from "vue";
 
 import { useDataPlaneStore } from "../stores/dataplane";
 
@@ -25,6 +27,9 @@ const remoteProof = ref<HashedMessage>();
 
 const dataPlaneStore = useDataPlaneStore();
 const userStore = useUserStore();
+const canCreateTransfer = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.CP_TRANSFER)
+);
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -258,7 +263,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                   v-if="
                     accNegotiation.role === 'consumer' &&
                     accNegotiation.state === 'FINALIZED' &&
-                    !userStore.isReadOnly
+                    canCreateTransfer
                   "
                   raised
                   type="button"

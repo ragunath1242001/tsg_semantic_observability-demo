@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import AppLayout from "@tsg-dsp/common-ui/layout/AppLayout.vue";
 import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { generateMenuFromRoutes } from "../router/route-permissions";
 import { useCatalogStore } from "../stores/catalog";
 import { useRuntimeStore } from "../stores/runtime";
 import AppConfig from "./AppConfig.vue";
@@ -15,6 +18,11 @@ const runtimeStore = useRuntimeStore();
 runtimeStore.getRuntimeSettings();
 
 const catalogStore = useCatalogStore();
+const userStore = useUserStore();
+
+const canManageSettings = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.HDP_CONFIG)
+);
 
 const logoUrl = computed(() => {
   if (layoutConfig.darkTheme && runtimeStore.darkThemeUrl) {
@@ -38,40 +46,19 @@ const containerClass = computed(() => {
     "layout-mobile-active": layoutState.staticMenuMobileActive
   };
 });
-const menuList: Menu[] = [
-  {
-    label: "Home",
-    items: [
-      {
-        label: "Dashboard",
-        icon: "pi pi-fw pi-id-card",
-        to: "/"
-      },
-      {
-        label: "Metadata",
-        icon: "pi pi-fw pi-file",
-        to: "/metadata"
-      },
-      {
-        label: "Logging",
-        icon: "pi pi-fw pi-list",
-        to: "/logging"
-      },
-      {
-        label: "Tester",
-        icon: "pi pi-fw pi-cog",
-        to: "/tester"
-      }
-    ]
-  }
-];
+// Generate menu dynamically from route configuration, filtered by user permissions
+const menuList = computed<Menu[]>(
+  () => generateMenuFromRoutes(userStore.user?.permissions ?? []) as Menu[]
+);
 
 const route = useRoute();
 
-const sidebar: MenuProps = {
-  menu: menuList,
-  route: route
-};
+const sidebar = computed(
+  (): MenuProps => ({
+    menu: menuList.value,
+    route: route
+  })
+);
 
 onMounted(async () => {
   await catalogStore.getOwnCatalog();
@@ -84,7 +71,8 @@ onMounted(async () => {
         title: 'Http Data Plane',
         name: catalogStore.title,
         logoUrl: logoUrl,
-        router: useRouter()
+        router: useRouter(),
+        showSettings: canManageSettings
       }"
       :footer="{
         logoUrl: logoUrl,

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
@@ -24,6 +25,9 @@ interface CredentialForm {
 
 const toast = useToast();
 const userStore = useUserStore();
+const canIssueManually = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.W_CREDENTIAL)
+);
 
 const formDefault: CredentialForm = {
   context: [],
@@ -216,7 +220,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <Card>
+    <Card v-if="canIssueManually">
       <template #title>Manual issue credential</template>
       <template #subtitle>
         <p>

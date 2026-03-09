@@ -13,6 +13,7 @@
     "@guolao/vue-monaco-editor": "^1.6.0",
     "@tsconfig/node22": "^22.0.0",
     "@tsg-dsp/common-dsp": "workspace:*",
+    "@tsg-dsp/common-dtos": "workspace:*",
     "@types/dom-view-transitions": "^1.0.5",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/tsconfig": "^0.8.0",

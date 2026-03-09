@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ProjectAgreementDetailDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { formatDate, formatRelative } from "@tsg-dsp/common-ui/utils/date.js";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { useConfirm } from "primevue";
@@ -11,6 +13,11 @@ import { useCatalogStore } from "../../stores/catalog";
 
 const toast = useToast();
 const confirm = useConfirm();
+
+const userStore = useUserStore();
+const canSignAgreements = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.ADP_PROJECT_AGREEMENT)
+);
 
 const agreements = ref<ProjectAgreementDetailDto[]>([]);
 const loading = ref(false);
@@ -273,7 +280,7 @@ defineExpose({
               rounded
               @click="viewAgreement(slotProps.data)" />
             <Button
-              v-if="canSign(slotProps.data)"
+              v-if="canSign(slotProps.data) && canSignAgreements"
               v-tooltip.top="'Sign Agreement'"
               icon="pi pi-check"
               severity="success"
@@ -554,7 +561,7 @@ defineExpose({
             severity="secondary"
             @click="viewDialogVisible = false" />
           <Button
-            v-if="canSign(selectedAgreement)"
+            v-if="canSign(selectedAgreement) && canSignAgreements"
             :loading="signing"
             label="Sign Agreement"
             icon="pi pi-check"

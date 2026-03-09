@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { DataPlaneDetailsDto, DatasetDto } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
@@ -8,9 +9,15 @@ import http from "@tsg-dsp/common-ui/utils/http";
 import { storeToRefs } from "pinia";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const userStore = useUserStore();
+const canDeleteDataplane = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.CP_DATAPLANE)
+);
+const canCreateDataplane = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.CP_DATAPLANE)
+);
 
 import { useDataPlaneStore } from "../stores/dataplane";
 
@@ -140,6 +147,7 @@ onMounted(async () => {
         </div>
         <div class="col-span-1 mb-0">
           <Button
+            v-if="canDeleteDataplane"
             severity="danger"
             icon="pi pi-trash"
             @click="deleteDataPlane(dataplane.id)" />
@@ -182,7 +190,7 @@ onMounted(async () => {
       </div>
     </template>
   </Card>
-  <Card v-if="!userStore.isReadOnly">
+  <Card v-if="canCreateDataplane">
     <template #title>Add Data Plane</template>
     <template #subtitle> Link a data plane to this Control Plane </template>
     <template #content>

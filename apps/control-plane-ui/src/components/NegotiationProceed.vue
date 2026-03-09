@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { NegotiationStatusDto } from "@tsg-dsp/common-dtos";
+import { Action, NegotiationStatusDto, Resource } from "@tsg-dsp/common-dtos";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue/usetoast";
+import { computed } from "vue";
 
 const props = defineProps<{
   negotiation: NegotiationStatusDto;
@@ -10,6 +12,11 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
+
+const userStore = useUserStore();
+const canUpdateNegotiation = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.CP_NEGOTIATION)
+);
 
 const proceedNegotiation = async (negotiation: NegotiationStatusDto) => {
   try {
@@ -86,22 +93,24 @@ const declineNegotiation = async (negotiation: NegotiationStatusDto) => {
         ><template v-else>verified</template> your request. Do you want to
         {{ endState }}?
       </span>
-      <div class="flex justify-between mb-0">
-        <Button
-          label="No"
-          severity="danger"
-          icon="pi pi-times"
-          type="submit"
-          class="p-button-outlined"
-          @click="declineNegotiation(negotiation)" />
-        <Button
-          label="Sign"
-          severity="success"
-          icon="pi pi-check"
-          type="submit"
-          class="p-button-outlined"
-          @click="proceedNegotiation(negotiation)" />
-      </div>
+      <template v-if="canUpdateNegotiation">
+        <div class="flex justify-between mb-0">
+          <Button
+            label="No"
+            severity="danger"
+            icon="pi pi-times"
+            type="submit"
+            class="p-button-outlined"
+            @click="declineNegotiation(negotiation)" />
+          <Button
+            label="Sign"
+            severity="success"
+            icon="pi pi-check"
+            type="submit"
+            class="p-button-outlined"
+            @click="proceedNegotiation(negotiation)" />
+        </div>
+      </template>
     </template>
   </Card>
 </template>

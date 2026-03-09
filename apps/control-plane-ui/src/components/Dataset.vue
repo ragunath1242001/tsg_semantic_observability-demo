@@ -5,6 +5,7 @@ import {
   PolicyDto,
   ReferenceDto
 } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import schema from "@tsg-dsp/common-ui/assets/odrl.schema.json";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
@@ -12,7 +13,7 @@ import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { obtainValues, stringify } from "@tsg-dsp/common-ui/utils/common";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { useToast } from "primevue/usetoast";
-import { reactive, ref, toRef } from "vue";
+import { computed, reactive, ref, toRef } from "vue";
 
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
@@ -43,6 +44,10 @@ const props = defineProps<{
 const http = injectStrict(AxiosKey);
 
 const toast = useToast();
+const userStore = useUserStore();
+const canCreateNegotiation = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.CP_NEGOTIATION)
+);
 
 const datasetDataRo = toRef(props, "datasetDataProp");
 const datasetData = reactive(datasetDataRo.value);
@@ -51,7 +56,6 @@ const policy = toRef(props, "policy");
 
 const display = ref(false);
 const editable = ref(false);
-const userStore = useUserStore();
 
 const datasetDataString = ref("");
 datasetDataString.value = stringify(datasetDataRo.value);
@@ -279,7 +283,7 @@ const sendNegotiation = async (
             <Divider />
           </template>
           <div
-            v-if="!props.ownDataset && !userStore.isReadOnly"
+            v-if="!props.ownDataset && canCreateNegotiation"
             class="grid grid-cols-7">
             <div class="col-span-1 col-start-4">
               <Button

@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { CatalogDto } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const userStore = useUserStore();
+const canRequestCatalog = computed(() =>
+  userStore.canAccessRoute(Action.READ, Resource.CP_CATALOG)
+);
+const canRefreshRegistry = computed(() =>
+  userStore.canAccessRoute(Action.EXECUTE, Resource.CP_REGISTRY)
+);
 
 import Catalog from "../components/Catalog.vue";
 import router from "../router";
@@ -45,7 +52,7 @@ const queryAddresses = async () => {
 };
 
 const getCatalog = () => {
-  if (!userStore.isReadOnly) {
+  if (canRequestCatalog.value) {
     urlInput.value = selection.value.address;
     didInput.value = selection.value.didId;
     router.push({ path: "/catalog/request" });
@@ -111,7 +118,7 @@ onMounted(async () => await initialize());
       <div class="flex justify-between items-center">
         <span>Registry</span>
         <Button
-          v-if="!userStore.isReadOnly"
+          v-if="canRefreshRegistry"
           icon="pi pi-refresh"
           label="Refresh Registry"
           :loading="refreshing"

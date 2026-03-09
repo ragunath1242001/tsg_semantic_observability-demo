@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { type CatalogDto } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const userStore = useUserStore();
+const canRequestCatalog = computed(() =>
+  userStore.canAccessRoute(Action.READ, Resource.CP_CATALOG)
+);
 
 import Catalog from "../components/Catalog.vue";
 import router from "../router";
@@ -76,7 +80,7 @@ onMounted(async () => await initialize());
 </script>
 <template>
   <div>
-    <Card v-if="!userStore.isReadOnly" class="mb-8">
+    <Card v-if="canRequestCatalog" class="mb-8">
       <template #title>Catalog Request</template>
       <template #subtitle
         >Use this page to find other catalogs. You can search for other Control

@@ -120,5 +120,5 @@ onMounted(async () => await loadStatus());
       </div>
     </template>
   </Card>
-  <WalletStatus :status="status" />
+  <WalletStatus v-if="status" :status="status" />
 </template>

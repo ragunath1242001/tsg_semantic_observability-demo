@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { storeToRefs } from "pinia";
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 
 const userStore = useUserStore();
+const canManageNegotiations = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.CP_NEGOTIATION)
+);
 
 import CTANegotiation from "../components/CTANegotiation.vue";
 import NegotiationHistory from "../components/NegotiationHistory.vue";
@@ -32,7 +36,7 @@ onMounted(async () => {
       </template>
     </Card>
     <CTANegotiation
-      v-if="!userStore.isReadOnly"
+      v-if="canManageNegotiations"
       :negotiations="ctaNegotiations" />
     <NegotiationHistory :negotiations="negotiations"></NegotiationHistory>
   </div>

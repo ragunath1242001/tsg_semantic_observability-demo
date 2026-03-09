@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
+import { Action, DataPlaneStateDto, Resource } from "@tsg-dsp/common-dtos";
 import schema from "@tsg-dsp/common-ui/assets/dataset-config.schema.json";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
@@ -7,9 +7,16 @@ import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { VersionedDatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 const userStore = useUserStore();
+const canUpdateConfig = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.HDP_DATAPLANE)
+);
+
+const canRefreshControlplane = computed(() =>
+  userStore.canAccessRoute(Action.EXECUTE, Resource.HDP_DATAPLANE)
+);
 
 import { cleanPolicyConfig } from "../utils/policyconfig";
 import PolicyEditor from "./PolicyEditor.vue";
@@ -122,6 +129,7 @@ onMounted(() => {
         <div class="col-span-12 min-[1024px]:col-span-4">
           <div>
             <Button
+              v-if="canRefreshControlplane"
               icon="pi pi-refresh"
               severity="info"
               label="Refresh state at Control Plane"
@@ -130,7 +138,7 @@ onMounted(() => {
           </div>
           <div class="mt-4">
             <Button
-              v-if="!userStore.isReadOnly"
+              v-if="canUpdateConfig"
               label="Update configuration"
               :loading="updateLoading"
               severity="warn"

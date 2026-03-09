@@ -1,3 +1,4 @@
+import { RouteRequirement } from "@tsg-dsp/common-ui/router/route-permissions";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import {
   createRouter,
@@ -93,9 +94,9 @@ router.beforeEach(async (to) => {
     return "/login";
   }
 
-  if (store.user && store.isReadOnly) {
-    // Check if route requires write permissions using metadata
-    if (to.meta?.requiresWrite) {
+  if (store.user && store.user.permissions.length > 0 && to.meta?.requires) {
+    const requirement = to.meta.requires as RouteRequirement;
+    if (!store.canAccessRoute(requirement.action, requirement.resource)) {
       return "/";
     }
   }

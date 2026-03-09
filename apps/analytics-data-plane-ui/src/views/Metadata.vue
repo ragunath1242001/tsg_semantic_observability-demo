@@ -6,18 +6,30 @@ import {
   defaultContext,
   deserialize
 } from "@tsg-dsp/common-dsp";
-import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
+import { Action, DataPlaneStateDto, Resource } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import MetadataWizard from "../components/MetadataWizard.vue";
 
 const toast = useToast();
 const confirm = useConfirm();
+
+const userStore = useUserStore();
+const canCreateDataset = computed(() =>
+  userStore.canAccessRoute(Action.CREATE, Resource.ADP_DATAPLANE)
+);
+const canUpdateDataset = computed(() =>
+  userStore.canAccessRoute(Action.UPDATE, Resource.ADP_DATAPLANE)
+);
+const canDeleteDataset = computed(() =>
+  userStore.canAccessRoute(Action.DELETE, Resource.ADP_DATAPLANE)
+);
 
 const state = ref<DataPlaneStateDto>();
 const datasets = ref<DatasetDto[]>();
@@ -316,6 +328,7 @@ onMounted(async () => {
           <div class="col-span-12 lg:col-span-4">
             <div>
               <Button
+                v-if="canUpdateDataset"
                 icon="pi pi-refresh"
                 severity="info"
                 label="Refresh state at Control Plane"
@@ -335,11 +348,13 @@ onMounted(async () => {
             <span>{{ dataset.title ?? dataset["@id"] }}</span>
             <div class="flex gap-2">
               <Button
+                v-if="canUpdateDataset"
                 icon="pi pi-pencil"
                 severity="info"
                 text
                 @click="editDatasetWithWizard(dataset)" />
               <Button
+                v-if="canDeleteDataset"
                 icon="pi pi-trash"
                 severity="danger"
                 text
@@ -406,7 +421,7 @@ onMounted(async () => {
     </div>
 
     <!-- Add Dataset Card - Always visible in simple mode -->
-    <div v-if="viewMode === 'simple'">
+    <div v-if="viewMode === 'simple' && canCreateDataset">
       <Card class="add-dataset-card mb-2" @click="startWizard()">
         <template #content>
           <div class="text-center py-4">
@@ -434,10 +449,12 @@ onMounted(async () => {
         <template #footer>
           <div class="flex gap-4 mt-1">
             <Button
+              v-if="canUpdateDataset"
               label="Update"
               class="w-full"
               @click="updateDataset(dataset['@id'], datasetStrings[idx])" />
             <Button
+              v-if="canDeleteDataset"
               label="Delete"
               severity="danger"
               outlined
@@ -459,7 +476,11 @@ onMounted(async () => {
         </template>
         <template #footer>
           <div class="flex gap-4 mt-1">
-            <Button label="Add" class="w-full" @click="addDataset" />
+            <Button
+              v-if="canCreateDataset"
+              label="Add"
+              class="w-full"
+              @click="addDataset" />
           </div>
         </template>
       </Card>
