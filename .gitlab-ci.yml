@@ -86,7 +86,7 @@ lint:
 
 renovate:
   stage: check
-  image: ghcr.io/renovatebot/renovate:42.84.2
+  image: ghcr.io/renovatebot/renovate:43.76.0
   needs: []
   script:
     - renovate
@@ -97,7 +97,7 @@ renovate:
 
 renovate_test:
   stage: check
-  image: ghcr.io/renovatebot/renovate:42.84.2
+  image: ghcr.io/renovatebot/renovate:43.76.0
   needs: []
   script:
     - renovate-config-validator
