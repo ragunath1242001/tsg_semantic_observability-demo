@@ -1623,8 +1623,8 @@ importers:
         specifier: ^2.9.4
         version: 2.10.1(@nestjs/common@11.1.12(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(axios@1.13.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typescript@5.9.3)
       nodemailer:
-        specifier: ^7.0.10
-        version: 7.0.12
+        specifier: ^8.0.0
+        version: 8.0.0
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -6445,8 +6445,8 @@ packages:
   node-releases@2.0.27:
     resolution: {integrity: sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA==}
 
-  nodemailer@7.0.12:
-    resolution: {integrity: sha512-H+rnK5bX2Pi/6ms3sN4/jRQvYSMltV6vqup/0SFOrxYYY/qoNvhXPlYq3e+Pm9RFJRwrMGbMIwi81M4dxpomhA==}
+  nodemailer@8.0.0:
+    resolution: {integrity: sha512-xvVJf/f0bzmNpnRIbhCp/IKxaHgJ6QynvUbLXzzMRPG3LDQr5oXkYuw4uDFyFYs8cge8agwwrJAXZsd4hhMquw==}
     engines: {node: '>=6.0.0'}
 
   noms@0.0.0:
@@ -12059,7 +12059,7 @@ snapshots:
 
   node-releases@2.0.27: {}
 
-  nodemailer@7.0.12: {}
+  nodemailer@8.0.0: {}
 
   noms@0.0.0:
     dependencies:
