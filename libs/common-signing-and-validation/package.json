@@ -23,7 +23,7 @@
     "@tsg-dsp/common-dtos": "workspace:*",
     "ajv": "^8.17.1",
     "axios": "^1.13.2",
-    "bignumber.js": "^9.3.1",
+    "bignumber.js": "^10.0.0",
     "class-transformer": "^0.5.1",
     "did-resolver": "^4.1.0",
     "elliptic": "^6.6.1",
