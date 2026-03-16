@@ -4,6 +4,7 @@ import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import * as bcrypt from "bcrypt";
 import { plainToInstance } from "class-transformer";
 import { Request } from "express";
+import { generateSecret } from "otplib";
 import { Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
@@ -199,7 +200,7 @@ describe("RecoveryCodeService", () => {
 
     it("should regenerate recovery codes for user with 2FA enabled", async () => {
       // Setup 2FA for the user
-      const secret = (await import("otplib")).authenticator.generateSecret();
+      const secret = generateSecret();
       const credential = totpCredentialRepo.create({
         userId: testUser.id,
         secret,

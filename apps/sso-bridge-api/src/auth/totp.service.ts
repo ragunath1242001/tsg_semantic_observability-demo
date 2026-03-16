@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AppError } from "@tsg-dsp/common-api";
 import { Request } from "express";
-import { authenticator } from "otplib";
+import { generateSecret, generateURI, verify } from "otplib";
 import QRCode from "qrcode";
 import { Repository } from "typeorm";
 
@@ -35,7 +35,7 @@ export class TotpService {
     });
 
     for (const credential of credentials) {
-      const isValid = this.verifyToken(token, credential.secret);
+      const isValid = await this.verifyToken(token, credential.secret);
       if (isValid) {
         credential.lastUsed = new Date();
         // eslint-disable-next-line no-await-in-loop
@@ -64,7 +64,7 @@ export class TotpService {
     const username = session.pendingTwoFactor.username;
 
     if (!session?.totpRegistration) {
-      const secret = this.generateSecret();
+      const secret = generateSecret();
       const credential = await this.createCredential(userId, secret);
 
       session!.totpRegistration = {
@@ -92,7 +92,7 @@ export class TotpService {
     const userId = session.pendingTwoFactor.userId;
 
     if (!session?.totpRegistration) {
-      const secret = this.generateSecret();
+      const secret = generateSecret();
       const credential = await this.createCredential(userId, secret);
 
       session!.totpRegistration = {
@@ -156,7 +156,7 @@ export class TotpService {
     const { userId, username } = getUserIdentity(request, this.logger);
     const session = getSession(request);
 
-    const secret = this.generateSecret();
+    const secret = generateSecret();
     const credential = await this.createCredential(userId, secret);
 
     if (session) {
@@ -268,7 +268,7 @@ export class TotpService {
       ).andLog(this.logger);
     }
 
-    const secret = this.generateSecret();
+    const secret = generateSecret();
     await this.createCredential(currentUser.id, secret);
 
     await this.usersService.setRequire2FA(currentUser.id, true);
@@ -395,25 +395,22 @@ export class TotpService {
     return { success: true, message: "2FA setup verified successfully" };
   }
 
-  private generateSecret(): string {
-    return authenticator.generateSecret();
-  }
-
   private async generateQRCode(
     username: string,
     secret: string
   ): Promise<string> {
-    const otpauthUrl = authenticator.keyuri(
-      username,
-      this.rootConfig.twoFactorIssuerName,
+    const otpauthUrl = generateURI({
+      issuer: this.rootConfig.twoFactorIssuerName,
+      label: username,
       secret
-    );
+    });
     return await QRCode.toDataURL(otpauthUrl);
   }
 
-  private verifyToken(token: string, secret: string): boolean {
+  private async verifyToken(token: string, secret: string): Promise<boolean> {
     try {
-      return authenticator.verify({ token, secret });
+      const result = await verify({ token, secret });
+      return result.valid;
     } catch (_error) {
       return false;
     }
@@ -448,7 +445,7 @@ export class TotpService {
       return false;
     }
 
-    const isValid = this.verifyToken(token, credential.secret);
+    const isValid = await this.verifyToken(token, credential.secret);
 
     if (isValid) {
       credential.isVerified = true;
