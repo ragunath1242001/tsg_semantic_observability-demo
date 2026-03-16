@@ -11,7 +11,7 @@
   "license": "ISC",
   "peerDependencies": {
     "@guolao/vue-monaco-editor": "^1.6.0",
-    "@tsconfig/node22": "^22.0.0",
+    "@tsconfig/node24": "^24.0.0",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
     "@types/dom-view-transitions": "^1.0.5",
