@@ -40,6 +40,7 @@ export class ClientsService {
         existingClients.map(async (client) => {
           // Only create secrets for clients using symmetric authentication
           if (
+            client.secretName &&
             client.clientSecret &&
             (!client.tokenEndpointAuthMethod ||
               client.tokenEndpointAuthMethod === "client_secret_post")
@@ -105,6 +106,7 @@ export class ClientsService {
 
     // Only create Kubernetes secrets for clients using symmetric authentication
     if (
+      client.secretName &&
       client.clientSecret &&
       (!client.tokenEndpointAuthMethod ||
         client.tokenEndpointAuthMethod === "client_secret_post")
@@ -158,6 +160,7 @@ export class ClientsService {
 
     // Only update Kubernetes secrets for clients using symmetric authentication
     if (
+      client.secretName &&
       client.clientSecret &&
       (!client.tokenEndpointAuthMethod ||
         client.tokenEndpointAuthMethod === "client_secret_post")

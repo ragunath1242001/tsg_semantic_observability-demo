@@ -740,4 +740,89 @@ export class FilesService {
       throw Error(`Error reading directory: ${err}`);
     }
   }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async syncMetadata() {
+    if (this.filesConfig.recreateFileMetadata) {
+      const files = await fsPromises.readdir(this.filesConfig.path);
+      const dbEntries: { fileName: string }[] = await this.fileRepository.find({
+        select: ["fileName"]
+      });
+      for (const file of files) {
+        if (!dbEntries.find((dbEntry) => dbEntry.fileName === file)) {
+          // eslint-disable-next-line no-await-in-loop
+          const stat = await fsPromises.stat(
+            this.filesConfig.path + "/" + file
+          );
+          if (!stat.isFile()) {
+            continue;
+          }
+          // Only if file is older than 1 minute to avoid conflicts with ongoing uploads
+          if (stat.birthtimeMs > Date.now() - 60_000) {
+            continue;
+          }
+          // eslint-disable-next-line no-await-in-loop
+          await this.recreateMetadata(file, stat);
+          break;
+        }
+      }
+    }
+  }
+
+  private async recreateMetadata(file: string, stat: fs.Stats) {
+    let mimetype = "application/octet-stream";
+    switch (file.split(".").slice(-1)[0]) {
+      case "csv":
+        mimetype = "text/csv";
+        break;
+      case "json":
+        mimetype = "application/json";
+        break;
+      case "xlsx":
+        mimetype =
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        break;
+      case "h5":
+      case "hdf5":
+        mimetype = "application/x-hdf";
+        break;
+    }
+    let originalname = file;
+    // Check if file starts with a unix epoch in ms added by Multer
+    if (file.match(/^\d{13}-/)) {
+      originalname = file.slice(14);
+    }
+    this.logger.log(
+      `Found file without metadata, uploading: ${file} (${stat.size} bytes)`
+    );
+    const catalog = await this.catalog.getOwnCatalog();
+    const matchingDataset = catalog.dataset?.find((d) =>
+      d.distribution?.find(
+        (dist) =>
+          dist.byteSize === `${stat.size}` && dist.title === originalname
+      )
+    );
+    const multerMock: Express.Multer.File = {
+      fieldname: "file",
+      originalname,
+      mimetype,
+      size: stat.size,
+      filename: file
+    } as Express.Multer.File;
+
+    await this.uploadFiles([multerMock]);
+
+    if (matchingDataset) {
+      this.logger.log(
+        `Found matching dataset for file ${file}, linking metadata: ${matchingDataset["@id"]}`
+      );
+      await this.fileRepository.update(
+        { fileName: file },
+        { datasetId: matchingDataset["@id"] }
+      );
+    }
+    setImmediate(() => {
+      this.createMetadata([multerMock]);
+    });
+  }
 }

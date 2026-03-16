@@ -1,6 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { PaginationOptionsDto } from "@tsg-dsp/common-api";
 import { Permissions, PermissionString, Resource } from "@tsg-dsp/common-dtos";
 import { Repository } from "typeorm";
 
@@ -20,28 +19,32 @@ export class PermissionsService {
     private readonly clientRepository: Repository<OauthClient>
   ) {}
 
+  readonly appMapping: Record<string, string> = {
+    CP: "Control Plane",
+    DP: "Common Data Plane",
+    ADP: "Analytics Data Plane",
+    HDP: "HTTP Data Plane",
+    W: "Wallet",
+    SSO: "SSO Bridge"
+  };
+
   /**
    * Get all available permissions from the system.
    */
-  getAvailablePermissions(paginationOptions: PaginationOptionsDto): {
-    data: { permission: string; description: string }[];
-    total: number;
-  } {
-    const allPermissions = Object.entries(Permissions).map(([key, value]) => ({
-      permission: value,
-      description: key.replace(/_/g, " ").toLowerCase()
-    }));
-
-    const { skip, take } = paginationOptions.typeOrm;
-    const paginatedData =
-      skip !== undefined && take !== undefined
-        ? allPermissions.slice(skip, skip + take)
-        : allPermissions;
-
-    return {
-      data: paginatedData,
-      total: allPermissions.length
-    };
+  getAvailablePermissions(): { permission: string; description: string }[] {
+    const allPermissions = Object.entries(Permissions).map(([key, value]) => {
+      const [app, ...remainder] = key.split("_");
+      const resource = remainder
+        .slice(0, -1)
+        .map((w) => w[0] + w.slice(1).toLowerCase())
+        .join(" ");
+      const action = remainder.slice(-1)[0];
+      return {
+        permission: value,
+        description: `${action[0]}${action.slice(1).toLowerCase()} permission for ${resource} resources of the ${this.appMapping[app] || app}`
+      };
+    });
+    return allPermissions;
   }
 
   /**

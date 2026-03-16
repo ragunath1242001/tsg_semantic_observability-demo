@@ -32,7 +32,7 @@ interface ChunkBuffer {
 }
 
 @WebSocketGateway({
-  path: "/bridge/ws",
+  path: `${process.env["SUBPATH"] || ""}${process.env["EMBEDDED_FRONTEND"] ? "/api" : ""}/bridge/ws`,
   transports: ["websocket"]
 })
 export class BridgeWsGateway {

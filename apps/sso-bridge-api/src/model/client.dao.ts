@@ -7,8 +7,8 @@ import { Column, Entity } from "typeorm";
 export class OauthClient extends OwnableEntity {
   readonly resourceType = Resource.SSO_CLIENT;
 
-  @Column({ type: String })
-  secretName!: string;
+  @Column({ type: String, nullable: true })
+  secretName?: string;
 
   @Column({ type: String })
   clientId!: string;

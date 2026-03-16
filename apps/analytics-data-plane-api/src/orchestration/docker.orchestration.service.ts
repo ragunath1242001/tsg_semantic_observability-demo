@@ -4,7 +4,7 @@ import { Cron, CronExpression } from "@nestjs/schedule";
 import Dockerode from "dockerode";
 import { once } from "events";
 import { resolve } from "path";
-import { Readable, Writable } from "stream";
+import { PassThrough, Readable, Writable } from "stream";
 
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { DockerConfig, RootConfig } from "../config.js";
@@ -147,7 +147,8 @@ export class DockerOrchestrationService
   ): Promise<SpawnJobResult> {
     const docker = this.getClientOrThrow();
     const time = new Date().getTime();
-    const containerNameForJob = `adp-job-${algorithmInstanceId}-${time}`;
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const containerNameForJob = `adp-job-${algorithmInstanceId}-${time}-${randomSuffix}`;
 
     // Get the algorithm instance to retrieve participant information
     const algorithmInstance =
@@ -269,10 +270,15 @@ export class DockerOrchestrationService
     algorithmInstanceId: string
   ): Promise<JobInfo[]> {
     const docker = this.getClientOrThrow();
+    const participantId =
+      await this.algorithmInstancesService["catalog"].getParticipantId();
     const containers = await docker.listContainers({
       all: true,
       filters: {
-        label: [`adp.tsg.app/algorithm-instance-id=${algorithmInstanceId}`]
+        label: [
+          `adp.tsg.app/algorithm-instance-id=${algorithmInstanceId}`,
+          `adp.tsg.app/participant-id=${participantId}`
+        ]
       }
     });
 
@@ -284,10 +290,15 @@ export class DockerOrchestrationService
   async getPodsForJob(jobName: string): Promise<PodList> {
     // In Docker, a job is essentially a single container, so we return that container as a pod
     const docker = this.getClientOrThrow();
+    const participantId =
+      await this.algorithmInstancesService["catalog"].getParticipantId();
     const containers = await docker.listContainers({
       all: true,
       filters: {
-        label: [`adp.tsg.app/job-name=${jobName}`]
+        label: [
+          `adp.tsg.app/job-name=${jobName}`,
+          `adp.tsg.app/participant-id=${participantId}`
+        ]
       }
     });
 
@@ -358,7 +369,7 @@ export class DockerOrchestrationService
     }
   }
 
-  async watchPodLogs(jobName: string): Promise<Writable> {
+  async watchPodLogs(jobName: string, tail = 10) {
     const pods = await this.getPodsForJob(jobName);
 
     if (pods.items.length === 0) {
@@ -376,12 +387,7 @@ export class DockerOrchestrationService
 
     const docker = this.getClientOrThrow();
 
-    const logStreamWritable = new Writable({
-      write: (chunk, _encoding, callback) => {
-        this.logger.log(chunk.toString());
-        callback();
-      }
-    });
+    const logStreamWritable = new PassThrough();
 
     const container = docker.getContainer(podName);
     void (async () => {
@@ -390,7 +396,7 @@ export class DockerOrchestrationService
           follow: true,
           stdout: true,
           stderr: true,
-          tail: 10
+          tail
         });
 
         const stream = Buffer.isBuffer(logsResult)

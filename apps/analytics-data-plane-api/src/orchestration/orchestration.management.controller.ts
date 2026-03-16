@@ -6,7 +6,10 @@ import {
   Inject,
   Logger,
   Param,
-  Post
+  ParseIntPipe,
+  Post,
+  Query,
+  Res
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -23,6 +26,7 @@ import {
   ApiForbiddenResponseDefault,
   Resource
 } from "@tsg-dsp/common-dtos";
+import { Response } from "express";
 
 import {
   IOrchestrationService,
@@ -89,6 +93,41 @@ export class OrchestrationManagementController {
   @ApiForbiddenResponseDefault()
   async getJobLogs(@Param("podName") podName: string): Promise<string> {
     return await this.orchestrationService.getPodLogs(podName);
+  }
+
+  @Get("/pods/:podName/streamLogs")
+  @Requires(Action.READ, Resource.ADP_ORCHESTRATION)
+  @ApiOperation({ summary: "Stream job logs" })
+  @ApiParam({
+    name: "podName",
+    description: "The pod name",
+    example: "12345678-1234-5678-1234-567812345678",
+    required: true,
+    type: "string"
+  })
+  @ApiParam({
+    name: "tail",
+    description: "Number of lines to include from the end of the logs",
+    example: 100,
+    required: false,
+    type: "number"
+  })
+  @ApiOkResponse({ type: String, isArray: true })
+  @ApiForbiddenResponseDefault()
+  async streamJobLogs(
+    @Param("podName") podName: string,
+    @Res() res: Response,
+    @Query("tail", new ParseIntPipe({ optional: true })) tail?: number
+  ) {
+    const logStream = await this.orchestrationService.watchPodLogs(
+      podName,
+      tail
+    );
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Transfer-Encoding", "chunked");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    logStream.pipe(res);
   }
 
   @Post("/spawn-job")

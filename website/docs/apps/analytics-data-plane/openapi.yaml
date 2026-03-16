@@ -1163,6 +1163,44 @@ paths:
             - read:adp.orchestration
       summary: Get job logs
       tags: *a10
+  /api/management/k8s/pods/{podName}/streamLogs:
+    get:
+      operationId: OrchestrationManagementController_streamJobLogs
+      parameters:
+        - name: podName
+          required: true
+          in: path
+          description: The pod name
+          schema:
+            example: 12345678-1234-5678-1234-567812345678
+            type: string
+        - name: tail
+          required: false
+          in: path
+          description: Number of lines to include from the end of the logs
+          schema:
+            example: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:adp.orchestration
+      summary: Stream job logs
+      tags: *a10
   /api/management/k8s/spawn-job:
     post:
       operationId: OrchestrationManagementController_spawnJob
