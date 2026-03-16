@@ -64,7 +64,7 @@ export class AppLogger extends ConsoleLogger {
       logLevel ||
       process.env["LOG_LEVEL"]?.toLowerCase() ||
       (process.env.NODE_ENV === "production" ? "info" : "debug");
-    let levels: LogLevel[] = [];
+    let levels: LogLevel[];
     switch (logLevelConfig) {
       case "error":
         levels = ["error", "fatal"];

@@ -75,16 +75,17 @@ export async function performCredentialLogin(
     const msg = getErrorMessage(error, "Unknown error");
 
     if (status === 401) {
-      throw new Error("Invalid username or password");
+      throw new Error("Invalid username or password", { cause: error });
     }
     if (status === 403) {
       throw new Error(
         "Login forbidden — " +
           msg +
-          " (2FA setup may be required via the web UI first)"
+          " (2FA setup may be required via the web UI first)",
+        { cause: error }
       );
     }
-    throw new Error(`SSO login failed: ${msg}`);
+    throw new Error(`SSO login failed: ${msg}`, { cause: error });
   }
 
   // 2b. Handle 2FA challenge
@@ -112,7 +113,7 @@ export async function performCredentialLogin(
       );
     } catch (error: unknown) {
       const msg = getErrorMessage(error, "Unknown error");
-      throw new Error(`2FA verification failed: ${msg}`);
+      throw new Error(`2FA verification failed: ${msg}`, { cause: error });
     }
   }
 

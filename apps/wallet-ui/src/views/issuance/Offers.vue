@@ -140,8 +140,10 @@ const validateCredentialSubject = (showToast: boolean) => {
     let credentialSubject;
     try {
       credentialSubject = JSON.parse(offerForm.value.credentialSubject);
-    } catch (_) {
-      throw Error("Credential subject must be a valid JSON document");
+    } catch (error) {
+      throw Error("Credential subject must be a valid JSON document", {
+        cause: error
+      });
     }
     if (typeof credentialSubject !== "object") {
       throw Error("Credential subject must be a valid JSON object");

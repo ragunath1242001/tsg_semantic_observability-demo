@@ -67,7 +67,7 @@ export class VCAuthService {
   }
 
   async validateVP(token: string): Promise<CredentialContainer[]> {
-    let tokenPayload: JwtPayload | null = null;
+    let tokenPayload: JwtPayload | null;
     try {
       tokenPayload = decode(token, { json: true });
     } catch (err) {
@@ -98,7 +98,7 @@ export class VCAuthService {
     req: Request,
     token: string
   ): Promise<CredentialContainer[]> {
-    let tokenPayload: JwtPayload | null = null;
+    let tokenPayload: JwtPayload | null;
     try {
       tokenPayload = decode(token, { json: true });
     } catch (err) {

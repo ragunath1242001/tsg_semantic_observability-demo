@@ -28,7 +28,7 @@ export const Client = createParamDecorator(
     if (!user) return undefined;
 
     const permissionPath = authConfig.permissionPath || "permissions";
-    let permissions: PermissionString[] = [];
+    let permissions: PermissionString[];
     try {
       permissions = jsonpath.query(user, permissionPath) as PermissionString[];
       if (permissions.length === 1 && Array.isArray(permissions[0])) {

@@ -737,7 +737,7 @@ export class FilesService {
         );
       }
     } catch (err) {
-      throw Error(`Error reading directory: ${err}`);
+      throw new Error(`Error reading directory: ${err}`, { cause: err });
     }
   }
 

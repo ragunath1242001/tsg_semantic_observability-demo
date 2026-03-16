@@ -52,7 +52,7 @@ export const useUserStore = defineStore("user", {
         loadedResolver();
       } catch (e) {
         console.log(e);
-        throw new Error("Login failed");
+        throw new Error("Login failed", { cause: e });
       }
     },
     async login() {
@@ -65,7 +65,7 @@ export const useUserStore = defineStore("user", {
         }
       } catch (e) {
         console.log(e);
-        throw new Error("Login failed");
+        throw new Error("Login failed", { cause: e });
       }
     },
     async logout() {

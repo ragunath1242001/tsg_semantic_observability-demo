@@ -234,11 +234,12 @@ export class OauthService {
       let codeChallenge: string;
       if (user.code_challenge_method !== "S256") {
         codeChallenge = request.code_verifier;
+      } else {
+        codeChallenge = crypto
+          .createHash("sha256")
+          .update(request.code_verifier)
+          .digest("base64url");
       }
-      codeChallenge = crypto
-        .createHash("sha256")
-        .update(request.code_verifier)
-        .digest("base64url");
       OauthService.codes.delete(request.code);
       if (codeChallenge !== user.code_challenge) {
         throw new AppError("Invalid code verifier", HttpStatus.BAD_REQUEST);
