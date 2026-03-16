@@ -8,6 +8,7 @@ import {
 import {
   BridgeAlgorithmEventDataChunkDto,
   BridgeCreateAlgorithmEventDto,
+  BridgeDeleteAlgorithmInstanceDto,
   BridgeDeleteDatasetsDto,
   BridgeJobStatusUpdateDto,
   BridgePushAlgorithmEventDataDto,
@@ -103,6 +104,10 @@ export class BridgeWsGateway {
 
   pushStartAlgorithmInstance(body: BridgeStartAlgorithmInstanceDto): void {
     this.server.emit("server.algorithm-instances.start", body);
+  }
+
+  pushDeleteAlgorithmInstance(body: BridgeDeleteAlgorithmInstanceDto): void {
+    this.server.emit("server.algorithm-instances.delete", body);
   }
 
   pushAlgorithmEventCreated(body: BridgePushAlgorithmEventDto): void {

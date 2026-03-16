@@ -47,6 +47,20 @@ export class BridgeWsServerListeners {
     this.publisher.pushAlgorithmInstance(payload.algorithmInstance, "updated");
   }
 
+  @OnEvent(INTERNAL_EVENTS.ALGORITHM_INSTANCES_DELETED)
+  onAlgorithmInstancesDeleted(
+    payload: InternalEventMap[typeof INTERNAL_EVENTS.ALGORITHM_INSTANCES_DELETED]
+  ): void {
+    if (!this.splitMode.shouldBridgeAlgorithmInstancesToClients) {
+      return;
+    }
+
+    this.logger.debug(
+      `Publishing algorithm instance deleted: ${payload.algorithmInstanceId}`
+    );
+    this.publisher.pushDeleteAlgorithmInstance(payload.algorithmInstanceId);
+  }
+
   @OnEvent(INTERNAL_EVENTS.ALGORITHM_INSTANCES_START_REQUESTED)
   onAlgorithmInstanceStartRequested(
     payload: InternalEventMap[typeof INTERNAL_EVENTS.ALGORITHM_INSTANCES_START_REQUESTED]

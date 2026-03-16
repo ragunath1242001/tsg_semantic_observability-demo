@@ -44,7 +44,7 @@ export class TransferDao extends OwnableEntity {
   @ManyToOne(
     () => AlgorithmInstanceDao,
     (algorithmInstance) => algorithmInstance.transfers,
-    { nullable: true }
+    { nullable: true, onDelete: "SET NULL" }
   )
   @JoinColumn()
   algorithmInstance?: Relation<AlgorithmInstanceDao>;

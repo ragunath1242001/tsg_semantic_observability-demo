@@ -99,6 +99,12 @@ export class BridgePushAlgorithmInstanceDto {
   reason?: "created" | "updated";
 }
 
+export class BridgeDeleteAlgorithmInstanceDto {
+  @ApiProperty({ example: "urn:uuid:..." })
+  @IsString()
+  algorithmInstanceId!: string;
+}
+
 export class BridgeStartAlgorithmInstanceDto {
   @ApiProperty({ example: "urn:uuid:..." })
   @IsString()

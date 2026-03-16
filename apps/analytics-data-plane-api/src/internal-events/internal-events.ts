@@ -8,10 +8,12 @@ import type {
 export const INTERNAL_EVENTS = {
   ALGORITHM_INSTANCES_CREATED: "algorithm-instances.created",
   ALGORITHM_INSTANCES_UPDATED: "algorithm-instances.updated",
+  ALGORITHM_INSTANCES_DELETED: "algorithm-instances.deleted",
   ALGORITHM_INSTANCES_START_REQUESTED: "algorithm-instances.start-requested",
   ALGORITHM_EVENTS_RECEIVED: "algorithm-events.received",
   ALGORITHM_EVENT_DATA_RECEIVED: "algorithm-events.data-received",
-  JOB_SPAWN: "job.spawn"
+  JOB_SPAWN: "job.spawn",
+  JOB_DELETE: "job.delete"
 } as const;
 
 export type InternalEventMap = {
@@ -20,6 +22,9 @@ export type InternalEventMap = {
   };
   [INTERNAL_EVENTS.ALGORITHM_INSTANCES_UPDATED]: {
     algorithmInstance: BridgeAlgorithmInstanceMetadataDto;
+  };
+  [INTERNAL_EVENTS.ALGORITHM_INSTANCES_DELETED]: {
+    algorithmInstanceId: string;
   };
   [INTERNAL_EVENTS.ALGORITHM_INSTANCES_START_REQUESTED]: {
     algorithmInstanceId: string;
@@ -33,6 +38,9 @@ export type InternalEventMap = {
     imageName: string;
     command?: string;
     datasetId?: string;
+  };
+  [INTERNAL_EVENTS.JOB_DELETE]: {
+    algorithmInstanceId: string;
   };
 };
 

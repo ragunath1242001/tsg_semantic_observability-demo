@@ -1354,7 +1354,8 @@ paths:
       summary: Get an algorithm instance by ID
       tags: *a11
     delete:
-      description: Delete an algorithm instance by its ID
+      description: Delete an algorithm instance by its ID. Use hard=true for permanent
+        deletion.
       operationId: AlgorithmInstancesManagementController_remove
       parameters:
         - name: id
@@ -1362,6 +1363,13 @@ paths:
           in: path
           schema:
             type: string
+        - name: hard
+          required: false
+          in: query
+          description: When true, permanently deletes the algorithm instance instead of
+            soft-deleting it.
+          schema:
+            type: boolean
       responses:
         "200":
           description: The algorithm instance has been successfully deleted
@@ -1375,6 +1383,41 @@ paths:
         - oauth2:
             - delete:adp.algorithm
       summary: Delete an algorithm instance by ID
+      tags: *a11
+  /api/management/algorithm-instances/prune:
+    post:
+      description: "Hard-delete algorithm instances that were soft-deleted. Use
+        olderThanDays to only prune instances deleted more than N days ago
+        (default: 0 = all)."
+      operationId: AlgorithmInstancesManagementController_prune
+      parameters:
+        - name: olderThanDays
+          required: false
+          in: query
+          description: "Only prune instances soft-deleted more than this many days ago.
+            Default: 0 (prune all)."
+          schema:
+            type: number
+      responses:
+        "200":
+          description: The number of pruned algorithm instances
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pruned:
+                    type: number
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - delete:adp.algorithm
+      summary: Prune soft-deleted algorithm instances
       tags: *a11
   /api/algorithm-instances/create:
     post:

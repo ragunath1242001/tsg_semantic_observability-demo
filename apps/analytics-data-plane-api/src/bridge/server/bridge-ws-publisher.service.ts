@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import {
   BridgeAlgorithmInstanceMetadataDto,
+  BridgeDeleteAlgorithmInstanceDto,
   BridgePushAlgorithmEventDataDto,
   BridgePushAlgorithmEventDto,
   BridgePushAlgorithmInstanceDto,
@@ -45,6 +46,15 @@ export class BridgeWsPublisherService {
       requestedAt
     };
     this.gateway.pushStartAlgorithmInstance(body);
+  }
+
+  pushDeleteAlgorithmInstance(algorithmInstanceId: string): void {
+    if (this.config.split.mode !== "server") {
+      return;
+    }
+
+    const body: BridgeDeleteAlgorithmInstanceDto = { algorithmInstanceId };
+    this.gateway.pushDeleteAlgorithmInstance(body);
   }
 
   pushAlgorithmEventCreated(body: BridgePushAlgorithmEventDto): void {

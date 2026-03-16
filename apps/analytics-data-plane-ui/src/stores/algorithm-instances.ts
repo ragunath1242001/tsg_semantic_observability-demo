@@ -130,7 +130,7 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
       }
     },
 
-    async deleteAlgorithmInstance(id: string) {
+    async deleteAlgorithmInstance(id: string, hardDelete = false) {
       const runtimeStore = useRuntimeStore();
       if (runtimeStore.isClientMode) {
         throw new Error(
@@ -142,7 +142,11 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
       this.error = null;
 
       try {
-        await http.delete(`management/algorithm-instances/${id}`);
+        await http.delete(`management/algorithm-instances/${id}`, {
+          params: {
+            hard: hardDelete
+          }
+        });
         this.algorithmInstances = this.algorithmInstances.filter(
           (instance) => instance.id !== id
         );
@@ -275,6 +279,14 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
       this.refreshAlgorithmInstance(data.algorithmInstanceId);
     },
 
+    _onAlgorithmInstanceDeleted(data: { algorithmInstanceId: string }) {
+      this.algorithmInstances = this.algorithmInstances.filter(
+        (instance) => instance.id !== data.algorithmInstanceId
+      );
+      // Clean up events for the deleted instance
+      delete this.events[data.algorithmInstanceId];
+    },
+
     bindEvents() {
       // Only bind once — listeners persist for the lifetime of the store
       if (this._bound) return;
@@ -282,9 +294,11 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
 
       const onInternal = this._onInternalEvent.bind(this);
       const onAlgorithm = this._onAlgorithmEvent.bind(this);
+      const onDeleted = this._onAlgorithmInstanceDeleted.bind(this);
 
       socket.on("event:internal:create", onInternal);
       socket.on("event:algorithm:create", onAlgorithm);
+      socket.on("algorithm-instances:deleted", onDeleted);
     }
   }
 });

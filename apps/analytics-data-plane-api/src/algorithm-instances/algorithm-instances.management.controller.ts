@@ -6,12 +6,14 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  Post
+  Post,
+  Query
 } from "@nestjs/common";
 import {
   ApiBody,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
@@ -99,17 +101,58 @@ export class AlgorithmInstancesManagementController {
     return await this.algorithmInstancesService.getAlgorithmInstanceDto(id);
   }
 
+  @Post("prune")
+  @Requires(Action.DELETE, Resource.ADP_ALGORITHM)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Prune soft-deleted algorithm instances",
+    description:
+      "Hard-delete algorithm instances that were soft-deleted. " +
+      "Use olderThanDays to only prune instances deleted more than N days ago (default: 0 = all)."
+  })
+  @ApiQuery({
+    name: "olderThanDays",
+    required: false,
+    type: Number,
+    description:
+      "Only prune instances soft-deleted more than this many days ago. Default: 0 (prune all)."
+  })
+  @ApiOkResponse({
+    description: "The number of pruned algorithm instances",
+    schema: {
+      type: "object",
+      properties: { pruned: { type: "number" } }
+    }
+  })
+  @ApiForbiddenResponseDefault()
+  prune(@Query("olderThanDays") olderThanDays?: string) {
+    return this.algorithmInstancesService.pruneAlgorithmInstances(
+      olderThanDays ? parseInt(olderThanDays, 10) : 0
+    );
+  }
+
   @Delete(":id")
   @Requires(Action.DELETE, Resource.ADP_ALGORITHM)
   @ApiOperation({
     summary: "Delete an algorithm instance by ID",
-    description: "Delete an algorithm instance by its ID"
+    description:
+      "Delete an algorithm instance by its ID. Use hard=true for permanent deletion."
+  })
+  @ApiQuery({
+    name: "hard",
+    required: false,
+    type: Boolean,
+    description:
+      "When true, permanently deletes the algorithm instance instead of soft-deleting it."
   })
   @ApiOkResponse({
     description: "The algorithm instance has been successfully deleted"
   })
   @ApiForbiddenResponseDefault()
-  remove(@Param("id") id: string) {
-    return this.algorithmInstancesService.removeAlgorithmInstance(id);
+  remove(@Param("id") id: string, @Query("hard") hard?: string) {
+    return this.algorithmInstancesService.removeAlgorithmInstance(
+      id,
+      hard === "true"
+    );
   }
 }
