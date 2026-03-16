@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import type {
+  BridgeDeleteAlgorithmInstanceDto,
   BridgePushAlgorithmEventDataDto,
   BridgePushAlgorithmEventDto,
   BridgePushAlgorithmInstanceDto,
@@ -13,6 +14,7 @@ export interface AlgorithmInstanceBridgeHandler {
   upsertAlgorithmInstancesFromBridge(
     instances: BridgePushAlgorithmInstanceDto["algorithmInstance"][]
   ): Promise<void>;
+  deleteAlgorithmInstanceFromBridge(algorithmInstanceId: string): Promise<void>;
   startAlgorithmInstance(params: {
     algorithmInstanceId: string;
     isInitiator: boolean;
@@ -76,6 +78,25 @@ export class BridgeWsClientListeners implements OnModuleInit {
         await this.algorithmInstanceHandler.upsertAlgorithmInstancesFromBridge([
           body.algorithmInstance
         ]);
+      }
+    );
+
+    this.bridgeWs.on(
+      "server.algorithm-instances.delete",
+      async (body: BridgeDeleteAlgorithmInstanceDto) => {
+        if (!this.algorithmInstanceHandler) {
+          this.logger.warn(
+            "Received algorithm instance delete but handler not registered"
+          );
+          return;
+        }
+
+        this.logger.log(
+          `Received delete for algorithm instance ${body.algorithmInstanceId} from server via bridge WS`
+        );
+        await this.algorithmInstanceHandler.deleteAlgorithmInstanceFromBridge(
+          body.algorithmInstanceId
+        );
       }
     );
 

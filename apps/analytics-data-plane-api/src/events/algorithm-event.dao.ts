@@ -20,7 +20,7 @@ export class AlgorithmEventDao {
   @Column({ type: String, unique: true })
   eventId!: string;
 
-  @ManyToOne(() => AlgorithmInstanceDao)
+  @ManyToOne(() => AlgorithmInstanceDao, { onDelete: "CASCADE" })
   @JoinColumn()
   algorithmInstance!: Relation<AlgorithmInstanceDao>;
 

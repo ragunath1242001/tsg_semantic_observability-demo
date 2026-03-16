@@ -7,6 +7,7 @@ import {
   Optional
 } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
+import { OnEvent } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   AlgorithmEventDto,
@@ -31,7 +32,10 @@ import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service
 import { SplitModeService } from "../bridge/split-mode/split-mode.service.js";
 import { AnalyticsTransferHandler } from "../dataplane/analytics-transfer-handler.service.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
-import { INTERNAL_EVENTS } from "../internal-events/internal-events.js";
+import {
+  INTERNAL_EVENTS,
+  InternalEventMap
+} from "../internal-events/internal-events.js";
 import { getAxiosConfigFromDataAddress } from "../utils/axios.js";
 import { parseToken } from "../utils/token.js";
 import { AlgorithmEventDao } from "./algorithm-event.dao.js";
@@ -57,6 +61,16 @@ export class EventsService {
     private readonly transferHandler?: AnalyticsTransferHandler
   ) {}
   private readonly logger = new Logger(this.constructor.name);
+
+  @OnEvent(INTERNAL_EVENTS.ALGORITHM_INSTANCES_DELETED)
+  onAlgorithmInstanceDeleted(
+    payload: InternalEventMap[typeof INTERNAL_EVENTS.ALGORITHM_INSTANCES_DELETED]
+  ): void {
+    this.eventsGateway.sendUpdateToClients(
+      "algorithm-instances:deleted",
+      payload
+    );
+  }
 
   async createInternalEvent({
     algorithmInstanceId,

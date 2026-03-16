@@ -250,6 +250,11 @@ describe("AlgorithmInstancesService", () => {
         id: "test-instance-id-2"
       })
     ).toBeDefined();
+    // Mark as completed so it can be deleted (pending/running instances are blocked)
+    await algorithmInstancesService.updateStatus(
+      "test-instance-id-2",
+      "completed"
+    );
     await algorithmInstancesService.removeAlgorithmInstance(
       "test-instance-id-2"
     );
@@ -366,12 +371,12 @@ describe("AlgorithmInstancesService", () => {
     expect(
       await algorithmInstancesService.createAlgorithmInstance({
         ...sampleAlgorithmInstanceDto,
-        id: "test-instance-id-2"
+        id: "test-instance-id-link-duplicate"
       })
     ).toBeDefined();
     await expect(
       algorithmInstancesService.linkTransfer({
-        algorithmInstanceId: "test-instance-id-2",
+        algorithmInstanceId: "test-instance-id-link-duplicate",
         transfer: reloadedTransferDao!
       })
     ).rejects.toThrow("already linked to");
@@ -606,6 +611,651 @@ describe("AlgorithmInstancesService", () => {
       expect(result.projectAgreement?.status).toBe("FINALIZED");
       // Add small delay to ensure distributing instance is not executed during test teardown
       await new Promise((r) => setTimeout(r, 10));
+    });
+  });
+
+  describe("Deletion - blocking active instances", () => {
+    it("should block deletion of pending instances", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-delete-pending"
+      });
+
+      await expect(
+        algorithmInstancesService.removeAlgorithmInstance("test-delete-pending")
+      ).rejects.toThrow("Cannot delete algorithm instance with status");
+    });
+
+    it("should block deletion of running instances", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-delete-running"
+      });
+      await algorithmInstancesService.updateStatus(
+        "test-delete-running",
+        "running"
+      );
+
+      await expect(
+        algorithmInstancesService.removeAlgorithmInstance("test-delete-running")
+      ).rejects.toThrow("Cannot delete algorithm instance with status");
+    });
+
+    it("should allow deletion of completed instances", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-delete-completed"
+      });
+      await algorithmInstancesService.updateStatus(
+        "test-delete-completed",
+        "completed"
+      );
+
+      await expect(
+        algorithmInstancesService.removeAlgorithmInstance(
+          "test-delete-completed"
+        )
+      ).resolves.toBeUndefined();
+    });
+
+    it("should allow deletion of failed instances", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-delete-failed"
+      });
+      await algorithmInstancesService.updateStatus(
+        "test-delete-failed",
+        "failed"
+      );
+
+      await expect(
+        algorithmInstancesService.removeAlgorithmInstance("test-delete-failed")
+      ).resolves.toBeUndefined();
+    });
+
+    it("should allow deletion of terminated instances", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-delete-terminated"
+      });
+      await algorithmInstancesService.updateStatus(
+        "test-delete-terminated",
+        "terminated"
+      );
+
+      await expect(
+        algorithmInstancesService.removeAlgorithmInstance(
+          "test-delete-terminated"
+        )
+      ).resolves.toBeUndefined();
+    });
+
+    it("should allow deletion of cancelled instances", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-delete-cancelled"
+      });
+      await algorithmInstancesService.updateStatus(
+        "test-delete-cancelled",
+        "cancelled"
+      );
+
+      await expect(
+        algorithmInstancesService.removeAlgorithmInstance(
+          "test-delete-cancelled"
+        )
+      ).resolves.toBeUndefined();
+    });
+  });
+
+  describe("Soft-delete vs hard-delete", () => {
+    it("should soft-delete by default (instance not returned by find but exists with withDeleted)", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-soft-delete"
+      });
+      await algorithmInstancesService.updateStatus(
+        "test-soft-delete",
+        "completed"
+      );
+      await algorithmInstancesService.removeAlgorithmInstance(
+        "test-soft-delete"
+      );
+
+      // Normal find should not return it
+      await expect(
+        algorithmInstancesService.getAlgorithmInstanceDto("test-soft-delete")
+      ).rejects.toThrow("not found");
+
+      // But it should still exist with withDeleted
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const softDeleted = await repo.findOne({
+        where: { id: "test-soft-delete" },
+        withDeleted: true
+      });
+      expect(softDeleted).toBeDefined();
+      expect(softDeleted!.deletedDate).toBeDefined();
+    });
+
+    it("should hard-delete when hardDelete flag is true", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-hard-delete"
+      });
+      await algorithmInstancesService.updateStatus(
+        "test-hard-delete",
+        "completed"
+      );
+      await algorithmInstancesService.removeAlgorithmInstance(
+        "test-hard-delete",
+        true
+      );
+
+      // Should not exist even with withDeleted
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const hardDeleted = await repo.findOne({
+        where: { id: "test-hard-delete" },
+        withDeleted: true
+      });
+      expect(hardDeleted).toBeNull();
+    });
+  });
+
+  describe("Event emissions on delete", () => {
+    it("should emit JOB_DELETE and ALGORITHM_INSTANCES_DELETED events on removal", async () => {
+      const emitSpy = vi.spyOn(eventEmitter, "emit");
+
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-delete-events"
+      });
+      await algorithmInstancesService.updateStatus(
+        "test-delete-events",
+        "completed"
+      );
+
+      emitSpy.mockClear();
+
+      await algorithmInstancesService.removeAlgorithmInstance(
+        "test-delete-events"
+      );
+
+      expect(emitSpy).toHaveBeenCalledWith(
+        "job.delete",
+        expect.objectContaining({
+          algorithmInstanceId: "test-delete-events"
+        })
+      );
+      expect(emitSpy).toHaveBeenCalledWith(
+        "algorithm-instances.deleted",
+        expect.objectContaining({
+          algorithmInstanceId: "test-delete-events"
+        })
+      );
+    });
+  });
+
+  describe("Pruning", () => {
+    it("should return pruned count for existing soft-deleted instances", async () => {
+      // Clean up any leftover soft-deleted instances from other tests first
+      await algorithmInstancesService.pruneAlgorithmInstances(0);
+
+      // Now there should be none left
+      const result = await algorithmInstancesService.pruneAlgorithmInstances(0);
+      expect(result).toEqual({ pruned: 0 });
+    });
+
+    it("should hard-delete soft-deleted instances when pruning with olderThanDays=0", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-prune-target"
+      });
+      await algorithmInstancesService.updateStatus(
+        "test-prune-target",
+        "completed"
+      );
+      await algorithmInstancesService.removeAlgorithmInstance(
+        "test-prune-target"
+      );
+
+      // Verify it's soft-deleted
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const softDeleted = await repo.findOne({
+        where: { id: "test-prune-target" },
+        withDeleted: true
+      });
+      expect(softDeleted).toBeDefined();
+
+      // Prune with olderThanDays=0 should remove all soft-deleted
+      const result = await algorithmInstancesService.pruneAlgorithmInstances(0);
+      expect(result.pruned).toBeGreaterThanOrEqual(1);
+
+      // Verify it's gone
+      const pruned = await repo.findOne({
+        where: { id: "test-prune-target" },
+        withDeleted: true
+      });
+      expect(pruned).toBeNull();
+    });
+
+    it("should not prune recently soft-deleted instances when olderThanDays > 0", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-prune-recent"
+      });
+      await algorithmInstancesService.updateStatus(
+        "test-prune-recent",
+        "completed"
+      );
+      await algorithmInstancesService.removeAlgorithmInstance(
+        "test-prune-recent"
+      );
+
+      // Prune with olderThanDays=30 should not remove recently deleted
+      const result =
+        await algorithmInstancesService.pruneAlgorithmInstances(30);
+      expect(result.pruned).toBe(0);
+
+      // Verify it still exists
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const stillExists = await repo.findOne({
+        where: { id: "test-prune-recent" },
+        withDeleted: true
+      });
+      expect(stillExists).toBeDefined();
+
+      // Clean up
+      await repo.remove(stillExists!);
+    });
+
+    it("handlePruneCron calls pruneAlgorithmInstances with 14 days", async () => {
+      const pruneSpy = vi
+        .spyOn(algorithmInstancesService, "pruneAlgorithmInstances")
+        .mockResolvedValue({ pruned: 0 });
+
+      await algorithmInstancesService.handlePruneCron();
+
+      expect(pruneSpy).toHaveBeenCalledWith(14);
+    });
+  });
+
+  describe("Status update timestamps", () => {
+    it("should set startedAt when transitioning to running", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-timestamp-running"
+      });
+
+      const result = await algorithmInstancesService.updateStatus(
+        "test-timestamp-running",
+        "running"
+      );
+
+      expect(result.startedAt).toBeDefined();
+      expect(result.status).toBe("running");
+    });
+
+    it("should not overwrite startedAt on subsequent running updates", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-timestamp-no-overwrite"
+      });
+
+      const first = await algorithmInstancesService.updateStatus(
+        "test-timestamp-no-overwrite",
+        "running"
+      );
+      const second = await algorithmInstancesService.updateStatus(
+        "test-timestamp-no-overwrite",
+        "running"
+      );
+
+      expect(first.startedAt).toEqual(second.startedAt);
+    });
+
+    it("should set finishedAt when transitioning to completed", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-timestamp-completed"
+      });
+
+      const result = await algorithmInstancesService.updateStatus(
+        "test-timestamp-completed",
+        "completed"
+      );
+
+      expect(result.finishedAt).toBeDefined();
+    });
+
+    it("should set finishedAt when transitioning to failed", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-timestamp-failed"
+      });
+
+      const result = await algorithmInstancesService.updateStatus(
+        "test-timestamp-failed",
+        "failed"
+      );
+
+      expect(result.finishedAt).toBeDefined();
+    });
+
+    it("should set finishedAt when transitioning to terminated", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-timestamp-terminated"
+      });
+
+      const result = await algorithmInstancesService.updateStatus(
+        "test-timestamp-terminated",
+        "terminated"
+      );
+
+      expect(result.finishedAt).toBeDefined();
+    });
+
+    it("should set finishedAt when transitioning to cancelled", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-timestamp-cancelled"
+      });
+
+      const result = await algorithmInstancesService.updateStatus(
+        "test-timestamp-cancelled",
+        "cancelled"
+      );
+
+      expect(result.finishedAt).toBeDefined();
+    });
+
+    it("should use provided observedAt for timestamps", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      const observedAt = new Date("2025-01-01T00:00:00Z");
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-timestamp-observed"
+      });
+
+      const result = await algorithmInstancesService.updateStatus(
+        "test-timestamp-observed",
+        "running",
+        { observedAt }
+      );
+
+      expect(result.startedAt).toEqual(observedAt);
+    });
+
+    it("should not overwrite finishedAt on subsequent terminal status updates", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-timestamp-no-overwrite-finish"
+      });
+
+      const first = await algorithmInstancesService.updateStatus(
+        "test-timestamp-no-overwrite-finish",
+        "completed"
+      );
+      const second = await algorithmInstancesService.updateStatus(
+        "test-timestamp-no-overwrite-finish",
+        "failed"
+      );
+
+      expect(first.finishedAt).toEqual(second.finishedAt);
+    });
+  });
+
+  describe("isValidJobAccessToken", () => {
+    it("should return true for a valid token", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      const instance = await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-valid-token"
+      });
+
+      const token = await algorithmInstancesService.createAccessToken(
+        instance.id
+      );
+
+      expect(
+        algorithmInstancesService.isValidJobAccessToken(token, instance.id)
+      ).toBe(true);
+    });
+
+    it("should return false for an invalid token", async () => {
+      expect(
+        algorithmInstancesService.isValidJobAccessToken(
+          "nonexistent-token",
+          "any-id"
+        )
+      ).toBe(false);
+    });
+
+    it("should return false for a valid token paired with wrong instance", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      const instance = await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-wrong-instance-token"
+      });
+
+      const token = await algorithmInstancesService.createAccessToken(
+        instance.id
+      );
+
+      expect(
+        algorithmInstancesService.isValidJobAccessToken(
+          token,
+          "different-instance"
+        )
+      ).toBe(false);
+    });
+  });
+
+  describe("createAlgorithmInstance events", () => {
+    it("should emit ALGORITHM_INSTANCES_CREATED event", async () => {
+      const emitSpy = vi.spyOn(eventEmitter, "emit");
+
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      emitSpy.mockClear();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-create-event"
+      });
+
+      expect(emitSpy).toHaveBeenCalledWith(
+        "algorithm-instances.created",
+        expect.objectContaining({
+          algorithmInstance: expect.objectContaining({
+            id: "test-create-event"
+          })
+        })
+      );
+    });
+
+    it("should set initial status to pending", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      const result = await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-initial-status"
+      });
+
+      expect(result.status).toBe("pending");
+      expect(result.startedAt).toBeFalsy();
+      expect(result.finishedAt).toBeFalsy();
+    });
+  });
+
+  describe("updateStatus notifyStatusChange", () => {
+    it("should emit algorithm-instances.updated in standalone mode", async () => {
+      const emitSpy = vi.spyOn(eventEmitter, "emit");
+
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...sampleAlgorithmInstanceDto,
+        id: "test-notify-standalone"
+      });
+
+      emitSpy.mockClear();
+
+      await algorithmInstancesService.updateStatus(
+        "test-notify-standalone",
+        "running"
+      );
+
+      expect(emitSpy).toHaveBeenCalledWith(
+        "algorithm-instances.updated",
+        expect.objectContaining({
+          algorithmInstance: expect.objectContaining({
+            id: "test-notify-standalone",
+            status: "running"
+          })
+        })
+      );
+    });
+  });
+
+  describe("requireProjectAgreement config flag", () => {
+    it("should throw when requireProjectAgreement is true and no projectAgreementId provided", async () => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+
+      // Temporarily set the runtime config
+      const originalRuntime = algorithmInstancesService["config"].runtime;
+      Object.defineProperty(algorithmInstancesService["config"], "runtime", {
+        value: { ...originalRuntime, requireProjectAgreement: true },
+        configurable: true
+      });
+
+      await expect(
+        algorithmInstancesService.createAlgorithmInstance({
+          ...sampleAlgorithmInstanceDto,
+          id: "test-require-pa"
+        })
+      ).rejects.toThrow("project agreement is required");
+
+      // Restore
+      Object.defineProperty(algorithmInstancesService["config"], "runtime", {
+        value: originalRuntime,
+        configurable: true
+      });
     });
   });
 });

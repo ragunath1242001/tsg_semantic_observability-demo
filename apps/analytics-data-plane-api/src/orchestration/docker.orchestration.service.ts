@@ -109,6 +109,14 @@ export class DockerOrchestrationService
     );
   }
 
+  @OnEvent("job.delete")
+  async handleJobDeleteEvent(event: { algorithmInstanceId: string }) {
+    this.logger.log(
+      `Deleting Docker containers for algorithm instance ${event.algorithmInstanceId}`
+    );
+    await this.deleteJobsForAlgorithmInstance(event.algorithmInstanceId);
+  }
+
   @OnEvent("job.spawn")
   async handleJobSpawnEvent(event: {
     algorithmInstanceId: string;
@@ -369,7 +377,48 @@ export class DockerOrchestrationService
     }
   }
 
-  async watchPodLogs(jobName: string, tail = 10) {
+  async deleteJobsForAlgorithmInstance(
+    algorithmInstanceId: string
+  ): Promise<void> {
+    const docker = this.getClientOrThrow();
+
+    // Remove from job status polling
+    this.followingJobStatus = this.followingJobStatus.filter(
+      (id) => id !== algorithmInstanceId
+    );
+
+    const containers = await docker.listContainers({
+      all: true,
+      filters: {
+        label: [`adp.tsg.app/algorithm-instance-id=${algorithmInstanceId}`]
+      }
+    });
+
+    for (const containerInfo of containers) {
+      const containerId = containerInfo.Id;
+      const containerName = containerInfo.Names?.[0] ?? containerId;
+      try {
+        const container = docker.getContainer(containerId);
+        // Stop the container if it's running, then remove it
+        try {
+          await container.stop({ t: 5 });
+        } catch {
+          // Container may already be stopped; ignore
+        }
+        await container.remove({ force: true });
+        this.logger.log(
+          `Deleted Docker container ${containerName} for algorithm instance ${algorithmInstanceId}`
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Failed to delete Docker container ${containerName} for algorithm instance ${algorithmInstanceId}`,
+          error
+        );
+      }
+    }
+  }
+
+  async watchPodLogs(jobName: string, tail = 10): Promise<PassThrough> {
     const pods = await this.getPodsForJob(jobName);
 
     if (pods.items.length === 0) {

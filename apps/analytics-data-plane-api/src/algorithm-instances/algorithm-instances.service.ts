@@ -6,6 +6,7 @@ import {
   Optional
 } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
+import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   AlgorithmInstanceDto,
@@ -25,7 +26,7 @@ import { OfferDto } from "@tsg-dsp/common-dsp";
 import axios, { AxiosResponse } from "axios";
 import { plainToInstance } from "class-transformer";
 import { randomBytes } from "crypto";
-import { Repository } from "typeorm";
+import { IsNull, LessThan, Not, Repository } from "typeorm";
 
 import { BridgeWsClientService } from "../bridge/client/bridge-ws-client.service.js";
 import { SplitModeService } from "../bridge/split-mode/split-mode.service.js";
@@ -106,6 +107,22 @@ export class AlgorithmInstancesService {
     algorithmInstances: BridgeAlgorithmInstanceMetadataDto[]
   ): Promise<void> {
     await this.upsertAlgorithmInstancesFromBridge(algorithmInstances);
+  }
+
+  async deleteAlgorithmInstanceFromBridge(
+    algorithmInstanceId: string
+  ): Promise<void> {
+    // Clean up local orchestration resources (K8s jobs / Docker containers)
+    emitInternalEvent(this.eventEmitter, INTERNAL_EVENTS.JOB_DELETE, {
+      algorithmInstanceId
+    });
+
+    // Soft-delete the local copy if it exists
+    await this.algorithmInstanceRepository.softDelete(algorithmInstanceId);
+
+    this.logger.log(
+      `Algorithm instance ${algorithmInstanceId} deleted via bridge`
+    );
   }
 
   async getAlgorithmInstance(id: string): Promise<AlgorithmInstanceDao> {
@@ -225,12 +242,108 @@ export class AlgorithmInstancesService {
     return algorithmInstance;
   }
 
-  async removeAlgorithmInstance(id: string): Promise<void> {
-    const result = await this.algorithmInstanceRepository.delete(id);
-    if (result.affected === 0) {
+  async removeAlgorithmInstance(
+    id: string,
+    hardDelete: boolean = false
+  ): Promise<void> {
+    const algorithmInstance = await this.algorithmInstanceRepository.findOne({
+      where: { id }
+    });
+
+    if (!algorithmInstance) {
       throw new DataPlaneError(
         `AlgorithmInstance with id ${id} not found`,
         HttpStatus.NOT_FOUND
+      );
+    }
+
+    // Block deletion of active instances
+    const activeStatuses = ["pending", "running"];
+    if (activeStatuses.includes(algorithmInstance.status)) {
+      throw new DataPlaneError(
+        `Cannot delete algorithm instance with status '${algorithmInstance.status}'. Stop or cancel it first.`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    // Delete associated orchestration resources (K8s jobs, Docker containers)
+    emitInternalEvent(this.eventEmitter, INTERNAL_EVENTS.JOB_DELETE, {
+      algorithmInstanceId: id
+    });
+
+    // Delete the algorithm instance
+    const result = hardDelete
+      ? await this.algorithmInstanceRepository.delete(id)
+      : await this.algorithmInstanceRepository.softDelete(id);
+
+    if (result.affected === 0) {
+      throw new DataPlaneError(
+        `AlgorithmInstance with id ${id} could not be deleted`,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+
+    // Notify about the deletion
+    emitInternalEvent(
+      this.eventEmitter,
+      INTERNAL_EVENTS.ALGORITHM_INSTANCES_DELETED,
+      { algorithmInstanceId: id }
+    );
+
+    this.logger.log(
+      `Algorithm instance ${id} ${hardDelete ? "hard-deleted" : "soft-deleted"}`
+    );
+  }
+
+  /**
+   * Hard-delete algorithm instances that were soft-deleted more than
+   * `olderThanDays` days ago. Related events and transfers are cleaned
+   * up via database cascade rules (CASCADE for events, SET NULL for transfers).
+   */
+  async pruneAlgorithmInstances(
+    olderThanDays: number = 0
+  ): Promise<{ pruned: number }> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
+
+    const softDeletedInstances = await this.algorithmInstanceRepository.find({
+      withDeleted: true,
+      where: {
+        deletedDate: Not(IsNull()) as unknown as Date,
+        ...(olderThanDays > 0
+          ? { deletedDate: LessThan(cutoffDate) as unknown as Date }
+          : {})
+      }
+    });
+
+    if (softDeletedInstances.length === 0) {
+      return { pruned: 0 };
+    }
+
+    for (const instance of softDeletedInstances) {
+      await this.algorithmInstanceRepository.remove(instance);
+    }
+
+    this.logger.log(
+      `Pruned ${softDeletedInstances.length} soft-deleted algorithm instances`
+    );
+
+    return { pruned: softDeletedInstances.length };
+  }
+
+  /**
+   * Daily cron job to prune algorithm instances that were soft-deleted
+   * more than 14 days ago.
+   */
+  @Cron("0 3 * * *")
+  async handlePruneCron(): Promise<void> {
+    this.logger.log(
+      "Running scheduled prune of soft-deleted algorithm instances"
+    );
+    const result = await this.pruneAlgorithmInstances(14);
+    if (result.pruned > 0) {
+      this.logger.log(
+        `Scheduled prune completed: ${result.pruned} instances removed`
       );
     }
   }

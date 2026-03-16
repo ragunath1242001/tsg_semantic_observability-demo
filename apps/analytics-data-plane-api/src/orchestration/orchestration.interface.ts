@@ -121,7 +121,19 @@ export interface IOrchestrationService {
    */
   getPodLogs(podName: string): Promise<string>;
 
+  /**
+   * Watch logs for a specific pod (container). Returns a stream that emits log lines.
+   * The stream ends when the pod terminates.
+   */
   watchPodLogs(podName: string, tailLines?: number): Promise<PassThrough>;
+
+  /**
+   * Delete all jobs (and associated resources) for a specific algorithm instance.
+   * This stops running jobs, removes completed/failed jobs, and cleans up
+   * associated resources (ConfigMaps, containers, etc.).
+   * Also removes the algorithm instance from the job status polling list.
+   */
+  deleteJobsForAlgorithmInstance(algorithmInstanceId: string): Promise<void>;
 }
 
 export const IOrchestrationService = Symbol("IOrchestrationService");

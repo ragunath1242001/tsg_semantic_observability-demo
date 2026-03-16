@@ -105,6 +105,14 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
     );
   }
 
+  @OnEvent("job.delete")
+  async handleJobDeleteEvent(event: { algorithmInstanceId: string }) {
+    this.logger.log(
+      `Deleting jobs for algorithm instance ${event.algorithmInstanceId}`
+    );
+    await this.deleteJobsForAlgorithmInstance(event.algorithmInstanceId);
+  }
+
   @OnEvent("job.spawn")
   async handleJobSpawnEvent(event: {
     algorithmInstanceId: string;
@@ -390,7 +398,43 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
     });
   }
 
-  async watchPodLogs(jobName: string, tailLines = 10) {
+  async deleteJobsForAlgorithmInstance(
+    algorithmInstanceId: string
+  ): Promise<void> {
+    // Remove from job status polling
+    this.followingJobStatus = this.followingJobStatus.filter(
+      (id) => id !== algorithmInstanceId
+    );
+
+    const jobs = await this.getJobsForAlgorithmInstance(algorithmInstanceId);
+
+    for (const job of jobs) {
+      const jobName = job.metadata?.name;
+      if (!jobName) continue;
+
+      try {
+        // Delete the job with propagation policy 'Foreground' to also delete owned
+        // resources (ConfigMaps via ownerReferences, and pods).
+        await this.batchV1Api.deleteNamespacedJob({
+          name: jobName,
+          namespace: this.kubernetesConfig.namespace,
+          body: {
+            propagationPolicy: "Foreground"
+          }
+        });
+        this.logger.log(
+          `Deleted K8s Job ${jobName} for algorithm instance ${algorithmInstanceId}`
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Failed to delete K8s Job ${jobName} for algorithm instance ${algorithmInstanceId}`,
+          error
+        );
+      }
+    }
+  }
+
+  async watchPodLogs(jobName: string, tailLines = 10): Promise<PassThrough> {
     const podList = await this.coreV1Api.listNamespacedPod({
       namespace: this.kubernetesConfig.namespace,
       labelSelector: `app=${jobName}`

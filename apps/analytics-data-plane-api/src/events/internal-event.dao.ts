@@ -14,7 +14,7 @@ export class InternalEventDao {
   @PrimaryColumn({ type: String })
   id!: string;
 
-  @ManyToOne(() => AlgorithmInstanceDao)
+  @ManyToOne(() => AlgorithmInstanceDao, { onDelete: "CASCADE" })
   @JoinColumn()
   algorithmInstance!: Relation<AlgorithmInstanceDao>;
 
