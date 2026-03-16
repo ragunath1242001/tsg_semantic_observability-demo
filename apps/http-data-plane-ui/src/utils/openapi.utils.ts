@@ -53,7 +53,7 @@ export function requestBodyToTester(
   bodyRaw: Ref<string>,
   toast: ToastServiceMethods
 ) {
-  let bodyType: "none" | "form-data" | "x-www-form-urlencoded" | "raw" = "none";
+  let bodyType: "none" | "form-data" | "x-www-form-urlencoded" | "raw";
   let bodyLanguage: string = "json";
   let bodySchema: DereferencedSchemaObject | null = null;
   const headers: { key: string; value: string }[] = [];

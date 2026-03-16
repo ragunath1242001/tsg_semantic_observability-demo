@@ -357,8 +357,7 @@ export class CatalogService {
         _resource: newResource,
         _distribution: dataset.distribution?.map((distribution) => {
           const { accessService, ...distributionRemainder } = distribution;
-          let accessServiceDao: DeepPartial<DataServiceDao | undefined> =
-            undefined;
+          let accessServiceDao: DeepPartial<DataServiceDao | undefined>;
           if (typeof accessService === "string") {
             accessServiceDao = this.dataservicesRepository.create({
               _resource: this.resourceRepository.create({

@@ -372,7 +372,8 @@ export class DockerOrchestrationService
       return output;
     } catch (error) {
       throw new Error(
-        `Failed to get logs for container ${podName}: ${String(error)}`
+        `Failed to get logs for container ${podName}: ${String(error)}`,
+        { cause: error }
       );
     }
   }
@@ -462,7 +463,8 @@ export class DockerOrchestrationService
         });
         stream.on("error", (error: unknown) => {
           this.logger.warn(
-            `Log stream for container ${podName} failed: ${String(error)}`
+            `Log stream for container ${podName} failed: ${String(error)}`,
+            { cause: error }
           );
           logStreamWritable.end();
         });
@@ -471,7 +473,8 @@ export class DockerOrchestrationService
         stream.resume();
       } catch (error) {
         this.logger.warn(
-          `Log stream for container ${podName} failed: ${String(error)}`
+          `Log stream for container ${podName} failed: ${String(error)}`,
+          { cause: error }
         );
         logStreamWritable.end();
       }
@@ -541,7 +544,8 @@ export class DockerOrchestrationService
         // ignore cleanup failures
       }
       throw new Error(
-        `Failed to inject algorithm instance file into container ${containerNameForJob}: ${String(error)}`
+        `Failed to inject algorithm instance file into container ${containerNameForJob}: ${String(error)}`,
+        { cause: error }
       );
     }
   }

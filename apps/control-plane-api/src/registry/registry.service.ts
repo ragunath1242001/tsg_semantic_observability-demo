@@ -56,7 +56,7 @@ export class RegistryService implements OnApplicationBootstrap {
   }
 
   async fetchDidDocuments(): Promise<DIDDocument[]> {
-    let credentials: Credential[] = [];
+    let credentials: Credential[];
     try {
       credentials = await this.vcAuthService.walletClient.getCredentials();
       this.logger.debug(

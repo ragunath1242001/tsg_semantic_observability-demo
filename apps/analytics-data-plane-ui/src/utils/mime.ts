@@ -5,8 +5,8 @@ export const mimeToUrl = (mimeType: string): string => {
 
 export const mimeToIcon = (mimeType: string): string => {
   const mimeTypeMatch = mimeType.match(/^(.*?)\/(.*?)(;\s*.*)?$/);
-  let type = "unknown";
-  let subtype = "unknown";
+  let type: string;
+  let subtype: string;
 
   if (mimeTypeMatch) {
     type = mimeTypeMatch[1];

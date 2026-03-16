@@ -44,7 +44,7 @@ export const createSigner = (vm: VerificationMethod) => {
     } catch (e: any) {
       Logger.error(`Error signing document: ${e.message}`, "TDW createSigner");
       Logger.debug(e, "TDW createSigner");
-      throw new Error(`Document signing failure: ${e.details}`);
+      throw new Error(`Document signing failure: ${e.details}`, { cause: e });
     }
   };
 };

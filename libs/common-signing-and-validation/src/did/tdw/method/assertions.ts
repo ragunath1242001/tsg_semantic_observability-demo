@@ -61,7 +61,7 @@ export const documentStateIsValid = async (
         "TDW DocumentStateValidation"
       );
       Logger.debug(e, "TDW DocumentStateValidation");
-      throw new Error(`Error verifying signature: ${e}`);
+      throw new Error(`Error verifying signature: ${e}`, { cause: e });
     }
     i++;
   }

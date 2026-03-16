@@ -75,7 +75,7 @@ export const useAuthStore = defineStore("auth", {
         router.push(this.returnUrl || "/");
       } catch (e) {
         console.log(e);
-        throw new Error("Login failed");
+        throw new Error("Login failed", { cause: e });
       }
     },
     async verify2FASetup(token: string) {
@@ -99,7 +99,7 @@ export const useAuthStore = defineStore("auth", {
         }
       } catch (e) {
         console.log(e);
-        throw new Error("2FA setup verification failed");
+        throw new Error("2FA setup verification failed", { cause: e });
       }
     },
     async verify2FA(token: string) {
@@ -113,7 +113,7 @@ export const useAuthStore = defineStore("auth", {
         router.push(this.returnUrl || "/");
       } catch (e) {
         console.log(e);
-        throw new Error("2FA verification failed");
+        throw new Error("2FA verification failed", { cause: e });
       }
     },
     async get2FAQRCode(): Promise<string> {
@@ -122,7 +122,7 @@ export const useAuthStore = defineStore("auth", {
         return response.data.qrCode;
       } catch (e) {
         console.log(e);
-        throw new Error("Failed to get 2FA QR code");
+        throw new Error("Failed to get 2FA QR code", { cause: e });
       }
     },
     async get2FASecret(): Promise<string> {
@@ -133,7 +133,7 @@ export const useAuthStore = defineStore("auth", {
         return response.data.secret;
       } catch (e) {
         console.log(e);
-        throw new Error("Failed to get 2FA secret");
+        throw new Error("Failed to get 2FA secret", { cause: e });
       }
     },
     async cancel2FASetup() {
@@ -156,7 +156,7 @@ export const useAuthStore = defineStore("auth", {
         router.push(this.returnUrl || "/");
       } catch (e) {
         console.log(e);
-        throw new Error("Failed to complete login");
+        throw new Error("Failed to complete login", { cause: e });
       }
     },
     async logout() {

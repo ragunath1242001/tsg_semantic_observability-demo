@@ -239,7 +239,7 @@ export class TransferService {
       ODRLAction.USE,
       []
     );
-    let distributions: DistributionDto[] = [];
+    let distributions: DistributionDto[];
     if (!format) {
       const datasetAddress = normalizeAddress(
         remoteAddress.split("/transfers")[0],

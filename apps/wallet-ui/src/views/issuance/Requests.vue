@@ -151,8 +151,13 @@ const retrieveCredential = async () => {
                 JSON.parse(form.authorized.additionalRequestParams.credential);
                 request.authorized.additionalRequestParams =
                   form.authorized.additionalRequestParams;
-              } catch (_) {
-                throw Error("Request parameters must be a valid JSON document");
+              } catch (error) {
+                throw Error(
+                  "Request parameters must be a valid JSON document",
+                  {
+                    cause: error
+                  }
+                );
               }
             }
             break;
