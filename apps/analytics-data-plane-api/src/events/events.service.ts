@@ -75,7 +75,14 @@ export class EventsService {
       ...createInternalEvent
     });
 
-    this.eventsGateway.sendUpdateToClients("event:internal:create", event);
+    this.eventsGateway.sendUpdateToClients("event:internal:create", {
+      id: event.id,
+      algorithmInstanceId,
+      name: event.name,
+      number: event.number,
+      timestamp: event.timestamp,
+      data: event.data ?? undefined
+    });
 
     return await this.internalEventsRepository.save(event);
   }
@@ -288,10 +295,17 @@ export class EventsService {
       })
     );
 
-    this.eventsGateway.sendUpdateToClients(
-      "event:algorithm:create",
-      savedEvent
-    );
+    this.eventsGateway.sendUpdateToClients("event:algorithm:create", {
+      id: savedEvent.id,
+      eventId: savedEvent.eventId,
+      algorithmInstanceId,
+      name: savedEvent.name,
+      number: savedEvent.number,
+      timestamp: savedEvent.timestamp,
+      createdBy: savedEvent.createdBy,
+      transferIds: savedEvent.transferIds,
+      recipients: savedEvent.recipients
+    });
 
     if (
       this.splitMode.isClientMode &&
@@ -350,7 +364,7 @@ export class EventsService {
     });
 
     const createdBy = await this.catalog.getParticipantId();
-    return await this.algorithmEventsRepository.save(
+    const savedEvent = await this.algorithmEventsRepository.save(
       this.algorithmEventsRepository.create({
         id: v7(),
         eventId: createEvent.eventId,
@@ -364,6 +378,19 @@ export class EventsService {
         recipients: createEvent.recipients
       })
     );
+
+    this.eventsGateway.sendUpdateToClients("event:algorithm:create", {
+      id: savedEvent.id,
+      eventId: savedEvent.eventId,
+      algorithmInstanceId,
+      name: savedEvent.name,
+      number: savedEvent.number,
+      timestamp: savedEvent.timestamp,
+      createdBy: savedEvent.createdBy,
+      transferIds: savedEvent.transferIds,
+      recipients: savedEvent.recipients
+    });
+    return savedEvent;
   }
 
   async uploadAlgorithmEventData({
@@ -835,7 +862,7 @@ export class EventsService {
       return;
     }
 
-    await this.algorithmEventsRepository.save(
+    const savedEvent = await this.algorithmEventsRepository.save(
       this.algorithmEventsRepository.create({
         id: v7(),
         eventId: body.event.eventId,
@@ -849,6 +876,18 @@ export class EventsService {
         recipients: body.event.recipients
       })
     );
+
+    this.eventsGateway.sendUpdateToClients("event:algorithm:create", {
+      id: savedEvent.id,
+      eventId: savedEvent.eventId,
+      algorithmInstanceId: body.algorithmInstanceId,
+      name: savedEvent.name,
+      number: savedEvent.number,
+      timestamp: savedEvent.timestamp,
+      createdBy: savedEvent.createdBy,
+      transferIds: savedEvent.transferIds,
+      recipients: savedEvent.recipients
+    });
 
     this.eventEmitter.emit(`event.created.${body.algorithmInstanceId}`);
   }

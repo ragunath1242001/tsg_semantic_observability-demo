@@ -1,3 +1,5 @@
+import { PassThrough } from "stream";
+
 export interface JobInfo {
   apiVersion?: string;
   kind?: string;
@@ -118,6 +120,8 @@ export interface IOrchestrationService {
    * Get logs for a specific pod (container).
    */
   getPodLogs(podName: string): Promise<string>;
+
+  watchPodLogs(podName: string, tailLines?: number): Promise<PassThrough>;
 }
 
 export const IOrchestrationService = Symbol("IOrchestrationService");

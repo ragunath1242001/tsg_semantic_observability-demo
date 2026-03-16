@@ -13,9 +13,11 @@ interface ClientWithDates extends ClientDto {
   modifiedDate?: Date;
 }
 
+import { canAccessRoute } from "@tsg-dsp/common-ui/router/route-permissions";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 
 import jwkSchema from "../assets/jwk.schema.json";
+import { useAuthStore } from "../stores/user";
 import { OAUTH_GRANTS } from "../utils/constants";
 import { injectStrict } from "../utils/injectTyped";
 import {
@@ -31,17 +33,33 @@ import { AxiosKey } from "../utils/symbols";
 const http = injectStrict(AxiosKey);
 
 const toast = useToast();
+const authStore = useAuthStore();
 
-const userStore = useUserStore();
+useUserStore();
 
 const canCreateClient = computed(() =>
-  userStore.canAccessRoute(Action.CREATE, Resource.SSO_CLIENT)
+  authStore.user
+    ? canAccessRoute(
+        { action: Action.CREATE, resource: Resource.SSO_CLIENT },
+        authStore.user.permissions
+      )
+    : false
 );
 const canEditClient = computed(() =>
-  userStore.canAccessRoute(Action.UPDATE, Resource.SSO_CLIENT)
+  authStore.user
+    ? canAccessRoute(
+        { action: Action.UPDATE, resource: Resource.SSO_CLIENT },
+        authStore.user.permissions
+      )
+    : false
 );
 const canDeleteClient = computed(() =>
-  userStore.canAccessRoute(Action.DELETE, Resource.SSO_CLIENT)
+  authStore.user
+    ? canAccessRoute(
+        { action: Action.DELETE, resource: Resource.SSO_CLIENT },
+        authStore.user.permissions
+      )
+    : false
 );
 
 const submitted = ref(false);
@@ -269,14 +287,15 @@ const saveClient = async () => {
 
   // Validate required fields based on auth method
   const hasRequiredFields =
-    client?.value.name?.trim() &&
-    client?.value.clientId?.trim() &&
-    client?.value.permissions?.length > 0;
+    client?.value?.name?.trim() &&
+    client?.value?.description?.trim() &&
+    client?.value?.clientId?.trim() &&
+    client?.value?.permissions?.length > 0;
 
   const hasSecretIfNeeded =
-    !needsClientSecret.value || client?.value.clientSecret?.trim();
+    !needsClientSecret.value || client?.value?.clientSecret?.trim();
 
-  const hasKeyIfNeeded = !usesPrivateKeyJwt.value || client?.value.jwk;
+  const hasKeyIfNeeded = !usesPrivateKeyJwt.value || client?.value?.jwk;
 
   if (hasRequiredFields && hasSecretIfNeeded && hasKeyIfNeeded) {
     if (client.value.id) {
@@ -284,8 +303,14 @@ const saveClient = async () => {
     } else {
       await createClient();
     }
+    await load();
   }
-  await load();
+  toast.add({
+    severity: "error",
+    summary: "Validation Failed",
+    detail: "Please fill in all required fields.",
+    life: 5000
+  });
 };
 
 const deleteClient = async () => {
@@ -651,14 +676,23 @@ onMounted(async () => {
 
             <div class="field md:col-span-2">
               <label for="description" class="block text-sm font-medium mb-2">
-                Description
+                Description <span class="text-red-500">*</span>
               </label>
               <Textarea
                 id="description"
                 v-model.trim="client.description"
                 placeholder="Brief description of the client application"
                 rows="2"
+                :invalid="submitted && !client.description"
                 class="w-full" />
+              <small v-if="submitted && !client.clientId" class="text-red-500">
+                Client ID is required
+              </small>
+              <small
+                v-if="submitted && !client.description"
+                class="text-red-500">
+                Description is required
+              </small>
             </div>
           </div>
         </div>

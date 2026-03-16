@@ -257,22 +257,22 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
       }
     },
 
-    _onInternalEvent(data: any) {
+    _onInternalEvent(data: InternalEventDto) {
       this.addEventToAlgorithmInstance(
-        data.algorithmInstance.id,
+        data.algorithmInstanceId,
         data,
         "internal"
       );
-      this.refreshAlgorithmInstance(data.algorithmInstance.id);
+      this.refreshAlgorithmInstance(data.algorithmInstanceId);
     },
 
-    _onAlgorithmEvent(data: any) {
+    _onAlgorithmEvent(data: AlgorithmEventDto) {
       this.addEventToAlgorithmInstance(
-        data.algorithmInstance.id,
+        data.algorithmInstanceId,
         data,
         "algorithm"
       );
-      this.refreshAlgorithmInstance(data.algorithmInstance.id);
+      this.refreshAlgorithmInstance(data.algorithmInstanceId);
     },
 
     bindEvents() {

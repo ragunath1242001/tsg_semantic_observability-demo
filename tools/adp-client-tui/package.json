@@ -1,0 +1,47 @@
+{
+  "name": "@tsg-dsp/adp-client-tui",
+  "version": "0.17.0",
+  "description": "Terminal User Interface for the Analytics Data Plane (Client Mode)",
+  "engines": {
+    "node": ">= 22"
+  },
+  "bin": {
+    "adp-tui": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build:bin": "bun build src/index.tsx --compile --target=bun-linux-x64 --outfile adp-tui",
+    "dev": "tsx src/index.tsx",
+    "start": "node dist/index.js"
+  },
+  "type": "module",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway.git",
+    "directory": "tools/adp-client-tui"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^18.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "chalk": "^5.5.0",
+    "commander": "^14.0.2",
+    "form-data": "^4.0.2",
+    "fullscreen-ink": "^0.1.0",
+    "ink": "^5.1.0",
+    "open": "^10.1.0",
+    "react": "^18.3.1",
+    "socket.io-client": "^4.8.3"
+  },
+  "patchedDependencies": {
+    "ink@5.2.1": "patches/ink@5.2.1.patch"
+  }
+}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Action, Resource } from "@tsg-dsp/common-dtos";
-import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import { canAccessRoute } from "@tsg-dsp/common-ui/router/route-permissions";
 import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
@@ -9,6 +9,7 @@ import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 
 import { usePermissions } from "../composables/usePermissions";
+import { useAuthStore } from "../stores/user";
 import { OAUTH_GRANTS } from "../utils/constants";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
@@ -16,15 +17,30 @@ import { AxiosKey } from "../utils/symbols";
 const http = injectStrict(AxiosKey);
 
 const toast = useToast();
-const userStore = useUserStore();
+const authStore = useAuthStore();
 const canCreateUser = computed(() =>
-  userStore.canAccessRoute(Action.CREATE, Resource.SSO_USER)
+  authStore.user
+    ? canAccessRoute(
+        { action: Action.CREATE, resource: Resource.SSO_USER },
+        authStore.user.permissions
+      )
+    : false
 );
 const canEditUser = computed(() =>
-  userStore.canAccessRoute(Action.UPDATE, Resource.SSO_USER)
+  authStore.user
+    ? canAccessRoute(
+        { action: Action.UPDATE, resource: Resource.SSO_USER },
+        authStore.user.permissions
+      )
+    : false
 );
 const canDeleteUser = computed(() =>
-  userStore.canAccessRoute(Action.DELETE, Resource.SSO_USER)
+  authStore.user
+    ? canAccessRoute(
+        { action: Action.DELETE, resource: Resource.SSO_USER },
+        authStore.user.permissions
+      )
+    : false
 );
 
 const submitted = ref(false);

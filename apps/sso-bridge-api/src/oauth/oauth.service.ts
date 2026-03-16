@@ -14,6 +14,9 @@ import crypto from "crypto";
 import { Request, Response } from "express";
 import { decodeJwt } from "jose";
 
+import { RecoveryCodeService } from "../auth/recovery-code.service.js";
+import { TotpService } from "../auth/totp.service.js";
+import { TwoFactorHelper } from "../auth/two-factor.helper.js";
 import { ClientsService } from "../clients/clients.service.js";
 import { OauthUser } from "../model/user.dao.js";
 import { UsersService } from "../users/users.service.js";
@@ -27,7 +30,10 @@ export class OauthService {
     private readonly serverConfig: ServerConfig,
     private readonly usersService: UsersService,
     private readonly clientsService: ClientsService,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    private readonly totpService: TotpService,
+    private readonly recoveryCodeService: RecoveryCodeService,
+    private readonly twoFactorHelper: TwoFactorHelper
   ) {}
   private static readonly codes = new Map<
     string,
@@ -105,12 +111,13 @@ export class OauthService {
   async login(
     username: string,
     password: string,
-    request: AuthorizationRequest
+    request: AuthorizationRequest,
+    totpToken?: string
   ) {
     const user = await this.usersService.validateUser(username, password);
 
     if (user.require2FA) {
-      const has2FACredentials = await this.usersService.has2FACredentials(
+      const has2FACredentials = await this.twoFactorHelper.has2FACredentials(
         user.id
       );
       if (!has2FACredentials) {
@@ -118,6 +125,36 @@ export class OauthService {
           "2FA setup required. Please complete 2FA setup before using OAuth login.",
           HttpStatus.FORBIDDEN
         );
+      }
+
+      if (!totpToken) {
+        const hasTotpCredentials =
+          await this.twoFactorHelper.hasVerifiedTotpCredentials(user.id);
+        const hasWebAuthnCredentials =
+          await this.twoFactorHelper.hasWebAuthnCredentials(user.id);
+        return {
+          status: "2fa_required" as const,
+          hasTotpCredentials,
+          hasWebAuthnCredentials
+        };
+      }
+
+      const isValidTotp = await this.totpService.verifyAnyCredential(
+        user.id,
+        totpToken
+      );
+      if (!isValidTotp) {
+        const isValidRecovery =
+          await this.recoveryCodeService.verifyAndUseRecoveryCode(
+            user.id,
+            totpToken
+          );
+        if (!isValidRecovery) {
+          throw new AppError(
+            "Invalid 2FA or recovery code",
+            HttpStatus.BAD_REQUEST
+          );
+        }
       }
     }
 
@@ -131,14 +168,33 @@ export class OauthService {
     redirect: boolean,
     username?: string,
     password?: string,
-    currentUser?: OauthUser
+    currentUser?: OauthUser,
+    totpToken?: string
   ) {
-    let loginResult: { url: string; user: OauthUser };
+    let loginResult:
+      | { url: string; user: OauthUser }
+      | {
+          status: "2fa_required";
+          hasTotpCredentials: boolean;
+          hasWebAuthnCredentials: boolean;
+        };
     if (username && password) {
-      loginResult = await this.login(username, password, authorizationRequest);
+      loginResult = await this.login(
+        username,
+        password,
+        authorizationRequest,
+        totpToken
+      );
+
+      if ("status" in loginResult && loginResult.status === "2fa_required") {
+        response.status(HttpStatus.OK).json(loginResult);
+        return;
+      }
+
+      const completedLogin = loginResult as { url: string; user: OauthUser };
       const session = getSession(request);
       if (session && !session.user) {
-        session.user = loginResult.user;
+        session.user = completedLogin.user;
       }
     } else if (currentUser) {
       loginResult = await this.handleAuthorizationRequest(
@@ -152,11 +208,12 @@ export class OauthService {
       const client = await this.clientsService.getClient(
         authorizationRequest.client_id
       );
+      const completedLogin = loginResult as { url: string; user: OauthUser };
       const isValidRedirect = client.redirectUris.some((allowedUri) =>
         new RegExp(allowedUri).test(authorizationRequest.redirect_uri)
       );
       if (isValidRedirect) {
-        response.redirect(loginResult.url);
+        response.redirect(completedLogin.url);
       } else {
         throw new AppError("Invalid redirect uri", HttpStatus.BAD_REQUEST);
       }

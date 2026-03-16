@@ -10,6 +10,7 @@ import {
   TokenResponse,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
+import { fail } from "assert";
 import { plainToInstance } from "class-transformer";
 import { Request, Response } from "express";
 import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
@@ -153,6 +154,11 @@ describe("Oauth", () => {
         redirect_uri: "http://localhost:3000",
         state: "1234"
       });
+      if ("status" in loginRedirect) {
+        fail(
+          `Login failed: ${loginRedirect.status} (2FA setup may be required via the web UI first)`
+        );
+      }
       const redirectUrl = new URL(loginRedirect.url);
       expect(redirectUrl.searchParams.get("state")).toEqual("1234");
       expect(redirectUrl.searchParams.get("code")).toBeDefined();
@@ -164,13 +170,18 @@ describe("Oauth", () => {
         redirect_uri: "http://localhost:3000",
         state: "1234"
       });
+      if ("status" in loginRedirect2) {
+        fail(
+          `Login failed: ${loginRedirect2.status} (2FA setup may be required via the web UI first)`
+        );
+      }
       const redirectUrl2 = new URL(loginRedirect2.url);
       expect(redirectUrl2.pathname).toEqual("/");
       expect(redirectUrl2.hash).toEqual(expect.stringContaining("state=1234"));
       expect(redirectUrl2.hash).toEqual(expect.stringContaining("code="));
     });
     it("Response types", async () => {
-      let loginRedirect: { url: string };
+      let loginRedirect: { url: string } | { status: string };
       let redirectUrl: URL;
       loginRedirect = await oauth.login("Alice", "password", {
         response_type: "code",
@@ -180,6 +191,11 @@ describe("Oauth", () => {
         redirect_uri: "http://localhost:3000",
         state: "1234"
       });
+      if ("status" in loginRedirect) {
+        fail(
+          `Login failed: ${loginRedirect.status} (2FA setup may be required via the web UI first)`
+        );
+      }
       redirectUrl = new URL(loginRedirect.url);
       expect(redirectUrl.searchParams.get("state")).toEqual("1234");
       expect(redirectUrl.searchParams.get("code")).toBeDefined();
@@ -192,6 +208,11 @@ describe("Oauth", () => {
         redirect_uri: "http://localhost:3000",
         state: "1234"
       });
+      if ("status" in loginRedirect) {
+        fail(
+          `Login failed: ${loginRedirect.status} (2FA setup may be required via the web UI first)`
+        );
+      }
       redirectUrl = new URL(loginRedirect.url);
       expect(redirectUrl.searchParams.get("state")).toEqual("1234");
       expect(redirectUrl.searchParams.get("token")).toBeDefined();
@@ -206,6 +227,11 @@ describe("Oauth", () => {
         state: "1234",
         nonce: "5678"
       });
+      if ("status" in loginRedirect) {
+        fail(
+          `Login failed: ${loginRedirect.status} (2FA setup may be required via the web UI first)`
+        );
+      }
       redirectUrl = new URL(loginRedirect.url);
       expect(redirectUrl.searchParams.get("state")).toEqual("1234");
       expect(redirectUrl.searchParams.get("id_token")).toBeDefined();
@@ -213,7 +239,7 @@ describe("Oauth", () => {
       expect(claims.nonce).toEqual("5678");
     });
     it("PKCE", async () => {
-      let loginRedirect: { url: string };
+      let loginRedirect: { url: string } | { status: string };
       let redirectUrl: URL;
       loginRedirect = await oauth.login("Alice", "password", {
         response_type: "code",
@@ -224,6 +250,12 @@ describe("Oauth", () => {
         code_challenge: "randomChallenge",
         code_challenge_method: "plain"
       });
+      if ("status" in loginRedirect) {
+        fail(
+          `Login failed: ${loginRedirect.status} (2FA setup may be required via the web UI first)`
+        );
+      }
+
       redirectUrl = new URL(loginRedirect.url);
       expect(redirectUrl.searchParams.get("state")).toEqual("1234");
       expect(redirectUrl.searchParams.get("code")).toBeDefined();
@@ -236,6 +268,11 @@ describe("Oauth", () => {
         code_challenge: "randomChallenge",
         code_challenge_method: "S256"
       });
+      if ("status" in loginRedirect) {
+        fail(
+          `Login failed: ${loginRedirect.status} (2FA setup may be required via the web UI first)`
+        );
+      }
       redirectUrl = new URL(loginRedirect.url);
       expect(redirectUrl.searchParams.get("state")).toEqual("1234");
       expect(redirectUrl.searchParams.get("code")).toBeDefined();
@@ -341,6 +378,11 @@ describe("Oauth", () => {
         redirect_uri: "http://localhost:3000",
         state: "1234"
       });
+      if ("status" in loginRedirect) {
+        fail(
+          `Login failed: ${loginRedirect.status} (2FA setup may be required via the web UI first)`
+        );
+      }
       const redirectUrl = new URL(loginRedirect.url);
       expect(redirectUrl.pathname).toEqual("/");
       expect(redirectUrl.searchParams.get("state")).toEqual("1234");

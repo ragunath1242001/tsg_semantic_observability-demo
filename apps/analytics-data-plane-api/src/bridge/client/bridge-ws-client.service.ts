@@ -19,6 +19,11 @@ type Listener = {
   handler: (...args: unknown[]) => void | Promise<void>;
 };
 
+type QueuedMessage = {
+  event: string;
+  payload: unknown;
+};
+
 /**
  * Default chunk size for large event data transfers (512KB).
  * Socket.IO default maxHttpBufferSize is 1MB, so we use a smaller chunk
@@ -26,12 +31,20 @@ type Listener = {
  */
 const DEFAULT_CHUNK_SIZE = 512 * 1024;
 
+/**
+ * How long (ms) to wait for the bridge WS to reconnect before giving up
+ * on a pending ack-based call.
+ */
+const RECONNECT_WAIT_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
 @Injectable()
 export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(this.constructor.name);
   private socket?: Socket;
   private readonly listeners: Listener[] = [];
   private readonly chunkSize: number;
+  /** Messages queued while the socket is temporarily disconnected. */
+  private readonly pendingQueue: QueuedMessage[] = [];
 
   constructor(
     private readonly config: RootConfig,
@@ -52,13 +65,15 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
       return;
     }
 
-    const path = "/bridge/ws";
+    const parsedUrl = new URL(url);
+    const basePath = parsedUrl.pathname.replace(/\/$/, "");
+    const path = `${basePath}/bridge/ws`;
 
     const token = this.authConfig.enabled
       ? await this.authClientService.getToken()
       : undefined;
 
-    this.socket = io(url, {
+    this.socket = io(parsedUrl.origin, {
       path,
       transports: ["websocket"],
       reconnection: true,
@@ -67,6 +82,7 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
 
     this.socket.on("connect", () => {
       this.logger.log(`Connected to bridge WS peer (${this.socket?.id})`);
+      this.drainQueue();
     });
 
     this.socket.on("disconnect", (reason) => {
@@ -75,6 +91,38 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
 
     this.socket.on("connect_error", (err) => {
       this.logger.error(`Bridge WS connect error: ${String(err)}`);
+    });
+
+    // Refresh the auth token before each reconnection attempt so that an
+    // expired token does not permanently block automatic reconnects.
+    this.socket.io.on("reconnect_attempt", async (attempt) => {
+      this.logger.log(`Bridge WS reconnect attempt #${attempt}`);
+      if (this.authConfig.enabled) {
+        try {
+          const newToken = await this.authClientService.getToken();
+          this.socket!.io.opts.extraHeaders = {
+            authorization: `Bearer ${newToken}`
+          };
+        } catch (err) {
+          this.logger.error(
+            `Bridge WS failed to refresh token for reconnect: ${String(err)}`
+          );
+        }
+      }
+    });
+
+    this.socket.io.on("reconnect", (attempt) => {
+      this.logger.log(`Bridge WS reconnected after ${attempt} attempt(s)`);
+    });
+
+    this.socket.io.on("reconnect_error", (err) => {
+      this.logger.warn(`Bridge WS reconnect error: ${String(err)}`);
+    });
+
+    this.socket.io.on("reconnect_failed", () => {
+      this.logger.error(
+        "Bridge WS failed to reconnect; pending queue will be retained until next connect"
+      );
     });
 
     for (const { event, handler } of this.listeners) {
@@ -102,12 +150,71 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
   }
 
   emit(event: string, payload: unknown): void {
-    if (!this.socket?.connected) {
-      this.logger.warn(`Bridge WS not connected; skipping emit ${event}`);
+    if (!this.socket) {
+      this.logger.warn(`Bridge WS not initialised; skipping emit ${event}`);
+      return;
+    }
+
+    if (!this.socket.connected) {
+      this.logger.warn(
+        `Bridge WS not connected; queuing emit ${event} (queue length: ${this.pendingQueue.length + 1})`
+      );
+      this.pendingQueue.push({ event, payload });
       return;
     }
 
     this.socket.emit(event, payload);
+  }
+
+  /**
+   * Re-emits all messages that were queued while the socket was disconnected.
+   * Called automatically on every successful (re)connect.
+   */
+  private drainQueue(): void {
+    if (this.pendingQueue.length === 0) {
+      return;
+    }
+
+    this.logger.log(
+      `Bridge WS (re)connected; draining ${this.pendingQueue.length} queued message(s)`
+    );
+
+    while (this.pendingQueue.length > 0 && this.socket?.connected) {
+      const item = this.pendingQueue.shift()!;
+      this.logger.debug(`Sending queued message: ${item.event}`);
+      this.socket.emit(item.event, item.payload);
+    }
+  }
+
+  /**
+   * Returns a Promise that resolves when the socket connects (or immediately
+   * if it is already connected).  Rejects after {@link RECONNECT_WAIT_TIMEOUT_MS}
+   * if no connection has been established.
+   */
+  private waitForConnection(
+    timeoutMs = RECONNECT_WAIT_TIMEOUT_MS
+  ): Promise<void> {
+    if (this.socket?.connected) {
+      return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.socket?.off("connect", onConnect);
+        reject(
+          new Error(
+            `Timed out waiting for bridge WS to reconnect after ${timeoutMs}ms`
+          )
+        );
+      }, timeoutMs);
+
+      const onConnect = () => {
+        clearTimeout(timer);
+        resolve();
+      };
+
+      this.socket?.once("connect", onConnect);
+    });
   }
 
   /**
@@ -118,11 +225,18 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
     algorithmInstanceId: string;
     event: CreateAlgorithmEventDto;
   }): Promise<void> {
-    if (!this.socket?.connected) {
+    if (!this.socket) {
       this.logger.warn(
-        `Bridge WS not connected; skipping emit algorithm event create for ${payload.event.eventId}`
+        `Bridge WS not initialised; skipping emit algorithm event create for ${payload.event.eventId}`
       );
       return;
+    }
+
+    if (!this.socket.connected) {
+      this.logger.warn(
+        `Bridge WS not connected; waiting to emit algorithm event create for ${payload.event.eventId}`
+      );
+      await this.waitForConnection();
     }
 
     this.logger.log(
@@ -149,11 +263,18 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
     eventId: string;
     eventData: Buffer;
   }): Promise<void> {
-    if (!this.socket?.connected) {
+    if (!this.socket) {
       this.logger.warn(
-        `Bridge WS not connected; skipping emit algorithm event data for ${eventId}`
+        `Bridge WS not initialised; skipping emit algorithm event data for ${eventId}`
       );
       return;
+    }
+
+    if (!this.socket.connected) {
+      this.logger.warn(
+        `Bridge WS not connected; waiting to emit algorithm event data for ${eventId}`
+      );
+      await this.waitForConnection();
     }
 
     // If data is small enough, send it in a single message

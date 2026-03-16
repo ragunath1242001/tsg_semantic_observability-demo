@@ -14,7 +14,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { hostname } from "os";
-import { Writable } from "stream";
+import { PassThrough } from "stream";
 
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { KubernetesConfig, RootConfig } from "../config.js";
@@ -390,7 +390,7 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
     });
   }
 
-  async watchPodLogs(jobName: string) {
+  async watchPodLogs(jobName: string, tailLines = 10) {
     const podList = await this.coreV1Api.listNamespacedPod({
       namespace: this.kubernetesConfig.namespace,
       labelSelector: `app=${jobName}`
@@ -414,22 +414,11 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
     const streamOptions = {
       follow: true, // Stream logs in real-time
       pretty: true, // Avoid extra formatting
-      tailLines: 10 // Optional: Start with the last 10 lines of logs
+      tailLines // Optional: Start with the last `tailLines` lines of logs
     };
 
-    const write = (
-      chunk: Buffer | string,
-      _encoding: BufferEncoding,
-      callback: (error?: Error | null) => void
-    ) => {
-      this.logger.log(chunk.toString()); // Output the log data
-      callback();
-    };
-
-    // Create a readable stream for logs
-    const logStreamWritable = new Writable({
-      write
-    });
+    // Create a PassThrough stream so logs can be both received from k8s and piped to a consumer
+    const logStreamWritable = new PassThrough();
 
     await logStream.log(
       this.kubernetesConfig.namespace,

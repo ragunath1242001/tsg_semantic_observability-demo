@@ -67,6 +67,7 @@ export class OauthController {
     redirect: boolean,
     @Body("username") username?: string,
     @Body("password") password?: string,
+    @Body("totp_token") totpToken?: string,
     @User() user?: OauthUser
   ) {
     await this.oauthService.loginHandler(
@@ -76,7 +77,8 @@ export class OauthController {
       redirect,
       username,
       password,
-      user
+      user,
+      totpToken
     );
   }
 

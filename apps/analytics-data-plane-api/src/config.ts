@@ -68,6 +68,12 @@ export class FilesConfig {
   @IsOptional()
   @IsInt()
   public maxInlineMetadataColumns: number = 200;
+
+  @Description("Recreate file metadata for existing files")
+  @IsBoolean()
+  @IsOptional()
+  @Transform(valueToBoolean)
+  public readonly recreateFileMetadata: boolean = false;
 }
 
 export class RuntimeConfig {

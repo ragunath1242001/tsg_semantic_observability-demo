@@ -1,11 +1,6 @@
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import {
-  PaginationOptionsDto,
-  PaginationQuery,
-  Requires,
-  UsePagination
-} from "@tsg-dsp/common-api";
+import { Requires } from "@tsg-dsp/common-api";
 import { Action, Resource } from "@tsg-dsp/common-dtos";
 
 import { AuthGuard } from "../auth/auth.guard.js";
@@ -19,12 +14,9 @@ export class PermissionsController {
 
   @Get()
   @Requires(Action.READ, Resource.SSO_CONFIG)
-  @UsePagination()
   @ApiOperation({ summary: "Get all available permissions" })
   @ApiResponse({ status: 200, description: "List of permissions returned." })
-  async getPermissions(
-    @PaginationQuery() paginationOptions: PaginationOptionsDto
-  ) {
-    return this.permissionsService.getAvailablePermissions(paginationOptions);
+  async getPermissions() {
+    return this.permissionsService.getAvailablePermissions();
   }
 }

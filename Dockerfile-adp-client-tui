@@ -1,0 +1,20 @@
+# Build image
+FROM oven/bun:1 AS build
+WORKDIR /app
+
+# Install dependencies (layer cached unless package.json, bun.lock, or patches change)
+COPY tools/adp-client-tui/package.json tools/adp-client-tui/bun.lock ./
+COPY tools/adp-client-tui/patches patches
+RUN bun install --frozen-lockfile
+
+# Compile to self-contained binary
+COPY tools/adp-client-tui/src src
+RUN bun build src/index.tsx --compile --target=bun-linux-x64 --outfile adp-tui
+
+# Deploy image
+FROM cgr.dev/chainguard/glibc-dynamic:latest AS deploy
+WORKDIR /app
+
+COPY --from=build /app/adp-tui .
+
+ENTRYPOINT ["/app/adp-tui"]
