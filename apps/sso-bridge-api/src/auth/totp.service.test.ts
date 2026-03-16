@@ -3,7 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
 import { Request } from "express";
-import { authenticator } from "otplib";
+import { generate, generateSecret } from "otplib";
 
 import { RootConfig } from "../config.js";
 import { OauthClient } from "../model/client.dao.js";
@@ -80,7 +80,7 @@ describe("TotpService", () => {
     });
 
     it("should verify token against any verified credential", async () => {
-      const secret1 = authenticator.generateSecret();
+      const secret1 = generateSecret();
       const cred1 = await service["createCredential"](
         testUser.id,
         secret1,
@@ -89,7 +89,7 @@ describe("TotpService", () => {
       cred1.isVerified = true;
       await service.credentialRepository.save(cred1);
 
-      const secret2 = authenticator.generateSecret();
+      const secret2 = generateSecret();
       const cred2 = await service["createCredential"](
         testUser.id,
         secret2,
@@ -98,7 +98,7 @@ describe("TotpService", () => {
       cred2.isVerified = true;
       await service.credentialRepository.save(cred2);
 
-      const token = authenticator.generate(secret2);
+      const token = await generate({ secret: secret2 });
       const result = await service.verifyAnyCredential(testUser.id, token);
 
       expect(result).toBe(true);
@@ -111,7 +111,7 @@ describe("TotpService", () => {
     });
 
     it("should return false for invalid token", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const cred = await service["createCredential"](
         testUser.id,
         secret,
@@ -126,10 +126,10 @@ describe("TotpService", () => {
     });
 
     it("should ignore unverified credentials", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       await service["createCredential"](testUser.id, secret, "Device");
 
-      const token = authenticator.generate(secret);
+      const token = await generate({ secret });
       const result = await service.verifyAnyCredential(testUser.id, token);
 
       expect(result).toBe(false);
@@ -157,7 +157,7 @@ describe("TotpService", () => {
     });
 
     it("should reuse existing registration session when getting QR code", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const credential = await service["createCredential"](
         testUser.id,
         secret,
@@ -214,14 +214,14 @@ describe("TotpService", () => {
     });
 
     it("should verify 2FA setup with valid token", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const credential = await service["createCredential"](
         testUser.id,
         secret,
         "Device"
       );
 
-      const token = authenticator.generate(secret);
+      const token = await generate({ secret });
 
       const request = {
         session: {
@@ -264,7 +264,7 @@ describe("TotpService", () => {
     });
 
     it("should throw error with invalid token during setup", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const credential = await service["createCredential"](
         testUser.id,
         secret,
@@ -316,14 +316,14 @@ describe("TotpService", () => {
     });
 
     it("should complete TOTP registration", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const credential = await service["createCredential"](
         testUser.id,
         secret,
         "Device"
       );
 
-      const token = authenticator.generate(secret);
+      const token = await generate({ secret });
 
       const request = {
         session: {
@@ -365,7 +365,7 @@ describe("TotpService", () => {
     it("should list TOTP credentials for user with session", async () => {
       await service.credentialRepository.delete({ userId: testUser.id });
 
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const cred = await service["createCredential"](
         testUser.id,
         secret,
@@ -398,7 +398,7 @@ describe("TotpService", () => {
     });
 
     it("should delete TOTP credential for user with session", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const cred = await service["createCredential"](
         testUser.id,
         secret,

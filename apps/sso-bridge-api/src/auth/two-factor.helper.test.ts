@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
-import { authenticator } from "otplib";
+import { generateSecret } from "otplib";
 
 import { RootConfig } from "../config.js";
 import { OauthClient } from "../model/client.dao.js";
@@ -92,7 +92,7 @@ describe("TwoFactorHelper", () => {
     });
 
     it("should return true when user has verified TOTP credentials", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const credential = await totpService["createCredential"](
         testUser.id,
         secret,
@@ -106,7 +106,7 @@ describe("TwoFactorHelper", () => {
     });
 
     it("should return false when user has unverified TOTP credentials", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       await totpService["createCredential"](testUser.id, secret, "Test Device");
 
       const result = await helper.has2FACredentials(testUser.id);
@@ -130,7 +130,7 @@ describe("TwoFactorHelper", () => {
 
     it("should return true when user has both TOTP and WebAuthn credentials", async () => {
       // Add TOTP credential
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const totpCred = await totpService["createCredential"](
         testUser.id,
         secret,
@@ -162,7 +162,7 @@ describe("TwoFactorHelper", () => {
     });
 
     it("should return true when user has verified TOTP credentials", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const credential = await totpService["createCredential"](
         testUser.id,
         secret,
@@ -176,7 +176,7 @@ describe("TwoFactorHelper", () => {
     });
 
     it("should return false when user has only unverified TOTP credentials", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       await totpService["createCredential"](testUser.id, secret, "Test Device");
 
       const result = await helper.hasVerifiedTotpCredentials(testUser.id);
@@ -215,7 +215,7 @@ describe("TwoFactorHelper", () => {
     });
 
     it("should return count of verified TOTP credentials only", async () => {
-      const secret1 = authenticator.generateSecret();
+      const secret1 = generateSecret();
       const cred1 = await totpService["createCredential"](
         testUser.id,
         secret1,
@@ -224,7 +224,7 @@ describe("TwoFactorHelper", () => {
       cred1.isVerified = true;
       await totpService.credentialRepository.save(cred1);
 
-      const secret2 = authenticator.generateSecret();
+      const secret2 = generateSecret();
       const cred2 = await totpService["createCredential"](
         testUser.id,
         secret2,
@@ -234,7 +234,7 @@ describe("TwoFactorHelper", () => {
       await totpService.credentialRepository.save(cred2);
 
       // Add an unverified one
-      const secret3 = authenticator.generateSecret();
+      const secret3 = generateSecret();
       await totpService["createCredential"](testUser.id, secret3, "Device 3");
 
       const count = await helper["getVerifiedTotpCredentialsCount"](
@@ -278,7 +278,7 @@ describe("TwoFactorHelper", () => {
 
   describe("isInitial2FASetup", () => {
     it("should return true for first TOTP credential when no WebAuthn exists", async () => {
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const credential = await totpService["createCredential"](
         testUser.id,
         secret,
@@ -292,7 +292,7 @@ describe("TwoFactorHelper", () => {
     });
 
     it("should return false for second TOTP credential", async () => {
-      const secret1 = authenticator.generateSecret();
+      const secret1 = generateSecret();
       const cred1 = await totpService["createCredential"](
         testUser.id,
         secret1,
@@ -301,7 +301,7 @@ describe("TwoFactorHelper", () => {
       cred1.isVerified = true;
       await totpService.credentialRepository.save(cred1);
 
-      const secret2 = authenticator.generateSecret();
+      const secret2 = generateSecret();
       const cred2 = await totpService["createCredential"](
         testUser.id,
         secret2,
@@ -327,7 +327,7 @@ describe("TwoFactorHelper", () => {
       await webAuthnService["credentialRepository"].save(webAuthnCred);
 
       // Add TOTP
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const totpCred = await totpService["createCredential"](
         testUser.id,
         secret,
@@ -382,7 +382,7 @@ describe("TwoFactorHelper", () => {
 
     it("should return false when WebAuthn is added but TOTP already exists", async () => {
       // Add TOTP first
-      const secret = authenticator.generateSecret();
+      const secret = generateSecret();
       const totpCred = await totpService["createCredential"](
         testUser.id,
         secret,

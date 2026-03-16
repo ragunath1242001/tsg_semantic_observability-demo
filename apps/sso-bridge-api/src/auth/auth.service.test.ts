@@ -3,6 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
 import { Request } from "express";
+import { generate, generateSecret } from "otplib";
 
 import { RootConfig } from "../config.js";
 import { OauthClient } from "../model/client.dao.js";
@@ -209,7 +210,7 @@ describe("AuthService", () => {
 
     it("should require 2FA verification when user has credentials", async () => {
       // Setup TOTP credential
-      const secret = totpService["generateSecret"]();
+      const secret = generateSecret();
       const credential = await totpService["createCredential"](
         user2FA.id,
         secret,
@@ -241,7 +242,7 @@ describe("AuthService", () => {
     });
 
     it("should verify 2FA with valid TOTP token", async () => {
-      const secret = totpService["generateSecret"]();
+      const secret = generateSecret();
       const credential = await totpService["createCredential"](
         user2FA.id,
         secret,
@@ -250,7 +251,7 @@ describe("AuthService", () => {
       credential.isVerified = true;
       await totpService.credentialRepository.save(credential);
 
-      const token = (await import("otplib")).authenticator.generate(secret);
+      const token = await generate({ secret });
 
       const request = {
         session: {
