@@ -1,0 +1,70 @@
+---
+id: catalog-management-controller-delete-dataset
+title: "Delete dataset"
+description: "Deletes a dataset from the catalog by ID."
+sidebar_label: "Delete dataset"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWU1vGzcQ/SsET22wlQzXJ90CywkEJI6ROO3BMAyKHEmMd0mGnLXiCvvfi1nuB/ejKXosIF9iPz4O5w3J3cnbE1cQpNcOtTV8xdeQA0JggimBIgCynbcFwwMwKVDkds+2r2yzXvCMWwde0LyN4it+HYc/CiP2UIDBa2vQ2zwH/6TqqOsYkWfcCS8KQPCBrx5O3IgC+IprxTPu4XupPSi+Ql9CxjVl5QQeeDZK9f4AbLNmdldn16aLlsXVeMaDPEAh+OrE8dXRCgG9NnteVY+0UHDWBAg0fnlxRf+MatGEjPEUC6WUEMKuzPNXXmX86uJiOmljXkSuVZfPZh2pv0+p76zfaqXA8IxLaxAMEkk4l2tZF3b5LRDzNFVit99A1qX0tA2oo45YybHejMMPUbicoM8QbOkl3Fp8Z0ujKLuAAsvw83lXF1fs1iLrJkmr0qVMWWzBp1OuLq6qjBcQgtjDXOp9cNpK2ngIVGffpMiUhcCMRQY/dMAFrQreW//zTJMsq/Q8PcTqdHIbCY8ZR431zBsKvkbLK/rJeABZeo2v9SHdgvDg+erhscpO3IoSD5cUNJ6OlXSLZsv5Ix0vFHs63O21YP29oBULwIOlW9Od1fqIr/hSOL0sOu6yuXTLJvbypFVFEsC/xNvz2Kf5hQ5JPAdten3RI5DxXW6PNYUA6/Vf9UG7bjYzSOtiBOlBRFli7yEmvppFqcZCjZlTLOOlUzMx59AsKWvKnUNp70GWU/IsnPFY3TF5Ds0Svc1GDGrQYn0FetYYSdX3rCmWKu95U2yguifOgKninjjFBmqt2emR2AglWlvOCBgobTkTaKCzZU2gocqWNsUGGlvaBEoV0oVyuTAwENmjvc6UOcVStSlzDs1GD4uWO4cOlKfkWTjVn5Ln0HEV6JE1rkF8TadqI2uMjNVH1hQbK4+8KTZRHYkz4FhxJE6xVK2BvUUtmtfvPN6rHrLn0FT9kD2Pp1UY8ufxQTWGE/5hIK3KcMI8nlbH2VzL10FhGqivSccZAWklOs4ESvV3rAk0UN3RpliqtaNNoFShh70O6IcaO7BXmfAmUKo04c2AqdqEOQMOFCfUOTRVnVBnwFQ5emHCjtqXObBXnvAmUKo84c2AqfKEOQMOlCfUOTRVnlBnQOrdZK7p/yAeFBjUIg/n9ubc3pzbm3N7c25vzu3Nub05tzf/5/aGGpzWj2rMQXocNlA79s76QtBj4487nrVG0AHRTazUP8DrnRbbHNidhwAG6/vDDIACRZ6qtEVRGrIlgW0BjwCG4dEybQIKIyG0PqyMri+rH8aLuhXTZmdrK6qx2e6/vGeNOczuujfH0NrVgX1yYN7ebVhwIPWucURZONhjqFcCo5zVBrulBzEX7KMN2A71XOHJaswFRl00WPu8TkgSb9FKm2dMhHZdUOR4E+9G5toFYH9a/6zNnr33tnT97LBgn/AAfrRYKJ2zHvVLmgVaVohnGvTQ2ddMCsO2wIRSfXJN+5IxYdR4mkD2dcO0QfBCUnVCHQKJ4nIhYcHY09ObW4vw5ulpxQZlVbDTRtc11dFlpUCmWXoLTGkPEvNXlmvzDIodNR6YYEGbfT4qdncMFoxnnJzJuI+NsS0kGdtVxnMtwQTonWr+1gl5AHa5uKAL6PPmhIbVcnk8HheiHl5Yv182c8Pyw+b65vbLzW+Xi4vFAYu8PmPOBiyESSLHLxksfUUnR+zUO+7/6ZtHc4sQfuDS5UIbMqXrvE+NhfvAhdPdbW4b7b797fJZaUVW8MEGpFmn01YE+OrzqiL4ewn05CN/90X4+m7WNrTSgX5XfLUTeYCfyPrlc2N9/8r+/VPJrK4GFIaeti8iLyHu6TO8xs811WOV8QMIVRvjp2bgrZTgMJky+aJRpRb4+ubDzf0Nz2pHOrGsR0+zeoHZjE6nyLi3z2CqqksQ6W/Ksar+BhGhfLE=
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete dataset"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/catalog/dataset/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Deletes a dataset from the catalog by ID.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./catalog-management-controller-delete-dataset.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./catalog-management-controller-delete-dataset.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./catalog-management-controller-delete-dataset.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

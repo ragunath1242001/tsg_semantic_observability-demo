@@ -1,0 +1,70 @@
+---
+id: did-management-controller-delete-service
+title: "Delete DID service"
+description: "Deletes an existing DID service for this wallet"
+sidebar_label: "Delete DID service"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWE1v3DYQ/SsDnpJA2TVcn4SiQBA7hYHUKeIUPaTGYizOrphoSYUcee0u9N8LktoVpWVy6KU9+OI154OcN6SGj7MXklxlVcvKaFGKS2qIyQFqoEflWOkNXF5fgiP7oCqCtbHAtXKww6YhFoUwLVn03tfS+19f/oYaN7QlzW+NZmuahuxKhnlv4yyiEC1a3BKTdaL8vBcatyRKoaQohKVvnbIkRcm2o0IoH1eLXItCuKqmLYpyL/ip9R6OrdIb0fd33tG1RjtyXn9+duZ/puhEX4iLs59OFe+MvVdSkhaFqIxm0uyNsG0bVQV0yy/OW+5PQzD3X6jymWitzwWrGECENA+0EPSI27bxoo/kTGcrujH8znRa+ugcI3fux34XZxdwYxiOTpWR6VK6296TTV0uzi76QmzJOdxQLvRx8k81gd8BckwS7BAiSEMOtOF4KhZ+VbLW2B9HmkTZpxv7OWbnCHeAcFcIVhw8r/zkl2xE3/dh0y5ON+2QvxDXOizzvHv/v93zeaGqs4qfwrdusOP63E9jCWW5W0glxV1fpJpYLo46PzVufKkQY3XxdckvuiWuja890SkUF65FKZbYquX2aL+USi6HOuaWeyV7D4HsQyxCd2OYt/6QxHNwCGlMehQUYt2YXTDxAmPV3+GgvR0201WmjTNUljBAqYxeq40oTyTFIRFHi+m4EF0rZ3PMJcWYsqPNXOL3lqpuanQiKkRMWWo0lxQJBkuSNCtsJshG6YgutTyVpShTy5w0RZva5qQT1KlxVpyiT41z0iQL/piW02GRHu8yHSRIo24yLKaHv5wOUzRRPR0n8Uf1ZJhErJzraHV6JifyI4aZdU6aoJpZ5+UJzpl9Xp4inzl8R5HkYuaQlyfZ+UpPaVL88JiLqEsGCfKomwwTnFE7Gaaoono6TjBE9WSYRNxacqQZh7sxLz9imFnnpAmqmXVenuCc2eflKfKZw3cUSS5mDnm5v3mqRnkievxo3XNxfi7Oz8X5uTg/F+f/ujiHl4HSaxPY9fBy+HT7K/x5aC1Mn3v+bTOqQTlAuL29HjoRwDUyVKghHBtALcGxsQQPZNVa4X1DMNYHFwziRkAamAM2cE/QOZKwU1wrDRIZwbVYkVv8fG9h+Uv8+5cGAPBx7caY1JYkIMO2a1i9ZkUWJLWNefJvEFeEOcFoghfGwtZYejlBgBU7QAdsO8eAuqqNDV0XTMIIwSst1UOHzeDughVhVYNZA9cELVpWlWpRswOlg2ycYwEfdGzltLihoKxIsz1OGOMJ2XSTzO1U0/gUVd5MBs9LZIyRDbuDDdem29SgQlb82/PwgIzzck2WAJsdPjlvQY9YcfMUMhPWtB5GuqzSQw5i+KcbsVq9ujFMr1arEj55YB9a0m9+vwZJa6WV391DLMo3CaSPJWy2VJbC6o3SX4d9BwSn9KY5QlLaMWqfOFEI/2gcekqx54CV7zn0hWhURdrR2EQQb1qsaoLzxZn/bq2/sWrm1pXL5W63W2BQL4zdLAdft3x//fbq5vbq9fnibFHztglcpjWOt6iTmWO3Lm3Qzb+a/dgQ+Re9veHNy/TIy7ZBpX3nICDYD4/szwJbdfz4/RH3EYTb7PDUFoUo/Su+ELVx7F32+3t09Idt+t6Lv3Vkn+IL/AFt+FJDo0Aq5/+Xolxj4+gHyF58HM7WS/he1IMQtS/MD9h0FPcuFm4lRX/XF6ImlGTD6lHxpqqo5cTlpKnUpy2Iy6v3V5+uRBGaArmuwbHFsc9HNKOfMCGbMCOWMCORMOeLMOOGkOGAcML2IMPqIMPeIEfSIEPGIOVeMJItSLkVpFQKJsQJUp4EWTYEGdYDWW4DWQYDeZoCWTICKfeAkWxAyi0gpRIwIQ6Q8gTIsgHI3PqQvdshe4ND/pqG/GV8+AzCw0j4Vlz2cE46XavQ9Dt4bixqXgWv/q7v+38A8e6SAw==
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete DID service"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/did/services/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Deletes an existing DID service for this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./did-management-controller-delete-service.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./did-management-controller-delete-service.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./did-management-controller-delete-service.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

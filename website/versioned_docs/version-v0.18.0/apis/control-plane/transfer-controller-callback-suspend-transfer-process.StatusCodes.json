@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Callback suspended transfer successfully","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"success"}}}}}}}

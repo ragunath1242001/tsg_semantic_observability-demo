@@ -1,0 +1,1 @@
+{"parameters":[{"name":"dataSet","required":true,"in":"query","description":"Dataset for the negotiation","schema":{"type":"string"}},{"name":"address","required":true,"in":"query","description":"Address for the negotiation","schema":{"type":"string"}},{"name":"audience","required":true,"in":"query","description":"Audience for the negotiation","schema":{"type":"string"}}]}

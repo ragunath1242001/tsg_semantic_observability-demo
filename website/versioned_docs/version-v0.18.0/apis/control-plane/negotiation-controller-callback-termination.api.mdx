@@ -1,0 +1,70 @@
+---
+id: negotiation-controller-callback-termination
+title: "Handle negotiation callback termination"
+description: "Handle negotiation callback termination"
+sidebar_label: "Handle negotiation callback termination"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWVtv2zYY/SsEn7ZCs4M+6mlZmnUB1iRo3O4hCILP1GebjUSy5Ke4maH/PpCSLFJSLwP2MsBPiQ8PL+fwIuLwwLVBCyS1uip4zq9xq0mG3xdakdVlifZRQFmuQTyt0FZShVKecQMWKiS0juf3B66gQp5zWfCMW/xcS4sFz8nWmHGpeM4N0I5n3IkdVsDzA6cX42s4slJtedM8tBXR0W+6ePGMcTtCK0JFvgiMKaUIY1l+clp5bNK0Xn9CQX6s1uskic6X/toWj0eQcfwClSk9FNSDoMiQy2dU9A6dgy3yJgzG1RXaW1l8u63aqrz7lceVmjCuZ1n8yzbiSk3G0Y9r9V1F15dvb1ZX56urm+vHu9X5+9XlG9408Vzdd8ak0tJBxt09ZJwk/Yhdd+3ENE3boTNauXYqXp+d+T8FOmGlCSsr5/w/m2lHQLWbW2yRNQNtKG6H6lDUVtJLWOBrBIuW5/cPfqUSbP26j3eM846kSv4AVZTI1EBi/WZilOymCmmn/RY02gUdfrfkfAlGLvsqbhk15JYHWTTLtBWH9rndkA/D6IP7rR8aatq9jn1rgYxvSr0PFA9oK//uDoGiNUho07YgLAJhLswCthaxCpM0i/qZhmLMnGIZr00x0+Yc6v0tccqdQ/0Mo6in5Fk44xUo2E7Ic2gW6RVAUOpt4kGPDQ4MrDESqx9YUyxWPvCmWKJ6IM6AseKBOMUStVpt5EhsC0Vae84ISJT2nAmU6OxZEyhV2dOmWKKxp02gWGEBBKYEhYnIAR10xswpFquNmXNorDnmzqGJ8pg8C8f6Y/IcOnbBIU088FjqQMsaI2P1LWuKjZW3vCk2Ud0SZ8Cx4pY4xWK10amaKI7xQXXKnkNj9Sl7Ho9dSPnzeOJGWuErBbEraYV5PHbH6FKKl8SYDho8OXJGQOzEkTOBYv1H1gRKVB9pUyzWeqRNoFihxa10ZFONR3BQGfEmUKw04s2AsdqIOQMmiiPqHBqrjqgzYKycLCi38beaOXBQHvEmUKw84s2AsfKIOQMmyiPqHBorj6gzoL/SiVKioguLBSqSULrT9eZ0vTldb07Xm9P15nS9OV1vTteb//P1xl9w+piqC8n8cdhBfdnv2lbgj42Ptzzrg6AdkeHj+OojWrmRsC6R3Vp0qKjNsBRigQUjzYSuqlr5eA7ZGmmPqBjtNZPKESiBjukNox0y0cbJLBzGi3AV82He+yHwvRzyuC6g/W4KOwphv5q0joLWr6apSZg6n5j6MHujQ4LWZZ+ru7esC8vZ7fGDF9u42knHbgyq89sr5gwKuekCTeZ2eu+CQagKo6Wio2NJmwv2TjvqiwYuWGQWS6B2OnzhG/8JMCD8nGnSQpcZA9f3iwVbvwTepSilccj+0vZJqi17a3VthtpuwW5oh3bUmauN0ZbkczwK0qyCJ19oMbTtP0NMgGJrZFAUw+C6W1fGQBXjakDswxWTitDPuY84QxPkKaYEgQvGHh9fXWvCV4+POUtsLXAjlQyeSseUptCQ6rpeIyukRUHlCyulesKC7SXtGDAn1bYcmX1cvQvGM+4D1SSXBuFz6SbjpRSoXFix3evHuQGxQ/Z6cebPDVt2G8vly+V+v19AKF5ou112dd3yz6uLy+u7y19eL84WO6rKsDV8CFyBilr+8SQ5WXvHoJfwCy1NCVL5NRyGduhC5nsORnptfczMMx4HzTzjedgccT8PGd/5pDq/54fDGhx+sGXTePhzjf5s9gn0M9hweoT8vJDO/1/wfAOlw8lAj5E//+l99ybxMxsOqFRAB4LyB/4zlDW28/OEL+0jVPPQZHyHUITI/tAVXLR9/LJq3zn6ipMnhibra5wLgYa+yX2I0vvbm7uVP2i7B6wq5Ofcwt5/bWDfDlKb1lf/wuWxAy9BbWt/ouW8bdMvAp/ERzM4OsWDqlkbDoeWsdJPqJrm6Ar5396YpvkHZavpzQ==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Handle negotiation callback termination"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/callbacks/negotiations/{id}/termination"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Handle negotiation callback termination
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./negotiation-controller-callback-termination.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./negotiation-controller-callback-termination.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./negotiation-controller-callback-termination.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

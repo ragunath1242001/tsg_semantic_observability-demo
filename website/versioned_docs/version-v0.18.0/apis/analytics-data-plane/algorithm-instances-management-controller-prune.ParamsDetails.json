@@ -1,0 +1,1 @@
+{"parameters":[{"name":"olderThanDays","required":false,"in":"query","description":"Only prune instances soft-deleted more than this many days ago. Default: 0 (prune all).","schema":{"type":"number"}}]}

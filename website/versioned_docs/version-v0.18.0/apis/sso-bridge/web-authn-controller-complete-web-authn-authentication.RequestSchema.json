@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"response":{"type":"object","description":"WebAuthn authentication response from navigator.credentials.get()"}},"required":["response"]}}}}}

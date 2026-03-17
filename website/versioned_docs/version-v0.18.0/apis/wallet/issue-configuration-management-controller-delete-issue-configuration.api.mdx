@@ -1,0 +1,70 @@
+---
+id: issue-configuration-management-controller-delete-issue-configuration
+title: "Delete issue configuration"
+description: "Delete an existing issue configuration in this wallet"
+sidebar_label: "Delete issue configuration"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWE1vGzcQ/SsDnpJgIxmuT4uiQGA7hYHUKWIXPbiGMF6OtExW5IactewK+98LkiuJu6Jz6KU9+GKZ80HOGy6Hj7MVklxlVcvKaFGKC2qICVADPSnHSq9AOdcRVEYv1aqz6A1BaeBaOdhg0xCLQpiWoupKilJceZfz1OM31LiiNWk+N5qtaRqyCxkWOzYWhWjR4pqYrBPl3VZoXJMohZKiEJa+d8qSFCXbjgqhfNwtci0K4aqa1ijKreDn1ns4tkqvRN/fe0fXGu3Ief3pyYn/GaMXfSHOTn46Vnw09kFJST60ymgmzd4I27ZRVYh5/tV5y+1xCObhK1U+R631WWIVA4iQpoEWgp5w3TZe9IWc6WxF14Y/mk5LH51j5M792O/s5AyuDcPeqTIyXUp36weyqcvZyVlfiDU5hyvKhX6Y/LYm8DtAjkmCHUIEaciBNhw/m5lflaw19seRJlH26cbexezs4Q4Q7gvBioPnpZ/8go3o+z5s2tnxpu3yF+JahmVed+//t3s+L1R1VvFzOOsGO65P/TSWUJabWShAi1iAxH1fpCaxhBwb+cVw5YuHOJQeCKUGRrXG+bjWxLXxhStOF+oP16IUc2zVfL2fYB5WeT+qhW6+VbL3aMk+xnp1f0B047+n+Mnsgj7sTxQUYtmYTTDxAmPV32Hi82HfXWXaOENlCQPYAWZ5JCl2OdtbjMeF6Fo5mWMqKQ5J3dtMJf4zoKobGx2JChFTlxpNJUWCwZIkzQqbEbKD9IAutTyWpShTy5w0RZva5qQj1KlxVpyiT41z0iQLUskUvhzuvIAx6pJBgjTqRsMEW9SOhimaqB6Pk/ijejRMIh4dvfIFeZE9zWVWmqCaWOflxQtloHxBniKfOLygSHIxccjLk+x8o+c0KX64z0XUJYMEedSNhgnOqB0NU1RRPR4nGKJ6NEwibi050ozDNZqX7zFMrHPSBNXEOi9PcE7s8/IU+cThBUWSi4lDXu4vqapRnr7uD617Lc6vxfm1OL8W59fi/F8X5/CIUHppArseHhm3N7/Cn7v+xPhl6J9BBzUoBwg3N1dDOwO4RoYK9dD6QC3BsbEEj2TVUuFDQ3CoDy4YxI2ANDAHbOCBoHMkYaO4VhokMoJrsSI3+/nBwvyX+PcvDQDg49ocYlJrkoAM665h9Z4VWZDUNubZv0VcEeYEowneGAtrY+ntCAFW7AAdsO0cA+qqNhaWxgImYYTglZbqscNmcHfBirCqwSyBa4IWLatKtajZxeYPJXPM4PPQD2pxRUFZkWa7nzDGE7LpRpnbqKbxKaq8mQyeF8gYIxt2BxuuTbeqQYWs+Gfq7q0Z5+WaLAE2G3x23oKesOLmOWQmrGk9jHRZpYccxPCPN2KxeHdtmN4tFiXcemCfW9Iffr8CSUulVeyBxViU7ydIH0vYbKkshdUbpb8N+w4ITulVs4ektGPUPnGiEP7ROLSfYnsCK9+e6AvRqIq0o0O/QXxosaoJTmcn/txaf2PVzK0r5/PNZjPDoJ4Zu5oPvm7+6er88vrm8v3p7GRW87oJXKY1jteok5mHxl+m2Tc9PdtDD+VftwuHFzDTE8/bBpX2LYeAZzs8ve8EtmpfCvwHLwqRe36LQpRK+ld8bRx7x+32AR39YZu+9+LvHdnn+Cp/RBtOb+gzSOX8/1KUS2wc/QDlmy/D9/YWXop9EKL2xfoRm47ifsZirqTo7/tC1ISSbFg9Kj5UFbWcuBz1pPq0PXFx+eny9lIUoVGQ6yTsGyPbfEQTSgojAgoTsgkTYglTDgkTvggZXghHDBAyTA8yjA5yxA0yBA1SPgYHAgYp34KUXsGITEHKnSDLkCDDhCDLdyDLaiBPXSBLUCDlI3AgIJDyDUjpBYzIBKTcAbIMATJMALL3PWRvdchf3ZC/oHfHIDyWhG/gZT/OUfdrEXqGO8+VRc2L4NXf933/D6cWvHA=
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete issue configuration"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/issue-configurations/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete an existing issue configuration in this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./issue-configuration-management-controller-delete-issue-configuration.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./issue-configuration-management-controller-delete-issue-configuration.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./issue-configuration-management-controller-delete-issue-configuration.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,70 @@
+---
+id: dataplane-management-controller-get-datasets
+title: "Get all datasets for a dataplane"
+description: "Fetches all datasets associated with a specific dataplane."
+sidebar_label: "Get all datasets for a dataplane"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get all datasets for a dataplane"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/dataplanes/{id}/datasets"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Fetches all datasets associated with a specific dataplane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./dataplane-management-controller-get-datasets.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./dataplane-management-controller-get-datasets.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./dataplane-management-controller-get-datasets.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"name":{"type":"string","example":"Display Name"},"locale":{"type":"string","example":"en-US"}},"title":"BaseDisplay"},"schemaType":"response"}

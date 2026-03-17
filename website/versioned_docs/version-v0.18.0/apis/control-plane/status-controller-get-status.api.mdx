@@ -1,0 +1,70 @@
+---
+id: status-controller-get-status
+title: "Application status"
+description: "Retrieves the current health of the control plane. With additional status information"
+sidebar_label: "Application status"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Application status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/status"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the current health of the control plane. With additional status information
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./status-controller-get-status.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./status-controller-get-status.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./status-controller-get-status.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

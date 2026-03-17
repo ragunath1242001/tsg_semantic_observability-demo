@@ -1,0 +1,70 @@
+---
+id: auth-controller-get-user
+title: "Retrieve current user status"
+description: "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown."
+sidebar_label: "Retrieve current user status"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve current user status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/auth/user"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./auth-controller-get-user.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./auth-controller-get-user.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./auth-controller-get-user.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

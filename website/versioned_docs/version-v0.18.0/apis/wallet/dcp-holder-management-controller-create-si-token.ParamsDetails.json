@@ -1,0 +1,1 @@
+{"parameters":[{"name":"audience","required":true,"in":"query","schema":{"type":"string"}},{"name":"scope","required":true,"in":"query","schema":{"type":"string"}}]}

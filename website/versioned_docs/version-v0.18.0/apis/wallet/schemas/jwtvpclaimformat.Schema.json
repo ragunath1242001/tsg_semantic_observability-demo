@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"alg":{"example":["Ed25519"],"type":"array","items":{"type":"string"}}},"required":["alg"],"title":"JwtVpClaimFormat"},"schemaType":"response"}

@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"code":{"type":"string"},"reason":{"type":"string"}},"example":{"code":"TERMINATION_CODE","reason":"Reason for termination"}}}}}}

@@ -1,0 +1,1 @@
+{"parameters":[{"name":"participantId","required":true,"in":"path","schema":{"type":"string"}}]}

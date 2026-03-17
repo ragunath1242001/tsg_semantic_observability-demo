@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"jwt":{"type":"string","description":"The signed JWT","example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}},"required":["jwt"],"title":"SignedJwtResponse"},"schemaType":"response"}

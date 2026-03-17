@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"response":{"type":"object","description":"WebAuthn registration response from navigator.credentials.create()"},"deviceName":{"example":"My Phone","type":"string"}},"required":["response"]}}}}}

@@ -1,0 +1,70 @@
+---
+id: transfer-controller-request-transfer
+title: "Request Transfer"
+description: "Requests a transfer from control plane to data plane."
+sidebar_label: "Request Transfer"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request Transfer"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/request/{role}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Requests a transfer from control plane to data plane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./transfer-controller-request-transfer.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./transfer-controller-request-transfer.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./transfer-controller-request-transfer.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

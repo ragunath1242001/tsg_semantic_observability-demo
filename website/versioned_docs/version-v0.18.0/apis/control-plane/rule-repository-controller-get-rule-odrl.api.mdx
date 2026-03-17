@@ -1,0 +1,70 @@
+---
+id: rule-repository-controller-get-rule-odrl
+title: "Get rule ODRL"
+description: "Get rule ODRL based on its identifier"
+sidebar_label: "Get rule ODRL"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get rule ODRL"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/policy/rule/{id}/odrl"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get rule ODRL based on its identifier
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./rule-repository-controller-get-rule-odrl.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./rule-repository-controller-get-rule-odrl.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./rule-repository-controller-get-rule-odrl.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

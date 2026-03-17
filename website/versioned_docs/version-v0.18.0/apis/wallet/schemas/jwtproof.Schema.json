@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"proof_type":{"type":"string","enum":["jwt","di_vp","attestation"],"example":"jwt"},"jwt":{"type":"string","example":"jwt-token-sample"}},"required":["proof_type","jwt"],"title":"JwtProof"},"schemaType":"response"}

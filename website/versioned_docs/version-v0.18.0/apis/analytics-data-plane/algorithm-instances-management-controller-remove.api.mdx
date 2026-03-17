@@ -1,0 +1,70 @@
+---
+id: algorithm-instances-management-controller-remove
+title: "Delete an algorithm instance by ID"
+description: "Delete an algorithm instance by its ID. Use hard=true for permanent deletion."
+sidebar_label: "Delete an algorithm instance by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWN9v2zYQ/lcOfNoA1TayPBnYQ9CkQ4CuK5oWeyiMgJbOFjuJZMlTEs/Q/z6cJMuiRHkYsAF7SF4cf/eDdx9J3/GOIkOfOmVJGS3W4hYLJASpQRZ74xTlJSjtSeoUYXsARR7ubxfwxSPk0mU/k6sQdsaBRVdKjZogYx/K6IVIhLHoJH+5z8Ra3Jx83ncu/a9Syz2WqOmt0eRMUaB7dFiaJxSJsNLJEgmdF+uvR6FliWItVCYS4fB7pRxmYs0RJEJx9FZSLhLh0xxLKdZHQQfLFp6c0ntR10nvhIMP3Oxk4U9+vlfoDiIZcfN7jhqa1c7JFoc2XfRAOcZI439QZmB24M2O3rTs6D0oWsRi3RpToNSirjccnrdGe/SscLVa8UcY1Of4qrn0sEXU4Ks0Re93VdGHmok6Edern6bO3hm3VVmGWiQiNZpQEytJawuVNtu4/OZZ8ziN22y/YUq8aY43nVQbdEv3eCcSgS+ytAVDn9CbyqX4wdA7U+kmOk+SKn/Z7np1DR8MQW+Ummy4lK7KLbqhyfXquk5Eid7LPcZCPztnWvlsoCfMwHUhQmbQgzYE+KI8LXhVdM64y5EOoqyHR+5ry06fbpfCJhGkqLG8Y+e3ZETNf4nwmFZO0aG5DkZWlF+xm3Zf1zKzi/4siA0fIJJ7vjvnmwf91eN1SqTc8M1sPTRXjnKxFktp1bLsL+eyd/vmdMT88qiymoNH99Te0M05wAc+Hu0JOIV5prsFErErzHOjwoBx6s/miL3tttGnxrYeUodykt46DjO/MpvoRsBEVDaL+Y3CSZzkdRzm3ce0iqjH8US0XE/Uo3AyTD01eqf2IR0dNuCi1xojAQu91hQL8u/1pliYea8YAYOce8UpFmSbSZK2kBrDhM/wIOehbgQMMh/qRuEg/6F2FA5ZGKrH8YCLoXoUDhjZqWJERoMMeOg0wu9B9p3GGAly7nTGSJhppzSBgvw6pTESZGVcmqOntncI0wtFgzzHNjOCIPOxzawo4GJsNSsK2RmbzcsCvsZms6KAQesMV7VHuXfY/IaHLE7FAyZjtheEAaMx24vigNmY9UVxyHDM/LI8YDpmflHMNTktFLevDjPUpGThX4vXa/F6LV6vxeu1eL0Wr/938WrelErvTPM6696cnx9+gRstiwOp1MOtJAkf+1+RcPSgPPxmUd98vAdvMVW7bkoAPjfP7UQEdWaN0uR5AMJAzDUPQvgN2frthg8y5eFDnYhCpag9nqcJ4sbKNEe4Wqx4+1zB8xwi69fL5fPz80I24oVx+2Vn65fv79/efXi4e3O1WC1yKoumdFvjqZR64Pnv5l/3t2MajudJyb8+PesezIQvtLSFVJoHDk2+x+6h/lVIq/pz0B2KyGNdJGKtMn7y58YT2x2PW+nxiyvqmuF25MVjhUx5uS0GI7HZdP+TgVg05z/wcJ7ZPcmiYhXBA44n6RSH+w9D/+FTN4X5EebW7ECpD8M1T7GoTNSbOhE5ygxds3oruElTtDQwmUzP6uHg5fbu/d3nO960ivdzOiTppzzHeESxRhKmHSPEGkOI9X8Q7fIg1szBpG2DUYsGk2YMJm0XTPsrmHRSEGuYYNoZQawBglifA9FuBmJNC4waFAjaERi1HjBqM2DcUcCoe4C5BgHiXQDMFXqYq+UwW61hriDDpXoL8wUVLtVLuFQO4WKxg4u17HQtm3eX4Dl/9LIEg8bHZtp6stw7qemxsao3dV3/BSOg/TU=
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete an algorithm instance by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/algorithm-instances/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete an algorithm instance by its ID. Use hard=true for permanent deletion.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./algorithm-instances-management-controller-remove.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./algorithm-instances-management-controller-remove.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./algorithm-instances-management-controller-remove.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,70 @@
+---
+id: data-plane-controller-health-check
+title: "Health check"
+description: "Retrieves the current health of the control plane. If the control plane is running it always returns an empty 200 OK"
+sidebar_label: "Health check"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVk2P2zYQ/SuDObO2YaAX3QJ3kSxSNIusezKMBUONLSI0yZCjdVxB/72gJG/0wZ4LBDkZfnwiZ4acea/BkqIK2rN2Fgv8TBw0vVIErghUHQJZhoqk4QrcqUed5eAMeCMtreAxg4KOEGprtT2DZpDmKm8RAnEdbARpgS6eb7DdbODTRxToPAWZQngsscA/JMuntM2u39NQeOlD2FWkvqJAL4O8EFOIWByOAgNF72ykiEWD280m/UwTw1bg75ttbqEVGEnVQfMNi0ODTtZcbbE4YCBZFlXpV6Vk2SWGx/YokOU5HdwFCk89LvBCXLkU/5m4i5ErLHDdR47pkPD6FvH9xGdV0aWP+35ug3zzhMUdEHgy7tpREuCC/qer1c6VlMConO93UIEkUxexcvakz1hkMPEjrzfWHBFY+3Kx1xITWJKhOW+JCaTvpOo5MQMKvEgrzzPiEhPjzH7cT5GHRe4uixw4yXzMzcKT/MfsLDytwpiexye1GNOz8KQixqUnukBGdRgY0/+T7AfGHJnkPHDmyDTTgbSAJvkNpDmS2lMZTZZ3gUqyrKWJv579r2f/sz/7Nr18bU+uUwTNJlVg//wePuz3TzCSHjFTtH2lI3zyZN89PUL0pPRJq04xIFbu2ks72dI7bTneVX226woFJrUaRFJg0nepGIumFWi0Ihs79bHykgJ756WqCLarTSpmMFhgxexjsV5fr9eV7JZXLpzXw7dx/efj7uGv54fftqvNquKL6Vrdu8gXaUc7f+jNhxqkf5Jr04VFlv8/6zJoNdN3XnsjtU1OoytAM1iAAw4W4CiwcpET0jRfZKS/g2nbBH+rKdx6Y/Aqg5Zf0mUfju3IVLx/2KPoDEDOIbx5lrclaW/pCqWpKTcOYTb6YDHkYDHOYDm3YDGhIDeIYDlxIDdYIDc/IDslIDcMYNb4MGlzmLU0zNoX5p0K864U+JVuWPTag634j2pPbNqLSj7t/uU5SMsv3VftsW3bfwFErwoL
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Health check"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/health"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the current health of the control plane. If the control plane is running it always returns an empty 200 OK
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./data-plane-controller-health-check.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./data-plane-controller-health-check.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./data-plane-controller-health-check.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

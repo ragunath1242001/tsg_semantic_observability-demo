@@ -1,0 +1,1 @@
+{"schema":{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"},"schemaType":"response"}

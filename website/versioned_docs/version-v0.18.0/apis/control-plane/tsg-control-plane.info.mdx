@@ -1,0 +1,352 @@
+---
+id: tsg-control-plane
+title: "TSG Control Plane"
+description: "This OpenAPI specification shows the endpoints of the Control Plane. Most of the endpoints are related to the Dataspace Protocol, as specified by the Eclipse Working Group Dataspaces. Other endpoints are supportive endpoints to make sure the data can be added to the catalog, and to make sure that UI interactions can take place.  __*Note*__: This OpenAPI definition is not intended to be directly linked with a single Control Plane instance."
+sidebar_label: Introduction
+sidebar_position: 0
+hide_title: true
+custom_edit_url: null
+---
+
+import ApiLogo from "@theme/ApiLogo";
+import Heading from "@theme/Heading";
+import SchemaTabs from "@theme/SchemaTabs";
+import TabItem from "@theme/TabItem";
+import Export from "@theme/ApiExplorer/Export";
+
+<Export
+  url={"openapi.yaml"}
+  proxy={undefined}
+>
+  
+</Export>
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"TSG Control Plane"}
+>
+</Heading>
+
+
+
+This OpenAPI specification shows the endpoints of the Control Plane. Most of the endpoints are related to the Dataspace Protocol, as specified by the Eclipse Working Group Dataspaces. Other endpoints are supportive endpoints to make sure the data can be added to the catalog, and to make sure that UI interactions can take place.  __*Note*__: This OpenAPI definition is not intended to be directly linked with a single Control Plane instance. 
+
+<div
+  style={{"marginBottom":"2rem"}}
+>
+  <Heading
+    id={"authentication"}
+    as={"h2"}
+    className={"openapi-tabs__heading"}
+    children={"Authentication"}
+  >
+  </Heading><SchemaTabs
+    className={"openapi-tabs__security-schemes"}
+  >
+    <TabItem
+      label={"OAuth 2.0: oauth2"}
+      value={"oauth2"}
+    >
+      
+      
+      
+      
+      <div>
+        <table>
+          <tbody>
+            <tr>
+              <th>
+                Security Scheme Type:
+              </th><td>
+                oauth2
+              </td>
+            </tr><tr>
+              <th>
+                OAuth Flow (authorizationCode):
+              </th><td>
+                <span>
+                  Scopes:
+                </span><ul>
+                  <li>
+                    create:cp.agreement: create:cp.agreement
+                  </li><li>
+                    read:cp.agreement: read:cp.agreement
+                  </li><li>
+                    update:cp.agreement: update:cp.agreement
+                  </li><li>
+                    delete:cp.agreement: delete:cp.agreement
+                  </li><li>
+                    execute:cp.agreement: execute:cp.agreement
+                  </li><li>
+                    manage:cp.agreement: manage:cp.agreement
+                  </li><li>
+                    create:cp.catalog: create:cp.catalog
+                  </li><li>
+                    read:cp.catalog: read:cp.catalog
+                  </li><li>
+                    update:cp.catalog: update:cp.catalog
+                  </li><li>
+                    delete:cp.catalog: delete:cp.catalog
+                  </li><li>
+                    execute:cp.catalog: execute:cp.catalog
+                  </li><li>
+                    manage:cp.catalog: manage:cp.catalog
+                  </li><li>
+                    create:cp.config: create:cp.config
+                  </li><li>
+                    read:cp.config: read:cp.config
+                  </li><li>
+                    update:cp.config: update:cp.config
+                  </li><li>
+                    delete:cp.config: delete:cp.config
+                  </li><li>
+                    execute:cp.config: execute:cp.config
+                  </li><li>
+                    manage:cp.config: manage:cp.config
+                  </li><li>
+                    create:cp.dataplane: create:cp.dataplane
+                  </li><li>
+                    read:cp.dataplane: read:cp.dataplane
+                  </li><li>
+                    update:cp.dataplane: update:cp.dataplane
+                  </li><li>
+                    delete:cp.dataplane: delete:cp.dataplane
+                  </li><li>
+                    execute:cp.dataplane: execute:cp.dataplane
+                  </li><li>
+                    manage:cp.dataplane: manage:cp.dataplane
+                  </li><li>
+                    create:cp.dataset: create:cp.dataset
+                  </li><li>
+                    read:cp.dataset: read:cp.dataset
+                  </li><li>
+                    update:cp.dataset: update:cp.dataset
+                  </li><li>
+                    delete:cp.dataset: delete:cp.dataset
+                  </li><li>
+                    execute:cp.dataset: execute:cp.dataset
+                  </li><li>
+                    manage:cp.dataset: manage:cp.dataset
+                  </li><li>
+                    create:cp.negotiation: create:cp.negotiation
+                  </li><li>
+                    read:cp.negotiation: read:cp.negotiation
+                  </li><li>
+                    update:cp.negotiation: update:cp.negotiation
+                  </li><li>
+                    delete:cp.negotiation: delete:cp.negotiation
+                  </li><li>
+                    execute:cp.negotiation: execute:cp.negotiation
+                  </li><li>
+                    manage:cp.negotiation: manage:cp.negotiation
+                  </li><li>
+                    create:cp.policy: create:cp.policy
+                  </li><li>
+                    read:cp.policy: read:cp.policy
+                  </li><li>
+                    update:cp.policy: update:cp.policy
+                  </li><li>
+                    delete:cp.policy: delete:cp.policy
+                  </li><li>
+                    execute:cp.policy: execute:cp.policy
+                  </li><li>
+                    manage:cp.policy: manage:cp.policy
+                  </li><li>
+                    create:cp.registry: create:cp.registry
+                  </li><li>
+                    read:cp.registry: read:cp.registry
+                  </li><li>
+                    update:cp.registry: update:cp.registry
+                  </li><li>
+                    delete:cp.registry: delete:cp.registry
+                  </li><li>
+                    execute:cp.registry: execute:cp.registry
+                  </li><li>
+                    manage:cp.registry: manage:cp.registry
+                  </li><li>
+                    create:cp.transfer: create:cp.transfer
+                  </li><li>
+                    read:cp.transfer: read:cp.transfer
+                  </li><li>
+                    update:cp.transfer: update:cp.transfer
+                  </li><li>
+                    delete:cp.transfer: delete:cp.transfer
+                  </li><li>
+                    execute:cp.transfer: execute:cp.transfer
+                  </li><li>
+                    manage:cp.transfer: manage:cp.transfer
+                  </li>
+                </ul>
+              </td>
+            </tr><tr>
+              <th>
+                OAuth Flow (clientCredentials):
+              </th><td>
+                <span>
+                  Scopes:
+                </span><ul>
+                  <li>
+                    create:cp.agreement: create:cp.agreement
+                  </li><li>
+                    read:cp.agreement: read:cp.agreement
+                  </li><li>
+                    update:cp.agreement: update:cp.agreement
+                  </li><li>
+                    delete:cp.agreement: delete:cp.agreement
+                  </li><li>
+                    execute:cp.agreement: execute:cp.agreement
+                  </li><li>
+                    manage:cp.agreement: manage:cp.agreement
+                  </li><li>
+                    create:cp.catalog: create:cp.catalog
+                  </li><li>
+                    read:cp.catalog: read:cp.catalog
+                  </li><li>
+                    update:cp.catalog: update:cp.catalog
+                  </li><li>
+                    delete:cp.catalog: delete:cp.catalog
+                  </li><li>
+                    execute:cp.catalog: execute:cp.catalog
+                  </li><li>
+                    manage:cp.catalog: manage:cp.catalog
+                  </li><li>
+                    create:cp.config: create:cp.config
+                  </li><li>
+                    read:cp.config: read:cp.config
+                  </li><li>
+                    update:cp.config: update:cp.config
+                  </li><li>
+                    delete:cp.config: delete:cp.config
+                  </li><li>
+                    execute:cp.config: execute:cp.config
+                  </li><li>
+                    manage:cp.config: manage:cp.config
+                  </li><li>
+                    create:cp.dataplane: create:cp.dataplane
+                  </li><li>
+                    read:cp.dataplane: read:cp.dataplane
+                  </li><li>
+                    update:cp.dataplane: update:cp.dataplane
+                  </li><li>
+                    delete:cp.dataplane: delete:cp.dataplane
+                  </li><li>
+                    execute:cp.dataplane: execute:cp.dataplane
+                  </li><li>
+                    manage:cp.dataplane: manage:cp.dataplane
+                  </li><li>
+                    create:cp.dataset: create:cp.dataset
+                  </li><li>
+                    read:cp.dataset: read:cp.dataset
+                  </li><li>
+                    update:cp.dataset: update:cp.dataset
+                  </li><li>
+                    delete:cp.dataset: delete:cp.dataset
+                  </li><li>
+                    execute:cp.dataset: execute:cp.dataset
+                  </li><li>
+                    manage:cp.dataset: manage:cp.dataset
+                  </li><li>
+                    create:cp.negotiation: create:cp.negotiation
+                  </li><li>
+                    read:cp.negotiation: read:cp.negotiation
+                  </li><li>
+                    update:cp.negotiation: update:cp.negotiation
+                  </li><li>
+                    delete:cp.negotiation: delete:cp.negotiation
+                  </li><li>
+                    execute:cp.negotiation: execute:cp.negotiation
+                  </li><li>
+                    manage:cp.negotiation: manage:cp.negotiation
+                  </li><li>
+                    create:cp.policy: create:cp.policy
+                  </li><li>
+                    read:cp.policy: read:cp.policy
+                  </li><li>
+                    update:cp.policy: update:cp.policy
+                  </li><li>
+                    delete:cp.policy: delete:cp.policy
+                  </li><li>
+                    execute:cp.policy: execute:cp.policy
+                  </li><li>
+                    manage:cp.policy: manage:cp.policy
+                  </li><li>
+                    create:cp.registry: create:cp.registry
+                  </li><li>
+                    read:cp.registry: read:cp.registry
+                  </li><li>
+                    update:cp.registry: update:cp.registry
+                  </li><li>
+                    delete:cp.registry: delete:cp.registry
+                  </li><li>
+                    execute:cp.registry: execute:cp.registry
+                  </li><li>
+                    manage:cp.registry: manage:cp.registry
+                  </li><li>
+                    create:cp.transfer: create:cp.transfer
+                  </li><li>
+                    read:cp.transfer: read:cp.transfer
+                  </li><li>
+                    update:cp.transfer: update:cp.transfer
+                  </li><li>
+                    delete:cp.transfer: delete:cp.transfer
+                  </li><li>
+                    execute:cp.transfer: execute:cp.transfer
+                  </li><li>
+                    manage:cp.transfer: manage:cp.transfer
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </TabItem><TabItem
+      label={"HTTP: Bearer Auth"}
+      value={"bearer"}
+    >
+      
+      
+      Verifiable Presentation needed to communicate between two instances of the control plane.
+      
+      <div>
+        <table>
+          <tbody>
+            <tr>
+              <th>
+                Security Scheme Type:
+              </th><td>
+                http
+              </td>
+            </tr><tr>
+              <th>
+                HTTP Authorization Scheme:
+              </th><td>
+                bearer
+              </td>
+            </tr><tr>
+              <th>
+                Bearer format:
+              </th><td>
+                VP
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </TabItem>
+  </SchemaTabs>
+</div><div
+  style={{"marginBottom":"var(--ifm-paragraph-margin-bottom)"}}
+>
+  <h3
+    style={{"marginBottom":"0.25rem"}}
+  >
+    License
+  </h3><a
+    href={"https://www.apache.org/licenses/LICENSE-2.0.html"}
+  >
+    Apache 2.0
+  </a>
+</div>
+      

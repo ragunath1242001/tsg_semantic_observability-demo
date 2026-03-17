@@ -1,0 +1,70 @@
+---
+id: keys-controller-get-ca-chain
+title: "Retrieve Key CA chain"
+description: "Retrieves the CA chain for a given key. Only supported for keys with type `X509`"
+sidebar_label: "Retrieve Key CA chain"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWFFv2zYQ/isHPrWFahtB9jBhGBC4WRF0SIcmwwZ0QXoRzxYbiVTJUxzP0H8fSCo2Jat5GDDsJS9x7rs73n3HE6XjTkhyhVUNK6NFLj4RW0UP5IBLguUZFCUqDStjAWGtHkjDPW1n8FFXW3Bt0xjLJIP+nrYONopL4G1D8OXPHxY/fhGZMA1Z9MtfSJGLD7R1S6PZmqoie7smXuLSxxCZaNBiTUzWifzzTmisSeRCSZEJS99aZUmKnG1LmVA+2Qa5FJlwRUk1inwnfGCRC8dW6bXouhvv6BqjHTmvP1ks/M+QsshEYTSTZq/DpqlUEfKdf3XeYPdMgK7LxOni9HjRT+RMawsCbRhWptXyX4Qxd1+pYF8Y64vIKrKIdRknkwl6xLqpKIl+afiXELvLhGPk1j3vd7o4hUvDsHcqjExD6ba+I5u6nC5Ou0zU5ByuaSr1w+LXJYHfRnK+Y+xTgaQhF6pEj8rxzEcla419PtMkyy7tjs+xOnu6PYWbTLDi4HnuF3/HJuxelwnGtW+30JjeriYuje/UNYXS+x7Lxdx393ynZOfXJvsQm/TGC0VrFW+v/O7FDTLYcnmSViMCmVhVZhNMPGCs+jt0wLKvsitME1coLCFTvpkVRq/UWuRHiCeNMrUYyploGzlaY4xkQlJFQ5sx4otORTs0OoIyUaPG9cBojGQJB0uSNCusBswO6IFdanmMpSxTyyk0ZZvaTqED1qnxJJyyT42n0KQKUsmUvuwPusAx6hIhYRp1AzHhFrUDMWUT1UM5yT+qB2KSsXKupdvjnhzgew4j6yk0YTWynsYTniP7aTxlPnL4jiKpxchhGk+qc0/btChe3Nci6hIhYR51AzHhGbUDMWUV1UM54RDVAzHJuLHkSDP2L61pfM9hZD2FJqxG1tN4wnNkP42nzEcO31EktRg5TOP+lVBUijQv9w+tezmcXw7nl8P55XB+OZz/78M5fLIrvTLh67r/pL++eg9/YFWFD/bhHOaHjoMalAOEq6sL2ESZS2QoUENoG0AtwbGxBA9k1UrhXUVwOB9cMIgbAWliDtjAHUHrSIYRWGmQyAiuwYLc7Kc7C/Of49+/NACAz2tzyEnVJAEZ6rZi9ZYVWZDUVGZbk2aXxbHaaIJXxkJtLL0eMMCCHaADtq1jQF2UxvYz+yGNkLzSUj20WPXuLlgRFiWYVRj5G7SsCtWgZgdKB+ywhh/8gUvloME1BWVBmu1+wZhPqKYbVG6jqsqXqPBmMni+Q8aYWb87WHFp2nUJKlTFD4VPk11cl0uyBFhtcOu8BT1iwdU2VCbEtJ5GGlbpvgYx/eONuL19c2mY3tze5nDtiX1sSJ/9dgGSVkorv7tPuSg/vUufS9hsqSyF6JXS9/2+A4JTel3tKSntGLUvnMiEHxoHdw5Y+MuALhOVKkg7Okz34qzBoiQ4mS38c2v9G6tkblw+n282mxkG9czY9bz3dfNfL5bnl1fnb09mi1nJdRW+ZRrjuEadrPx0xQMfaLu/4Rk/OLvDZcV/cSfUz8VMjzxvKh+/61nu+on7s/C+IhO5kn4sL41jj+52d+jod1t1nYe/tWS3cRB/QBse2HB3JJXz/0uRr7By9Ay7V5/6FnsN30usB1H78/kBq5biFsbzW0nR3XSZKAkl2RA9Ks6KghpOXI4ufbr0vuH9+bXoun8AwRDcJw==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve Key CA chain"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/keys/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the CA chain for a given key. Only supported for keys with type `X509`
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./keys-controller-get-ca-chain.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./keys-controller-get-ca-chain.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./keys-controller-get-ca-chain.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

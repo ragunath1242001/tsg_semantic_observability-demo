@@ -1,0 +1,70 @@
+---
+id: negotiation-management-controller-finalize
+title: "Finalize a negotiation"
+description: "Finalize a negotiation"
+sidebar_label: "Finalize a negotiation"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWctuGzkQ/JUGT7vBrGT4OLcgLxjYJMY6yR4MwaA4LQ1jimRIyoojzL8vOE++jJwXkC9xikVyqjmiq0tnojQa6riSNw2pySfcK8f7/3+kku7xgNK9UdIZJQSahx2XVPBfSCqiqaEHdGgsqe/PRNIDkppooxhae9OQihj8ceQGG1I7c8SKcOkJ1LWkIg1aZrj2G5Ga3A6z4OYtqB24FkEuD0IqYlmLB0rqM3HP2m9jneFyT7pu47exWkmL1o9fX135f+LlSUWYkg6l82NUa8FZv/T6u/WEc76B2n5H5rxM4yvk+LC8ddQdbelBKoI/6UELDGnLsP+piEV2NNw99xVT9Ojaa1LfE/yJ7OiwZnoV6t54dY7ufYHDk7GwnA3ZpLV8Px4R0KSIB3St8oesle2V+ZOoyZpqvj7MC66DSXZ9ns+zWwdnb9E8DQe/WUTd+RoOZZqkLeUcgIrshDr1FA8ow3/1G71RzVA3pvSwAjNIh4rQvcFBal1E/QtAm5SZYxU56qawZgn1NRWYc0toFR5fSC7CFRlKnZJLaBXoZdRRofZRDSZsqcDCSpFQ/cLKsVD5wsuxSPVCLICh4oWYY5FaJXc8ETtAgdaJkwCR0omTQZHOiZVBscqJlmORxomWQaHChjqqBZUYiVzQRWfIzLFQbcgsoaHmkFtCI+UhuQiH+kNyCU2rYNFlNfBYXIGBlSKp+oGVY6nygZdjmeqBWABTxQMxx0K14XVcv4AvqmN2CQ3Vx+wyHlYh5pfx6qU/TPVLA2FV4gllPKyOVoKz56gwI7TUZOYkQFiJmZNBof6ZlUGR6pmWY6HWmZZBoUKDe26diTXO4KIy4GVQqDTgFcBQbcAsgJHigFpCQ9UBtQCGyp2h0u7QRMpncFEe8DIoVB7wCmCoPGAWwEh5QC2hofKAWgC902OCe+dssEHpOBX2Ym8u9uZiby725mJvLvbmYm8u9ub/bG+8wdkiNZ4xZmf+Ohyhaey9Mgfqr41vt6SagqDWOZ3Ff9/Q8B2nW4Fwa9CidP3nByRigw04BUwdDkfpUzuELboTogR3UsCldVQytFNuyIasEvrLeNVbMS53qo+iuPPpHPly9wHGSBNu578c4fN8abmFzxrl69sbsBoZ342BIdhWnWy/E8pGKy7dvHW05go+KuumoYVLDYJBQd2gyw++9XeppsyLV04xJSqgdtoXG9g+97x3THBtEf5V5pHLPXww6qiX2XYFn12LJtnMHrVWxvGn8CmcggN99IMG+7X9fQ6MStgi0KZZHm60LxVQ2aTTqIOvN8ClQ0PZEEz6JZynaEEZrgAeHl59Ug5fPTzUEJW1wR2XvK8ptyCV6xeS49ZbhIYbZE48g+DyERs4cdcCBcvlXiTFnl+DFZCK+GQyyn0p87lvVxHBGUrbJ41jXP1aU9YiXK+u/AfQiPENtfV6fTqdVrQfXimzX49z7frvmzfvPt29++t6dbVq3UH075iPVA9UBiu/GMNGr9ockDr86dZaUC5JNz7JeUxo7wnVfP58jtY5TGlJReowd5+D2k1FWp/11vfkfN5Si1+N6DoP/ziiv9h8fPtETf/R6zPphlv/e0PqHRUWs6edY3Tyxz9juv8n/C69L0ocQSr9VfpExRGHA3vE5+hrhG7TVaRF2vjL5v48jr9mDLULZmahvs/O58T79vPdF1L1mXMplJ6T+HP5sQp9GWQdGBQ6LSh0VFBqnKDQIEHWCkHS9kDW4EDWykDes0DWnUDaiEDcdUDaYEDaS0DWNUDaIEChEYDM8kPB2kPBwkPJqUPBkUPmvSHx2ZA5asi8c7qdhzI7DEXTCwVzC0ULC0WjCmU3CkXPCam9hNhLQmobIXWIkHlBSG0f5P4OUisHuWeD3JxBwYRB7rYgt1WQOijIrRLknggK3gcKJme6iPrIhnTVCzdD9C3WA/NfY00z94ZK99DP6jZd1/0HTMmD/g==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Finalize a negotiation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/negotiations/{processId}/finalize"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Finalize a negotiation
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./negotiation-management-controller-finalize.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./negotiation-management-controller-finalize.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./negotiation-management-controller-finalize.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

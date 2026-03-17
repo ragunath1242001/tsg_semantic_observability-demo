@@ -1,0 +1,1 @@
+{"parameters":[{"name":"id","required":true,"in":"query","description":"The ID of the dataset","schema":{"type":"string"}},{"name":"address","required":false,"in":"query","description":"The address of the remote connector","schema":{"type":"string"}},{"name":"audience","required":false,"in":"query","description":"The audience for the request","schema":{"type":"string"}}]}

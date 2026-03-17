@@ -1,0 +1,70 @@
+---
+id: algorithm-instances-management-controller-prune
+title: "Prune soft-deleted algorithm instances"
+description: "Hard-delete algorithm instances that were soft-deleted. Use olderThanDays to only prune instances deleted more than N days ago (default: 0 = all)."
+sidebar_label: "Prune soft-deleted algorithm instances"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWMFu3DYQ/ZUBTy2g7C5cnwT0YMRJa6B1jNo5GYYxlmZXTClSIak424X+vRhJqxUlak8tkIN9Mfw4M5p5JD3DdxA5uczKykujRSp+R5u/y0mRJ0C1M1b6ogSpnUedkQNfoIdXsgTObH1vma/gsyMwKif7UKC+xr0Db8BotYfK1ppGEXoXKI0lDqfhFnJ2wJ2Bn3LaYq18Chv4FVCpn1ciEaYii5zgTS5ScXVM6+YY80/UuKOStH9vtLdGKbLP7XdFIiq0WJIn60T6eBAaSxKpCHIVibD0tZaWcpFuUTlKhGQ2vtZk9yKZcPQpVtaYjlFtvpAOStT7ocYVXJ9q/KkLcyzUZQWVKNKD8PuK09R1+UJWNM0Tp+gqox05Xr/YbPhXmNhDQdB5gNl2GeaxXRSJyIz2pD3HwKpSMmv5XX9xHOgwT8S8fKHMM52Wd8PLLo3uG7GE+ScRl5tf5ml+NPZF5jnp/y6PblcHK+et1DuRCPqOZaUY+oucqW1Gt8Z/NLXORZMI59HX7rzf5eYSbo2HwSkzOc0LHrlcbi6bRJTkHO4olvopOG8YnzxyfGpsnyLkhhxo44G+S+dX/FWy1tjzmY6ybMYH+rFjZyi3L+EpEV761vMDB7/2RvS75iirrfT79sIYrH1xwWG6051iXq2GQyWe+Gh63PHtOl1NGO4mf6ckXxi+upVx7d6hL0Qq1ljJdTnc3fUQ9N1wUtfHW+zIfuuu8NMpv3s+Hd0BOGZ5YrsDErFV5rU1YcBY+U97wt73u+gyU3URMks4qy6Nw0wv5jPbCJiIuspjcaNwEuc4jcO8+ZTVEfM4noiO7Jl5FE7GpWdGb+UupKPHRlwMVlMkYGGwmmNB/YPdHAsrHwwjYFDzYDjHgmpz9Fgp1BQWfIJHNY9tI2BQ+dg2Cgf1j62jcMjC2DyOB1yMzaNwwMhWqgkZLTLiobcI/w6q7y2mSFBzbzNFwkp7oxkU1NcbTZGgKmOzgpzvZouwvHBpVOfUZ2EhqHzqs7gUcDH1WlwK2Zm6La8FfE3dFpcCBitruKk9485S+088ZHG+PGIy5ntmMWA05nt2OWA25n12OWQ45n5+PWA65n52mVtypiSPt5Zy0l6icm/N6615vTWvt+b11rzemteP3bzaJ6XUW9O+zvon58P9b3ClUe29zBxco0e4G/6LhJqGdPCpIn11dwOuokxue5EAXGFeWZEiIJ1XRmrvWPdgIBaaBRZ+Q3Zxe+0BM9YemkQomZF2dBITxFWFWUFwsdrw9lklUlF4X7l0vX59fV1hu7wydrfufd36j5v3H27vP7y7WG1WhS9V27r50VuiHkW+a0WfQDGKqzQBFYeTWPJjynT9y9vTd7+uFErNwkVL3KF/8j8KrORwoPrTFXn2t/oOP/yfElGwZpA+isPhBR19tqppGO6kORYocunwRY2ku0XW/j/hLlr637SPKI3fUNVsK1g4+YZWcvKsazSJKAhzsm1VnfNVllHlR14zkawZ6yt3n+4fmNGayZ5LIYOUMyyh3o+Cx8ZFmM+FEBv/IDblQXSWg9jIBrPhDCaDGMxGLpgNVzCfomA2L0FsLIL5/AOxMQdi0wxEZxaIjSYwGUMgGDpgMmDAZJiA6dwAkxkBlsYAiPd6WGrnsNSxYbEnw1LbhXNdFZbbJpzrinCu6cHZlgZnO9bx4ravK9EkC5clkBOfW0n16LmzqP1z69U8NU3zLymeG78=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Prune soft-deleted algorithm instances"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/algorithm-instances/prune"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Hard-delete algorithm instances that were soft-deleted. Use olderThanDays to only prune instances deleted more than N days ago (default: 0 = all).
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./algorithm-instances-management-controller-prune.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./algorithm-instances-management-controller-prune.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./algorithm-instances-management-controller-prune.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,32 @@
+---
+id: csvw
+title: "CSVW"
+description: ""
+sidebar_label: "CSVW"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@context":["http://example.com/csvw.json"],"tables":{"url":"http://example.com/table.csv","tableSchema":{"columns":[{"name":"http://example.com/tableSchema.json"}]},"dialect":{"header":true}}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"CSVW"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  {...require("./csvw.Schema.json")}
+>
+  
+</Schema>
+            

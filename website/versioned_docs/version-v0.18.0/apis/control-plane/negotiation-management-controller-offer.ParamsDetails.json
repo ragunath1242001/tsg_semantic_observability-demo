@@ -1,0 +1,1 @@
+{"parameters":[{"name":"processId","required":true,"in":"path","description":"Process ID of the negotiation","schema":{"type":"string"}},{"name":"address","required":false,"in":"query","description":"Address for the negotiation","schema":{"type":"string"}}]}

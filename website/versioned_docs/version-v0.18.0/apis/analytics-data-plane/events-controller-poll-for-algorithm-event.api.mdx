@@ -1,0 +1,70 @@
+---
+id: events-controller-poll-for-algorithm-event
+title: "Poll for the next available algorithm event for this algorithm instance"
+description: "Long polling endpoint that returns the next available algorithm event for this specific algorithm instance. Supports 'since' query parameter with ISO date format to filter events after that timestamp. Only returns external events (excludes own events)."
+sidebar_label: "Poll for the next available algorithm event for this algorithm instance"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWMFu2zgQ/RViLm0BrW1kc9ItSJMiQJEUTfdUBMVEGlvsUiRLjuJ4Df37gpKiiDJt7GEPC2xyCfTmzZDzRjSht4eSfOGkZWk05PDZ6I2wRimpN4J0aY3ULLhCFo64cdoLrkhoemaBTygVPioSqDbGSa5qQU+kWayNE1xJL7ylQq5lMWFI7Rl1QQtx31hrHHvxzktd0DvxqyG3ExYd1sTkxFZyJW7u70SJTKFojSzYiLVUIdyt5QWuw0O3RZY1ecbaLsSdVrtxy/TM5DSql5T39FyopiQvzFYP4IcFZGAsOQxS3JSQw1UXuDSanVGK3I8gzLVxFy/NdATIYNyyh/z7HjTWBDmMPd8MLd+UkIGjX410VELOrqEMZJDdIleQgS8qqhHyPfDOhhKendQbaNtsrNppdaxOp+DJQg8h01ujPfkQP1utwr/4Lfg2jng22Aq9eCTSYm0aXUKbwdnq/DD/1gz8MEGphTJ68/JSbaUuzTaknq9+P0y9Nu5RliVpyKAwmoPA+R7QWiWLbjTLnz4w94dNmsefVHTzcGGQLPsWe+HmUmRAz1hbFaCv5E3jCro1fP3SmGfkxp/OO1+di1vDYkwqTDldSjf1I7lpyvnqvM2gJu9xQ6mtvxYPQwhDJs9UCjdsUZSGvNCGBT1Lz4uwKjln3OmdTnbZTt+d7706Y7tDCw8ZsOQu8yoU/8gG2vCXAeMmvOXD4QjMmrgy4bxsqD8MXEEOS7Ry2R+t5T5xFNpleCPCyuSe+pPzEB6Kxkne3YfZ9uMz2HB1NtWqBzJYK7PtKAEwTv7VvR+Xwwx8YWxfoXCETDmWdjFuBPI0HMTB8oCbADNobJmqm4QzKElRgp2Ew+ioaBL0NJ5BjRo3h/QknE1bL4xey00sx4BNtBhZcyRSYWQdYlH/I+8QizsfiQkw6nkkHmJRtyUyWoWa4oZf4UnPU24CjDqfcpNw1P+UnYRjFab0NB5pMaUn4UiRtVQzMTpkosPAiJ+j7gfGHIl6HjhzJO50IB1AUX8DaY5EXRlXVOS5v8zj9uLQpM95zpFA1Pk852go0mKedTQUqzNPOx6L9JqnHQ1FClpnwpX0AzeOqO6u4dPhiZKp3BPBSNFU7slwpGwq+2Q4VjiVfjoeKZ1KPxkOF2qhJGm+dFSSZonKv11eb5fX2+X1dnm9XV5vl9d/+/LqPgilXpvu62z4YPx2/0lcaFQ7loUXH5FRfBl/RWKXQXpxZ0lffLkZnaJumMJXZts7TS8elBdm3QGp0sG6Cd+Qfd3BOcAiOAdtBkoWpD29WgFwYbGoSJwtVmF8TkEOFbP1+XK53W4X2IUXxm2WQ65ffr65vLq9v/rtbLFaVFyr7uq2xnONelL5i1FqsL/+uUt2aI7Ntdq/eiH/d4tuMAGYnnlpFUodHJBuhvvBevgOaGU4G71DkUGeduI6/+Ehg8p4Dln7/SN6+sOptg1w76UFP6+UPmhYQr5G5enEbN5/HZyVD+LYVv+k3cTFe0LVBA4EY+4JnQwL/fuLDiDq3XTNl82k5Gkf2gwqwpJct52eeVEUZHlS48CXa6eG0Kerb9C2fwN7jf36
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Poll for the next available algorithm event for this algorithm instance"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/events/{algorithmInstanceId}/poll"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Long polling endpoint that returns the next available algorithm event for this specific algorithm instance. Supports 'since' query parameter with ISO date format to filter events after that timestamp. Only returns external events (excludes own events).
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./events-controller-poll-for-algorithm-event.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./events-controller-poll-for-algorithm-event.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./events-controller-poll-for-algorithm-event.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"issuer_state":{"type":"string","example":"issuer-state-example"},"authorization_server":{"type":"string","example":"authorization-server-example"}},"title":"AuthorizationCode"},"schemaType":"response"}

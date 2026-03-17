@@ -1,0 +1,32 @@
+---
+id: dcqlquery
+title: "DcqlQuery"
+description: ""
+sidebar_label: "DcqlQuery"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"credentials":[{"id":"identity_credential","format":"jwt_vc_json","multiple":false,"meta":{"vct_values":["https://credentials.example.com/identity_credential"],"type_values":[["VerifiableCredential","IDCredential"]],"doctype_value":"org.iso.18013.5.1.mDL"},"trusted_authorities":[{"type":"openid_federation","values":["https://trustanchor.example.com"]}],"require_cryptographic_holder_binding":true,"claims":[{"id":"family_name_claim","path":["credentialSubject","familyName"],"values":["Doe","Smith"]}],"claim_sets":[["claim1","claim2"],["claim3"]]}],"credential_sets":[{"options":[["identity_cred"],["passport_cred","visa_cred"]],"required":true}]}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"DcqlQuery"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  {...require("./dcqlquery.Schema.json")}
+>
+  
+</Schema>
+            

@@ -1,0 +1,32 @@
+---
+id: clientinfo
+title: "ClientInfo"
+description: ""
+sidebar_label: "ClientInfo"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"sub":"user-id-123","name":"John Doe","email":"john.doe@example.com","didId":"did:example:123456789","permissions":["read:credential:own","manage:key"],"refreshToken":"refresh-token-abc123"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ClientInfo"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  {...require("./clientinfo.Schema.json")}
+>
+  
+</Schema>
+            

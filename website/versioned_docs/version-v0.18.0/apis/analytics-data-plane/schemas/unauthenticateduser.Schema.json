@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"state":{"type":"object","example":"unauthenticated"}},"required":["state"],"title":"UnauthenticatedUser"},"schemaType":"response"}

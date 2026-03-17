@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"digest":{"type":"string","example":"sha256:abcdef1234567890"},"algorithm":{"type":"string","example":"SHA-256"}},"required":["digest","algorithm"],"title":"HashedMessageSchema"},"schemaType":"response"}

@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"input_mode":{"type":"string","example":"text"},"length":{"type":"number","example":6},"description":{"type":"string","example":"Enter transaction code"}},"title":"TransactionCode"},"schemaType":"response"}

@@ -1,0 +1,32 @@
+---
+id: clientdto
+title: "ClientDto"
+description: ""
+sidebar_label: "ClientDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"id":"1","name":"Example Client","secretName":"SecretExample","description":"A sample client used for demonstration purposes.","clientId":"client-id-123","clientSecret":"client-secret-abc","tokenEndpointAuthMethod":"client_secret_post","jwk":{"kty":"RSA","n":"0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw","e":"AQAB","kid":"client-key-1"},"permissions":["manage:catalog","read:dataset"],"grants":["authorization_code","client_credentials"],"redirectUris":["https://example.com/callback"]}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ClientDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  {...require("./clientdto.Schema.json")}
+>
+  
+</Schema>
+            

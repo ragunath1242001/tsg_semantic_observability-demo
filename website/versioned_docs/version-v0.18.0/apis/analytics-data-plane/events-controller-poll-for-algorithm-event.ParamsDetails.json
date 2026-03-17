@@ -1,0 +1,1 @@
+{"parameters":[{"name":"algorithmInstanceId","required":true,"in":"path","schema":{"type":"string"}},{"name":"since","required":true,"in":"query","schema":{"type":"string"}}]}

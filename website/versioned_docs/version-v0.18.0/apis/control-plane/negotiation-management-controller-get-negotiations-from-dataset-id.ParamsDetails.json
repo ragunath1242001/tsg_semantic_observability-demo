@@ -1,0 +1,1 @@
+{"parameters":[{"name":"datasetId","required":true,"in":"path","description":"Dataset ID you want to find a negotiation for","schema":{"type":"string"}},{"name":"remoteParty","required":false,"in":"query","description":"Remote party you want a negotiation to find for","schema":{"type":"string"}}]}

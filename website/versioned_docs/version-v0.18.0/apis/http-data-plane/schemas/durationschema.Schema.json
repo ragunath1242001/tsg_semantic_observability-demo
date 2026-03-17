@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"@value":{"type":"string","example":"P3Y6M4DT12H30M5S"},"@type":{"type":"string","example":"xsd:duration"}},"required":["@value","@type"],"title":"DurationSchema"},"schemaType":"response"}

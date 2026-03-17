@@ -1,0 +1,1 @@
+{"parameters":[{"name":"algorithmInstanceId","required":true,"in":"path","description":"The ID of the algorithm instance to start","schema":{"example":"12345","type":"string"}},{"name":"Authorization","required":true,"in":"header","schema":{"type":"string"}}]}
