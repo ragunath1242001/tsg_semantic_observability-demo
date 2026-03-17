@@ -56,6 +56,20 @@ const config: Config = {
   ],
 
   plugins: [
+    function nodePathPolyfillPlugin() {
+      return {
+        name: "node-path-polyfill-plugin",
+        configureWebpack() {
+          return {
+            resolve: {
+              fallback: {
+                path: false
+              }
+            }
+          };
+        }
+      };
+    },
     [
       "docusaurus-plugin-openapi-docs",
       {

@@ -39,6 +39,12 @@ export class SQLiteConfig extends DatabaseConfig {
   override readonly type: "sqlite" = "sqlite" as const;
 }
 
+export function toTypeOrmType(
+  type: "sqlite" | "postgres"
+): "better-sqlite3" | "postgres" {
+  return type === "sqlite" ? "better-sqlite3" : "postgres";
+}
+
 export class PostgresConfig extends DatabaseConfig {
   override readonly type: "postgres" = "postgres" as const;
 

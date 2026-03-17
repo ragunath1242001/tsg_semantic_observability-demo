@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { DisableOAuthGuard } from "@tsg-dsp/common-api";
-import { ITransferHandler } from "@tsg-dsp/common-data-plane-api/dist/interfaces/index.js";
+import { ITransferHandler } from "@tsg-dsp/common-data-plane-api";
 import { Request, Response } from "express";
 
 import { HTTPTransferHandler } from "./http-transfer-handler.service.js";

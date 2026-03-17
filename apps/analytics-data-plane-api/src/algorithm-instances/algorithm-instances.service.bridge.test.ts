@@ -15,13 +15,15 @@ import {
 import {
   CatalogClientService,
   ControlPlaneConfig,
-  createDataPlaneHttpMocks,
-  createDataPlaneManagementHttpMocks,
-  createDidConnectorHttpMocks,
   ITransferHandler,
   NegotiationClientService,
   TransferClientService
 } from "@tsg-dsp/common-data-plane-api";
+import {
+  createDataPlaneHttpMocks,
+  createDataPlaneManagementHttpMocks,
+  createDidConnectorHttpMocks
+} from "@tsg-dsp/common-data-plane-api/testing";
 import { plainToClass } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
@@ -196,7 +198,10 @@ describe("AlgorithmInstancesService – server mode (bridge)", () => {
     TypeOrmTestHelper.instance.teardownTestDB();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Flush setImmediate queue so the fire-and-forget distributeAlgorithmInstance
+    // scheduled inside createAlgorithmInstance runs while mocks are still active.
+    await new Promise((resolve) => setImmediate(resolve));
     vi.restoreAllMocks();
   });
 

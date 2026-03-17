@@ -16,20 +16,19 @@
     "test:ci": "vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=junit.xml"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.9",
-    "@nestjs/swagger": "^11.2.3",
+    "@nestjs/common": "^11.1.16",
+    "@nestjs/swagger": "^11.2.6",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
     "@tsg-dsp/wallet-dtos": "workspace:*",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.3",
-    "jose": "^6.1.2",
+    "class-validator": "^0.15.1",
     "reflect-metadata": "^0.2.0",
     "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.1.9",
-    "@types/node": "^25.0.10",
+    "@nestjs/testing": "^11.1.16",
+    "@types/node": "^25.5.0",
     "@vitest/coverage-v8": "^4.0.17",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"

@@ -8,14 +8,16 @@ import {
 import {
   CatalogClientService,
   ControlPlaneConfig,
-  createDataPlaneHttpMocks,
-  createDataPlaneManagementHttpMocks,
-  createDidConnectorHttpMocks,
   DataPlaneError,
   ITransferHandler,
   NegotiationClientService,
   TransferClientService
 } from "@tsg-dsp/common-data-plane-api";
+import {
+  createDataPlaneHttpMocks,
+  createDataPlaneManagementHttpMocks,
+  createDidConnectorHttpMocks
+} from "@tsg-dsp/common-data-plane-api/testing";
 import { plainToClass } from "class-transformer";
 import { SetupServer, setupServer } from "msw/node";
 

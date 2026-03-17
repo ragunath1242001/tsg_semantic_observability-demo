@@ -1,14 +1,16 @@
 diff --git a/build/devtools.js b/build/devtools.js
-index 85d20c6ed3438e1539fea84db6c32dddad276744..0fc51e0f6ecb781e0952961485be875f80cc2076 100644
+index 10afb3a8e8c7ba1c66e962e57a708586bd5cc5cb..0fc51e0f6ecb781e0952961485be875f80cc2076 100644
 --- a/build/devtools.js
 +++ b/build/devtools.js
-@@ -1,9 +1,2 @@
+@@ -1,11 +1,2 @@
 -/* eslint-disable import/order */
 -// eslint-disable-next-line import/no-unassigned-import
 -import './devtools-window-polyfill.js';
 -// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 -// @ts-expect-error
 -import devtools from 'react-devtools-core';
+-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+-devtools.initialize();
 -// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 -devtools.connectToDevTools();
 +// Patched: removed react-devtools-core import (not needed for production builds)

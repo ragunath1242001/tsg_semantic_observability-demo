@@ -1,7 +1,7 @@
 import "@tsg-dsp/common-ui/assets/styles.scss";
 import "@tsg-dsp/common-ui/assets/tailwind.css";
 
-import Lara from "@primevue/themes/lara";
+import Lara from "@primeuix/themes/lara";
 import { createPinia } from "pinia";
 import {
   Badge,

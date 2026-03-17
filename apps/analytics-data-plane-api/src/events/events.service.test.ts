@@ -10,9 +10,6 @@ import {
 import {
   CatalogClientService,
   ControlPlaneConfig,
-  createDataPlaneHttpMocks,
-  createDataPlaneManagementHttpMocks,
-  createDidConnectorHttpMocks,
   DataPlaneError,
   DataPlaneRegistrationService,
   DataPlaneStateDao,
@@ -20,6 +17,11 @@ import {
   NegotiationClientService,
   TransferClientService
 } from "@tsg-dsp/common-data-plane-api";
+import {
+  createDataPlaneHttpMocks,
+  createDataPlaneManagementHttpMocks,
+  createDidConnectorHttpMocks
+} from "@tsg-dsp/common-data-plane-api/testing";
 import { TransferState } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { HttpResponse } from "msw";

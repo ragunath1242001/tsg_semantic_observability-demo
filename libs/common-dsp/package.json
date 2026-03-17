@@ -15,7 +15,7 @@
   "scripts": {
     "prepare": "install-peers",
     "build": "tsc -p tsconfig.build.json",
-    "postbuild": "copyfiles -f src/jsonld/contexts/{tsg,health}.json ../../website/docs",
+    "postbuild": "node scripts/postbuild.mjs",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ci": "vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=junit.xml"
@@ -27,10 +27,10 @@
     "*.md"
   ],
   "peerDependencies": {
-    "@nestjs/common": "^11.0.0",
-    "@nestjs/swagger": "^11.0.4",
+    "@nestjs/common": "^11.1.16",
+    "@nestjs/swagger": "^11.2.6",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.1",
+    "class-validator": "^0.15.1",
     "reflect-metadata": "^0.2.0"
   },
   "peerDependenciesMeta": {
@@ -49,18 +49,16 @@
   },
   "devDependencies": {
     "@types/jsonld": "^1.5.15",
-    "@types/node": "^24.0.0",
+    "@types/node": "^24.12.0",
     "@vitest/coverage-v8": "^4.0.17",
-    "copyfiles": "^2.4.1",
     "install-peers-cli": "^2.2.0",
-    "msw": "^2.12.3",
+    "msw": "^2.12.10",
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
   },
   "dependencies": {
-    "flat-cache": "^6.1.19",
     "jsonld": "^9.0.0",
     "uuid": "^13.0.0"
   }

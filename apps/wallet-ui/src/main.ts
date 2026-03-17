@@ -2,7 +2,7 @@ import "@tsg-dsp/common-ui/assets/styles.scss";
 import "@tsg-dsp/common-ui/assets/tailwind.css";
 
 import { loader } from "@guolao/vue-monaco-editor";
-import Lara from "@primevue/themes/lara";
+import Lara from "@primeuix/themes/lara";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { createPinia } from "pinia";

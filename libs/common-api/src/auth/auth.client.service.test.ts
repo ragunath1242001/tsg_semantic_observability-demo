@@ -117,7 +117,7 @@ describe("OAuthService", () => {
     expect(authClientService).toBeDefined();
     const instance = authClientService.axiosInstance();
     expect(instance).toBeDefined();
-    expect(instance.interceptors.request["handlers"].length).toBe(1);
+    expect(instance.interceptors.request["handlers"]?.length).toBe(1);
     const additionalInstance = authClientService.axiosInstance({
       baseURL: "https://example.com"
     });
