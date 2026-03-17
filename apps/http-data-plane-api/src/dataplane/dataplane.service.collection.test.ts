@@ -8,10 +8,10 @@ import {
 import {
   CatalogClientService,
   ControlPlaneConfig,
-  createDataPlaneHttpMocks,
   DataPlaneRegistrationService,
   DataPlaneStateDao
 } from "@tsg-dsp/common-data-plane-api";
+import { createDataPlaneHttpMocks } from "@tsg-dsp/common-data-plane-api/testing";
 import { plainToClass } from "class-transformer";
 import { SetupServer, setupServer } from "msw/node";
 

@@ -10,12 +10,14 @@ import {
 import {
   CatalogClientService,
   ControlPlaneConfig,
-  createDataPlaneHttpMocks,
-  createDataPlaneManagementHttpMocks,
-  createDidConnectorHttpMocks,
   DataPlaneRegistrationService,
   DataPlaneStateDao
 } from "@tsg-dsp/common-data-plane-api";
+import {
+  createDataPlaneHttpMocks,
+  createDataPlaneManagementHttpMocks,
+  createDidConnectorHttpMocks
+} from "@tsg-dsp/common-data-plane-api/testing";
 import { defaultContext, OfferDto } from "@tsg-dsp/common-dsp";
 import {
   DatasetConfig,

@@ -7,9 +7,9 @@ import {
 } from "@tsg-dsp/common-api";
 import {
   CatalogClientService,
-  ControlPlaneConfig,
-  createDataPlaneManagementHttpMocks
+  ControlPlaneConfig
 } from "@tsg-dsp/common-data-plane-api";
+import { createDataPlaneManagementHttpMocks } from "@tsg-dsp/common-data-plane-api/testing";
 import { plainToClass } from "class-transformer";
 import fs from "fs/promises";
 import { SetupServer, setupServer } from "msw/node";

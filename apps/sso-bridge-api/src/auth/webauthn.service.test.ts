@@ -3,7 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AuthenticationResponseJSON,
   RegistrationResponseJSON
-} from "@simplewebauthn/types";
+} from "@simplewebauthn/server";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
 import { Request } from "express";

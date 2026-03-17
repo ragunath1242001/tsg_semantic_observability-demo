@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { withFullScreen } from "fullscreen-ink";
 import { createElement } from "react";
 
 import { App } from "./app.js";
+import { withFullScreen } from "./fullscreen/index.js";
 import type { AppConfig } from "./types.js";
 
 const program = new Command();

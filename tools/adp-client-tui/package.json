@@ -25,23 +25,22 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
-    "@types/react": "^18.3.0",
+    "@types/node": "^24.12.0",
+    "@types/react": "^19.2.14",
     "tsx": "^4.19.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "axios": "^1.13.2",
+    "axios": "^1.13.6",
     "chalk": "^5.5.0",
-    "commander": "^14.0.2",
+    "commander": "^14.0.3",
     "form-data": "^4.0.2",
-    "fullscreen-ink": "^0.1.0",
-    "ink": "^5.1.0",
-    "open": "^10.1.0",
-    "react": "^18.3.1",
+    "ink": "^6.8.0",
+    "open": "^11.0.0",
+    "react": "^19.2.4",
     "socket.io-client": "^4.8.3"
   },
   "patchedDependencies": {
-    "ink@5.2.1": "patches/ink@5.2.1.patch"
+    "ink@6.8.0": "patches/ink@6.8.0.patch"
   }
 }

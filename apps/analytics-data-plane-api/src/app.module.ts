@@ -8,7 +8,8 @@ import {
   AuthModule,
   GenericConfigModule,
   LoggerMiddleware,
-  RequestContextMiddleware
+  RequestContextMiddleware,
+  toTypeOrmType
 } from "@tsg-dsp/common-api";
 
 import { AlgorithmInstancesModule } from "./algorithm-instances/algorithm-instances.module.js";
@@ -78,6 +79,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
       ...GenericConfigModule.get(RootConfig).db,
+      type: toTypeOrmType(GenericConfigModule.get(RootConfig).db.type),
       autoLoadEntities: true,
       migrations: [
         `dist/migrations/*-${GenericConfigModule.get(RootConfig).db.type}{.ts,.js}`

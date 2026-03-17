@@ -1,18 +1,18 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import {
-  generateAuthenticationOptions,
-  generateRegistrationOptions,
-  verifyAuthenticationResponse,
-  verifyRegistrationResponse
-} from "@simplewebauthn/server";
 import type {
   AuthenticationResponseJSON,
   AuthenticatorTransportFuture,
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON,
   RegistrationResponseJSON
-} from "@simplewebauthn/types";
+} from "@simplewebauthn/server";
+import {
+  generateAuthenticationOptions,
+  generateRegistrationOptions,
+  verifyAuthenticationResponse,
+  verifyRegistrationResponse
+} from "@simplewebauthn/server";
 import { AppError } from "@tsg-dsp/common-api";
 import { Request } from "express";
 import { Repository } from "typeorm";

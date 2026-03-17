@@ -20,5 +20,5 @@
     "noImplicitAny": false,
     "skipLibCheck": true
   },
-  "exclude": ["vitest.config.ts", "coverage/", "dist/"]
+  "exclude": ["vitest.config.ts", "coverage/", "dist/", "scripts/*.mjs"]
 }

@@ -11,7 +11,7 @@ import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type {
   AuthenticationResponseJSON,
   RegistrationResponseJSON
-} from "@simplewebauthn/types";
+} from "@simplewebauthn/server";
 import { Request } from "express";
 
 import { WebAuthnService } from "./webauthn.service.js";

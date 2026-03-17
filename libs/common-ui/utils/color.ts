@@ -1,4 +1,4 @@
-import { palette, updatePreset, updateSurfacePalette } from "@primevue/themes";
+import { palette, updatePreset, updateSurfacePalette } from "@primeuix/themes";
 
 export const updateColorPalette = (colorSetting: string) => {
   if (!colorSetting.startsWith("#")) {

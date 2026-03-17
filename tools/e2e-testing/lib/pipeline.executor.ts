@@ -51,7 +51,6 @@ export class PipelineExecutor {
     this.socket = io(`http://localhost:${this.port}`);
     this.socket.onAny((event, data) => {
       if (event === "connect") {
-        this.logger.log("Websocket connected to server");
         return;
       }
       new Promise((resolve) => setTimeout(resolve, 50)).then(async () => {
@@ -81,6 +80,12 @@ export class PipelineExecutor {
         }
       });
     });
+    if (!this.socket.connected) {
+      await new Promise<void>((resolve) => {
+        this.socket!.once("connect", resolve);
+      });
+    }
+    this.logger.log("Websocket connected to server");
   }
 
   async init() {

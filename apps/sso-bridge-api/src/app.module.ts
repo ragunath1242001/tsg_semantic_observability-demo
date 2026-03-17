@@ -7,7 +7,8 @@ import {
   GenericConfigModule,
   HealthController,
   LoggerMiddleware,
-  RequestContextMiddleware
+  RequestContextMiddleware,
+  toTypeOrmType
 } from "@tsg-dsp/common-api";
 
 import { AuthModule } from "./auth/auth.module.js";
@@ -37,6 +38,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
       ...GenericConfigModule.get(RootConfig).db,
+      type: toTypeOrmType(GenericConfigModule.get(RootConfig).db.type),
       autoLoadEntities: true,
       migrations: [
         `dist/migrations/*-${GenericConfigModule.get(RootConfig).db.type}{.ts,.js}`

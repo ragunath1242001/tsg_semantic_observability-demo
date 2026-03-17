@@ -1,5 +1,5 @@
 import { TypeOrmModule } from "@nestjs/typeorm";
-import sqlite3 from "sqlite3";
+import Database from "better-sqlite3";
 
 export class TypeOrmTestHelper {
   private static _instance: TypeOrmTestHelper;
@@ -12,16 +12,16 @@ export class TypeOrmTestHelper {
     return this._instance;
   }
 
-  private testdb!: sqlite3.Database;
+  private testdb!: InstanceType<typeof Database>;
 
   async setupTestDB() {
-    this.testdb = new sqlite3.Database(":memory:");
+    this.testdb = new Database(":memory:");
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   module(entities: any[]) {
     return TypeOrmModule.forRoot({
-      type: "sqlite",
+      type: "better-sqlite3",
       database: ":memory:",
       name: "default",
       entities: entities,

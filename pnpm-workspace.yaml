@@ -37,5 +37,5 @@ onlyBuiltDependencies:
   - "bcrypt"
   - "esbuild"
   - "msw"
-  - "sqlite3"
+  - "better-sqlite3"
   - "vue-demi"

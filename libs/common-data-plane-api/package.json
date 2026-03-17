@@ -4,6 +4,16 @@
   "description": "Common functionality for data plane APIs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./dist/utils/test.http-mocks.d.ts",
+      "default": "./dist/utils/test.http-mocks.js"
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -16,27 +26,27 @@
     "test:ci": "vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=junit.xml"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.9",
-    "@nestjs/core": "^11.1.9",
-    "@nestjs/swagger": "^11.2.3",
+    "@nestjs/common": "^11.1.16",
+    "@nestjs/core": "^11.1.16",
+    "@nestjs/swagger": "^11.2.6",
     "@nestjs/typeorm": "^11.0.0",
     "@tsg-dsp/common-api": "workspace:*",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
     "@tsg-dsp/wallet-dtos": "workspace:*",
-    "axios": "^1.13.2",
+    "axios": "^1.13.6",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.3",
+    "class-validator": "^0.15.1",
     "did-resolver": "^4.1.0",
-    "msw": "^2.12.3",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.25"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.1.9",
-    "@types/node": "^24.0.0",
+    "@nestjs/testing": "^11.1.16",
+    "@types/node": "^24.12.0",
     "@vitest/coverage-v8": "^4.0.17",
+    "msw": "^2.12.10",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
   }

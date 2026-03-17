@@ -38,7 +38,7 @@ async function generate(
     });
   } else {
     dataSource = new DataSource({
-      type: "sqlite",
+      type: "better-sqlite3",
       database: ":memory:",
       migrations: ["src/migrations/*-sqlite.ts"],
       ...datasourceDefaults
