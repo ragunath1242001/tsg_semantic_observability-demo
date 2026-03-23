@@ -1,4 +1,5 @@
 import {
+  AuditModuleConfig,
   AuthConfig,
   DatabaseConfig,
   Description,
@@ -413,4 +414,10 @@ export class RootConfig {
   @Type(() => DidConfig)
   @IsOptional()
   public readonly did: DidConfig = new DidConfig();
+
+  @Description("Audit logging configuration")
+  @ValidateNested()
+  @Type(() => AuditModuleConfig)
+  @IsOptional()
+  public readonly audit: AuditModuleConfig = new AuditModuleConfig();
 }

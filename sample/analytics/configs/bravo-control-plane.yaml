@@ -48,3 +48,6 @@ initCatalog:
   publisher: did:web:localhost%3A3600
   title: Bravo
   description: Bravo connector
+
+audit:
+  logExecute: true

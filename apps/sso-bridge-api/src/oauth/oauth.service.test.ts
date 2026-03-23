@@ -473,6 +473,7 @@ describe("Oauth", () => {
     expect(token).toBeDefined();
     const introspection = await oauth.introspect(token.access_token);
     expect(introspection.active).toBeTruthy();
+    expect(introspection.azp).toBe("test-client");
 
     await oauth.revocation(token.access_token);
     const introspectionRevoked = await oauth.introspect(token.access_token);

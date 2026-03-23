@@ -1,4 +1,5 @@
 import {
+  AuditModuleConfig,
   DatabaseConfig,
   Description,
   PostgresConfig,
@@ -109,6 +110,12 @@ export class RootConfig {
       ]
     }
   };
+
+  @Description("Audit logging configuration")
+  @ValidateNested()
+  @Type(() => AuditModuleConfig)
+  @IsOptional()
+  public readonly audit: AuditModuleConfig = new AuditModuleConfig();
 }
 
 export class InitClient {

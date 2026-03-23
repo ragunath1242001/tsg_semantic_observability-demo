@@ -48,3 +48,6 @@ initCatalog:
   publisher: did:web:localhost%3A3500
   title: Alfa
   description: Alfa connector
+
+audit:
+  logExecute: true

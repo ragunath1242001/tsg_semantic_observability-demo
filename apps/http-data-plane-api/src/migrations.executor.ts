@@ -1,5 +1,6 @@
 import "reflect-metadata";
 
+import { AuditLogDao } from "@tsg-dsp/common-api";
 import { DataPlaneStateDao } from "@tsg-dsp/common-data-plane-api";
 import chalk from "chalk";
 import path from "path";
@@ -9,7 +10,7 @@ import { CommandUtils } from "typeorm/commands/CommandUtils.js";
 import { MigrationGenerateCommand } from "typeorm/commands/MigrationGenerateCommand.js";
 
 const datasourceDefaults = {
-  entities: ["**/*.dao.ts", DataPlaneStateDao],
+  entities: ["**/*.dao.ts", DataPlaneStateDao, AuditLogDao],
   synchronize: false,
   migrationsRun: false,
   dropSchema: false,

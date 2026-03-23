@@ -1,5 +1,7 @@
 import { Action, Resource } from "./permissions.js";
 
+type AuditFilterValue<T> = T | T[];
+
 export enum AuditSeverity {
   DEBUG = "debug",
   INFO = "info",
@@ -17,13 +19,13 @@ export interface AuditLogEntry {
     sub: string;
     type: "user" | "service" | "system";
     serviceName?: string;
-    email?: string;
+    username?: string;
     didId?: string;
   };
 
   onBehalfOf?: {
     sub: string;
-    email?: string;
+    username?: string;
     didId?: string;
   };
 
@@ -55,7 +57,31 @@ export interface AuditLogConfig {
   enabled: boolean;
   minSeverity: AuditSeverity;
   logDenied: boolean;
-  logSuccessful: boolean;
   logDelegated: boolean;
+  logMutations: boolean;
+  logExecute: boolean;
+  logReads: boolean;
   sensitiveResources?: Resource[];
+}
+
+export interface AuditLogQueryParams {
+  page?: number;
+  perPage?: number;
+  orderBy?: string;
+  order?: "ASC" | "DESC";
+
+  severity?: AuditFilterValue<AuditSeverity>;
+  callerSub?: string;
+  callerType?: "user" | "service" | "system";
+  action?: AuditFilterValue<Action>;
+  resourceType?: AuditFilterValue<Resource | string>;
+  resultAllowed?: boolean;
+  correlationId?: string;
+  ipAddress?: string;
+  requestPath?: string;
+
+  from?: string; // ISO 8601
+  to?: string; // ISO 8601
+
+  search?: string;
 }

@@ -39,8 +39,6 @@ export class GenericOwnershipService<
     if (entity.ownerIdentifier) {
       if (subject.didId && entity.ownerIdentifier === subject.didId)
         return true;
-      if (subject.email && entity.ownerIdentifier === subject.email)
-        return true;
     }
 
     return false;

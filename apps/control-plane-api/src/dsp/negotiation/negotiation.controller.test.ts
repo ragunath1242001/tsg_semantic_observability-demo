@@ -2,7 +2,11 @@ import { HttpStatus } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import {
+  ProtocolAuditService,
+  ServerConfig,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
 import {
   Agreement,
   AgreementDto,
@@ -116,6 +120,20 @@ describe("NegotiationController", () => {
         },
         EventEmitter2,
         { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) },
+        {
+          provide: ProtocolAuditService,
+          useValue: {
+            createPeerServiceActor(didId: string) {
+              return { sub: didId, type: "service", didId };
+            },
+            createUnknownServiceActor(serviceName?: string) {
+              return { sub: "unknown", type: "service", serviceName };
+            },
+            async logAllowed() {},
+            async logDenied() {},
+            async log() {}
+          }
+        },
         {
           provide: RootConfig,
           useValue: plainToClass(RootConfig, {

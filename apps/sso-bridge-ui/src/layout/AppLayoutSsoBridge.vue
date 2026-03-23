@@ -55,7 +55,12 @@ const menuList = computed(() => {
       items: [
         { label: "Clients", icon: "pi pi-fw pi-desktop", to: "/clients" },
         { label: "Users", icon: "pi pi-fw pi-users", to: "/users" },
-        { label: "Permissions", icon: "pi pi-fw pi-shield", to: "/permissions" }
+        {
+          label: "Permissions",
+          icon: "pi pi-fw pi-shield",
+          to: "/permissions"
+        },
+        { label: "Audit Logs", icon: "pi pi-fw pi-shield", to: "/audit-logs" }
       ]
     });
   }

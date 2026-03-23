@@ -10,7 +10,7 @@ export enum Order {
 export class PaginationOptionsDto {
   static readonly NO_PAGINATION: PaginationOptionsDto = {
     order: Order.DESC,
-    order_by: "modifiedDate",
+    order_by: "id",
     page: 1,
     per_page: Number.MAX_SAFE_INTEGER,
     skip: 0,
@@ -19,7 +19,7 @@ export class PaginationOptionsDto {
       take: Number.MAX_SAFE_INTEGER,
       skip: 0,
       order: {
-        modifiedDate: Order.DESC
+        id: Order.DESC
       }
     }
   };

@@ -14,7 +14,7 @@ TSG empowers your organization to unlock the value of collaborative data exchang
 
 ## Documentation Structure
 
-This documentation is organized to support your journey with TSG, from initial exploration to production deployment. Start with [Getting Started](./getting-started.md) for a hands-on introduction, then explore the [Architecture](./architecture/) section to understand system design and technical foundations. Developers will find detailed API references and integration patterns in [Applications](./apps/), while operators can reference [Deployment](./deployment/) for deployment scenarios. The [Tools](./tools/) section covers utilities that simplify management tasks, and [Troubleshooting](./troubleshooting.md) provides diagnostic guidance when issues arise.
+This documentation is organized to support your journey with TSG, from initial exploration to production deployment. Start with [Getting Started](./getting-started.md) for a hands-on introduction, then explore the [Architecture](./architecture/) section to understand system design and technical foundations. Shared platform capabilities such as authorization, audit logging, and shared security patterns are documented in [Common](./common/). Developers will find app-specific API references and integration patterns in [Applications](./apps/), while operators can reference [Deployment](./deployment/) for deployment scenarios. The [Tools](./tools/) section covers utilities that simplify management tasks, and [Troubleshooting](./troubleshooting.md) provides diagnostic guidance when issues arise.
 
 ## Quick Start
 
@@ -30,8 +30,9 @@ Ready to dive in? This section provides fast-track paths based on your role and 
 If you're developing with or extending TSG:
 1. Start with [System Overview](./architecture/system-overview.md) to understand the overall architecture
 2. Review [Components](./architecture/components.md) for detailed component information
-3. Explore specific [app documentation for module-level](./apps/) details
-4. Check [Standards & Protocols](./architecture/standards-protocols.md) for implementation specifications
+3. Review [Common](./common/) for shared frameworks such as ABAC and audit logging
+4. Explore specific [app documentation for module-level](./apps/) details
+5. Check [Standards & Protocols](./architecture/standards-protocols.md) for implementation specifications
 
 ### For Operators
 If you're deploying or operating TSG:

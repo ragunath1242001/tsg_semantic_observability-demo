@@ -1,4 +1,5 @@
 import {
+  AuditModuleConfig,
   AuthConfig,
   DatabaseConfig,
   Description,
@@ -259,4 +260,10 @@ export class RootConfig {
   @Type(() => LLMConfig)
   @IsOptional()
   public readonly llm: LLMConfig = new LLMConfig();
+
+  @Description("Audit logging configuration")
+  @ValidateNested()
+  @Type(() => AuditModuleConfig)
+  @IsOptional()
+  public readonly audit: AuditModuleConfig = new AuditModuleConfig();
 }

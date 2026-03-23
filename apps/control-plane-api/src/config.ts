@@ -1,6 +1,7 @@
 import "reflect-metadata";
 
 import {
+  AuditModuleConfig,
   AuthConfig,
   DatabaseConfig,
   Description,
@@ -266,4 +267,10 @@ export class RootConfig {
   @Type(() => RuntimeConfig)
   @IsDefined()
   public readonly runtime!: RuntimeConfig;
+
+  @Description("Audit logging configuration")
+  @ValidateNested()
+  @Type(() => AuditModuleConfig)
+  @IsOptional()
+  public readonly audit: AuditModuleConfig = new AuditModuleConfig();
 }

@@ -6,13 +6,16 @@ import { TerminusModule } from "@nestjs/terminus";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AbacModule,
+  AuditLogModule,
   AuthModule,
+  createAuditLogController,
   GenericConfigModule,
   HealthController,
   LoggerMiddleware,
   RequestContextMiddleware,
   toTypeOrmType
 } from "@tsg-dsp/common-api";
+import { Resource } from "@tsg-dsp/common-dtos";
 
 import { ConfigController } from "./config.controller.js";
 import { RootConfig } from "./config.js";
@@ -55,6 +58,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       migrationsRun: !GenericConfigModule.get(RootConfig).db.synchronize
     }),
     AbacModule.forRoot(),
+    AuditLogModule,
     AuthModule,
     VCAuthModule,
     TypeOrmModule.forFeature([NegotiationDetailDao, TransferDetailDao]),
@@ -76,6 +80,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     TransferModule
   ],
   controllers: [
+    createAuditLogController(Resource.CP_AUDIT_LOG),
     VersionsController,
     ConfigController,
     HealthController,

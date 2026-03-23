@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { AuditLogModule } from "../audit/audit-log.module.js";
 import { AbacGuard } from "./abac/abac.guard.js";
 import { AuthClientService } from "./auth.client.service.js";
 import { AuthController } from "./auth.controller.js";
@@ -9,7 +10,7 @@ import { OpenIDConfigurationService } from "./openid.configuration.service.js";
 import { WsAuthMiddleware } from "./ws-auth.middleware.js";
 
 @Module({
-  imports: [],
+  imports: [AuditLogModule],
   controllers: [AuthController],
   providers: [
     AuthClientService,

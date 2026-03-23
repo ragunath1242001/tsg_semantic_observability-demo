@@ -18,7 +18,7 @@ import {
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
-import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { DisableOAuthGuard, ProtocolAuditService } from "@tsg-dsp/common-api";
 import {
   CredentialContainer,
   TransferCompletionMessage,
@@ -34,6 +34,7 @@ import {
   TransferTerminationMessage,
   TransferTerminationMessageSchema
 } from "@tsg-dsp/common-dsp";
+import { Action, Resource } from "@tsg-dsp/common-dtos";
 
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { TransferVerifiablePresentationGuard } from "../../vc-auth/transferVerifiablePresentation.guard.js";
@@ -46,7 +47,10 @@ import { TransferService } from "./transfer.service.js";
 @Controller()
 @DisableOAuthGuard()
 export class TransferController {
-  constructor(private readonly transferService: TransferService) {}
+  constructor(
+    private readonly transferService: TransferService,
+    private readonly protocolAuditService: ProtocolAuditService
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Post("transfers/request")
@@ -65,6 +69,7 @@ export class TransferController {
       `Received transfer request from ${vpId}: ${JSON.stringify(body)}`
     );
     const result = await this.transferService.handleRequest(body, vpId, vp);
+    await this.logAllowed(Action.CREATE, vpId, result.providerPid);
     return result.serialize();
   }
 
@@ -79,7 +84,9 @@ export class TransferController {
     @VPId() vpId: string
   ): Promise<TransferProcessDto> {
     this.logger.log(`Received transfer status request from ${vpId} for ${id}`);
-    return await this.transferService.getTransferProcessDto(id, vpId);
+    const result = await this.transferService.getTransferProcessDto(id, vpId);
+    await this.logAllowed(Action.READ, vpId, id);
+    return result;
   }
 
   @Post("transfers/:id/start")
@@ -105,7 +112,9 @@ export class TransferController {
     this.logger.log(
       `Received transfer start from ${vpId} for ${id}: ${JSON.stringify(body)}`
     );
-    return await this.transferService.handleStart(id, body, vpId);
+    const result = await this.transferService.handleStart(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
+    return result;
   }
 
   @Post("transfers/:id/completion")
@@ -134,7 +143,9 @@ export class TransferController {
         body
       )}`
     );
-    return await this.transferService.handleComplete(id, body, vpId);
+    const result = await this.transferService.handleComplete(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
+    return result;
   }
 
   @Post("transfers/:id/termination")
@@ -163,7 +174,9 @@ export class TransferController {
         body
       )}`
     );
-    return await this.transferService.handleTerminate(id, body, vpId);
+    const result = await this.transferService.handleTerminate(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
+    return result;
   }
 
   @Post("transfers/:id/suspension")
@@ -192,7 +205,9 @@ export class TransferController {
         body
       )}`
     );
-    return await this.transferService.handleSuspend(id, body, vpId);
+    const result = await this.transferService.handleSuspend(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
+    return result;
   }
 
   @Get("/callbacks/transfers/:id")
@@ -206,7 +221,9 @@ export class TransferController {
     @VPId() vpId: string
   ): Promise<TransferProcessDto> {
     this.logger.log(`Received transfer status request from ${vpId} for ${id}`);
-    return await this.transferService.getTransferProcessDto(id, vpId);
+    const result = await this.transferService.getTransferProcessDto(id, vpId);
+    await this.logAllowed(Action.READ, vpId, id);
+    return result;
   }
 
   @Post("/callbacks/transfers/:id/start")
@@ -234,7 +251,9 @@ export class TransferController {
         body
       )}`
     );
-    return await this.transferService.handleStart(id, body, vpId);
+    const result = await this.transferService.handleStart(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
+    return result;
   }
 
   @Post("/callbacks/transfers/:id/completion")
@@ -263,7 +282,9 @@ export class TransferController {
         body
       )}`
     );
-    return await this.transferService.handleComplete(id, body, vpId);
+    const result = await this.transferService.handleComplete(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
+    return result;
   }
 
   @Post("/callbacks/transfers/:id/termination")
@@ -292,7 +313,9 @@ export class TransferController {
         body
       )}`
     );
-    return await this.transferService.handleTerminate(id, body, vpId);
+    const result = await this.transferService.handleTerminate(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
+    return result;
   }
 
   @Post("/callbacks/transfers/:id/suspension")
@@ -321,6 +344,22 @@ export class TransferController {
         body
       )}`
     );
-    return await this.transferService.handleSuspend(id, body, vpId);
+    const result = await this.transferService.handleSuspend(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
+    return result;
+  }
+
+  private async logAllowed(action: Action, vpId: string, id?: string) {
+    await this.protocolAuditService.logAllowed({
+      caller: this.protocolAuditService.createPeerServiceActor(
+        vpId,
+        "remote-control-plane"
+      ),
+      action,
+      resource: {
+        type: Resource.CP_TRANSFER,
+        id
+      }
+    });
   }
 }

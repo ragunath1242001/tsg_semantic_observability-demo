@@ -75,3 +75,6 @@ issueConfigurations:
         hash: "https://w3id.org/security#hash"
         id: "@id"
         type: "@type"
+
+audit:
+  logExecute: true

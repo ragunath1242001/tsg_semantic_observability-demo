@@ -13,12 +13,15 @@ import {
   PolicyResult,
   RequestActor,
   RequestContext,
+  Resource,
   SubjectAttributes
 } from "@tsg-dsp/common-dtos";
 import { Request } from "express";
 
+import { AuditLogService } from "../../audit/audit.log.service.js";
 import { AuthConfig } from "../../config/auth.js";
 import { getSession } from "../../utils/session.js";
+import { AuthenticatedActorSource, toRequestActor } from "../request-actor.js";
 import {
   ABAC_ALL_METADATA_KEY,
   ABAC_METADATA_KEY,
@@ -26,9 +29,15 @@ import {
   AbacRequirement
 } from "./abac.decorator.js";
 import { AbacPolicyService } from "./abac.policy.service.js";
-import { AuditLogService } from "./audit.log.service.js";
 import { DELEGATION_HEADERS } from "./delegation.constants.js";
 import { OwnershipRegistry } from "./ownership.service.js";
+
+type AuthenticatedRequest = Request & {
+  user?: AuthenticatedActorSource;
+  requestContext?: RequestContext;
+  abacScope?: PolicyResult["effectiveScope"];
+  allowedResourceIds?: string[];
+};
 
 @Injectable()
 export class AbacGuard implements CanActivate {
@@ -78,7 +87,7 @@ export class AbacGuard implements CanActivate {
       return true;
     }
 
-    const request: Request = context.switchToHttp().getRequest();
+    const request: AuthenticatedRequest = context.switchToHttp().getRequest();
     const requestContext = this.extractRequestContext(request);
 
     const permissionsToEvaluate = requestContext.isOnBehalfOf
@@ -90,13 +99,22 @@ export class AbacGuard implements CanActivate {
       permissions: permissionsToEvaluate
     };
 
+    const primaryAction =
+      requirementsAny?.[0]?.action ||
+      requirementsAll?.[0]?.action ||
+      Action.READ;
+    const primaryResource =
+      requirementsAny?.[0]?.resource || requirementsAll?.[0]?.resource;
+
     const resourceIdParam = this.reflector.get<string>(
       ABAC_RESOURCE_ID_PARAM_KEY,
       context.getHandler()
     );
-    const resourceId = resourceIdParam
-      ? request.params[resourceIdParam]
-      : undefined;
+    const resourceId = this.extractResourceId(
+      request,
+      resourceIdParam,
+      primaryResource
+    );
 
     let result: PolicyResult;
 
@@ -141,12 +159,9 @@ export class AbacGuard implements CanActivate {
         (a) => a.serviceName || a.sub
       ),
       correlationId: requestContext.delegation?.correlationId,
-      action:
-        requirementsAny?.[0]?.action ||
-        requirementsAll?.[0]?.action ||
-        Action.READ,
+      action: primaryAction,
       resource: {
-        type: requirementsAny?.[0]?.resource || requirementsAll?.[0]?.resource,
+        type: primaryResource,
         id: resourceId
       },
       environment: requestContext.environment,
@@ -181,15 +196,15 @@ export class AbacGuard implements CanActivate {
       });
     }
 
-    (request as any).requestContext = requestContext;
-    (request as any).abacScope = result.effectiveScope;
-    (request as any).allowedResourceIds = result.allowedResourceIds;
+    request.requestContext = requestContext;
+    request.abacScope = result.effectiveScope;
+    request.allowedResourceIds = result.allowedResourceIds;
 
     return true;
   }
 
-  private extractRequestContext(request: Request): RequestContext {
-    let user = (request as any).user;
+  private extractRequestContext(request: AuthenticatedRequest): RequestContext {
+    let user = request.user;
     if (!user) {
       const session = getSession(request);
       user = session?.user || {};
@@ -251,12 +266,8 @@ export class AbacGuard implements CanActivate {
 
     return {
       caller: {
-        sub: user.sub || "",
-        type: user.clientId ? "service" : "user",
-        serviceName: user.clientId,
-        permissions: user.permissions || [],
-        didId: user.properties?.didId || user.didId,
-        email: user.email
+        ...toRequestActor(user),
+        permissions: user.permissions || []
       },
       isOnBehalfOf: false,
       environment
@@ -294,6 +305,151 @@ export class AbacGuard implements CanActivate {
       requirement.scope,
       this.ownershipRegistry
     );
+  }
+
+  private extractResourceId(
+    request: Request,
+    explicitName?: string,
+    resourceType?: Resource
+  ): string | undefined {
+    if (explicitName) {
+      return (
+        this.toStringValue(request.params[explicitName]) ||
+        this.toStringValue(
+          (request.query as Record<string, unknown>)[explicitName]
+        ) ||
+        this.toStringValue(
+          (request.body as Record<string, unknown> | undefined)?.[explicitName]
+        )
+      );
+    }
+
+    const paramCandidates = this.collectStringCandidates(
+      request.params as Record<string, unknown>
+    );
+    const queryCandidates = this.collectStringCandidates(
+      request.query as Record<string, unknown>
+    );
+    const allCandidates = [...paramCandidates, ...queryCandidates];
+
+    for (const preferredKey of this.getPreferredResourceIdKeys(resourceType)) {
+      const preferredMatch = allCandidates.find(
+        ({ key }) => key === preferredKey
+      );
+      if (preferredMatch) {
+        return preferredMatch.value;
+      }
+    }
+
+    const idLikeParamCandidates = paramCandidates.filter(({ key }) =>
+      this.isIdLikeKey(key)
+    );
+    if (idLikeParamCandidates.length === 1) {
+      return idLikeParamCandidates[0].value;
+    }
+
+    const idLikeCandidates = allCandidates.filter(({ key }) =>
+      this.isIdLikeKey(key)
+    );
+    if (idLikeCandidates.length === 1) {
+      return idLikeCandidates[0].value;
+    }
+
+    if (idLikeParamCandidates.length > 1) {
+      return idLikeParamCandidates[idLikeParamCandidates.length - 1].value;
+    }
+
+    if (allCandidates.length === 1) {
+      return allCandidates[0].value;
+    }
+
+    return undefined;
+  }
+
+  private collectStringCandidates(source: Record<string, unknown>): Array<{
+    key: string;
+    value: string;
+  }> {
+    return Object.entries(source)
+      .map(([key, value]) => ({ key, value: this.toStringValue(value) }))
+      .filter(
+        (candidate): candidate is { key: string; value: string } =>
+          !!candidate.value
+      );
+  }
+
+  private toStringValue(value: unknown): string | undefined {
+    if (typeof value === "string") {
+      return value;
+    }
+
+    if (Array.isArray(value)) {
+      const firstString = value.find((item) => typeof item === "string");
+      return typeof firstString === "string" ? firstString : undefined;
+    }
+
+    return undefined;
+  }
+
+  private isIdLikeKey(key: string): boolean {
+    return key === "id" || key.endsWith("Id") || key === "scid";
+  }
+
+  private getPreferredResourceIdKeys(resourceType?: Resource): string[] {
+    switch (resourceType) {
+      case Resource.CP_DATASET:
+        return ["datasetId", "id"];
+      case Resource.CP_DATAPLANE:
+        return ["id", "participantId"];
+      case Resource.CP_NEGOTIATION:
+        return ["processId", "datasetId", "dataSet", "id"];
+      case Resource.CP_TRANSFER:
+      case Resource.DP_TRANSFER:
+        return ["processId", "agreementId", "id"];
+      case Resource.CP_AGREEMENT:
+        return ["agreementId", "id"];
+      case Resource.CP_POLICY:
+        return ["id", "transferId", "agreementId"];
+      case Resource.CP_REGISTRY:
+        return ["participantId", "id"];
+      case Resource.ADP_ALGORITHM:
+        return ["algorithmInstanceId", "transferId", "id"];
+      case Resource.ADP_PROJECT_AGREEMENT:
+        return ["id", "datasetId"];
+      case Resource.ADP_ORCHESTRATION:
+        return ["algorithmInstanceId", "jobName", "podName"];
+      case Resource.ADP_FILE:
+        return ["id"];
+      case Resource.ADP_DATAPLANE:
+      case Resource.HDP_DATAPLANE:
+        return ["datasetId", "participantId", "id"];
+      case Resource.W_CREDENTIAL:
+        return ["credentialId", "requestId", "id"];
+      case Resource.W_PRESENTATION:
+        return ["requestId", "id"];
+      case Resource.W_KEY:
+        return ["keyId", "id"];
+      case Resource.W_DID:
+        return ["id", "scid"];
+      case Resource.W_ISSUE_CONFIG:
+      case Resource.SSO_USER:
+      case Resource.SSO_CLIENT:
+        return ["id"];
+      default:
+        return [
+          "id",
+          "datasetId",
+          "processId",
+          "agreementId",
+          "transferId",
+          "algorithmInstanceId",
+          "participantId",
+          "credentialId",
+          "keyId",
+          "requestId",
+          "scid"
+        ];
+    }
   }
 
   static asGlobalGuard() {

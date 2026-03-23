@@ -4,6 +4,8 @@ import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
 import { AuthConfig } from "../config/auth.js";
+import { RequestContext } from "../utils/logging.js";
+import { DELEGATION_HEADERS } from "./abac/delegation.constants.js";
 import { AuthClientService } from "./auth.client.service.js";
 import { OpenIDConfiguration } from "./auth.dto.js";
 import { OpenIDConfigurationService } from "./openid.configuration.service.js";
@@ -85,7 +87,18 @@ describe("OAuthService", () => {
       }),
       http.post("https://example.com/returnToken", ({ request }) => {
         return HttpResponse.json({
-          token: request.headers.get("Authorization")
+          token: request.headers.get("Authorization"),
+          originalActor: request.headers.get(DELEGATION_HEADERS.ORIGINAL_ACTOR),
+          delegationChain: request.headers.get(
+            DELEGATION_HEADERS.DELEGATION_CHAIN
+          ),
+          effectivePermissions: request.headers.get(
+            DELEGATION_HEADERS.EFFECTIVE_PERMISSIONS
+          ),
+          correlationId: request.headers.get(DELEGATION_HEADERS.CORRELATION_ID),
+          originTimestamp: request.headers.get(
+            DELEGATION_HEADERS.ORIGIN_TIMESTAMP
+          )
         });
       })
     );
@@ -128,5 +141,66 @@ describe("OAuthService", () => {
     expect(returnToken.data.token).toBe(
       `Bearer ${await authClientService.getToken()}`
     );
+  });
+
+  it("propagates delegation headers for user initiated calls", async () => {
+    const instance = authClientService.axiosInstance({
+      baseURL: "https://example.com"
+    });
+
+    const request: any = {
+      headers: {},
+      requestContext: {
+        caller: {
+          sub: "user-123",
+          type: "user",
+          username: "user@example.com",
+          permissions: ["read:cp.catalog"]
+        },
+        isOnBehalfOf: false,
+        environment: { timestamp: new Date() }
+      }
+    };
+
+    const response = await RequestContext.cls.run(
+      new RequestContext("corr-123", request, {} as any),
+      () => instance.post("returnToken")
+    );
+
+    expect(JSON.parse(response.data.originalActor)).toMatchObject({
+      sub: "user-123",
+      type: "user",
+      username: "user@example.com"
+    });
+    expect(response.data.delegationChain).toBe("[]");
+    expect(response.data.effectivePermissions).toBe("read:cp.catalog");
+    expect(response.data.correlationId).toBe("corr-123");
+    expect(response.data.originTimestamp).toBeDefined();
+  });
+
+  it("does not create delegation headers for azp-only service calls", async () => {
+    const instance = authClientService.axiosInstance({
+      baseURL: "https://example.com"
+    });
+
+    const request: any = {
+      headers: {},
+      user: {
+        sub: "service-123",
+        azp: "control-plane",
+        permissions: ["read:cp.catalog"]
+      }
+    };
+
+    const response = await RequestContext.cls.run(
+      new RequestContext("corr-service", request, {} as any),
+      () => instance.post("returnToken")
+    );
+
+    expect(response.data.originalActor).toBeNull();
+    expect(response.data.delegationChain).toBeNull();
+    expect(response.data.effectivePermissions).toBeNull();
+    expect(response.data.correlationId).toBeNull();
+    expect(response.data.originTimestamp).toBeNull();
   });
 });

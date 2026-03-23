@@ -5,6 +5,7 @@ import {
   EmailService,
   NodemailerConfiguration,
   PaginationOptionsDto,
+  ProtocolAuditService,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
 import {
@@ -132,6 +133,20 @@ describe("DCP Issuance", () => {
           useValue: plainToInstance(NodemailerConfiguration, {
             enabled: false
           })
+        },
+        {
+          provide: ProtocolAuditService,
+          useValue: {
+            createPeerServiceActor(didId: string) {
+              return { sub: didId, type: "service", didId };
+            },
+            createUnknownServiceActor(serviceName?: string) {
+              return { sub: "unknown", type: "service", serviceName };
+            },
+            async logAllowed() {},
+            async logDenied() {},
+            async log() {}
+          }
         },
         {
           provide: OID4VCIHolderService,

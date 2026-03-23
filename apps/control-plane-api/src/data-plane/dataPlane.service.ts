@@ -30,7 +30,7 @@ import {
   TransferSuspensionMessage,
   TransferTerminationMessage
 } from "@tsg-dsp/common-dsp";
-import axios, {
+import {
   AxiosInstance,
   AxiosRequestConfig,
   InternalAxiosRequestConfig
@@ -55,7 +55,7 @@ export class DataPlaneService {
     private readonly authClientService: AuthClientService,
     private readonly agreementService: AgreementService
   ) {
-    this.axios = axios.create();
+    this.axios = authClientService.axiosInstance();
     this.axios.interceptors.request.use(
       async (request: InternalAxiosRequestConfig) => {
         if (request.data instanceof SerializableClass) {

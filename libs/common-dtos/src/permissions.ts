@@ -35,6 +35,7 @@ export enum Resource {
   CP_REGISTRY = "cp.registry",
   CP_POLICY = "cp.policy",
   CP_CONFIG = "cp.config",
+  CP_AUDIT_LOG = "cp.audit_log",
 
   // ===========================================
   // Common Data Plane Resources (no namespace)
@@ -50,6 +51,7 @@ export enum Resource {
   ADP_FILE = "adp.file",
   ADP_DATAPLANE = "adp.dataplane",
   ADP_CONFIG = "adp.config",
+  ADP_AUDIT_LOG = "adp.audit_log",
 
   // ===========================================
   // HTTP Data Plane Resources (hdp.*)
@@ -57,6 +59,7 @@ export enum Resource {
   HDP_DATAPLANE = "hdp.dataplane",
   HDP_CONFIG = "hdp.config",
   HDP_LOGS = "hdp.logs",
+  HDP_AUDIT_LOG = "hdp.audit_log",
 
   // ===========================================
   // Wallet Resources (w.*)
@@ -67,6 +70,7 @@ export enum Resource {
   W_DID = "w.did",
   W_ISSUE_CONFIG = "w.issue_config",
   W_CONFIG = "w.config",
+  W_AUDIT_LOG = "w.audit_log",
 
   // ===========================================
   // SSO Bridge Resources (sso.*)
@@ -75,7 +79,8 @@ export enum Resource {
   SSO_CLIENT = "sso.client",
   SSO_ROLE = "sso.role",
   SSO_CONFIG = "sso.config",
-  SSO_LOGS = "sso.logs"
+  SSO_LOGS = "sso.logs",
+  SSO_AUDIT_LOG = "sso.audit_log"
 }
 
 export const RESERVED_SCOPES = {
@@ -222,6 +227,9 @@ export const Permissions = {
   CP_CONFIG_READ: permission(Action.READ, Resource.CP_CONFIG),
   CP_CONFIG_MANAGE: permission(Action.MANAGE, Resource.CP_CONFIG),
 
+  CP_AUDIT_LOG_READ: permission(Action.READ, Resource.CP_AUDIT_LOG),
+  CP_AUDIT_LOG_MANAGE: permission(Action.MANAGE, Resource.CP_AUDIT_LOG),
+
   // ===========================================
   // Common Data Plane Permissions (dp.*)
   // ===========================================
@@ -299,6 +307,9 @@ export const Permissions = {
   ADP_CONFIG_READ: permission(Action.READ, Resource.ADP_CONFIG),
   ADP_CONFIG_MANAGE: permission(Action.MANAGE, Resource.ADP_CONFIG),
 
+  ADP_AUDIT_LOG_READ: permission(Action.READ, Resource.ADP_AUDIT_LOG),
+  ADP_AUDIT_LOG_MANAGE: permission(Action.MANAGE, Resource.ADP_AUDIT_LOG),
+
   // ===========================================
   // HTTP Data Plane Permissions (hdp.*)
   // ===========================================
@@ -312,6 +323,9 @@ export const Permissions = {
 
   HDP_LOGS_READ: permission(Action.READ, Resource.HDP_LOGS),
   HDP_LOGS_MANAGE: permission(Action.MANAGE, Resource.HDP_LOGS),
+
+  HDP_AUDIT_LOG_READ: permission(Action.READ, Resource.HDP_AUDIT_LOG),
+  HDP_AUDIT_LOG_MANAGE: permission(Action.MANAGE, Resource.HDP_AUDIT_LOG),
 
   // ===========================================
   // Wallet Permissions (w.*)
@@ -358,6 +372,9 @@ export const Permissions = {
   W_CONFIG_READ: permission(Action.READ, Resource.W_CONFIG),
   W_CONFIG_MANAGE: permission(Action.MANAGE, Resource.W_CONFIG),
 
+  W_AUDIT_LOG_READ: permission(Action.READ, Resource.W_AUDIT_LOG),
+  W_AUDIT_LOG_MANAGE: permission(Action.MANAGE, Resource.W_AUDIT_LOG),
+
   // ===========================================
   // SSO Bridge Permissions (sso.*)
   // ===========================================
@@ -380,5 +397,8 @@ export const Permissions = {
   SSO_CONFIG_READ: permission(Action.READ, Resource.SSO_CONFIG),
   SSO_CONFIG_MANAGE: permission(Action.MANAGE, Resource.SSO_CONFIG),
 
-  SSO_LOGS_READ: permission(Action.READ, Resource.SSO_LOGS)
+  SSO_LOGS_READ: permission(Action.READ, Resource.SSO_LOGS),
+
+  SSO_AUDIT_LOG_READ: permission(Action.READ, Resource.SSO_AUDIT_LOG),
+  SSO_AUDIT_LOG_MANAGE: permission(Action.MANAGE, Resource.SSO_AUDIT_LOG)
 } as const;

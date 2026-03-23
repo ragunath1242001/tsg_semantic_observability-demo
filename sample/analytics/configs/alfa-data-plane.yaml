@@ -40,3 +40,6 @@ files:
 orchestration:
   type: "docker"
   mountFiles: true
+
+audit:
+  logExecute: true

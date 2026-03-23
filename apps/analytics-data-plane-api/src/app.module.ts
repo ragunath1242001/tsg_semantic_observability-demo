@@ -5,12 +5,15 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AbacModule,
+  AuditLogModule,
   AuthModule,
+  createAuditLogController,
   GenericConfigModule,
   LoggerMiddleware,
   RequestContextMiddleware,
   toTypeOrmType
 } from "@tsg-dsp/common-api";
+import { Resource } from "@tsg-dsp/common-dtos";
 
 import { AlgorithmInstancesModule } from "./algorithm-instances/algorithm-instances.module.js";
 import { BridgeWsClientModule } from "./bridge/client/bridge-ws-client.module.js";
@@ -74,6 +77,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
     AbacModule.forRoot(),
+    AuditLogModule,
     SplitModeModule,
     ...runtimeModules,
     GenericConfigModule.register(RootConfig),
@@ -89,7 +93,10 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     ...embeddedFrontend
   ],
   exports: moduleExports,
-  controllers: [ConfigController]
+  controllers: [
+    createAuditLogController(Resource.ADP_AUDIT_LOG),
+    ConfigController
+  ]
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

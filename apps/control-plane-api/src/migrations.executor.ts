@@ -1,5 +1,6 @@
 import "reflect-metadata";
 
+import { AuditLogDao } from "@tsg-dsp/common-api";
 import chalk from "chalk";
 import path from "path";
 import { PostgresMock } from "pgmock";
@@ -8,7 +9,7 @@ import { CommandUtils } from "typeorm/commands/CommandUtils.js";
 import { MigrationGenerateCommand } from "typeorm/commands/MigrationGenerateCommand.js";
 
 const datasourceDefaults = {
-  entities: ["**/*.dao.ts"],
+  entities: ["**/*.dao.ts", AuditLogDao],
   synchronize: false,
   migrationsRun: false,
   dropSchema: false,
