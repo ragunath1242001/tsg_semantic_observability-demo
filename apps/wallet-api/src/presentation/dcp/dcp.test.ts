@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { ProtocolAuditService, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { toArray } from "@tsg-dsp/common-dsp";
 import { PresentationQueryMessage } from "@tsg-dsp/common-dtos";
 import { plainToInstance } from "class-transformer";
@@ -102,6 +102,20 @@ describe("Presentation Service", () => {
         DidService,
         KeysService,
         PresentationService,
+        {
+          provide: ProtocolAuditService,
+          useValue: {
+            createPeerServiceActor(didId: string) {
+              return { sub: didId, type: "service", didId };
+            },
+            createUnknownServiceActor(serviceName?: string) {
+              return { sub: "unknown", type: "service", serviceName };
+            },
+            async logAllowed() {},
+            async logDenied() {},
+            async log() {}
+          }
+        },
         {
           provide: RootConfig,
           useValue: config

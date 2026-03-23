@@ -101,7 +101,7 @@ describe("Rule Repository Service", () => {
         false
       );
 
-      expect(constraints[0]).toMatchObject({
+      expect(constraints[1]).toMatchObject({
         type: ConstraintType.ATOMIC,
         title: "Test Constraint",
         contextPath: "$.verifiableCredentials[*].credential",
@@ -116,7 +116,7 @@ describe("Rule Repository Service", () => {
         ],
         leftOperand: "dspace:vc"
       });
-      expect(constraintDtos.data[0]).toMatchObject({
+      expect(constraintDtos.data[1]).toMatchObject({
         title: "Test Constraint",
         contextPath: "$.verifiableCredentials[*].credential",
         description: "Test constraint description",
@@ -132,10 +132,10 @@ describe("Rule Repository Service", () => {
       });
 
       expect(
-        await ruleRepositoryService.getConstraint(constraints[0].id)
+        await ruleRepositoryService.getConstraint(constraints[1].id)
       ).toBeInstanceOf(AtomicConstraint);
       expect(
-        await ruleRepositoryService.getConstraint(constraints[1].id, true)
+        await ruleRepositoryService.getConstraint(constraints[0].id, true)
       ).toBeInstanceOf(ConstraintDao);
       await expect(
         ruleRepositoryService.getConstraint("unknown")
@@ -374,7 +374,7 @@ describe("Rule Repository Service", () => {
         constraint: [
           {
             "@type": "Constraint",
-            leftOperand: "dspace:vc",
+            leftOperand: "dspace:vc2",
             operator: "eq",
             rightOperand: "tsg:MembershipCredential"
           }
@@ -390,7 +390,7 @@ describe("Rule Repository Service", () => {
         constraint: [
           {
             "@type": "Constraint",
-            leftOperand: "dspace:vc",
+            leftOperand: "dspace:vc2",
             operator: "eq",
             rightOperand: "tsg:MembershipCredential"
           }
@@ -409,7 +409,7 @@ describe("Rule Repository Service", () => {
         constraint: [
           {
             "@type": "Constraint",
-            leftOperand: "dspace:vc",
+            leftOperand: "dspace:vc2",
             operator: "eq",
             rightOperand: "tsg:MembershipCredential"
           }
@@ -423,7 +423,7 @@ describe("Rule Repository Service", () => {
             constraint: [
               {
                 "@type": "Constraint",
-                leftOperand: "dspace:vc",
+                leftOperand: "dspace:vc2",
                 operator: "eq",
                 rightOperand: "tsg:MembershipCredential"
               }

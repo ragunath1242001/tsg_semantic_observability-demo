@@ -5,6 +5,7 @@ import {
   MenuGroup,
   RouteConfig
 } from "@tsg-dsp/common-ui/router/route-permissions";
+import AuditLogView from "@tsg-dsp/common-ui/views/AuditLogView.vue";
 import { RouteRecordRaw } from "vue-router";
 
 import Dashboard from "../views/Dashboard.vue";
@@ -114,6 +115,18 @@ export const routeConfigs: RouteConfig[] = [
     component: ConsumerView,
     requires: { action: Action.READ, resource: Resource.DP_TRANSFER }
     // No group — detail page, not shown in menu
+  },
+  {
+    path: "audit-logs",
+    name: "audit-logs",
+    component: AuditLogView,
+    requires: { action: Action.READ, resource: Resource.ADP_AUDIT_LOG },
+    meta: {
+      title: "Audit Logs",
+      icon: "pi pi-fw pi-shield",
+      group: "audit",
+      menuLabel: "Audit Logs"
+    }
   }
 ];
 
@@ -121,7 +134,8 @@ export const adpMenuGroups: MenuGroup[] = [
   { key: "home", label: "Home" },
   { key: "files", label: "Files" },
   { key: "algorithms", label: "Algorithms" },
-  { key: "collaboration", label: "Collaboration" }
+  { key: "collaboration", label: "Collaboration" },
+  { key: "audit", label: "Audit" }
 ];
 
 interface RuntimeStore {

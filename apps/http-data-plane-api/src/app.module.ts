@@ -3,12 +3,15 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AbacModule,
+  AuditLogModule,
   AuthModule,
+  createAuditLogController,
   GenericConfigModule,
   LoggerMiddleware,
   RequestContextMiddleware,
   toTypeOrmType
 } from "@tsg-dsp/common-api";
+import { Resource } from "@tsg-dsp/common-dtos";
 
 import { ConfigController } from "./config.controller.js";
 import { RootConfig } from "./config.js";
@@ -29,6 +32,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 @Module({
   imports: [
     AbacModule.forRoot(),
+    AuditLogModule,
     DataPlaneModule,
     TransferModule,
     LoggingModule,
@@ -46,7 +50,10 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     ...embeddedFrontend
   ],
   exports: [],
-  controllers: [ConfigController]
+  controllers: [
+    createAuditLogController(Resource.HDP_AUDIT_LOG),
+    ConfigController
+  ]
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

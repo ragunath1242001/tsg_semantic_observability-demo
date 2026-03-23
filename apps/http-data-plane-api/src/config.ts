@@ -1,4 +1,5 @@
 import {
+  AuditModuleConfig,
   AuthConfig,
   DatabaseConfig,
   Description,
@@ -116,4 +117,10 @@ export class RootConfig {
   @IsOptional()
   @IsString()
   public readonly authorizationHeader: string = "Authorization";
+
+  @Description("Audit logging configuration")
+  @ValidateNested()
+  @Type(() => AuditModuleConfig)
+  @IsOptional()
+  public readonly audit: AuditModuleConfig = new AuditModuleConfig();
 }

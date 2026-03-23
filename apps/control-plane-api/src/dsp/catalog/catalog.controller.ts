@@ -22,6 +22,7 @@ import {
   Paginated,
   PaginationOptionsDto,
   PaginationQuery,
+  ProtocolAuditService,
   UsePagination
 } from "@tsg-dsp/common-api";
 import {
@@ -33,10 +34,15 @@ import {
   DatasetDto,
   DatasetSchema
 } from "@tsg-dsp/common-dsp";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import {
+  Action,
+  ApiForbiddenResponseDefault,
+  Resource
+} from "@tsg-dsp/common-dtos";
 
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
+import { VPId } from "../../vc-auth/vp.decorators.js";
 import { CatalogService } from "./catalog.service.js";
 
 @UseGuards(VerifiablePresentationGuard)
@@ -45,7 +51,10 @@ import { CatalogService } from "./catalog.service.js";
 @ApiTags("Catalog")
 @ApiBearerAuth()
 export class CatalogController {
-  constructor(private readonly catalogService: CatalogService) {}
+  constructor(
+    private readonly catalogService: CatalogService,
+    private readonly protocolAuditService: ProtocolAuditService
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Post("request")
@@ -62,10 +71,20 @@ export class CatalogController {
   async request(
     @PaginationQuery() paginationOptions: PaginationOptionsDto,
     @Body(new DeserializePipe(CatalogRequestMessage))
-    body: CatalogRequestMessage
+    body: CatalogRequestMessage,
+    @VPId() vpId: string
   ): Promise<Paginated<CatalogDto>> {
     this.logger.log(`Received catalog request`);
-    return await this.catalogService.request(body, paginationOptions);
+    const result = await this.catalogService.request(body, paginationOptions);
+    await this.protocolAuditService.logAllowed({
+      caller: this.protocolAuditService.createPeerServiceActor(
+        vpId,
+        "remote-control-plane"
+      ),
+      action: Action.READ,
+      resource: { type: Resource.CP_CATALOG }
+    });
+    return result;
   }
 
   @Get("datasets/:id")
@@ -78,9 +97,19 @@ export class CatalogController {
   @ApiBadRequestResponse({ description: "Invalid dataset ID" })
   @ApiForbiddenResponseDefault()
   async getDataset(
-    @Param("id") id: string
+    @Param("id") id: string,
+    @VPId() vpId: string
   ): Promise<DatasetDto | CatalogErrorDto> {
     this.logger.log(`Received dataset request for id ${id}`);
-    return await this.catalogService.getDatasetDto(id);
+    const result = await this.catalogService.getDatasetDto(id);
+    await this.protocolAuditService.logAllowed({
+      caller: this.protocolAuditService.createPeerServiceActor(
+        vpId,
+        "remote-control-plane"
+      ),
+      action: Action.READ,
+      resource: { type: Resource.CP_DATASET, id }
+    });
+    return result;
   }
 }

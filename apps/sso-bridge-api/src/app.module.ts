@@ -4,12 +4,15 @@ import { TerminusModule } from "@nestjs/terminus";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AbacModule,
+  AuditLogModule,
+  createAuditLogController,
   GenericConfigModule,
   HealthController,
   LoggerMiddleware,
   RequestContextMiddleware,
   toTypeOrmType
 } from "@tsg-dsp/common-api";
+import { Resource } from "@tsg-dsp/common-dtos";
 
 import { AuthModule } from "./auth/auth.module.js";
 import { SessionAbacMiddleware } from "./auth/session-abac.middleware.js";
@@ -35,6 +38,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   imports: [
     TerminusModule,
     AbacModule.forRoot(),
+    AuditLogModule,
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
       ...GenericConfigModule.get(RootConfig).db,
@@ -54,7 +58,10 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     ClientsModule,
     ...embeddedFrontend
   ],
-  controllers: [HealthController]
+  controllers: [
+    createAuditLogController(Resource.SSO_AUDIT_LOG),
+    HealthController
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

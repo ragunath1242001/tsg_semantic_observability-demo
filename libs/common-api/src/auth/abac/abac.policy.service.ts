@@ -182,9 +182,6 @@ export class AbacPolicyService {
       if (subject.didId && resource.ownerIdentifier === subject.didId) {
         return true;
       }
-      if (subject.email && resource.ownerIdentifier === subject.email) {
-        return true;
-      }
     }
 
     return false;

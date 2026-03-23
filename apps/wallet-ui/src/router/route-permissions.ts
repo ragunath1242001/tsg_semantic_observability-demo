@@ -5,6 +5,7 @@ import {
   MenuGroup,
   RouteConfig
 } from "@tsg-dsp/common-ui/router/route-permissions";
+import AuditLogView from "@tsg-dsp/common-ui/views/AuditLogView.vue";
 import { RouteRecordRaw } from "vue-router";
 
 import CredentialGaiaX from "@/views/credentials/GaiaX.vue";
@@ -192,6 +193,18 @@ export const routeConfigs: RouteConfig[] = [
       group: "issuance",
       menuLabel: "Configurations"
     }
+  },
+  {
+    path: "audit-logs",
+    name: "audit-logs",
+    component: AuditLogView,
+    requires: { action: Action.READ, resource: Resource.W_AUDIT_LOG },
+    meta: {
+      title: "Audit Logs",
+      icon: "pi pi-fw pi-shield",
+      group: "audit",
+      menuLabel: "Audit Logs"
+    }
   }
 ];
 
@@ -200,7 +213,8 @@ export const walletMenuGroups: MenuGroup[] = [
   { key: "did", label: "DID" },
   { key: "credentials", label: "Credentials" },
   { key: "issuance", label: "Issuance" },
-  { key: "presentations", label: "Presentation" }
+  { key: "presentations", label: "Presentation" },
+  { key: "audit", label: "Audit" }
 ];
 
 interface RuntimeStore {

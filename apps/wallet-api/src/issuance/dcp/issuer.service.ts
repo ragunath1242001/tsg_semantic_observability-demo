@@ -1,11 +1,17 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AppError, parseNetworkError } from "@tsg-dsp/common-api";
 import {
+  AppError,
+  parseNetworkError,
+  ProtocolAuditService
+} from "@tsg-dsp/common-api";
+import {
+  Action,
   CredentialMessage,
   CredentialRequestMessage,
   CredentialStatus,
-  IssuerMetadata
+  IssuerMetadata,
+  Resource
 } from "@tsg-dsp/common-dtos";
 import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import axios from "axios";
@@ -30,7 +36,8 @@ export class DCPIssuerService {
     private readonly didService: DidService,
     private readonly secureTokenService: SecureTokenService,
     private readonly issueConfigurationService: IssueConfigurationService,
-    private readonly credentialService: CredentialsService
+    private readonly credentialService: CredentialsService,
+    private readonly protocolAuditService: ProtocolAuditService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -80,13 +87,43 @@ export class DCPIssuerService {
   ) {
     const didId = await this.didService.getDidId();
     if (!authorizationHeader?.startsWith("Bearer ")) {
+      await this.protocolAuditService.logDenied({
+        caller:
+          this.protocolAuditService.createUnknownServiceActor("remote-wallet"),
+        action: Action.CREATE,
+        resource: { type: Resource.W_CREDENTIAL },
+        reason: "Invalid authorization"
+      });
       throw new AppError("Invalid authorization", HttpStatus.UNAUTHORIZED);
     }
     const token = authorizationHeader.split(" ")[1];
-    const validatedIdToken =
-      await this.secureTokenService.validateIDToken(token);
+    let validatedIdToken;
+    try {
+      validatedIdToken = await this.secureTokenService.validateIDToken(token);
+    } catch (error) {
+      await this.protocolAuditService.logDenied({
+        caller:
+          this.protocolAuditService.createUnknownServiceActor("remote-wallet"),
+        action: Action.CREATE,
+        resource: { type: Resource.W_CREDENTIAL },
+        reason:
+          error instanceof Error
+            ? error.message
+            : "Invalid self-issued ID token"
+      });
+      throw error;
+    }
     const accessToken = validatedIdToken["token"];
     if (!accessToken) {
+      await this.protocolAuditService.logDenied({
+        caller: this.protocolAuditService.createPeerServiceActor(
+          validatedIdToken.sub,
+          "remote-wallet"
+        ),
+        action: Action.CREATE,
+        resource: { type: Resource.W_CREDENTIAL },
+        reason: "No access token in self-issued ID token"
+      });
       throw new AppError(
         "No access token in self-issued ID token",
         HttpStatus.UNAUTHORIZED
@@ -95,6 +132,15 @@ export class DCPIssuerService {
 
     const preAuthorizedCode = validatedIdToken["pre-authorized_code"];
     if (!preAuthorizedCode) {
+      await this.protocolAuditService.logDenied({
+        caller: this.protocolAuditService.createPeerServiceActor(
+          validatedIdToken.sub,
+          "remote-wallet"
+        ),
+        action: Action.CREATE,
+        resource: { type: Resource.W_CREDENTIAL },
+        reason: "Only pre-authorized code flows supported"
+      });
       throw new AppError(
         "Only pre-authorized code flows supported",
         HttpStatus.NOT_IMPLEMENTED
@@ -233,6 +279,16 @@ export class DCPIssuerService {
       }
     });
 
+    await this.protocolAuditService.logAllowed({
+      caller: this.protocolAuditService.createPeerServiceActor(
+        validatedIdToken.sub,
+        "remote-wallet"
+      ),
+      action: Action.CREATE,
+      resource: { type: Resource.W_CREDENTIAL, id: issuance.id },
+      reason: "si_token_validated"
+    });
+
     return {
       url: `${this.config.server.publicAddress}${API_PREFIX}/dcp/issuer/requests/${issuance.id}`
     };
@@ -243,11 +299,32 @@ export class DCPIssuerService {
     requestId: string
   ): Promise<CredentialStatus> {
     if (!authorizationHeader?.startsWith("Bearer ")) {
+      await this.protocolAuditService.logDenied({
+        caller:
+          this.protocolAuditService.createUnknownServiceActor("remote-wallet"),
+        action: Action.READ,
+        resource: { type: Resource.W_CREDENTIAL, id: requestId },
+        reason: "Invalid authorization"
+      });
       throw new AppError("Invalid authorization", HttpStatus.UNAUTHORIZED);
     }
     const token = authorizationHeader.split(" ")[1];
-    const validatedIdToken =
-      await this.secureTokenService.validateIDToken(token);
+    let validatedIdToken;
+    try {
+      validatedIdToken = await this.secureTokenService.validateIDToken(token);
+    } catch (error) {
+      await this.protocolAuditService.logDenied({
+        caller:
+          this.protocolAuditService.createUnknownServiceActor("remote-wallet"),
+        action: Action.READ,
+        resource: { type: Resource.W_CREDENTIAL, id: requestId },
+        reason:
+          error instanceof Error
+            ? error.message
+            : "Invalid self-issued ID token"
+      });
+      throw error;
+    }
 
     const issuance = await this.issuanceRepository.findOneBy({
       holderId: validatedIdToken.sub,
@@ -261,6 +338,15 @@ export class DCPIssuerService {
         HttpStatus.NOT_FOUND
       );
     }
+    await this.protocolAuditService.logAllowed({
+      caller: this.protocolAuditService.createPeerServiceActor(
+        validatedIdToken.sub,
+        "remote-wallet"
+      ),
+      action: Action.READ,
+      resource: { type: Resource.W_CREDENTIAL, id: requestId },
+      reason: "si_token_validated"
+    });
     return {
       "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: "CredentialStatus",

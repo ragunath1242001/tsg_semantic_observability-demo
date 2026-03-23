@@ -91,7 +91,9 @@ export class TokenService {
       tokenType: type
     };
 
-    if (!this.isOauthClient(subject)) {
+    if (this.isOauthClient(subject)) {
+      claims.azp = subject.clientId;
+    } else {
       claims.username = subject.username;
       claims.email = subject.email;
     }

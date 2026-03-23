@@ -13,7 +13,7 @@ export interface RequestActor {
   serviceName?: string;
   permissions?: PermissionString[];
   didId?: string;
-  email?: string;
+  username?: string;
   [key: string]: unknown;
 }
 

@@ -18,7 +18,7 @@ import {
   ApiParam,
   ApiTags
 } from "@nestjs/swagger";
-import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { DisableOAuthGuard, ProtocolAuditService } from "@tsg-dsp/common-api";
 import {
   ContractAgreementMessage,
   ContractAgreementMessageSchema,
@@ -36,6 +36,7 @@ import {
   ContractRequestMessage,
   ContractRequestMessageSchema
 } from "@tsg-dsp/common-dsp";
+import { Action, AuditSeverity, Resource } from "@tsg-dsp/common-dtos";
 
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { DSPError } from "../../utils/errors/error.js";
@@ -49,7 +50,10 @@ import { NegotiationService } from "./negotiation.service.js";
 @DisableOAuthGuard()
 @Controller()
 export class NegotiationController {
-  constructor(private readonly negotiationService: NegotiationService) {}
+  constructor(
+    private readonly negotiationService: NegotiationService,
+    private readonly protocolAuditService: ProtocolAuditService
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @ApiOperation({ summary: "Request a new negotiation" })
@@ -66,6 +70,7 @@ export class NegotiationController {
   ): Promise<ContractNegotiationDto> {
     this.logger.log(`Received negotiation request: ${JSON.stringify(body)}`);
     const result = await this.negotiationService.handleNewRequest(body, vpId);
+    await this.logAllowed(Action.CREATE, vpId, body.providerPid);
     return result.serialize();
   }
 
@@ -80,6 +85,7 @@ export class NegotiationController {
   ): Promise<ContractNegotiationDto> {
     this.logger.log(`Received negotiation status request for ${id}`);
     const negotiation = await this.negotiationService.getNegotiation(id, vpId);
+    await this.logAllowed(Action.READ, vpId, id);
     return new ContractNegotiation({
       providerPid: negotiation.id,
       consumerPid: negotiation.remoteId,
@@ -105,6 +111,12 @@ export class NegotiationController {
       `Received negotiation request for ${id}: ${JSON.stringify(body)}`
     );
     if (body.providerPid === undefined || body.providerPid !== id) {
+      await this.logDenied(
+        Action.CREATE,
+        vpId,
+        id,
+        "Missing or mismatch providerPid field in contract request message"
+      );
       throw new DSPError(
         "Missing or mismatch providerPid field in contract request message",
         HttpStatus.BAD_REQUEST
@@ -115,6 +127,7 @@ export class NegotiationController {
       body,
       vpId
     );
+    await this.logAllowed(Action.CREATE, vpId, id);
     return result.serialize();
   }
 
@@ -140,12 +153,19 @@ export class NegotiationController {
       `Received negotiation event for ${id}: ${JSON.stringify(body)}`
     );
     if (body.providerPid !== id) {
+      await this.logDenied(
+        Action.EXECUTE,
+        vpId,
+        id,
+        "Mismatch providerPid field in contract negotiation event message"
+      );
       throw new DSPError(
         "Mismatch providerPid field in contract negotiation event message",
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "warn");
     }
     const result = await this.negotiationService.handleEvent(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
     return result;
   }
 
@@ -171,6 +191,12 @@ export class NegotiationController {
       `Received negotiation verification for ${id}: ${JSON.stringify(body)}`
     );
     if (body.providerPid !== id) {
+      await this.logDenied(
+        Action.EXECUTE,
+        vpId,
+        id,
+        "Mismatch providerPid field in contract negotiation event message"
+      );
       throw new DSPError(
         "Mismatch providerPid field in contract negotiation event message",
         HttpStatus.BAD_REQUEST
@@ -182,6 +208,7 @@ export class NegotiationController {
       vpId
     );
 
+    await this.logAllowed(Action.EXECUTE, vpId, id);
     return result;
   }
 
@@ -207,6 +234,12 @@ export class NegotiationController {
       `Received negotiation termination for ${id}: ${JSON.stringify(body)}`
     );
     if (body.providerPid !== id) {
+      await this.logDenied(
+        Action.EXECUTE,
+        vpId,
+        id,
+        "Mismatch providerPid field in contract negotiation event message"
+      );
       throw new DSPError(
         "Mismatch providerPid field in contract negotiation event message",
         HttpStatus.BAD_REQUEST
@@ -217,6 +250,7 @@ export class NegotiationController {
       body,
       vpId
     );
+    await this.logAllowed(Action.EXECUTE, vpId, id);
     return result;
   }
 
@@ -230,6 +264,7 @@ export class NegotiationController {
   ): Promise<ContractNegotiationDto> {
     this.logger.log(`Received negotiation callback status request for ${id}`);
     const negotiation = await this.negotiationService.getNegotiation(id, vpId);
+    await this.logAllowed(Action.READ, vpId, id);
     return new ContractNegotiation({
       providerPid: negotiation.id,
       consumerPid: negotiation.remoteId,
@@ -257,6 +292,7 @@ export class NegotiationController {
       `Received negotiation callback offer for ${id}: ${JSON.stringify(body)}`
     );
     const result = await this.negotiationService.handleOffer(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
     return result;
   }
 
@@ -287,6 +323,7 @@ export class NegotiationController {
       body,
       vpId
     );
+    await this.logAllowed(Action.EXECUTE, vpId, id);
     return result;
   }
 
@@ -311,6 +348,7 @@ export class NegotiationController {
       `Received negotiation callback event for ${id}: ${JSON.stringify(body)}`
     );
     const result = await this.negotiationService.handleEvent(id, body, vpId);
+    await this.logAllowed(Action.EXECUTE, vpId, id);
     return result;
   }
   @ApiOperation({ summary: "Handle negotiation callback termination" })
@@ -338,6 +376,42 @@ export class NegotiationController {
       body,
       vpId
     );
+    await this.logAllowed(Action.EXECUTE, vpId, id);
     return result;
+  }
+
+  private async logAllowed(action: Action, vpId: string, id?: string) {
+    await this.protocolAuditService.logAllowed({
+      caller: this.protocolAuditService.createPeerServiceActor(
+        vpId,
+        "remote-control-plane"
+      ),
+      action,
+      resource: {
+        type: Resource.CP_NEGOTIATION,
+        id
+      }
+    });
+  }
+
+  private async logDenied(
+    action: Action,
+    vpId: string,
+    id: string | undefined,
+    reason: string
+  ) {
+    await this.protocolAuditService.logDenied({
+      caller: this.protocolAuditService.createPeerServiceActor(
+        vpId,
+        "remote-control-plane"
+      ),
+      action,
+      resource: {
+        type: Resource.CP_NEGOTIATION,
+        id
+      },
+      reason,
+      severity: AuditSeverity.WARNING
+    });
   }
 }

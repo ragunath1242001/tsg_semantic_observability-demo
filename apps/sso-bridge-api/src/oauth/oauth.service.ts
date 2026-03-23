@@ -12,7 +12,7 @@ import {
 } from "@tsg-dsp/common-api";
 import crypto from "crypto";
 import { Request, Response } from "express";
-import { decodeJwt } from "jose";
+import { decodeJwt, JWTPayload } from "jose";
 
 import { RecoveryCodeService } from "../auth/recovery-code.service.js";
 import { TotpService } from "../auth/totp.service.js";
@@ -327,12 +327,15 @@ export class OauthService {
     return decodeJwt(id_token);
   }
 
-  async introspect(token: string, token_type_hint: string = "access_token") {
+  async introspect(
+    token: string,
+    token_type_hint: string = "access_token"
+  ): Promise<{ active: boolean } & JWTPayload> {
     try {
       await this.tokenService.validateToken(token, token_type_hint);
       return {
-        active: true,
-        ...decodeJwt(token)
+        ...decodeJwt(token),
+        active: true
       };
     } catch (_) {
       return {

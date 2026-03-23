@@ -3,14 +3,17 @@ import {
   AppError,
   parseNetworkError,
   promiseMap,
+  ProtocolAuditService,
   validateOrRejectSync
 } from "@tsg-dsp/common-api";
 import { formatCredential, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   CredentialMessage,
   CredentialOfferMessage,
   CredentialRequestMessage,
-  IssuerMetadata
+  IssuerMetadata,
+  Resource
 } from "@tsg-dsp/common-dtos";
 import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import { DCPCredentialRequestInitiation } from "@tsg-dsp/wallet-dtos";
@@ -28,7 +31,8 @@ export class DCPHolderService {
   constructor(
     private readonly credentialsService: CredentialsService,
     private readonly secureTokenService: SecureTokenService,
-    private readonly config: RootConfig
+    private readonly config: RootConfig,
+    private readonly protocolAuditService: ProtocolAuditService
   ) {
     this.initialized = this.init();
   }
@@ -159,16 +163,50 @@ export class DCPHolderService {
     credentialMessage: CredentialMessage
   ): Promise<void> {
     if (!authorizationHeader?.startsWith("Bearer ")) {
+      await this.protocolAuditService.logDenied({
+        caller:
+          this.protocolAuditService.createUnknownServiceActor("remote-wallet"),
+        action: Action.CREATE,
+        resource: { type: Resource.W_CREDENTIAL },
+        reason: "Invalid authorization"
+      });
       throw new AppError("Invalid authorization", HttpStatus.UNAUTHORIZED);
     }
     const token = authorizationHeader.split(" ")[1];
-    const validatedIdToken =
-      await this.secureTokenService.validateIDToken(token);
+    let validatedIdToken;
+    try {
+      validatedIdToken = await this.secureTokenService.validateIDToken(token);
+    } catch (error) {
+      await this.protocolAuditService.logDenied({
+        caller:
+          this.protocolAuditService.createUnknownServiceActor("remote-wallet"),
+        action: Action.CREATE,
+        resource: { type: Resource.W_CREDENTIAL },
+        reason:
+          error instanceof Error
+            ? error.message
+            : "Invalid self-issued ID token"
+      });
+      throw error;
+    }
 
     if (credentialMessage.status === "REJECTED") {
       this.logger.warn(
         `Credential request rejected by ${credentialMessage.issuerPid}: ${credentialMessage.rejectionReason}`
       );
+      await this.protocolAuditService.logDenied({
+        caller: this.protocolAuditService.createPeerServiceActor(
+          validatedIdToken.sub,
+          "remote-wallet"
+        ),
+        action: Action.CREATE,
+        resource: {
+          type: Resource.W_CREDENTIAL,
+          id: credentialMessage.issuerPid
+        },
+        reason:
+          credentialMessage.rejectionReason ?? "Credential request rejected"
+      });
       return;
     }
 
@@ -214,6 +252,19 @@ export class DCPHolderService {
         ).andLog(this.logger);
       }
     }
+
+    await this.protocolAuditService.logAllowed({
+      caller: this.protocolAuditService.createPeerServiceActor(
+        validatedIdToken.sub,
+        "remote-wallet"
+      ),
+      action: Action.CREATE,
+      resource: {
+        type: Resource.W_CREDENTIAL,
+        id: credentialMessage.issuerPid
+      },
+      reason: "si_token_validated"
+    });
   }
 
   formatDcpProfile(profile: string) {
@@ -253,6 +304,13 @@ export class DCPHolderService {
     this.logger.debug(
       `Received credential offer message: ${JSON.stringify(credentialOfferMessage, null, 2)} and authorization: ${authorization}`
     );
+    await this.protocolAuditService.logDenied({
+      caller:
+        this.protocolAuditService.createUnknownServiceActor("remote-wallet"),
+      action: Action.CREATE,
+      resource: { type: Resource.W_CREDENTIAL },
+      reason: "Method not implemented"
+    });
     throw new AppError("Method not implemented", HttpStatus.NOT_IMPLEMENTED);
   }
 }

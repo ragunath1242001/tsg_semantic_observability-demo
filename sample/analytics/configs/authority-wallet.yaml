@@ -87,3 +87,6 @@ issueConfigurations:
 
 did:
   method: "did:web:"
+
+audit:
+  logExecute: true

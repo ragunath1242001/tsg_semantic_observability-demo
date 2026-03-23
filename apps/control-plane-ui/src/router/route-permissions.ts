@@ -5,6 +5,7 @@ import {
   MenuGroup,
   RouteConfig
 } from "@tsg-dsp/common-ui/router/route-permissions";
+import AuditLogView from "@tsg-dsp/common-ui/views/AuditLogView.vue";
 import { RouteRecordRaw } from "vue-router";
 
 import CatalogVue from "../views/Catalog.vue";
@@ -99,12 +100,25 @@ export const routeConfigs: RouteConfig[] = [
       group: "dsp",
       menuLabel: "Transfers"
     }
+  },
+  {
+    path: "audit-logs",
+    name: "audit-logs",
+    component: AuditLogView,
+    requires: { action: Action.READ, resource: Resource.CP_AUDIT_LOG },
+    meta: {
+      title: "Audit Logs",
+      icon: "pi pi-fw pi-shield",
+      group: "audit",
+      menuLabel: "Audit Logs"
+    }
   }
 ];
 
 export const cpMenuGroups: MenuGroup[] = [
   { key: "home", label: "Home" },
-  { key: "dsp", label: "Dataspace Protocol" }
+  { key: "dsp", label: "Dataspace Protocol" },
+  { key: "audit", label: "Audit" }
 ];
 
 export function createRouteRecords(): RouteRecordRaw[] {

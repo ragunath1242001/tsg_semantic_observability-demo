@@ -6,6 +6,7 @@ import { randomUUID } from "crypto";
 import { decodeJwt } from "jose";
 import { vi } from "vitest";
 
+import { OauthClient } from "../model/client.dao.js";
 import { KeyDao } from "../model/keys.dao.js";
 import { TokenDao } from "../model/token.dao.js";
 import { OauthUser } from "../model/user.dao.js";
@@ -135,6 +136,25 @@ describe("TokenService", () => {
       expect(
         (decoded.permissions as string[]).includes("manage:sso.user")
       ).toBe(true);
+    });
+
+    it("should include azp in client tokens", async () => {
+      const mockClient = {
+        clientId: "test-client",
+        permissions: ["manage:sso.client"]
+      } as unknown as OauthClient;
+
+      const tokenResponse = await tokenService.createToken(
+        "test-client",
+        mockClient,
+        false
+      );
+
+      const decoded = decodeJwt(tokenResponse.access_token);
+      expect(decoded.sub).toBe("test-client");
+      expect(decoded.azp).toBe("test-client");
+      expect(decoded.username).toBeUndefined();
+      expect(decoded.email).toBeUndefined();
     });
   });
 

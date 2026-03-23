@@ -1,15 +1,10 @@
 import { DynamicModule, Module, Provider } from "@nestjs/common";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { AuditLogConfig, AuditSeverity, Resource } from "@tsg-dsp/common-dtos";
+import { Resource } from "@tsg-dsp/common-dtos";
 import { Repository } from "typeorm";
 
 import { OwnableEntity } from "../../model/ownable.entity.js";
 import { AbacPolicyService } from "./abac.policy.service.js";
-import {
-  AuditLogHandler,
-  AuditLogService,
-  ConsoleAuditLogHandler
-} from "./audit.log.service.js";
 import { getOwnershipCheckerToken } from "./ownership.decorator.js";
 import {
   GenericOwnershipService,
@@ -23,45 +18,14 @@ export interface OwnableEntityConfig<T extends OwnableEntity = OwnableEntity> {
   customChecker?: new (...args: any[]) => OwnershipChecker;
 }
 
-const DEFAULT_AUDIT_CONFIG: AuditLogConfig = {
-  enabled: true,
-  minSeverity: AuditSeverity.INFO,
-  logDenied: true,
-  logSuccessful: false,
-  logDelegated: true,
-  sensitiveResources: [Resource.W_KEY, Resource.W_CREDENTIAL, Resource.SSO_USER]
-};
-
 @Module({})
 export class AbacModule {
-  static forRoot(auditConfig?: Partial<AuditLogConfig>): DynamicModule {
-    const config = { ...DEFAULT_AUDIT_CONFIG, ...auditConfig };
-
+  static forRoot(): DynamicModule {
     return {
       module: AbacModule,
       global: true,
-      providers: [
-        OwnershipRegistry,
-        AbacPolicyService,
-        ConsoleAuditLogHandler,
-        {
-          provide: "AUDIT_LOG_CONFIG",
-          useValue: config
-        },
-        {
-          provide: AuditLogService,
-          useFactory: (handler: AuditLogHandler) => {
-            return new AuditLogService(handler, config);
-          },
-          inject: [ConsoleAuditLogHandler]
-        }
-      ],
-      exports: [
-        OwnershipRegistry,
-        AbacPolicyService,
-        AuditLogService,
-        ConsoleAuditLogHandler
-      ]
+      providers: [OwnershipRegistry, AbacPolicyService],
+      exports: [OwnershipRegistry, AbacPolicyService]
     };
   }
 

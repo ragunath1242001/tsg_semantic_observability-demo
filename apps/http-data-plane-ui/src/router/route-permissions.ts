@@ -5,6 +5,7 @@ import {
   MenuGroup,
   RouteConfig
 } from "@tsg-dsp/common-ui/router/route-permissions";
+import AuditLogView from "@tsg-dsp/common-ui/views/AuditLogView.vue";
 import { RouteRecordRaw } from "vue-router";
 
 import Dashboard from "../views/Dashboard.vue";
@@ -67,10 +68,25 @@ export const routeConfigs: RouteConfig[] = [
     component: Tester,
     requires: { action: Action.EXECUTE, resource: Resource.HDP_DATAPLANE }
     // No group — dynamic detail page, not shown in menu
+  },
+  {
+    path: "audit-logs",
+    name: "audit-logs",
+    component: AuditLogView,
+    requires: { action: Action.READ, resource: Resource.HDP_AUDIT_LOG },
+    meta: {
+      title: "Audit Logs",
+      icon: "pi pi-fw pi-shield",
+      group: "audit",
+      menuLabel: "Audit Logs"
+    }
   }
 ];
 
-export const hdpMenuGroups: MenuGroup[] = [{ key: "home", label: "Home" }];
+export const hdpMenuGroups: MenuGroup[] = [
+  { key: "home", label: "Home" },
+  { key: "audit", label: "Audit" }
+];
 
 export function createRouteRecords(): RouteRecordRaw[] {
   return commonCreateRouteRecords(routeConfigs);

@@ -4,6 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AuthClientService,
   AuthConfig,
+  ProtocolAuditService,
   ServerConfig,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
@@ -270,6 +271,20 @@ describe("TransferController", () => {
           useValue: plainToClass(DevWalletConfig, {
             didId: "did:web:localhost"
           })
+        },
+        {
+          provide: ProtocolAuditService,
+          useValue: {
+            createPeerServiceActor(didId: string) {
+              return { sub: didId, type: "service", didId };
+            },
+            createUnknownServiceActor(serviceName?: string) {
+              return { sub: "unknown", type: "service", serviceName };
+            },
+            async logAllowed() {},
+            async logDenied() {},
+            async log() {}
+          }
         },
         { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) },
         { provide: RuntimeConfig, useValue: plainToClass(RuntimeConfig, {}) },

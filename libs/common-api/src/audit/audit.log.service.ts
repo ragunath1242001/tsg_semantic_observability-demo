@@ -82,6 +82,7 @@ export class AuditLogService {
       !this.shouldLog(
         severity,
         params.result,
+        params.action,
         params.resource.type,
         isDelegated
       )
@@ -97,13 +98,13 @@ export class AuditLogService {
         sub: params.caller.sub,
         type: params.caller.type,
         serviceName: params.caller.serviceName,
-        email: params.caller.email,
+        username: params.caller.username,
         didId: params.caller.didId
       },
       onBehalfOf: params.onBehalfOf
         ? {
             sub: params.onBehalfOf.sub,
-            email: params.onBehalfOf.email,
+            username: params.onBehalfOf.username,
             didId: params.onBehalfOf.didId
           }
         : undefined,
@@ -137,26 +138,39 @@ export class AuditLogService {
   private shouldLog(
     severity: AuditSeverity,
     result: PolicyResult,
+    action: Action,
     resourceType?: Resource,
     isDelegated?: boolean
   ): boolean {
+    const isMutation =
+      action === Action.CREATE ||
+      action === Action.UPDATE ||
+      action === Action.DELETE ||
+      action === Action.MANAGE;
+
+    if (result.allowed) {
+      if (isMutation && !this.config.logMutations) return false;
+      if (action === Action.EXECUTE && !this.config.logExecute) return false;
+      if (action === Action.READ && !this.config.logReads) return false;
+    }
+
+    // Always log denied attempts if configured
     if (!result.allowed && this.config.logDenied) {
       return true;
     }
 
+    // Always log delegated access if configured, but still respect the
+    // action-specific success filters above to avoid noisy delegated reads.
     if (isDelegated && this.config.logDelegated) {
       return true;
     }
 
+    // Always log access to sensitive resources
     if (
       resourceType &&
       this.config.sensitiveResources?.includes(resourceType)
     ) {
       return true;
-    }
-
-    if (result.allowed && !this.config.logSuccessful) {
-      return false;
     }
 
     const severityIndex = this.severityOrder.indexOf(severity);
@@ -175,8 +189,10 @@ export function createAuditLogService(
     enabled: true,
     minSeverity: AuditSeverity.INFO,
     logDenied: true,
-    logSuccessful: false,
     logDelegated: true,
+    logMutations: true,
+    logExecute: false,
+    logReads: false,
     sensitiveResources: [
       Resource.W_KEY,
       Resource.W_CREDENTIAL,

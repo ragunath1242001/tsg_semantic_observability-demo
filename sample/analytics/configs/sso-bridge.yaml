@@ -208,3 +208,6 @@ initUsers:
       - manage:dp.*
       - manage:adp.*
       - manage:hdp.*
+
+audit:
+  logExecute: true

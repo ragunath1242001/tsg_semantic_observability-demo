@@ -1,5 +1,165 @@
 openapi: 3.0.0
 paths:
+  /api/management/audit-logs:
+    get:
+      description: Fetches paginated audit log entries with optional filters.
+      operationId: AuditLogController_list
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+        - name: callerSub
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: callerType
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: resultAllowed
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: correlationId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: ipAddress
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: requestPath
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: from
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: resourceType
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: action
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: severity
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - debug
+                - info
+                - warning
+                - error
+                - critical
+      responses:
+        "200":
+          description: Successful response
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+      security:
+        - oauth2:
+            - read:hdp.audit_log
+      summary: List audit log entries
+      tags: &a1
+        - Audit Logs
+  /api/management/audit-logs/{id}:
+    get:
+      description: Fetches a single audit log entry by its ID.
+      operationId: AuditLogController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - oauth2:
+            - read:hdp.audit_log
+      summary: Get audit log entry by ID
+      tags: *a1
   /api/settings:
     get:
       description: Retrieves the settings of the control plane.
@@ -19,7 +179,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Retrieve settings
-      tags: &a1
+      tags: &a2
         - Settings
   /api/settings/update:
     post:
@@ -55,7 +215,7 @@ paths:
         - oauth2:
             - update:hdp.config
       summary: Update settings
-      tags: *a1
+      tags: *a2
   /api/settings/upload:
     post:
       description: Uploads logo for the control plane, receive a base64 encoded url.
@@ -68,7 +228,7 @@ paths:
         - oauth2:
             - update:hdp.config
       summary: Upload logo
-      tags: *a1
+      tags: *a2
   /api/catalog:
     get:
       description: Get catalog, currently not implemented.
@@ -83,11 +243,11 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
         "501":
           description: ""
-      security: &a2
+      security: &a3
         - oauth2:
             - read:hdp.dataplane
       summary: Get catalog
-      tags: &a3
+      tags: &a4
         - Data Plane
   /health:
     get:
@@ -100,9 +260,9 @@ paths:
           description: ""
         "502":
           description: ""
-      security: *a2
+      security: *a3
       summary: Health check
-      tags: *a3
+      tags: *a4
   /api/management/state:
     get:
       description: Get the state of the data plane, consisting of the id, details and
@@ -126,7 +286,7 @@ paths:
         - oauth2:
             - read:hdp.dataplane
       summary: Get Data Plane state
-      tags: &a4
+      tags: &a5
         - Data Plane Management
   /api/management/catalog:
     get:
@@ -150,7 +310,7 @@ paths:
         - oauth2:
             - read:hdp.dataplane
       summary: Get catalog
-      tags: *a4
+      tags: *a5
   /api/management/registry/addresses:
     get:
       description: Get the current registry addresses from the Control Plane.
@@ -180,7 +340,7 @@ paths:
         - oauth2:
             - read:hdp.dataplane
       summary: Get registry addresses
-      tags: *a4
+      tags: *a5
   /api/management/registry/catalog/{participantId}:
     get:
       description: Get the catalog of a participant based on its participant ID.
@@ -210,7 +370,7 @@ paths:
         - oauth2:
             - read:hdp.dataplane
       summary: Get participant catalog
-      tags: *a4
+      tags: *a5
   /api/management/registry/refresh:
     post:
       description: Force refresh the registry by triggering a re-crawl of all
@@ -230,7 +390,7 @@ paths:
         - oauth2:
             - execute:hdp.dataplane
       summary: Refresh registry
-      tags: *a4
+      tags: *a5
   /api/management/participant-id:
     get:
       description: Get the ID of the current participant from the Control Plane catalog.
@@ -253,7 +413,7 @@ paths:
         - oauth2:
             - read:adp.dataplane
       summary: Get current participant ID
-      tags: *a4
+      tags: *a5
   /api/management/refresh:
     post:
       description: Use this endpoint to (re)register your data plane. Currently it
@@ -273,7 +433,7 @@ paths:
         - oauth2:
             - execute:hdp.dataplane
       summary: (Re)register data plane
-      tags: *a4
+      tags: *a5
   /api/management/openapi:
     get:
       description: Fetch an OpenAPI document from a given URL and return it as JSON.
@@ -292,7 +452,7 @@ paths:
         - oauth2:
             - read:hdp.dataplane
       summary: Fetch OpenAPI document
-      tags: *a4
+      tags: *a5
   /api/management/config:
     get:
       description: Get the current dataset configuration.
@@ -315,7 +475,7 @@ paths:
         - oauth2:
             - read:hdp.dataplane
       summary: Get dataset
-      tags: *a4
+      tags: *a5
     put:
       description: Update the current dataset configuration.
       operationId: DataPlaneManagementController_updateDatasetConfig
@@ -343,7 +503,7 @@ paths:
         - oauth2:
             - update:hdp.dataplane
       summary: Update dataset
-      tags: *a4
+      tags: *a5
   /api/management/datasets:
     get:
       description: Retrieve all datasets.
@@ -368,7 +528,7 @@ paths:
         - oauth2:
             - read:hdp.dataplane
       summary: Get datasets
-      tags: *a4
+      tags: *a5
     post:
       description: Create a new dataset.
       operationId: DataPlaneManagementController_createDataset
@@ -396,7 +556,7 @@ paths:
         - oauth2:
             - create:hdp.dataplane
       summary: Create dataset
-      tags: *a4
+      tags: *a5
   /api/management/datasets/{id}:
     get:
       description: Retrieve a specific dataset by id.
@@ -424,7 +584,7 @@ paths:
         - oauth2:
             - read:hdp.dataplane
       summary: Get dataset
-      tags: *a4
+      tags: *a5
     put:
       description: Update an existing dataset by id.
       operationId: DataPlaneManagementController_updateDataset
@@ -457,7 +617,7 @@ paths:
         - oauth2:
             - update:hdp.dataplane
       summary: Update dataset
-      tags: *a4
+      tags: *a5
     delete:
       description: Delete an existing dataset by id.
       operationId: DataPlaneManagementController_deleteDataset
@@ -484,7 +644,7 @@ paths:
         - oauth2:
             - delete:hdp.dataplane
       summary: Delete dataset
-      tags: *a4
+      tags: *a5
   /api/auth/user:
     get:
       description: Retrieves current user state, whether someone is logged in or not a
@@ -502,7 +662,7 @@ paths:
                   - $ref: "#/components/schemas/AuthenticatedUser"
                   - $ref: "#/components/schemas/UnauthenticatedUser"
       summary: Retrieve current user status
-      tags: &a5
+      tags: &a6
         - Authentication
   /api/auth/login:
     get:
@@ -513,7 +673,7 @@ paths:
         "302":
           description: ""
       summary: Login redirect
-      tags: *a5
+      tags: *a6
   /api/auth/logout:
     get:
       description: Removes session information and redirects user the root of the
@@ -524,7 +684,7 @@ paths:
         "302":
           description: ""
       summary: Logout redirect
-      tags: *a5
+      tags: *a6
   /api/auth/callback:
     get:
       description: Users are redirected from the authorization server to this endpoint
@@ -582,7 +742,7 @@ paths:
         "302":
           description: ""
       summary: Login callback
-      tags: *a5
+      tags: *a6
   /api/management/logging/ingress:
     get:
       operationId: LoggingController_getIngressLogs
@@ -643,7 +803,7 @@ paths:
         - oauth2:
             - read:hdp.logs
       summary: Get ingress logs
-      tags: &a6
+      tags: &a7
         - Logging
   /api/management/logging/egress:
     get:
@@ -705,7 +865,7 @@ paths:
         - oauth2:
             - read:hdp.logs
       summary: Get egress logs
-      tags: *a6
+      tags: *a7
   /api/management/transfers:
     get:
       operationId: TransferManagementController_getTransfers
@@ -729,7 +889,7 @@ paths:
         - oauth2:
             - read:dp.transfer
       summary: Get all transfers
-      tags: &a7
+      tags: &a8
         - Data Plane Management
   /api/management/transfers/{id}:
     get:
@@ -758,7 +918,7 @@ paths:
         - oauth2:
             - read:dp.transfer
       summary: Get transfer by ID
-      tags: *a7
+      tags: *a8
   /api/management/transfers/{id}/metadata:
     get:
       operationId: TransferManagementController_getMetadata
@@ -786,7 +946,7 @@ paths:
         - oauth2:
             - read:dp.transfer
       summary: Get metadata of transfer by ID
-      tags: *a7
+      tags: *a8
   /api/management/transfers/{id}/start:
     post:
       operationId: TransferManagementController_startTransfer
@@ -810,7 +970,7 @@ paths:
         - oauth2:
             - execute:dp.transfer
       summary: Start a transfer by ID
-      tags: *a7
+      tags: *a8
   /api/management/transfers/{id}/completion:
     post:
       operationId: TransferManagementController_completeTransfer
@@ -834,7 +994,7 @@ paths:
         - oauth2:
             - execute:dp.transfer
       summary: Complete a transfer by ID
-      tags: *a7
+      tags: *a8
   /api/management/transfers/{id}/termination:
     post:
       operationId: TransferManagementController_terminateTransfer
@@ -868,7 +1028,7 @@ paths:
         - oauth2:
             - execute:dp.transfer
       summary: Terminate a transfer by ID
-      tags: *a7
+      tags: *a8
   /api/management/transfers/{id}/suspension:
     post:
       operationId: TransferManagementController_suspendTransfer
@@ -902,7 +1062,7 @@ paths:
         - oauth2:
             - execute:dp.transfer
       summary: Suspend a transfer by ID
-      tags: *a7
+      tags: *a8
   /api/management/transfers/{id}/execute/{path}:
     get:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
@@ -929,7 +1089,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request
-      tags: *a7
+      tags: *a8
     post:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -955,7 +1115,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request
-      tags: *a7
+      tags: *a8
     put:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -981,7 +1141,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request
-      tags: *a7
+      tags: *a8
     delete:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1007,7 +1167,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request
-      tags: *a7
+      tags: *a8
     patch:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1033,7 +1193,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request
-      tags: *a7
+      tags: *a8
     options:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1059,7 +1219,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request
-      tags: *a7
+      tags: *a8
     head:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1085,7 +1245,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request
-      tags: *a7
+      tags: *a8
     search:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1111,7 +1271,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request
-      tags: *a7
+      tags: *a8
   /api/management/execute/{path}:
     get:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
@@ -1148,7 +1308,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request without transfer ID
-      tags: *a7
+      tags: *a8
     post:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -1184,7 +1344,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request without transfer ID
-      tags: *a7
+      tags: *a8
     put:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -1220,7 +1380,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request without transfer ID
-      tags: *a7
+      tags: *a8
     delete:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -1256,7 +1416,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request without transfer ID
-      tags: *a7
+      tags: *a8
     patch:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -1292,7 +1452,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request without transfer ID
-      tags: *a7
+      tags: *a8
     options:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -1328,7 +1488,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request without transfer ID
-      tags: *a7
+      tags: *a8
     head:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -1364,7 +1524,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request without transfer ID
-      tags: *a7
+      tags: *a8
     search:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -1400,7 +1560,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request without transfer ID
-      tags: *a7
+      tags: *a8
   /api/proxy/{id}/{path}:
     get:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
@@ -1423,7 +1583,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: &a8
+      tags: &a9
         - Proxy
     post:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
@@ -1446,7 +1606,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a8
+      tags: *a9
     put:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1468,7 +1628,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a8
+      tags: *a9
     delete:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1490,7 +1650,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a8
+      tags: *a9
     patch:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1512,7 +1672,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a8
+      tags: *a9
     options:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1534,7 +1694,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a8
+      tags: *a9
     head:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1556,7 +1716,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a8
+      tags: *a9
     search:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1578,7 +1738,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a8
+      tags: *a9
   /api/transfers/request/{role}:
     post:
       description: Requests a transfer from control plane to data plane.
@@ -1627,7 +1787,7 @@ paths:
         - oauth2:
             - create:dp.transfer
       summary: Request Transfer
-      tags: &a9
+      tags: &a10
         - Data Plane
   /api/transfers/{id}/start:
     post:
@@ -1652,7 +1812,7 @@ paths:
         - oauth2:
             - execute:dp.transfer
       summary: Start transfer process
-      tags: *a9
+      tags: *a10
   /api/transfers/{id}/completion:
     post:
       operationId: TransferController_completeTransfer
@@ -1676,7 +1836,7 @@ paths:
         - oauth2:
             - execute:dp.transfer
       summary: Complete transfer process
-      tags: *a9
+      tags: *a10
   /api/transfers/{id}/termination:
     post:
       operationId: TransferController_terminateTransfer
@@ -1700,7 +1860,7 @@ paths:
         - oauth2:
             - execute:dp.transfer
       summary: Terminate transfer process
-      tags: *a9
+      tags: *a10
   /api/transfers/{id}/suspension:
     post:
       operationId: TransferController_suspendTransfer
@@ -1724,7 +1884,7 @@ paths:
         - oauth2:
             - execute:dp.transfer
       summary: Suspend transfer process
-      tags: *a9
+      tags: *a10
 info:
   title: TSG HTTP Data Plane
   description: This OpenAPI specification shows the endpoints of the HTTP Data Plane.
@@ -1755,7 +1915,7 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          scopes: &a10
+          scopes: &a11
             create:hdp.config: create:hdp.config
             read:hdp.config: read:hdp.config
             update:hdp.config: update:hdp.config
@@ -1775,7 +1935,7 @@ components:
             execute:hdp.logs: execute:hdp.logs
             manage:hdp.logs: manage:hdp.logs
         clientCredentials:
-          scopes: *a10
+          scopes: *a11
   schemas:
     RuntimeConfigDto:
       type: object
@@ -1909,7 +2069,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: &a11 []
+          example: &a12 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1940,7 +2100,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a11
+          example: *a12
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1966,7 +2126,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a11
+          example: *a12
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1992,17 +2152,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: &a18 []
+          example: &a19 []
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: &a19 []
+          example: &a20 []
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: &a20 []
+          example: &a21 []
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -2034,7 +2194,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: &a12
+          example: &a13
             - keyword1
             - keyword2
           type: array
@@ -2044,14 +2204,14 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: &a13
+          example: &a14
             - theme1
             - theme2
           type: array
           items:
             type: string
         conformsTo:
-          example: &a14
+          example: &a15
             - conformsToExample
           type: array
           items:
@@ -2060,7 +2220,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: &a15
+          example: &a16
             - description1
             - description2
           type: array
@@ -2097,12 +2257,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: &a16 []
+          example: &a17 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: &a17
+          example: &a18
             - version1
             - version2
           type: array
@@ -2162,7 +2322,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a12
+          example: *a13
           type: array
           items:
             type: string
@@ -2170,12 +2330,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a13
+          example: *a14
           type: array
           items:
             type: string
         conformsTo:
-          example: *a14
+          example: *a15
           type: array
           items:
             type: string
@@ -2183,7 +2343,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a15
+          example: *a16
           type: array
           items:
             type: string
@@ -2218,12 +2378,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a16
+          example: *a17
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a17
+          example: *a18
           type: array
           items:
             type: string
@@ -2291,7 +2451,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a12
+          example: *a13
           type: array
           items:
             type: string
@@ -2299,12 +2459,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a13
+          example: *a14
           type: array
           items:
             type: string
         conformsTo:
-          example: *a14
+          example: *a15
           type: array
           items:
             type: string
@@ -2312,7 +2472,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a15
+          example: *a16
           type: array
           items:
             type: string
@@ -2347,12 +2507,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a16
+          example: *a17
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a17
+          example: *a18
           type: array
           items:
             type: string
@@ -2395,7 +2555,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a12
+          example: *a13
           type: array
           items:
             type: string
@@ -2403,12 +2563,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a13
+          example: *a14
           type: array
           items:
             type: string
         conformsTo:
-          example: *a14
+          example: *a15
           type: array
           items:
             type: string
@@ -2416,7 +2576,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a15
+          example: *a16
           type: array
           items:
             type: string
@@ -2451,12 +2611,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a16
+          example: *a17
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a17
+          example: *a18
           type: array
           items:
             type: string
@@ -2853,17 +3013,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: *a18
+          example: *a19
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: *a19
+          example: *a20
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: *a20
+          example: *a21
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"

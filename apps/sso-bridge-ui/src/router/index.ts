@@ -40,6 +40,12 @@ const router = createRouter({
           path: "/profile",
           name: "profile",
           component: () => import("../views/Profile.vue")
+        },
+        {
+          path: "/audit-logs",
+          name: "audit-logs",
+          component: () => import("@tsg-dsp/common-ui/views/AuditLogView.vue"),
+          meta: { requiresAdmin: true }
         }
       ]
     },

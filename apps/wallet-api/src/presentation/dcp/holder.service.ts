@@ -1,15 +1,17 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { AppError } from "@tsg-dsp/common-api";
+import { AppError, ProtocolAuditService } from "@tsg-dsp/common-api";
 import {
   VerifiablePresentationJsonLd,
   VerifiablePresentationJwt
 } from "@tsg-dsp/common-dsp";
 import {
+  Action,
   Field,
   PresentationDefinition,
   PresentationQueryMessage,
   PresentationResponseMessage,
-  PresentationSubmission
+  PresentationSubmission,
+  Resource
 } from "@tsg-dsp/common-dtos";
 import { Ajv } from "ajv";
 import jsonpath from "jsonpath";
@@ -24,7 +26,8 @@ export class DCPHolderService {
   constructor(
     private readonly credentialService: CredentialsService,
     private readonly presentationService: PresentationService,
-    private readonly siopService: SecureTokenService
+    private readonly siopService: SecureTokenService,
+    private readonly protocolAuditService: ProtocolAuditService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
   // @ts-expect-error ajv error
@@ -35,11 +38,33 @@ export class DCPHolderService {
     verifierIdTokenHeader: string | undefined
   ): Promise<PresentationResponseMessage> {
     if (!verifierIdTokenHeader?.startsWith("Bearer ")) {
+      await this.protocolAuditService.logDenied({
+        caller:
+          this.protocolAuditService.createUnknownServiceActor("remote-wallet"),
+        action: Action.READ,
+        resource: { type: Resource.W_PRESENTATION },
+        reason: "Invalid authorization"
+      });
       throw new AppError("Invalid authorization", HttpStatus.UNAUTHORIZED);
     }
     const verifierIdToken = verifierIdTokenHeader.split(" ")[1];
-    const validatedIdToken =
-      await this.siopService.validateIDTokenWithAccessToken(verifierIdToken);
+    let validatedIdToken;
+    try {
+      validatedIdToken =
+        await this.siopService.validateIDTokenWithAccessToken(verifierIdToken);
+    } catch (error) {
+      await this.protocolAuditService.logDenied({
+        caller:
+          this.protocolAuditService.createUnknownServiceActor("remote-wallet"),
+        action: Action.READ,
+        resource: { type: Resource.W_PRESENTATION },
+        reason:
+          error instanceof Error
+            ? error.message
+            : "Invalid self-issued ID token"
+      });
+      throw error;
+    }
     this.logger.log(
       `Received presentation request from ${validatedIdToken.tokenPayload.iss}`
     );
@@ -121,12 +146,27 @@ export class DCPHolderService {
       });
     }
 
-    return {
+    const response: PresentationResponseMessage = {
       "@context": ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"],
       type: "PresentationResponseMessage",
       presentation: [vpJwt?.vp, vpLdp?.vp].filter((v) => v !== undefined),
       presentationSubmission: presentation_submission
     };
+
+    await this.protocolAuditService.logAllowed({
+      caller: this.protocolAuditService.createPeerServiceActor(
+        validatedIdToken.tokenPayload.iss,
+        "remote-wallet"
+      ),
+      action: Action.READ,
+      resource: {
+        type: Resource.W_PRESENTATION,
+        id: presentationQueryMessage.presentationDefinition?.id
+      },
+      reason: "si_token_validated"
+    });
+
+    return response;
   }
 
   async getCredentialsByScope(
