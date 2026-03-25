@@ -15,6 +15,6 @@ import { BridgeWsServerListeners } from "./bridge-ws-server.listeners.js";
     BridgeWsPublisherService,
     BridgeWsServerListeners
   ],
-  exports: [BridgeWsPublisherService]
+  exports: [BridgeWsPublisherService, BridgeWsGateway]
 })
 export class BridgeWsServerModule {}

@@ -6,6 +6,24 @@ export interface SettingsDto {
   [key: string]: unknown;
 }
 
+export interface ModeDto {
+  mode: "standalone" | "client" | "server";
+}
+
+export interface BridgeClientStatusDto {
+  mode: "client";
+  status: "connected" | "disconnected" | "not-configured";
+  oauthClientId?: string;
+  serverUrl?: string;
+  connectedAt?: string;
+  disconnectedAt?: string;
+  lastMessageReceivedAt?: string;
+  lastMessageSentAt?: string;
+  reconnecting?: boolean;
+  reconnectAttempts?: number;
+  uptimeMs?: number;
+}
+
 export interface UserDto {
   name: string;
   email: string;

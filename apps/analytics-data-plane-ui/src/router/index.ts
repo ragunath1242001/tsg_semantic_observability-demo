@@ -51,6 +51,8 @@ router.beforeEach(async (to) => {
 
   if (to.meta?.restrictedInClientMode && runtimeStore.isClientMode) return "/";
   if (to.meta?.restrictedInServerMode && runtimeStore.isServerMode) return "/";
+  if (to.meta?.restrictedInStandaloneMode && runtimeStore.isStandaloneMode)
+    return "/";
 });
 
 export default router;

@@ -10,10 +10,12 @@ import type {
   AlgorithmEventDto,
   AlgorithmInstanceDto,
   AuthStateDto,
+  BridgeClientStatusDto,
   EventsForInstanceDto,
   FileMetadataDto,
   InternalEventDto,
   JobInfo,
+  ModeDto,
   PodInfo,
   SettingsDto
 } from "../types.js";
@@ -193,7 +195,12 @@ export class ApiClient {
   }
 
   async getMode(): Promise<string> {
-    const res = await this.http.get<string>("settings/mode");
+    const res = await this.http.get<ModeDto>("settings/mode");
+    return res.data.mode;
+  }
+
+  async getBridgeStatus(): Promise<BridgeClientStatusDto> {
+    const res = await this.http.get<BridgeClientStatusDto>("bridge/status");
     return res.data;
   }
 

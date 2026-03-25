@@ -1,4 +1,4 @@
-import { Module, OnModuleInit, Type } from "@nestjs/common";
+import { Module, OnModuleInit } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "@tsg-dsp/common-api";
 import { CommonDataPlaneModule } from "@tsg-dsp/common-data-plane-api";
@@ -28,7 +28,7 @@ import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
     SplitModeModule,
     ...splitModules([DataPlaneModule, ProjectAgreementsModule])
   ],
-  controllers: splitModules<Type>(
+  controllers: splitModules(
     [AlgorithmInstancesManagementController, AlgorithmInstancesController],
     [AlgorithmInstancesReadOnlyManagementController]
   ),

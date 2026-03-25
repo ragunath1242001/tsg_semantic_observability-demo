@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import type {
   BridgeAlgorithmEventDataChunkDto,
+  BridgeClientConnectionStatusDto,
   CreateAlgorithmEventDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
@@ -45,6 +46,12 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
   private readonly chunkSize: number;
   /** Messages queued while the socket is temporarily disconnected. */
   private readonly pendingQueue: QueuedMessage[] = [];
+  private connectedAt?: Date;
+  private disconnectedAt?: Date;
+  private lastMessageSentAt?: Date;
+  private lastMessageReceivedAt?: Date;
+  private reconnecting = false;
+  private reconnectAttempts = 0;
 
   constructor(
     private readonly config: RootConfig,
@@ -77,16 +84,21 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
       path,
       transports: ["websocket"],
       reconnection: true,
+      reconnectionDelayMax: 600_000,
       extraHeaders: token ? { authorization: `Bearer ${token}` } : undefined
     });
 
     this.socket.on("connect", () => {
+      this.connectedAt = new Date();
       this.logger.log(`Connected to bridge WS peer (${this.socket?.id})`);
       this.drainQueue();
     });
 
     this.socket.on("disconnect", (reason) => {
+      this.disconnectedAt = new Date();
       this.logger.warn(`Bridge WS disconnected: ${reason}`);
+      this.reconnecting = true;
+      this.reconnectAttempts = 0;
     });
 
     this.socket.on("connect_error", (err) => {
@@ -96,6 +108,7 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
     // Refresh the auth token before each reconnection attempt so that an
     // expired token does not permanently block automatic reconnects.
     this.socket.io.on("reconnect_attempt", async (attempt) => {
+      this.reconnectAttempts = attempt;
       this.logger.log(`Bridge WS reconnect attempt #${attempt}`);
       if (this.authConfig.enabled) {
         try {
@@ -113,6 +126,9 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
 
     this.socket.io.on("reconnect", (attempt) => {
       this.logger.log(`Bridge WS reconnected after ${attempt} attempt(s)`);
+      this.reconnecting = false;
+      this.disconnectedAt = undefined;
+      this.reconnectAttempts = attempt;
     });
 
     this.socket.io.on("reconnect_error", (err) => {
@@ -120,6 +136,7 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
     });
 
     this.socket.io.on("reconnect_failed", () => {
+      this.reconnecting = false;
       this.logger.error(
         "Bridge WS failed to reconnect; pending queue will be retained until next connect"
       );
@@ -135,6 +152,32 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
     this.socket = undefined;
   }
 
+  getConnectionStatus(): BridgeClientConnectionStatusDto {
+    if (!this.peerWsUrl) {
+      return { mode: "client", status: "not-configured" };
+    }
+
+    const now = Date.now();
+    return {
+      mode: "client",
+      status: this.socket?.connected ? "connected" : "disconnected",
+      oauthClientId: this.authConfig.enabled
+        ? this.authConfig.clientId
+        : undefined,
+      serverUrl: this.peerWsUrl,
+      connectedAt: this.connectedAt?.toISOString(),
+      disconnectedAt: this.disconnectedAt?.toISOString(),
+      lastMessageReceivedAt: this.lastMessageReceivedAt?.toISOString(),
+      lastMessageSentAt: this.lastMessageSentAt?.toISOString(),
+      reconnecting: this.reconnecting,
+      reconnectAttempts: this.reconnecting ? this.reconnectAttempts : undefined,
+      uptimeMs:
+        this.socket?.connected && this.connectedAt
+          ? now - this.connectedAt.getTime()
+          : undefined
+    };
+  }
+
   private get peerWsUrl(): string | undefined {
     return this.config.split.bridgePeerWsUrl;
   }
@@ -143,8 +186,10 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
     event: string,
     handler: (payload: TPayload) => void | Promise<void>
   ): void {
-    const wrapped: Listener["handler"] = (payload: unknown) =>
-      handler(payload as TPayload);
+    const wrapped: Listener["handler"] = (payload: unknown) => {
+      this.lastMessageReceivedAt = new Date();
+      return handler(payload as TPayload);
+    };
     this.listeners.push({ event, handler: wrapped });
     this.socket?.on(event, wrapped);
   }
@@ -164,6 +209,7 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
     }
 
     this.socket.emit(event, payload);
+    this.lastMessageSentAt = new Date();
   }
 
   /**
@@ -352,6 +398,7 @@ export class BridgeWsClientService implements OnModuleInit, OnModuleDestroy {
 
       this.socket!.emit(event, payload, (response: unknown) => {
         clearTimeout(timer);
+        this.lastMessageSentAt = new Date();
         resolve(response);
       });
     });

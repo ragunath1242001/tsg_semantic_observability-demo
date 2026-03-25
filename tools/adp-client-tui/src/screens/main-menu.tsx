@@ -4,7 +4,7 @@ import { useState } from "react";
 interface MainMenuProps {
   baseUrl: string;
   userName: string | null;
-  onSelect: (choice: "files" | "instances" | "quit") => void;
+  onSelect: (choice: "files" | "instances" | "bridge-status" | "quit") => void;
 }
 
 const MENU_ITEMS = [
@@ -17,6 +17,11 @@ const MENU_ITEMS = [
     label: "Algorithm Instances",
     value: "instances" as const,
     description: "View running and completed algorithm instances"
+  },
+  {
+    label: "Bridge Status",
+    value: "bridge-status" as const,
+    description: "Inspect the ADP bridge WebSocket connection status"
   },
   {
     label: "Quit",
