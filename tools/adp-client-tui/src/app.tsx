@@ -3,13 +3,20 @@ import { useMemo, useState } from "react";
 
 import { ApiClient } from "./api/client.js";
 import { AlgorithmInstancesScreen } from "./screens/algorithm-instances.js";
+import { BridgeStatusScreen } from "./screens/bridge-status.js";
 import { FilesScreen } from "./screens/files.js";
 import { InstanceDetailScreen } from "./screens/instance-detail.js";
 import { LoginScreen } from "./screens/login.js";
 import { MainMenu } from "./screens/main-menu.js";
 import type { AlgorithmInstanceDto, AppConfig, UserDto } from "./types.js";
 
-type Screen = "auth" | "menu" | "files" | "instances" | "instance-detail";
+type Screen =
+  | "auth"
+  | "menu"
+  | "files"
+  | "instances"
+  | "bridge-status"
+  | "instance-detail";
 
 interface AppProps {
   config: AppConfig;
@@ -61,6 +68,9 @@ export function App({ config }: AppProps) {
               case "instances":
                 setScreen("instances");
                 break;
+              case "bridge-status":
+                setScreen("bridge-status");
+                break;
               case "quit":
                 exit();
                 break;
@@ -82,6 +92,11 @@ export function App({ config }: AppProps) {
             setScreen("instance-detail");
           }}
         />
+      );
+
+    case "bridge-status":
+      return (
+        <BridgeStatusScreen client={client} onBack={() => setScreen("menu")} />
       );
 
     case "instance-detail":

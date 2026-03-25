@@ -16,7 +16,9 @@ import {
 import { Resource } from "@tsg-dsp/common-dtos";
 
 import { AlgorithmInstancesModule } from "./algorithm-instances/algorithm-instances.module.js";
+import { BridgeClientStatusController } from "./bridge/client/bridge-client-status.controller.js";
 import { BridgeWsClientModule } from "./bridge/client/bridge-ws-client.module.js";
+import { BridgeServerStatusController } from "./bridge/server/bridge-server-status.controller.js";
 import { BridgeWsServerModule } from "./bridge/server/bridge-ws-server.module.js";
 import { SplitModeModule } from "./bridge/split-mode/split-mode.module.js";
 import { ConfigController } from "./config.controller.js";
@@ -71,6 +73,12 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     ]
   : [];
 
+const bridgeStatusControllers = splitModules(
+  [BridgeServerStatusController],
+  [BridgeClientStatusController],
+  []
+);
+
 @Module({
   imports: [
     SessionModule,
@@ -95,7 +103,8 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   exports: moduleExports,
   controllers: [
     createAuditLogController(Resource.ADP_AUDIT_LOG),
-    ConfigController
+    ConfigController,
+    ...bridgeStatusControllers
   ]
 })
 export class AppModule {

@@ -8,6 +8,7 @@ import {
 import AuditLogView from "@tsg-dsp/common-ui/views/AuditLogView.vue";
 import { RouteRecordRaw } from "vue-router";
 
+import BridgeStatus from "../views/BridgeStatus.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Files from "../views/Files.vue";
 import AlgorithmInstances from "../views/instances/AlgorithmInstances.vue";
@@ -127,6 +128,19 @@ export const routeConfigs: RouteConfig[] = [
       group: "audit",
       menuLabel: "Audit Logs"
     }
+  },
+  {
+    path: "bridge-status",
+    name: "bridge-status",
+    component: BridgeStatus,
+    requires: { action: Action.READ, resource: Resource.ADP_DATAPLANE },
+    meta: {
+      title: "Bridge Status",
+      icon: "pi pi-fw pi-wifi",
+      group: "bridge",
+      menuLabel: "Bridge Status",
+      restrictedInStandaloneMode: true
+    }
   }
 ];
 
@@ -135,12 +149,14 @@ export const adpMenuGroups: MenuGroup[] = [
   { key: "files", label: "Files" },
   { key: "algorithms", label: "Algorithms" },
   { key: "collaboration", label: "Collaboration" },
+  { key: "bridge", label: "Bridge" },
   { key: "audit", label: "Audit" }
 ];
 
 interface RuntimeStore {
   isClientMode: boolean;
   isServerMode: boolean;
+  isStandaloneMode: boolean;
 }
 
 export function createRouteRecords(): RouteRecordRaw[] {
@@ -159,6 +175,11 @@ export function generateMenuFromRoutes(
       if (route.meta?.restrictedInClientMode && runtimeStore.isClientMode)
         return false;
       if (route.meta?.restrictedInServerMode && runtimeStore.isServerMode)
+        return false;
+      if (
+        route.meta?.restrictedInStandaloneMode &&
+        runtimeStore.isStandaloneMode
+      )
         return false;
       return true;
     }

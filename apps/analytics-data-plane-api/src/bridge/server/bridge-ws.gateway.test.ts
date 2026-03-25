@@ -10,15 +10,13 @@ import type {
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { AuthConfig, OAuthService } from "@tsg-dsp/common-api";
 import type { DatasetDto } from "@tsg-dsp/common-dsp";
+import type { Socket } from "socket.io";
 import { vi } from "vitest";
 
-import type { RootConfig } from "../../config.js";
 import type { BridgeService } from "./bridge.service.js";
 import { BridgeWsGateway } from "./bridge-ws.gateway.js";
 
 function createGateway() {
-  const config = { split: { mode: "server" } } as unknown as RootConfig;
-
   const bridge = {
     clientUpsertDatasets: vi.fn().mockResolvedValue(undefined),
     clientDeleteDatasets: vi.fn().mockResolvedValue(undefined),
@@ -35,7 +33,6 @@ function createGateway() {
 
   const emitMock = vi.fn();
   const gateway = new BridgeWsGateway(
-    config,
     bridge as unknown as BridgeService,
     oauthService,
     authConfig
@@ -48,6 +45,10 @@ function createGateway() {
   });
 
   return { gateway, bridge, oauthService, authConfig, emitMock };
+}
+
+function mockSocket(id = "mock-client"): Socket {
+  return { id, handshake: { headers: {} } } as unknown as Socket;
 }
 
 describe("BridgeWsGateway", () => {
@@ -137,7 +138,7 @@ describe("BridgeWsGateway", () => {
       const body: BridgeUpsertDatasetsDto = {
         dataset: { "@id": "urn:uuid:ds-1" } as DatasetDto
       };
-      const result = await gateway.clientUpsertDatasets(body);
+      const result = await gateway.clientUpsertDatasets(mockSocket(), body);
       expect(bridge.clientUpsertDatasets).toHaveBeenCalledWith(body);
       expect(result).toEqual({ ok: true });
     });
@@ -145,7 +146,7 @@ describe("BridgeWsGateway", () => {
     it("clientDeleteDatasets delegates to bridge", async () => {
       const { gateway, bridge } = createGateway();
       const body: BridgeDeleteDatasetsDto = { datasetId: "urn:uuid:ds-1" };
-      const result = await gateway.clientDeleteDatasets(body);
+      const result = await gateway.clientDeleteDatasets(mockSocket(), body);
       expect(bridge.clientDeleteDatasets).toHaveBeenCalledWith(body);
       expect(result).toEqual({ ok: true });
     });
@@ -157,7 +158,7 @@ describe("BridgeWsGateway", () => {
         status: "running",
         jobName: "job-a"
       };
-      const result = await gateway.clientPushJobStatus(body);
+      const result = await gateway.clientPushJobStatus(mockSocket(), body);
       expect(bridge.clientPushJobStatus).toHaveBeenCalledWith(body);
       expect(result).toEqual({ ok: true });
     });
@@ -173,7 +174,10 @@ describe("BridgeWsGateway", () => {
           timestamp: new Date().toISOString()
         }
       };
-      const result = await gateway.clientCreateAlgorithmEvent(body);
+      const result = await gateway.clientCreateAlgorithmEvent(
+        mockSocket(),
+        body
+      );
       expect(bridge.clientCreateAlgorithmEvent).toHaveBeenCalledWith(body);
       expect(result).toEqual({ id: "ev-1" });
     });
@@ -181,11 +185,14 @@ describe("BridgeWsGateway", () => {
     it("clientUploadAlgorithmEventData delegates to bridge", async () => {
       const { gateway, bridge } = createGateway();
       const eventData = Buffer.from("data");
-      const result = await gateway.clientUploadAlgorithmEventData({
-        algorithmInstanceId: "inst-1",
-        eventId: "ev-1",
-        eventData
-      });
+      const result = await gateway.clientUploadAlgorithmEventData(
+        mockSocket(),
+        {
+          algorithmInstanceId: "inst-1",
+          eventId: "ev-1",
+          eventData
+        }
+      );
       expect(bridge.clientUploadAlgorithmEventData).toHaveBeenCalledWith({
         algorithmInstanceId: "inst-1",
         eventId: "ev-1",
@@ -197,11 +204,14 @@ describe("BridgeWsGateway", () => {
     it("clientUploadAlgorithmEventData converts non-Buffer to Buffer", async () => {
       const { gateway, bridge } = createGateway();
       const arrayBuffer = new Uint8Array([1, 2, 3]);
-      const result = await gateway.clientUploadAlgorithmEventData({
-        algorithmInstanceId: "inst-1",
-        eventId: "ev-1",
-        eventData: arrayBuffer as unknown as Buffer
-      });
+      const result = await gateway.clientUploadAlgorithmEventData(
+        mockSocket(),
+        {
+          algorithmInstanceId: "inst-1",
+          eventId: "ev-1",
+          eventData: arrayBuffer as unknown as Buffer
+        }
+      );
       expect(bridge.clientUploadAlgorithmEventData).toHaveBeenCalledWith(
         expect.objectContaining({
           eventData: expect.any(Buffer)
@@ -249,6 +259,29 @@ describe("BridgeWsGateway", () => {
       await gateway.handleConnection(client as any);
       expect(oauthService.validateToken).toHaveBeenCalledWith("valid-token");
       expect(client.disconnect).not.toHaveBeenCalled();
+    });
+
+    it("captures the client IP address from x-forwarded-for", async () => {
+      const { gateway } = createGateway();
+      const client = {
+        id: "client-1",
+        disconnect: vi.fn(),
+        handshake: {
+          address: "10.0.0.10",
+          headers: {
+            "x-forwarded-for": "203.0.113.20, 10.0.0.10"
+          }
+        }
+      };
+
+      await gateway.handleConnection(client as any);
+
+      expect(gateway.getConnectedClients()).toEqual([
+        expect.objectContaining({
+          clientId: "client-1",
+          clientIpAddress: "203.0.113.20"
+        })
+      ]);
     });
 
     it("rejects connections with invalid token when auth is enabled", async () => {
@@ -300,7 +333,10 @@ describe("BridgeWsGateway", () => {
           chunkData
         };
 
-        lastResult = await gateway.clientUploadAlgorithmEventDataChunk(chunk);
+        lastResult = await gateway.clientUploadAlgorithmEventDataChunk(
+          mockSocket(),
+          chunk
+        );
       }
 
       expect(lastResult).toEqual({ ok: true, assembled: true });
@@ -329,7 +365,10 @@ describe("BridgeWsGateway", () => {
         chunkData: Buffer.from("0123456789")
       };
 
-      const result = await gateway.clientUploadAlgorithmEventDataChunk(chunk);
+      const result = await gateway.clientUploadAlgorithmEventDataChunk(
+        mockSocket(),
+        chunk
+      );
       expect(result).toEqual({ ok: true, assembled: false });
     });
   });

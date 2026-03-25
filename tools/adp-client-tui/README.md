@@ -6,6 +6,7 @@ Terminal User Interface for the Analytics Data Plane in **client mode**.
 
 - **File Management** — List, upload, preview, and delete files
 - **Algorithm Instances** — Browse all algorithm instances with status overview
+- **Bridge Status** — Inspect WebSocket bridge connectivity, last message activity, and reconnect state
 - **Instance Detail** — View instance info, participants, and events (algorithm + internal) with filtering and event data download
 - **Authentication** — Supports bearer tokens, username/password login via SSO Bridge, and browser-based OAuth PKCE flow
 
@@ -79,6 +80,11 @@ pnpm dev -- --url http://localhost:3552/api --sso-url http://localhost:3700 --cl
 - `↑↓` or `j/k` — Navigate instance list
 - `Enter` — View instance details
 - `r` — Refresh list
+- `b` or `Escape` — Back to main menu
+
+### Bridge Status Screen
+
+- `r` — Refresh bridge status
 - `b` or `Escape` — Back to main menu
 
 ### Instance Detail Screen
