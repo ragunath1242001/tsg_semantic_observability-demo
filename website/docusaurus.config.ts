@@ -203,6 +203,16 @@ const config: Config = {
   ],
 
   themeConfig: {
+    algolia: {
+      appId: "5NIQZCN267",
+      apiKey: "abee9a686c4f8f2348de8161de60bb08",
+      indexName: "TSG Docusaurus Docs",
+      contextualSearch: true,
+    },
+    metadata: [{
+      name: "algolia-site-verification",
+      content: "3DDEE612BC25AA77"
+    }],
     languageTabs: [
       {
         language: "curl",
