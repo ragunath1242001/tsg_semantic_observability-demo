@@ -4,6 +4,12 @@ import { DIDDocument } from "did-resolver";
 
 import { DataPlaneError } from "../errors/index.js";
 
+function isHttpFallbackEnabled(): boolean {
+  return ["1", "true", "yes", "on"].includes(
+    (process.env.DID_RESOLVER_HTTP_FALLBACK_ENABLED ?? "").toLowerCase()
+  );
+}
+
 export async function resolve(didId: string) {
   if (!didId.startsWith("did:web:")) {
     throw new DataPlaneError(
@@ -15,7 +21,8 @@ export async function resolve(didId: string) {
   host = decodeURIComponent(host);
   paths = paths.map((path) => decodeURIComponent(path));
   let url: string;
-  const protocol = host.startsWith("localhost") ? "http" : "https";
+  const protocol =
+    host.startsWith("localhost") || isHttpFallbackEnabled() ? "http" : "https";
   if (paths.length === 0) {
     url = `${protocol}://${host}/.well-known/did.json`;
   } else {
