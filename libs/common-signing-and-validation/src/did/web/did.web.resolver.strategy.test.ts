@@ -50,6 +50,12 @@ describe("DID Web Resolver", () => {
           didGenerator("did:web:example.com:user:admin")
         );
       }),
+      http.get("https://setu-authority/.well-known/did.json", () => {
+        return new HttpResponse(null, { status: 404 });
+      }),
+      http.get("http://setu-authority/.well-known/did.json", () => {
+        return HttpResponse.json(didGenerator("did:web:setu-authority"));
+      }),
       http.get("https://example.com/user/admin-internal/did.json", () => {
         return new HttpResponse(null, { status: 404 });
       })
@@ -62,6 +68,10 @@ describe("DID Web Resolver", () => {
   });
 
   describe("DID Web Resolvement", () => {
+    afterEach(() => {
+      delete process.env.DID_RESOLVER_HTTP_FALLBACK_ENABLED;
+    });
+
     it("Resolve main DID", async () => {
       const didDocument = await didWebResolverStrategy.resolve(
         "did:web:example.com"
@@ -87,6 +97,15 @@ describe("DID Web Resolver", () => {
           "did:web:example.com:user:admin-internal"
         )
       ).rejects.toThrow("Could not load DID document for");
+    });
+
+    it("Resolve DID using HTTP fallback when enabled", async () => {
+      process.env.DID_RESOLVER_HTTP_FALLBACK_ENABLED = "true";
+
+      const didDocument = await didWebResolverStrategy.resolve(
+        "did:web:setu-authority"
+      );
+      expect(didDocument).toEqual(didGenerator("did:web:setu-authority"));
     });
   });
 });

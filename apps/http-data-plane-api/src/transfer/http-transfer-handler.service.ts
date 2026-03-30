@@ -314,6 +314,9 @@ export class HTTPTransferHandler implements ITransferHandler {
     const dataset = await this.dataPlaneService.getDataset(transfer.datasetId);
     const authorization =
       request.headers[this.config.authorizationHeader.toLowerCase()];
+    request.headers["X-DSP-Transfer-Id"] = transfer.id;
+    request.headers["X-DSP-Remote-Party"] = transfer.remoteParty;
+    request.headers["X-DSP-Agreement-Id"] = transfer.request.agreementId;
 
     if (transfer.state !== TransferState.STARTED) {
       this.logger.warn(
