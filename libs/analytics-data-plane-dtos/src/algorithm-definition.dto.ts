@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import {
   ArrayNotEmpty,
@@ -163,6 +163,29 @@ export class UITemplate {
   public type!: UIElementType;
 }
 
+export class AlgorithmImageCredentialsDto {
+  @ApiProperty({
+    description: "Registry hostname for pulling the algorithm image"
+  })
+  @IsString()
+  @IsDefined()
+  public registry!: string;
+
+  @ApiProperty({
+    description: "Username used to authenticate against the registry"
+  })
+  @IsString()
+  @IsDefined()
+  public username!: string;
+
+  @ApiProperty({
+    description: "Password used to authenticate against the registry"
+  })
+  @IsString()
+  @IsDefined()
+  public password!: string;
+}
+
 export class AlgorithmDefinitionDto {
   @ApiProperty({ description: "Title of the algorithm" })
   @IsString()
@@ -183,6 +206,14 @@ export class AlgorithmDefinitionDto {
   @IsString()
   @IsDefined()
   public image!: string;
+
+  @ApiPropertyOptional({
+    description: "Optional credentials for pulling the algorithm image"
+  })
+  @ValidateNested()
+  @Type(() => AlgorithmImageCredentialsDto)
+  @IsOptional()
+  public imageCredentials?: AlgorithmImageCredentialsDto;
 
   @ApiProperty({ description: "Algorithm event structure of the algorithm" })
   @ValidateNested({ each: true })

@@ -15,6 +15,7 @@ import {
   createSingleFileTarArchive,
   pullImage
 } from "../utils/docker.js";
+import { toDockerPullAuthConfig } from "../utils/image-registry-auth.js";
 import {
   IOrchestrationService,
   JobInfo,
@@ -218,6 +219,12 @@ export class DockerOrchestrationService
     const validCommand = command?.filter((cmd) => cmd && cmd.trim().length > 0);
     const finalCommand =
       validCommand && validCommand.length > 0 ? validCommand : undefined;
+    const imagePullAuthConfig = algorithmInstance.algorithmDefinition
+      .imageCredentials
+      ? toDockerPullAuthConfig(
+          algorithmInstance.algorithmDefinition.imageCredentials
+        )
+      : undefined;
 
     // Pull the image first (if not available locally)
     try {
@@ -227,6 +234,7 @@ export class DockerOrchestrationService
         docker,
         imageRef: imageName,
         platform: this.dockerConfig.platform,
+        authconfig: imagePullAuthConfig,
         logger: this.logger
       });
     } catch (_error) {

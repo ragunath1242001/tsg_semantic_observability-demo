@@ -1,5 +1,5 @@
 import { Logger } from "@nestjs/common";
-import Dockerode from "dockerode";
+import Dockerode, { AuthConfig } from "dockerode";
 import { Readable } from "stream";
 import tarStream from "tar-stream";
 
@@ -17,15 +17,18 @@ export async function pullImage({
   docker,
   imageRef,
   platform,
+  authconfig,
   logger
 }: {
   docker: Dockerode;
   imageRef: string;
   platform?: string;
+  authconfig?: AuthConfig;
   logger: Logger;
 }): Promise<void> {
   const pullStream = await docker.pull(imageRef, {
-    platform
+    platform,
+    authconfig
   } as unknown as Record<string, unknown>);
 
   await new Promise<void>((resolve, reject) => {

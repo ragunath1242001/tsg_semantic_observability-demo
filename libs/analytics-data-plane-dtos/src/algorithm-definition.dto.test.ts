@@ -14,7 +14,12 @@ describe("Algorithm Definition Service", () => {
         description:
           "Federated learning algorithm for predictive maintenance, based on the dataset available https://www.kaggle.com/code/jiejiea/ai4i-2020-predictive-maintenance",
         keywords: ["federated", "learning", "predictive", "maintenance"],
-        image: "https://example.com/public-image-url",
+        image: "private-registry.example.com/private-image:latest",
+        imageCredentials: {
+          registry: "private-registry.example.com",
+          username: "demo-user",
+          password: "demo-password"
+        },
         algorithmEvents: [
           {
             name: "data_loaded",

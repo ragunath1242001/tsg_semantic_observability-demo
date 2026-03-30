@@ -19,6 +19,7 @@ import { PassThrough } from "stream";
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { KubernetesConfig, RootConfig } from "../config.js";
 import { FilesService } from "../files/files.service.js";
+import { toDockerConfigJson } from "../utils/image-registry-auth.js";
 import {
   IOrchestrationService,
   JobInfo,
@@ -263,6 +264,26 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
     const validCommand = command?.filter((cmd) => cmd && cmd.trim().length > 0);
     const finalCommand =
       validCommand && validCommand.length > 0 ? validCommand : undefined;
+    let imagePullSecrets: { name: string }[] | undefined =
+      this.kubernetesConfig.pullSecrets?.map((secretName) => ({
+        name: secretName
+      })) ?? [];
+    let imagePullSecretName: string | undefined;
+    if (algorithmInstance.algorithmDefinition.imageCredentials) {
+      imagePullSecretName = await this.createImagePullSecret(
+        algorithmInstanceId,
+        jobName,
+        time,
+        algorithmInstance.algorithmDefinition.imageCredentials
+      );
+
+      imagePullSecrets.push({
+        name: imagePullSecretName
+      });
+    }
+    if (imagePullSecrets.length === 0) {
+      imagePullSecrets = undefined;
+    }
 
     // Get deployment information for ownerReference
     const deploymentOwnerRef = await this.getDeploymentOwnerReference();
@@ -296,28 +317,40 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
             }
           },
           spec: {
+            nodeSelector: this.kubernetesConfig.nodeSelector,
+            affinity: this.kubernetesConfig.affinity,
+            tolerations: this.kubernetesConfig.tolerations,
             restartPolicy: "Never",
             containers: [
               {
                 name: this.containerName,
                 image: imageName,
-                imagePullPolicy: "IfNotPresent",
+                imagePullPolicy: this.kubernetesConfig.pullPolicy,
                 env,
                 command: finalCommand,
                 volumeMounts
               }
             ],
+            imagePullSecrets: imagePullSecrets,
             volumes
           }
         }
       }
     };
 
-    // Create the job first to get its UID for ownerReferences
-    const createdJob = await this.batchV1Api.createNamespacedJob({
-      namespace,
-      body: jobManifest
-    });
+    let createdJob;
+    try {
+      // Create the job first to get its UID for ownerReferences
+      createdJob = await this.batchV1Api.createNamespacedJob({
+        namespace,
+        body: jobManifest
+      });
+    } catch (error) {
+      if (imagePullSecretName) {
+        await this.deleteImagePullSecret(imagePullSecretName);
+      }
+      throw error;
+    }
     this.followingJobStatus.push(algorithmInstanceId);
 
     const jobUid = createdJob.metadata?.uid;
@@ -432,6 +465,8 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
         );
       }
     }
+
+    await this.deleteImagePullSecretsForAlgorithmInstance(algorithmInstanceId);
   }
 
   async watchPodLogs(jobName: string, tailLines = 10): Promise<PassThrough> {
@@ -550,6 +585,79 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
         error
       );
       return null;
+    }
+  }
+
+  private async createImagePullSecret(
+    algorithmInstanceId: string,
+    jobName: string,
+    time: number,
+    imageCredentials: {
+      registry: string;
+      username: string;
+      password: string;
+    }
+  ): Promise<string> {
+    const dockerConfigJson = toDockerConfigJson(imageCredentials);
+
+    const secretName = `adp-pull-secret-${algorithmInstanceId}-${time}`;
+    await this.coreV1Api.createNamespacedSecret({
+      namespace: this.kubernetesConfig.namespace,
+      body: {
+        apiVersion: "v1",
+        kind: "Secret",
+        metadata: {
+          name: secretName,
+          namespace: this.kubernetesConfig.namespace,
+          labels: {
+            "adp.tsg.app/component": "analytics-job-image-pull-secret",
+            "adp.tsg.app/algorithm-instance-id": algorithmInstanceId,
+            "adp.tsg.app/job-name": jobName
+          }
+        },
+        type: "kubernetes.io/dockerconfigjson",
+        data: {
+          ".dockerconfigjson": Buffer.from(dockerConfigJson, "utf8").toString(
+            "base64"
+          )
+        }
+      }
+    });
+
+    return secretName;
+  }
+
+  private async deleteImagePullSecret(secretName: string): Promise<void> {
+    try {
+      await this.coreV1Api.deleteNamespacedSecret({
+        name: secretName,
+        namespace: this.kubernetesConfig.namespace
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Failed to delete image pull secret ${secretName}`,
+        error
+      );
+    }
+  }
+
+  private async deleteImagePullSecretsForAlgorithmInstance(
+    algorithmInstanceId: string
+  ): Promise<void> {
+    const secretList = await this.coreV1Api.listNamespacedSecret({
+      namespace: this.kubernetesConfig.namespace,
+      labelSelector:
+        "adp.tsg.app/component=analytics-job-image-pull-secret," +
+        `adp.tsg.app/algorithm-instance-id=${algorithmInstanceId}`
+    });
+
+    for (const secret of secretList.items) {
+      const secretName = secret.metadata?.name;
+      if (!secretName) {
+        continue;
+      }
+
+      await this.deleteImagePullSecret(secretName);
     }
   }
 }
