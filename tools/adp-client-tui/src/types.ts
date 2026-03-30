@@ -106,11 +106,18 @@ export interface UITemplate {
   type: UIElementType;
 }
 
+export interface AlgorithmImageCredentialsDto {
+  registry: string;
+  username: string;
+  password: string;
+}
+
 export interface AlgorithmDefinitionDto {
   title: string;
   description: string;
   keywords: string[];
   image: string;
+  imageCredentials?: AlgorithmImageCredentialsDto;
   algorithmEvents: AlgorithmEvents[];
   roleDefinitions: RoleDefinition[];
   internalEvents: InternalEvent[];

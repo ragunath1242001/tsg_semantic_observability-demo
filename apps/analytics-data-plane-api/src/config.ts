@@ -17,6 +17,7 @@ import {
   IsDefined,
   IsIn,
   IsInt,
+  IsObject,
   IsOptional,
   IsString,
   ValidateIf,
@@ -121,6 +122,42 @@ export class KubernetesConfig extends OrchestrationConfigBase {
   @IsString()
   @IsOptional()
   public readonly namespace: string = "default";
+
+  @Description("Kubernetes image pull policy (IfNotPresent, Always, Never)")
+  @IsString()
+  @IsIn(["IfNotPresent", "Always", "Never"])
+  @IsOptional()
+  public readonly pullPolicy: "IfNotPresent" | "Always" | "Never" =
+    "IfNotPresent";
+
+  @Description(
+    "Kubernetes image pull secrets for private registries (array of secret names)"
+  )
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  public readonly pullSecrets?: string[];
+
+  @Description(
+    "Kubernetes Node selector for scheduling jobs. See https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector for format details and usage examples."
+  )
+  @IsOptional()
+  @IsObject()
+  public readonly nodeSelector?: Record<string, string>;
+
+  @Description(
+    "Kubernetes Node affinity for scheduling jobs. See https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/ for format details and usage examples."
+  )
+  @IsOptional()
+  @IsObject()
+  public readonly affinity?: object;
+
+  @Description(
+    "Kubernetes Tolerations for scheduling jobs on tainted nodes. See https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/ for format details and usage examples."
+  )
+  @IsOptional()
+  @IsArray()
+  public readonly tolerations?: object[];
 }
 
 export class DockerConfig extends OrchestrationConfigBase {

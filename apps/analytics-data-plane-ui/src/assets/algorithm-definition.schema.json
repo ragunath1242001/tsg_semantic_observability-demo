@@ -151,6 +151,25 @@
       },
       "required": ["metric", "description", "type"],
       "additionalProperties": false
+    },
+    "AlgorithmImageCredentials": {
+      "type": "object",
+      "properties": {
+        "registry": {
+          "type": "string",
+          "description": "Registry hostname for pulling the algorithm image"
+        },
+        "username": {
+          "type": "string",
+          "description": "Username used to authenticate against the registry"
+        },
+        "password": {
+          "type": "string",
+          "description": "Password used to authenticate against the registry"
+        }
+      },
+      "required": ["registry", "username", "password"],
+      "additionalProperties": false
     }
   },
   "properties": {
@@ -170,7 +189,11 @@
     },
     "image": {
       "type": "string",
-      "description": "Public Docker image of the algorithm"
+      "description": "Docker image of the algorithm"
+    },
+    "imageCredentials": {
+      "$ref": "#/definitions/AlgorithmImageCredentials",
+      "description": "Optional credentials for pulling the algorithm image"
     },
     "algorithmEvents": {
       "type": "array",

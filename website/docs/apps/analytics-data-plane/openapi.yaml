@@ -3664,6 +3664,22 @@ components:
             $ref: "#/components/schemas/PodDto"
       required:
         - items
+    AlgorithmImageCredentialsDto:
+      type: object
+      properties:
+        registry:
+          type: string
+          description: Registry hostname for pulling the algorithm image
+        username:
+          type: string
+          description: Username used to authenticate against the registry
+        password:
+          type: string
+          description: Password used to authenticate against the registry
+      required:
+        - registry
+        - username
+        - password
     AlgorithmDefinitionDto:
       type: object
       properties:
@@ -3681,6 +3697,10 @@ components:
         image:
           type: string
           description: Public image URL of the algorithm
+        imageCredentials:
+          description: Optional credentials for pulling the algorithm image
+          allOf:
+            - $ref: "#/components/schemas/AlgorithmImageCredentialsDto"
         algorithmEvents:
           description: Algorithm event structure of the algorithm
           type: array
