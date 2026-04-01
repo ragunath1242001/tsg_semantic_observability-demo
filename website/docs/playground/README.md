@@ -1,263 +1,299 @@
 # TSG Playground
 
-The TSG Playground is a live demonstration dataspace where you can explore and test the TNO Security Gateway components without deploying your own infrastructure. It provides a hands-on environment to understand how dataspaces work and experience the complete lifecycle of data exchange.
+Experience a live, fully operational dataspace — no installation required. The TSG Playground lets you discover datasets, negotiate contracts, and transfer data between real participants in minutes.
 
-## What is the Playground?
+:::tip No setup needed
+Jump straight in with a browser. The playground is always running and ready to use.
+:::
 
-The playground is a fully operational dataspace with:
-- Authority Wallet: Central credential issuer for the playground dataspace
-- Three Participants: Alice, Bob, and Charlie, each with complete TSG stacks
-- Pre-configured Datasets: Test datasets ready for immediate use
-- Automatic Workflows: Negotiations are auto-accepted to speed up testing
+## What You Get
 
-### Purpose and Use Cases
+The playground is a complete dataspace environment with three independent participants — Alice, Bob, and Charlie — each running their own TSG stack. An Authority Wallet issues the Verifiable Credentials that establish trust between them.
 
-Use the playground to:
-- Learn dataspace concepts and TSG architecture
-- Test catalog browsing, contract negotiation, and data transfer
-- Demonstrate TSG capabilities to stakeholders
-- Test integration before deploying your own participant
+| Component | Role |
+|---|---|
+| **Authority Wallet** | Issues credentials and anchors trust in the dataspace |
+| **Three Participants** | Alice, Bob, and Charlie, each with a full TSG stack |
+| **Pre-configured Datasets** | HTTPBin test services ready for immediate use |
+| **Automated Negotiations** | Contracts are auto-accepted so you can focus on the flow, not the setup |
+
+### What You Can Do Here
+
+- **Learn** — see dataspace concepts in action: catalogs, policies, contract negotiation, and data transfer
+- **Explore** — browse participants' catalogs and understand how access control works
+- **Demonstrate** — show stakeholders a working dataspace end-to-end
+- **Validate** — test your own client integrations before going live
+
+---
 
 ## Quick Access
 
-### Credentials
+:::info Credentials
+All playground components share the same login:
 
-All playground components use the same credentials:
-- Username: `playground`
-- Password: `test`
+- **Username:** `playground`
+- **Password:** `test`
 
-Note: These are shared demo credentials. Do not use the playground for sensitive or production data.
+These are shared demo credentials. Do not enter sensitive or production data.
+:::
 
-### Component URLs
+### Live Component URLs
 
-#### Authority
-- [Dataspace Authority Wallet](https://playground.datapac.es/wallet) - Central credential issuer
+**Authority**
 
-#### Alice
-- [Alice Wallet](https://alice.playground.dataspac.es/wallet) - Credential management
-- [Alice Control Plane](https://alice.playground.dataspac.es/control-plane) - Catalog & negotiations
-- [Alice HTTP Data Plane](https://alice.playground.dataspac.es/http-data-plane) - Data access
+| Component | URL |
+|---|---|
+| Authority Wallet | [playground.dataspac.es/wallet](https://playground.dataspac.es/wallet) |
 
-#### Bob
-- [Bob Wallet](https://bob.playground.dataspac.es/wallet) - Credential management
-- [Bob Control Plane](https://bob.playground.dataspac.es/control-plane) - Catalog & negotiations
-- [Bob HTTP Data Plane](https://bob.playground.dataspac.es/http-data-plane) - Data access
+**Alice**
 
-#### Charlie
-- [Charlie Wallet](https://charlie.playground.dataspac.es/wallet) - Credential management
-- [Charlie Control Plane](https://charlie.playground.dataspac.es/control-plane) - Catalog & negotiations
-- [Charlie HTTP Data Plane](https://charlie.playground.dataspac.es/http-data-plane) - Data access
+| Component | URL |
+|---|---|
+| Wallet | [alice.playground.dataspac.es/wallet](https://alice.playground.dataspac.es/wallet) |
+| Control Plane | [alice.playground.dataspac.es/control-plane](https://alice.playground.dataspac.es/control-plane) |
+| HTTP Data Plane | [alice.playground.dataspac.es/http-data-plane](https://alice.playground.dataspac.es/http-data-plane) |
 
-## Understanding Components
+**Bob**
 
-### Wallet
-- Manages identity using Self-Sovereign Identity (SSI)
-- Stores Verifiable Credentials issued by the Authority
-- Proves participant membership in the dataspace
+| Component | URL |
+|---|---|
+| Wallet | [bob.playground.dataspac.es/wallet](https://bob.playground.dataspac.es/wallet) |
+| Control Plane | [bob.playground.dataspac.es/control-plane](https://bob.playground.dataspac.es/control-plane) |
+| HTTP Data Plane | [bob.playground.dataspac.es/http-data-plane](https://bob.playground.dataspac.es/http-data-plane) |
 
-### Control Plane
-- Implements the Dataspace Protocol
-- Manages catalogs, negotiations, and transfers
-- Coordinates with other participants
+**Charlie**
 
-### HTTP Data Plane
-- Executes actual data transfers
-- Proxies requests to backend services
-- Enforces transfer agreements
+| Component | URL |
+|---|---|
+| Wallet | [charlie.playground.dataspac.es/wallet](https://charlie.playground.dataspac.es/wallet) |
+| Control Plane | [charlie.playground.dataspac.es/control-plane](https://charlie.playground.dataspac.es/control-plane) |
+| HTTP Data Plane | [charlie.playground.dataspac.es/http-data-plane](https://charlie.playground.dataspac.es/http-data-plane) |
 
-## Getting Started
+---
 
-Follow this tutorial to experience a complete data exchange flow in the playground.
+## How the Components Fit Together
 
-### Step 1: Access a Participant
+Each participant runs three components that work together to enable secure data exchange:
 
-1. Choose a participant (e.g., Alice) and navigate to their Control Plane
-2. Log in with the credentials: `playground` / `test`
-3. The main dashboard appears with a navigation menu on the left
+**Wallet** — manages participant identity using Self-Sovereign Identity (SSI). It stores the Verifiable Credential issued by the Authority, which proves membership in the dataspace.
+
+**Control Plane** — implements the Dataspace Protocol. It handles catalog publication, contract negotiation with other participants, and transfer lifecycle management.
+
+**HTTP Data Plane** — executes the actual data exchange. It proxies requests to backend services and enforces the terms agreed in the transfer contract.
+
+---
+
+## Tutorial: Complete a Data Exchange
+
+This walkthrough guides you through the full flow: discovering a participant, negotiating a contract, and retrieving data. It takes about five minutes.
+
+### Step 1: Open the Control Plane
+
+1. Go to **[Alice's Control Plane](https://alice.playground.dataspac.es/control-plane)**
+2. Log in with `playground` / `test`
+3. The dashboard appears with a navigation menu on the left
 
 ### Step 2: Discover Other Participants
 
-1. In the left menu, click Registry → Addresses
-2. Entries for Bob and Charlie appear, along with any other deployed participants
-3. Click on Bob to view his entry
-4. Click Request Catalog to fetch Bob's available datasets
-5. Wait while the catalog is retrieved
+1. In the left menu, click **Federated Catalog → Addresses**
+2. Bob and Charlie appear, along with any other participants currently connected to the playground
+3. Click on **Bob** to open his entry
+4. Click **Request Catalog** to fetch his available datasets
 
-The catalog shows all datasets Bob is willing to share, along with their access policies.
+The catalog shows all datasets Bob is willing to share, together with the access policies that govern them.
 
-### Step 3: Browse the Catalog
+### Step 3: Browse Bob's Catalog
 
-1. After requesting the catalog, click Catalogs in the left menu
-2. Find and click on Bob's catalog entry
-3. Bob's dataset appears: "Bob HTTPBin"
-4. Click the info icon on the dataset entry to see details
+1. Bob's dataset **"Bob HTTPBin"** appears
+2. Click the info icon on the dataset to view its details
 
-The dataset information shows:
-- Title: Bob HTTPBin (0.9.2)
-- Conforms to: HTTPBin OpenAPI specification
-- Policy: Always Allow (unrestricted access)
-- Distribution: API endpoint details
+The dataset details reveal:
+- **Title:** Bob HTTPBin
+- **Version:** 0.9.2
+- **Conforms to:** HTTPBin OpenAPI specification
+- **Policy:** Always Allow (unrestricted access)
+- **Distribution:** API endpoint details
 
 ### Step 4: Negotiate a Contract
 
-1. From the dataset details, click Negotiate Contract
-2. The system creates a contract negotiation request
-3. Since contract negotiations are automated, all steps will happen automatically
+1. From the dataset details, click **Negotiate Contract**
+2. The system sends a contract negotiation request to Bob
+3. Because negotiations are automated in the playground, the agreement completes immediately
 
-This establishes a formal agreement to access Bob's dataset according to the policy terms.
+This establishes a formal, policy-backed agreement to access Bob's dataset.
 
-### Step 5: View Negotiation History
+### Step 5: Start a Transfer
 
-1. Click Negotiation History in the left menu
+1. In the left menu, click **Negotiations**
 2. Find your completed negotiation with Bob
-3. Click on the negotiation to view details
-4. Click Request Transfer
+3. Click on it to open the details
+4. Click **Request Transfer**
 
-This creates a data transfer agreement based on your contract.
+A transfer agreement is created on top of the contract. This is the active permission that the data plane will verify.
 
-### Step 6: Monitor the Transfer
+### Step 6: Confirm the Transfer is Active
 
-1. Click Transfers in the left menu
-2. Your active transfer with Bob appears
-3. The transfer shows status: Active
+1. Click **Transfers** in the left menu
+2. Your transfer with Bob appears with status **Active**
 
-> Keep the transfer active. Do not complete, suspend, or stop it as you need it for data access.
+:::warning Keep the transfer active
+Do not complete, suspend, or terminate this transfer — you need it to stay active in order to access data.
+:::
 
-### Step 7: Access the Data
+### Step 7: Retrieve Data
 
-You can now retrieve data from Bob's HTTPBin service:
+Now switch to the data plane to make an actual request through the secure channel:
 
-1. Navigate to Alice's HTTP Data Plane (use the URL from Quick Access section)
+1. Open **[Alice's HTTP Data Plane](https://alice.playground.dataspac.es/http-data-plane)**
 2. Log in with `playground` / `test`
-3. Click Execute in the Quick Actions menu
-4. In the request form:
-   - Method: GET
-   - Path: `/anything`
-   - Headers: (leave default)
-   - Body: (empty for GET)
-5. Click Send Request
+3. Click **Execute** in the Quick Actions menu
+4. Fill in the request form:
+   - **Method:** GET
+   - **Path:** `/anything`
+   - **Headers:** (leave as default)
+   - **Body:** (empty for GET)
+5. Click **Send Request**
 
-A successful response appears:
+A successful response looks like this:
+
 ```json
 {
   "args": {},
-  "headers": {...},
+  "headers": { "..." },
   "method": "GET",
   "origin": "...",
   "url": "..."
 }
 ```
 
-You have completed a full data exchange cycle.
+You have just completed a full, policy-governed data exchange across a live dataspace.
+
+---
 
 ## Available Datasets
 
-All three participants (Alice, Bob, Charlie) offer the same dataset for testing:
+All three participants expose the same dataset for testing purposes.
 
 ### HTTPBin Test Service
 
-Description: A request & response testing service that echoes back whatever you send it.
+A request-and-response echo service — whatever you send, it reflects back. Policy is set to **Always Allow**, so no restrictions apply.
 
-Policy: Always Allow (no restrictions)
+| Endpoint | Description |
+|---|---|
+| `/anything` | Echoes the full request back |
+| `/get` | Returns GET request data |
+| `/post` | Returns POST request data |
+| `/put` | Returns PUT request data |
+| `/delete` | Returns DELETE request data |
+| `/headers` | Returns request headers |
+| `/ip` | Returns your origin IP address |
+| `/user-agent` | Returns the user-agent string |
+| `/status/{code}` | Returns the specified HTTP status code |
 
-Available Endpoints:
-- `/anything` - Returns anything that is passed via request
-- `/get` - Returns GET request data
-- `/post` - Returns POST request data
-- `/put` - Returns PUT request data
-- `/delete` - Returns DELETE request data
-- `/headers` - Returns request headers
-- `/ip` - Returns origin IP
-- `/user-agent` - Returns user-agent string
-- `/status/{code}` - Returns specified HTTP status code
+**Example:** Send a POST to `/post` with:
 
-Example: Send a POST request to `/post` with a JSON body:
 ```json
 {
-  "message": "Hello from the playground!",
-  "timestamp": "2025-11-06"
+  "message": "Hello from the playground!"
 }
 ```
 
-The response will echo back your message with a 200 status, plus metadata about the request.
+The response echoes your message back with a `200` status, along with metadata about the request.
 
-## Common Workflows
+---
 
-### Workflow: Test Different HTTP Methods
+## More Things to Try
 
-1. Establish a transfer (follow Steps 1-6 above)
-2. Go to the Data Plane and try different operations:
-   - GET `/get` - Retrieve data
-   - POST `/post` with JSON body - Send data
-   - PUT `/put` with JSON body - Update data
-   - DELETE `/delete` - Delete operation
+### Test Different HTTP Methods
 
-### Workflow: Explore the Control Plane
+Once you have an active transfer, explore the full set of HTTP operations from the Data Plane:
 
-1. Dashboards: View statistics and recent activity
-2. Registry: Manage known participants and request catalogs
-3. Catalogs: Browse available datasets
-4. Negotiation History: Review completed contracts
-5. Transfers: Monitor active data exchanges
+- **GET** `/get` — retrieve data
+- **POST** `/post` with a JSON body — send data
+- **PUT** `/put` with a JSON body — update data
+- **DELETE** `/delete` — trigger a delete operation
 
-### Workflow: Understand Credentials
+### Explore the Control Plane Sections
 
-1. Log into a participant's Wallet (not Control Plane)
-2. View the stored Verifiable Credential
-3. See the credential subject details (role, participant info)
-4. Understand how identity works in the dataspace
+| Section | What to look for |
+|---|---|
+| **Dashboard** | Live statistics and recent activity |
+| **Registry** | Known participants; request catalogs from here |
+| **Catalogs** | Datasets available from other participants |
+| **Negotiations** | History of completed contracts |
+| **Transfers** | Active and historical data exchanges |
+
+### Inspect the Wallet
+
+Identity in a dataspace is built on Verifiable Credentials. To see how:
+
+1. Open any participant's **Wallet** (e.g., [Alice's Wallet](https://alice.playground.dataspac.es/wallet))
+2. Log in with `playground` / `test`
+3. View the stored Verifiable Credential
+4. Examine the credential subject — it records the participant's role and identity within the dataspace
+
+This is what the Authority checks when deciding whether to trust another participant.
+
+---
 
 ## Troubleshooting
 
-### Cannot Log In
-Login fails with incorrect credentials.
+### Cannot log in
 
-Check that you're using `playground` / `test` (all lowercase). Try a different browser or clear cookies.
+:::note
+Use `playground` / `test` (all lowercase, no spaces). Try a different browser or clear your browser cookies if login still fails.
+:::
 
-### Negotiation Not Appearing
-After negotiating, nothing appears in Negotiations.
 
-Wait 5-10 seconds and refresh the page. Check the Negotiations page to confirm the negotiation was created.
+### Data Plane shows "No active transfer"
 
-### Cannot Send Data Plane Request
-Data plane shows "No active transfer" or similar error.
+:::note
+Go to **Control Plane → Transfers** and confirm your transfer has status **Active**. If it shows Completed, Suspended, or Stopped, re-request a transfer from the Negotiations view.
+:::
 
-Verify you have an Active transfer in Control Plane → Transfers. Ensure the transfer is not Completed, Suspended, or Stopped.
+### Request returns an error
 
-### Response Shows Error
-Data plane request returns an error.
+:::note
+Check that the endpoint path starts with `/` (e.g., `/anything`, not `anything`). Make sure the HTTP method matches the endpoint — use GET for `/get`, POST for `/post`, and so on. If the path is correct, it might be that the HTTPBin service is not working temporarily.
+:::
 
-Check the endpoint path is correct (e.g., `/anything`, not `anything`). Verify the HTTP method matches the endpoint (GET for `/get`, POST for `/post`).
+### Page does not load
 
-### Page Won't Load
-Participant URLs don't load.
+:::note
+Double-check the subdomain in the URL. If the page still does not respond, the playground may be temporarily under maintenance.
+:::
 
-Verify the URL is correct (check for typos in subdomain). The playground may be under maintenance.
+---
 
 ## Next Steps
 
 ### Deploy Your Own Participant
 
-To join the playground with your own deployed participant, see the [Deployment Guide](./deployment.md) for instructions on:
-- Deploying your own TSG components on Kubernetes
-- Requesting credentials from the Authority Wallet
-- Interacting with Alice, Bob, and Charlie from your own infrastructure
+Ready to connect your own infrastructure to the playground? The [Deployment Guide](./deployment.md) walks you through:
 
-### Learn More About TSG
+- Deploying your Wallet, Control Plane, and HTTP Data Plane on Kubernetes
+- Requesting a credential from the Authority Wallet
+- Exchanging data with Alice, Bob, and Charlie from your own participant
 
-- [Getting Started Guide](../getting-started.md) - Complete TSG setup and configuration
-- [Architecture Overview](../architecture/) - TSG design and components
-- [Deployment Documentation](../deployment/) - Production deployment strategies
-- [CLI Tool Guide](../tools/cli/) - Advanced deployment and management
+### Go Deeper
+
+| Resource | Description |
+|---|---|
+| [Getting Started Guide](../getting-started.md) | Full TSG setup and CLI walkthrough |
+| [Architecture Overview](../architecture/) | How TSG components are designed and interact |
+| [Deployment Documentation](../deployment/) | Production deployment strategies |
+| [CLI Tool Guide](../tools/cli/) | Automated deployment and configuration |
 
 ### Explore Advanced Features
 
-- [Analytics Data Plane](../apps/analytics-data-plane/) - Distributed analytics capabilities
-- [Custom Data Planes](../apps/) - Build your own data plane connectors
+- **[Analytics Data Plane](../apps/analytics-data-plane/)** — run distributed analytics queries across participant datasets
+- **[Custom Data Planes](../apps/)** — build your own data plane connectors for non-HTTP protocols
+
+---
 
 ## Feedback and Support
 
-Found an issue or have suggestions?
+Found an issue or want to suggest an improvement?
 
-- [Report Issues](https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/-/issues) - Bug reports and feature requests
-- [TSG Documentation](https://tsg.dataspac.es) - Complete documentation website
+- [Open an issue on GitLab](https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/-/issues) — bug reports and feature requests
+- [TSG Documentation](https://tsg.dataspac.es) — the complete reference documentation
