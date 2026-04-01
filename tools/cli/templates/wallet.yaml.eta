@@ -102,15 +102,18 @@ config:
         - https://<%= it.general.authorityDomain %>/credentials/<%= it.general.credentialType %>
   
 <%- if (it.participant.issuer) { %>
+<%- const holdersWithCode = it.participants.filter((p) => !p.issuer && p.preAuthorizedCode); %>
+<%- if (holdersWithCode.length > 0) { %>
   issuance:
     issuer: 
-<%- it.participants.filter((p) => !p.issuer).forEach((participant) => { %>
+<%- holdersWithCode.forEach((participant) => { %>
       - holderId: did:web:<%= participant.host %>
         credentialType: <%= it.general.credentialType %>
         credentialSubject: <%= JSON.stringify({...participant.credentialSubject, id: `did:web:${participant.host}`}) %>
         preAuthorizedCode: <%= participant.preAuthorizedCode %>
 <% }) %>
-<% } else { %>
+<% } %>
+<% } else if (it.participant.preAuthorizedCode) { %>
   issuance:
     dcp:
       - issuerId: did:web:<%= it.general.authorityDomain %>
