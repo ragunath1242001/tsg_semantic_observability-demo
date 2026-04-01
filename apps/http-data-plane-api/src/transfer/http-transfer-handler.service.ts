@@ -32,6 +32,7 @@ import axios from "axios";
 import crypto from "crypto";
 import { Request, Response } from "express";
 import { IncomingHttpHeaders } from "http";
+import getRawBody from "raw-body";
 import { PassThrough } from "stream";
 import { Repository } from "typeorm";
 
@@ -259,16 +260,17 @@ export class HTTPTransferHandler implements ITransferHandler {
         headers[p.name.toLowerCase()] = p.value;
       });
 
+      const body = await this.getRequestBody(request);
       let bodyLength = -1;
-      if (this.config.logging.debug && request.rawBody) {
-        bodyLength = Buffer.byteLength(request.rawBody);
+      if (this.config.logging.debug && body) {
+        bodyLength = Buffer.byteLength(body);
       }
 
       await this.proxy(
         request.method,
         newUrl,
         headers,
-        request.rawBody,
+        body,
         request.query,
         response,
         false,
@@ -353,15 +355,16 @@ export class HTTPTransferHandler implements ITransferHandler {
         "$1"
       );
       this.logger.debug(`Rewrite: ${newUrl}`);
+      const body = await this.getRequestBody(request);
       let bodyLength = -1;
-      if (this.config.logging.debug && request.rawBody) {
-        bodyLength = Buffer.byteLength(request.rawBody);
+      if (this.config.logging.debug && body) {
+        bodyLength = Buffer.byteLength(body);
       }
       await this.proxy(
         request.method,
         newUrl,
         headers,
-        request.rawBody,
+        body,
         request.query,
         response,
         backendConfig.authorization !== undefined &&
@@ -397,6 +400,24 @@ export class HTTPTransferHandler implements ITransferHandler {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  private async getRequestBody(
+    request: RawBodyRequest<Request>
+  ): Promise<Buffer | undefined> {
+    if (request.rawBody) {
+      return request.rawBody;
+    }
+    if (
+      request.headers["content-length"] ||
+      request.headers["transfer-encoding"]
+    ) {
+      return await getRawBody(request, {
+        length: request.headers["content-length"],
+        limit: "1024mb"
+      });
+    }
+    return undefined;
   }
 
   private async proxy(
