@@ -50,6 +50,10 @@ const canDeleteDataset = computed(() =>
 const editDatasetModal = ref(false);
 const editModalLoading = ref(false);
 const datasetForm = ref<DatasetItem & { isNew: boolean }>();
+const configExtraPropsString = ref("{}");
+const configExtraPropsError = ref<string>();
+const datasetExtraPropsString = ref("{}");
+const datasetExtraPropsError = ref<string>();
 
 const datasets = ref<DatasetItemWithDto[]>([]);
 
@@ -103,8 +107,13 @@ const openDatasetEditModal = (dataset?: DatasetItemWithDto) => {
         authorization: "",
         mediaType: "",
         schemaRef: "",
-        policy: []
+        policy: [],
+        extraProps: null
       };
+  datasetExtraPropsString.value = dataset?.extraProps
+    ? JSON.stringify(dataset.extraProps, null, 2)
+    : "{}";
+  datasetExtraPropsError.value = undefined;
   editDatasetModal.value = true;
 };
 
@@ -115,6 +124,10 @@ const openConfigEditModal = () => {
       type: "default"
     }
   };
+  configExtraPropsString.value = props.config?.extraProps
+    ? JSON.stringify(props.config.extraProps, null, 2)
+    : "{}";
+  configExtraPropsError.value = undefined;
   editConfigModal.value = true;
 };
 
@@ -128,6 +141,15 @@ const updateConfiguration = async () => {
     config.schemaRef = trimEmptyString(config.schemaRef);
     config.openApiSpecRef = trimEmptyString(config.openApiSpecRef);
     config.basePolicy = cleanPolicyConfig(config.basePolicy);
+    try {
+      const parsed = JSON.parse(configExtraPropsString.value);
+      config.extraProps =
+        parsed && Object.keys(parsed).length > 0 ? parsed : undefined;
+    } catch {
+      configExtraPropsError.value = "Invalid JSON";
+      editModalLoading.value = false;
+      return;
+    }
     await http.put("management/config", config);
     editConfigModal.value = false;
     emits("update");
@@ -162,6 +184,15 @@ const datasetFormSubmit = async () => {
   dataset.schemaRef = trimEmptyString(dataset.schemaRef);
   dataset.openApiSpecRef = trimEmptyString(dataset.openApiSpecRef);
   dataset.policy = dataset.policy?.map(cleanPolicyConfig);
+  try {
+    const parsed = JSON.parse(datasetExtraPropsString.value);
+    dataset.extraProps =
+      parsed && Object.keys(parsed).length > 0 ? parsed : null;
+  } catch {
+    datasetExtraPropsError.value = "Invalid JSON";
+    editModalLoading.value = false;
+    return;
+  }
   try {
     if (isNew) {
       await http.post("management/datasets", dataset);
@@ -301,6 +332,17 @@ onMounted(async () => {
             label="Policy">
             <PolicyView :policy="config.basePolicy" />
           </FormField>
+          <template
+            v-if="config?.extraProps && Object.keys(config.extraProps).length">
+            <FormField
+              v-for="(value, key) in config.extraProps"
+              :key="key"
+              class="mb-1"
+              :label-width="3"
+              :label="String(key)">
+              {{ typeof value === "object" ? JSON.stringify(value) : value }}
+            </FormField>
+          </template>
         </div>
         <div class="col-span-12 min-[1024px]:col-span-4">
           <div>
@@ -415,6 +457,16 @@ onMounted(async () => {
         </div>
         <em v-else>Default policy</em>
       </FormField>
+      <template
+        v-if="dataset.extraProps && Object.keys(dataset.extraProps).length">
+        <FormField
+          v-for="(value, key) in dataset.extraProps"
+          :key="key"
+          class="mb-1"
+          :label="String(key)">
+          {{ typeof value === "object" ? JSON.stringify(value) : value }}
+        </FormField>
+      </template>
     </template>
   </Card>
   <Dialog
@@ -460,6 +512,24 @@ onMounted(async () => {
       </FormField>
       <FormField label="Policy">
         <PolicyEditor v-model="configForm.basePolicy" />
+      </FormField>
+      <FormField label="Extra Properties">
+        <p class="italic pb-2">
+          <small>
+            Custom DCAT properties as JSON. Keys must use namespaced prefixes
+            (e.g. <code>healthdcatap:numberOfRecords</code>). Applied as base
+            properties to all datasets in this collection.
+          </small>
+        </p>
+        <Textarea
+          v-model="configExtraPropsString"
+          class="w-full font-mono"
+          :rows="6"
+          placeholder='{"healthdcatap:numberOfRecords": 50000}'
+          @input="configExtraPropsError = undefined" />
+        <small v-if="configExtraPropsError" class="text-red-500">
+          {{ configExtraPropsError }}
+        </small>
       </FormField>
       <FormField no-label class="mt-8">
         <Button
@@ -548,6 +618,24 @@ onMounted(async () => {
           icon="pi pi-plus"
           label="Add policy"
           @click="pushOrCreate(datasetForm, 'policy', { type: 'default' })" />
+      </FormField>
+      <FormField label="Extra Properties">
+        <p class="italic pb-2">
+          <small>
+            Custom DCAT properties as JSON. Keys must use namespaced prefixes
+            (e.g. <code>dcat:spatialResolutionInMeters</code>). Overrides
+            config-level extra properties for this dataset.
+          </small>
+        </p>
+        <Textarea
+          v-model="datasetExtraPropsString"
+          class="w-full font-mono"
+          :rows="6"
+          placeholder='{"dcat:spatialResolutionInMeters": 10.0}'
+          @input="datasetExtraPropsError = undefined" />
+        <small v-if="datasetExtraPropsError" class="text-red-500">
+          {{ datasetExtraPropsError }}
+        </small>
       </FormField>
 
       <FormField v-if="datasetForm.isNew" no-label class="mt-8">

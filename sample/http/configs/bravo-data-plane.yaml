@@ -21,7 +21,9 @@ runtime:
 
 dataset:
   type: versioned
-  title: HTTPBin Alfa
+  title: MockHTTP Bravo
+  description:
+    - A dataset containing data from MockHTTP, used for testing and demonstration purposes.
   currentVersion: 0.9.2
   versions:
     - version: 0.9.2

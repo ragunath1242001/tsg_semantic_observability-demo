@@ -174,7 +174,7 @@ export class TransferManagementController {
     );
   }
 
-  @All("/execute/*path")
+  @All(["/execute/*path", "/execute"])
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: "Proxy a request without transfer ID",

@@ -279,6 +279,88 @@ This ensures consumers can validate data against the correct schema version and 
 }
 ```
 
+## Custom DCAT Properties (Application Profiles)
+
+The TSG HTTP data plane supports adding custom DCAT properties to datasets through the `extraProps` configuration field. This enables compliance with domain-specific application profiles such as [GeoDCAT-AP](https://semiceu.github.io/GeoDCAT-AP/) for geospatial data and [HealthDCAT-AP](https://healthdataeu.pages.code.europa.eu/healthdcat-ap/) for health data.
+
+Custom properties defined in `extraProps` are merged directly into the serialized DCAT dataset. This means any valid JSON-LD property can be included in the dataset metadata without modifying the core data model.
+
+The following namespace prefixes are available:
+
+| Source Context | Available Prefixes |
+|---|---|
+| DSP | `dcat`, `dct`, `odrl`, `dspace`, `xsd` |
+| TSG | `tsg`, `iana`, `csvw`, `dqv`, `dcatap`, `sdmx` |
+| HealthDCAT-AP | `healthdcatap`, `prov`, `heracles`, `ldp`, `fdp-o` |
+
+Using other namespaces require the keys to be expanded to their full IRI form (e.g., `http://www.w3.org/ns/dcat#spatial` instead of `dcat:spatial`) since prefixes not defined in the default contexts will be rejected during validation.
+
+### How it works
+
+The `extraProps` field accepts a `Record<string, unknown>` — a key-value map where keys are namespaced property names (e.g., `healthdcatap:numberOfRecords`) and values can be primitives, objects, or arrays following JSON-LD conventions.
+
+For **collection datasets**, properties are merged from two levels:
+1. **Config-level** `extraProps` — base properties for all items in the collection
+2. **Item-level** `extraProps` — per-item properties that override config-level ones
+
+For **versioned datasets**, `extraProps` are set on the base dataset entry.
+
+### GeoDCAT-AP Example
+
+[GeoDCAT-AP](https://semiceu.github.io/GeoDCAT-AP/) extends DCAT-AP with geospatial metadata. Properties using prefixes available in the default contexts include:
+
+| Property | Description |
+|---|---|
+| `dct:spatial` | Geographic coverage as a location or geometry |
+| `dcat:spatialResolutionInMeters` | Spatial resolution of the dataset |
+| `dcat:temporalResolution` | Temporal resolution (ISO 8601 duration) |
+
+```json
+{
+  "@type": "Dataset",
+  "@id": "urn:uuid:geo-roads",
+  "title": "National Road Infrastructure",
+  "conformsTo": "https://semiceu.github.io/GeoDCAT-AP/",
+  "dct:spatial": "POLYGON((3.37 50.75, 3.37 53.47, 7.21 53.47, 7.21 50.75, 3.37 50.75))",
+  "dcat:spatialResolutionInMeters": 10.0,
+  "dcat:temporalResolution": "P1D",
+  "distribution": [...]
+}
+```
+
+:::note
+Some GeoDCAT-AP properties use prefixes like `geodcat:`, `locn:`, `gsp:`, or `foaf:` that are not defined in the default JSON-LD contexts. To use these prefixes, the corresponding contexts must first be registered in the system. Properties with unknown prefixes will be rejected during validation.
+:::
+
+
+### HealthDCAT-AP Example
+
+[HealthDCAT-AP](https://healthdataeu.pages.code.europa.eu/healthdcat-ap/) extends DCAT-AP for health data. Typical properties include:
+
+| Property | Description |
+|---|---|
+| `healthdcatap:numberOfRecords` | Number of records in the dataset |
+| `healthdcatap:minTypicalAge` | Minimum typical age of subjects |
+| `healthdcatap:maxTypicalAge` | Maximum typical age of subjects |
+| `healthdcatap:populationCoverage` | Geographic scope of the population |
+
+```json
+{
+  "@type": "Dataset",
+  "@id": "urn:uuid:health-trials",
+  "title": "Clinical Trial Registry",
+  "conformsTo": "https://healthdataeu.pages.code.europa.eu/healthdcat-ap/",
+  "healthdcatap:numberOfRecords": 50000,
+  "healthdcatap:minTypicalAge": 18,
+  "healthdcatap:maxTypicalAge": 90,
+  "healthdcatap:populationCoverage": "National",
+  "distribution": [...]
+}
+```
+```
+
+For configuration examples, see the [Dataset Configuration](../deployment/dataset.md#custom-dcat-properties-extraprops) documentation.
+
 ## Conformance References
 
 ### Dataset Level (`dct:conformsTo`)
@@ -325,6 +407,7 @@ Provide multiple distributions when:
 ## Related Standards
 
 - [DCAT 3](https://www.w3.org/TR/vocab-dcat-3/) - Data Catalog Vocabulary
+- [GeoDCAT-AP](https://semiceu.github.io/GeoDCAT-AP/) - Geospatial Data Application Profile
 - [HealthDCAT-AP](https://healthdataeu.pages.code.europa.eu/healthdcat-ap/) - Health Data Application Profile
 - [CSVW](https://www.w3.org/TR/tabular-metadata/) - CSV on the Web
 - [Eclipse Dataspace Protocol](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/) - Data space interactions

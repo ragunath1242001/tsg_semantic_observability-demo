@@ -1971,6 +1971,9 @@ importers:
 
   libs/http-data-plane-dtos:
     dependencies:
+      '@nestjs/swagger':
+        specifier: ^11.2.6
+        version: 11.2.6(@nestjs/common@11.1.16(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.15.1)(reflect-metadata@0.2.2)
       '@tsg-dsp/common-dsp':
         specifier: workspace:*
         version: link:../common-dsp
