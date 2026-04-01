@@ -1,6 +1,7 @@
 export * from "./jsonld/context.defaults.js";
 export * from "./jsonld/documentLoader.js";
 export * from "./jsonld/jsonld.js";
+export * from "./jsonld/validate-extra-props.js";
 export * from "./model/data-planes/index.js";
 export * from "./model/decorators.js";
 export * from "./model/deserialize.js";

@@ -334,9 +334,7 @@ export class TransferService {
         ...getOwnershipFieldsFromClient(client)
       })
     );
-    if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:create", transfer.id);
-    }
+    this.dspGateway.sendUpdateToClients("transfer:create", transfer.id);
     return {
       id,
       remoteId: transferProcess.providerPid,
@@ -409,9 +407,7 @@ export class TransferService {
         false
       );
     }
-    if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:create", transfer.id);
-    }
+    this.dspGateway.sendUpdateToClients("transfer:create", transfer.id);
     return transferProcess;
   }
 
@@ -540,9 +536,7 @@ export class TransferService {
     );
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
-    if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
-    }
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     return {
       status: "OK"
     };
@@ -574,9 +568,7 @@ export class TransferService {
 
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
-    if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
-    }
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     return {
       status: "OK"
     };
@@ -618,9 +610,7 @@ export class TransferService {
     );
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
-    if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
-    }
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     return {
       status: "OK"
     };
@@ -654,9 +644,7 @@ export class TransferService {
 
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
-    if (this.runtime.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
-    }
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     return {
       status: "OK"
     };

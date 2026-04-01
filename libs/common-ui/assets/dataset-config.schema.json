@@ -93,6 +93,10 @@
     "policy": {
       "type": "object",
       "$ref": "#/definitions/PolicyConfig"
+    },
+    "extraProps": {
+      "type": "object",
+      "description": "Additional DCAT properties to merge into the dataset. Keys should use namespaced prefixes (e.g. healthdcatap:numberOfRecords)."
     }
   },
   "required": ["title", "versions"],

@@ -12,6 +12,14 @@
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
+  "peerDependencies": {
+    "@nestjs/swagger": "^11.2.6"
+  },
+  "peerDependenciesMeta": {
+    "@nestjs/swagger": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "@tsg-dsp/common-dsp": "workspace:*",
     "class-transformer": "^0.5.1",

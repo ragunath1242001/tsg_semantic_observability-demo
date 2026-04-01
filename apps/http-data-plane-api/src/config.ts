@@ -18,6 +18,7 @@ import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
+  IsIn,
   IsOptional,
   IsString,
   ValidateNested
@@ -28,6 +29,26 @@ export class LoggingConfig {
   @IsBoolean()
   @IsOptional()
   public readonly debug: boolean = false;
+
+  @Description("Server logging configuration")
+  @IsString()
+  @IsIn(["always", "onClientError", "onServerError", "never"])
+  @IsOptional()
+  public readonly serverLogging:
+    | "always"
+    | "onClientError"
+    | "onServerError"
+    | "never" = "onServerError";
+
+  @Description("Client logging configuration")
+  @IsString()
+  @IsIn(["always", "onClientError", "onServerError", "never"])
+  @IsOptional()
+  public readonly clientLogging:
+    | "always"
+    | "onClientError"
+    | "onServerError"
+    | "never" = "onClientError";
 }
 
 export class RuntimeConfig {

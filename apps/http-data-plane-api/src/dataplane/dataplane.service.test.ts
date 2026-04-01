@@ -18,7 +18,7 @@ import {
   createDataPlaneManagementHttpMocks,
   createDidConnectorHttpMocks
 } from "@tsg-dsp/common-data-plane-api/testing";
-import { defaultContext, OfferDto } from "@tsg-dsp/common-dsp";
+import { DatasetDto, defaultContext, OfferDto } from "@tsg-dsp/common-dsp";
 import {
   DatasetConfig,
   VersionedDatasetConfig
@@ -260,6 +260,129 @@ describe("Dataplane Service", () => {
       expect(config.versions).toHaveLength(2);
       expect(config.baseSemanticModelRef).toEqual("https://some-ontology.org");
       expect(config.policy).toBeDefined();
+    });
+    it("Update config with GeoDCAT-AP extraProps", async () => {
+      await dataPlaneService.updateDatasetConfig(
+        DatasetConfig.parse(
+          {
+            type: "versioned",
+            id: `urn:uuid:test-geo`,
+            title: "Geospatial Infrastructure",
+            baseSemanticModelRef: "https://semiceu.github.io/GeoDCAT-AP/",
+            currentVersion: "1.0.0",
+            extraProps: {
+              "dct:spatial": {
+                "@type": "dct:Location",
+                "http://www.w3.org/ns/locn#geometry": {
+                  "@type": "http://www.opengis.net/ont/geosparql#wktLiteral",
+                  "@value":
+                    "POLYGON((4.31 51.87, 4.31 52.03, 4.80 52.03, 4.80 51.87, 4.31 51.87))"
+                }
+              },
+              "dcat:spatialResolutionInMeters": 10.0,
+              "dcat:temporalResolution": "P1D"
+            },
+            versions: [
+              {
+                version: "1.0.0",
+                distributions: [
+                  {
+                    mediaType: "application/geo+json",
+                    backendUrl: "https://example.org/geo/api"
+                  }
+                ]
+              }
+            ]
+          },
+          validateOrRejectSync
+        )
+      );
+      const datasets = await dataPlaneService.getDatasets();
+      const baseDataset = datasets.find(
+        (d) => d["@id"] === "urn:uuid:test-geo"
+      ) as (DatasetDto & Record<string, unknown>) | undefined;
+      expect(baseDataset).toBeDefined();
+      expect(baseDataset!["dct:spatial"]).toBeDefined();
+      expect(baseDataset!["dcat:spatialResolutionInMeters"]).toEqual(10.0);
+      expect(baseDataset!["dcat:temporalResolution"]).toEqual("P1D");
+    });
+    it("Update config with HealthDCAT-AP extraProps", async () => {
+      await dataPlaneService.updateDatasetConfig(
+        DatasetConfig.parse(
+          {
+            type: "versioned",
+            id: `urn:uuid:test-health`,
+            title: "Clinical Trial Registry",
+            baseSemanticModelRef:
+              "https://healthdataeu.pages.code.europa.eu/healthdcat-ap/",
+            currentVersion: "2.0.0",
+            extraProps: {
+              "healthdcatap:hasCodeValues": {
+                "@type": "http://www.w3.org/2004/02/skos/core#ConceptScheme",
+                "http://www.w3.org/2004/02/skos/core#prefLabel": "ICD-10"
+              },
+              "healthdcatap:numberOfRecords": 50000,
+              "healthdcatap:minTypicalAge": 18,
+              "healthdcatap:maxTypicalAge": 90,
+              "healthdcatap:populationCoverage": "National"
+            },
+            versions: [
+              {
+                version: "2.0.0",
+                distributions: [
+                  {
+                    mediaType: "application/json",
+                    backendUrl: "https://example.org/health/trials"
+                  }
+                ]
+              }
+            ]
+          },
+          validateOrRejectSync
+        )
+      );
+      const datasets = await dataPlaneService.getDatasets();
+      const baseDataset = datasets.find(
+        (d) => d["@id"] === "urn:uuid:test-health"
+      ) as (DatasetDto & Record<string, unknown>) | undefined;
+      expect(baseDataset).toBeDefined();
+      expect(baseDataset!["healthdcatap:numberOfRecords"]).toEqual(50000);
+      expect(baseDataset!["healthdcatap:minTypicalAge"]).toEqual(18);
+      expect(baseDataset!["healthdcatap:maxTypicalAge"]).toEqual(90);
+      expect(baseDataset!["healthdcatap:populationCoverage"]).toEqual(
+        "National"
+      );
+      expect(baseDataset!["healthdcatap:hasCodeValues"]).toBeDefined();
+    });
+    it("Reject config with unknown prefix in extraProps", async () => {
+      await expect(
+        dataPlaneService.updateDatasetConfig(
+          DatasetConfig.parse(
+            {
+              type: "versioned",
+              id: `urn:uuid:test-invalid`,
+              title: "Invalid prefix",
+              currentVersion: "1.0.0",
+              extraProps: {
+                "unknownprefix:property": "value"
+              },
+              versions: [
+                {
+                  version: "1.0.0",
+                  distributions: [
+                    {
+                      backendUrl: "https://example.org/api"
+                    }
+                  ]
+                }
+              ]
+            },
+            validateOrRejectSync
+          )
+        )
+      ).rejects.toThrow(
+        "Unresolvable keys in extraProps: unknownprefix:property"
+      );
     });
     it("Default policy", async () => {
       await dataPlaneService.updateDatasetConfig(

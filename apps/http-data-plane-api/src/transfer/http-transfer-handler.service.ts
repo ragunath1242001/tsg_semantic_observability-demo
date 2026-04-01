@@ -271,7 +271,8 @@ export class HTTPTransferHandler implements ITransferHandler {
         request.rawBody,
         request.query,
         response,
-        false
+        false,
+        "client"
       );
       const logEntry: LogEntry = {
         date: new Date(),
@@ -351,8 +352,7 @@ export class HTTPTransferHandler implements ITransferHandler {
         /([^:]\/)\/+/g,
         "$1"
       );
-      this.logger.log(`Rewrite: ${newUrl}`);
-      this.logger.log(`Headers: ${JSON.stringify(headers)}`);
+      this.logger.debug(`Rewrite: ${newUrl}`);
       let bodyLength = -1;
       if (this.config.logging.debug && request.rawBody) {
         bodyLength = Buffer.byteLength(request.rawBody);
@@ -365,7 +365,8 @@ export class HTTPTransferHandler implements ITransferHandler {
         request.query,
         response,
         backendConfig.authorization !== undefined &&
-          this.config.authorizationHeader.toLowerCase() === "authorization"
+          this.config.authorizationHeader.toLowerCase() === "authorization",
+        "server"
       );
       const logEntry: LogEntry = {
         date: new Date(),
@@ -405,7 +406,8 @@ export class HTTPTransferHandler implements ITransferHandler {
     body: Buffer | undefined,
     query: qs.ParsedQs,
     response: Response,
-    removeAuth: boolean
+    removeAuth: boolean,
+    type: "client" | "server"
   ) {
     delete headers["transfer-encoding"];
     delete headers["keep-alive"];
@@ -419,9 +421,8 @@ export class HTTPTransferHandler implements ITransferHandler {
     }
 
     try {
-      this.logger.log(
-        `Proxying request ${method} ${url} (${JSON.stringify(headers)})`
-      );
+      this.logger.log(`Proxying request ${method} ${url}`);
+      this.logger.debug(`Request headers: ${JSON.stringify(headers)}`);
 
       const proxyResponse = await axios({
         method: method,
@@ -434,32 +435,10 @@ export class HTTPTransferHandler implements ITransferHandler {
         timeout: 30000 // Add timeout for debugging
       });
 
-      this.logger.log(
-        `Proxy response: ${proxyResponse.status} ${JSON.stringify(proxyResponse.headers)}`
+      this.logger.log(`Proxy response: ${proxyResponse.status}`);
+      this.logger.debug(
+        `Response headers: ${JSON.stringify(proxyResponse.headers)}`
       );
-
-      if (proxyResponse.status >= 400) {
-        this.logger.warn(
-          `Proxy request failed with status ${proxyResponse.status}: ${url}`
-        );
-
-        if (this.config.logging.debug) {
-          const chunks: Buffer[] = [];
-          proxyResponse.data.on("data", (chunk: Buffer) => {
-            chunks.push(chunk);
-          });
-
-          proxyResponse.data.on("end", () => {
-            const errorBody = Buffer.concat(chunks).toString("utf8");
-            this.logger.error(`Error response body: ${errorBody}`);
-          });
-        }
-
-        throw new HttpException(
-          `Proxy request failed with status ${proxyResponse.status}`,
-          proxyResponse.status
-        );
-      }
 
       // Copy response headers
       Object.entries(proxyResponse.headers).forEach(([name, value]) => {
@@ -469,8 +448,15 @@ export class HTTPTransferHandler implements ITransferHandler {
       });
 
       response.status(proxyResponse.status);
-
-      if (this.config.logging.debug) {
+      const logging =
+        type === "server"
+          ? this.config.logging.serverLogging
+          : this.config.logging.clientLogging;
+      if (
+        logging === "always" ||
+        (logging === "onClientError" && proxyResponse.status >= 400) ||
+        (logging === "onServerError" && proxyResponse.status >= 500)
+      ) {
         const debugStream = new PassThrough();
         let totalBytes = 0;
         const maxPreviewBytes = 1024; // First 1KB for preview

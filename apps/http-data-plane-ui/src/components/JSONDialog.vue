@@ -6,7 +6,11 @@ const note = ref<{ severity: string; message: string }>();
 const dialogRef = inject("dialogRef") as any;
 
 onBeforeMount(() => {
-  if ("note" in dialogRef.value.data && "content" in dialogRef.value.data) {
+  if (
+    typeof dialogRef.value.data === "object" &&
+    "note" in dialogRef.value.data &&
+    "content" in dialogRef.value.data
+  ) {
     note.value = {
       severity: "info",
       ...dialogRef.value.data.note

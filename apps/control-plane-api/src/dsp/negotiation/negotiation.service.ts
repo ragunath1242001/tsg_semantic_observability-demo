@@ -327,9 +327,7 @@ export class NegotiationService {
       ...getOwnershipFieldsFromClient(client)
     };
     await this.negotiationDetailRepository.save(negotiationWithOwnership);
-    if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("negotiation:create", negotiation.id);
-    }
+    this.dspGateway.sendUpdateToClients("negotiation:create", negotiation.id);
     return negotiation;
   }
 
@@ -622,7 +620,10 @@ export class NegotiationService {
     negotiation.state = newState;
     await this.negotiationDetailRepository.save(negotiation);
 
-    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+    if (
+      this.config.runtime?.controlPlaneInteractions === "manual" ||
+      newState === ContractNegotiationState.FINALIZED
+    ) {
       this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     }
     return {
@@ -918,9 +919,7 @@ export class NegotiationService {
       ...negotiation,
       agreementDao: agreementDao
     });
-    if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
-    }
+    this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     return {
       status: "OK"
     };
@@ -960,9 +959,7 @@ export class NegotiationService {
     );
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
-    if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
-    }
+    this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     return {
       status: "OK"
     };
@@ -989,9 +986,7 @@ export class NegotiationService {
     negotiation.events.push(event);
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
-    if (this.config.runtime?.controlPlaneInteractions === "manual") {
-      this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
-    }
+    this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     return {
       status: "OK"
     };

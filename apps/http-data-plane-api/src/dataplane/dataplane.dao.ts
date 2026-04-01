@@ -34,6 +34,9 @@ export class DatasetItemDao extends OwnableEntity {
   @Column({ type: String })
   title!: string;
 
+  @Column({ type: "simple-array", nullable: true })
+  description?: string[];
+
   @Column({ type: String })
   version!: string;
 
@@ -60,6 +63,9 @@ export class DatasetItemDao extends OwnableEntity {
     }
   })
   policy!: PolicyConfig[] | null;
+
+  @Column("simple-json", { nullable: true })
+  extraProps!: Record<string, unknown> | null;
 
   @Column("simple-json", { nullable: true })
   dataset!: DatasetDto | null;

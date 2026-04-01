@@ -153,10 +153,122 @@ describe("Dataplane with CollectionDatasetConfig", () => {
         authorization: null,
         mediaType: null,
         schemaRef: null,
-        policy: null
+        policy: null,
+        extraProps: null
       });
 
       await expect(dataPlaneService.getDatasets()).resolves.toHaveLength(3);
+    });
+    it("Add dataset with GeoDCAT-AP extraProps", async () => {
+      await dataPlaneService.addDatasetItem({
+        id: "urn:geodcat:SpatialDataset1",
+        title: "Spatial Infrastructure Dataset",
+        version: "v1",
+        backendUrl: "https://example.org/api/geo/infrastructure",
+        openApiSpecRef: null,
+        authorization: null,
+        mediaType: "application/geo+json",
+        schemaRef: null,
+        policy: null,
+        extraProps: {
+          "dct:spatial": {
+            "@type": "dct:Location",
+            "dcat:bbox":
+              "POLYGON((4.31 51.87, 4.31 52.03, 4.80 52.03, 4.80 51.87, 4.31 51.87))"
+          },
+          "dcat:spatialResolutionInMeters": 10.0,
+          "dcat:temporalResolution": "P1D"
+        }
+      });
+      const datasets = await dataPlaneService.getDatasets();
+      const geoDataset: any | undefined = datasets.find(
+        (d) => d["@id"] === "urn:geodcat:SpatialDataset1"
+      );
+      expect(geoDataset).toBeDefined();
+
+      expect(geoDataset!["dct:spatial"]).toBeDefined();
+      expect(geoDataset!["dcat:spatialResolutionInMeters"]).toEqual(10.0);
+      expect(geoDataset!["dcat:temporalResolution"]).toEqual("P1D");
+    });
+    it("Reject dataset with unknown prefix in extraProps", async () => {
+      await expect(
+        dataPlaneService.addDatasetItem({
+          id: "urn:invalid:UnknownPrefix1",
+          title: "Invalid Dataset",
+          version: "v1",
+          backendUrl: "https://example.org/api/invalid",
+          openApiSpecRef: null,
+          authorization: null,
+          mediaType: null,
+          schemaRef: null,
+          policy: null,
+          extraProps: {
+            "unknownprefix:property": "value"
+          }
+        })
+      ).rejects.toThrow("Dataset has extraProps with unknown prefixes");
+    });
+    it("Add dataset with HealthDCAT-AP extraProps", async () => {
+      await dataPlaneService.addDatasetItem({
+        id: "urn:healthdcat:ClinicalTrialData1",
+        title: "Clinical Trial Results",
+        version: "v1",
+        backendUrl: "https://example.org/api/health/clinical-trials",
+        openApiSpecRef: null,
+        authorization: null,
+        mediaType: "application/json",
+        schemaRef: null,
+        policy: null,
+        extraProps: {
+          "healthdcatap:hasCodeValues": "ICD-10",
+          "healthdcatap:numberOfRecords": 15000,
+          "healthdcatap:minTypicalAge": 18,
+          "healthdcatap:maxTypicalAge": 75,
+          "healthdcatap:populationCoverage": "National",
+          "dct:spatial": "Netherlands"
+        }
+      });
+      const datasets = await dataPlaneService.getDatasets();
+      const healthDataset: any | undefined = datasets.find(
+        (d) => d["@id"] === "urn:healthdcat:ClinicalTrialData1"
+      );
+      expect(healthDataset).toBeDefined();
+      expect(healthDataset!["healthdcatap:numberOfRecords"]).toEqual(15000);
+      expect(healthDataset!["healthdcatap:minTypicalAge"]).toEqual(18);
+      expect(healthDataset!["healthdcatap:maxTypicalAge"]).toEqual(75);
+      expect(healthDataset!["healthdcatap:populationCoverage"]).toEqual(
+        "National"
+      );
+    });
+    it("Update dataset with extraProps", async () => {
+      await dataPlaneService.updateDatasetItem(
+        "urn:healthdcat:ClinicalTrialData1",
+        {
+          id: "urn:healthdcat:ClinicalTrialData1",
+          title: "Clinical Trial Results",
+          version: "v2",
+          backendUrl: "https://example.org/api/health/clinical-trials",
+          openApiSpecRef: null,
+          authorization: null,
+          mediaType: "application/json",
+          schemaRef: null,
+          policy: null,
+          extraProps: {
+            "healthdcatap:numberOfRecords": 22000,
+            "healthdcatap:minTypicalAge": 18,
+            "healthdcatap:maxTypicalAge": 80
+          }
+        }
+      );
+      const datasets = await dataPlaneService.getDatasets();
+      const updated: any | undefined = datasets.find(
+        (d) => d["@id"] === "urn:healthdcat:ClinicalTrialData1"
+      );
+      expect(updated).toBeDefined();
+      expect(updated!["healthdcatap:numberOfRecords"]).toEqual(22000);
+      expect(updated!["healthdcatap:maxTypicalAge"]).toEqual(80);
+      // populationCoverage should no longer be present after update
+      expect(updated!["healthdcatap:populationCoverage"]).toBeUndefined();
     });
     it("Update dataset", async () => {
       await dataPlaneService.updateDatasetItem("urn:aasx:TestShell3", {
@@ -169,10 +281,11 @@ describe("Dataplane with CollectionDatasetConfig", () => {
         authorization: null,
         mediaType: null,
         schemaRef: null,
-        policy: null
+        policy: null,
+        extraProps: null
       });
       const datasets = await dataPlaneService.getDatasets();
-      expect(datasets).toHaveLength(3);
+      expect(datasets).toHaveLength(5);
       expect(datasets[2].version).toEqual("v2");
 
       await expect(
@@ -186,12 +299,17 @@ describe("Dataplane with CollectionDatasetConfig", () => {
           authorization: null,
           mediaType: null,
           schemaRef: null,
-          policy: null
+          policy: null,
+          extraProps: null
         })
       ).rejects.toThrow("not found");
     });
     it("Remove dataset", async () => {
       await dataPlaneService.removeDatasetItem("urn:aasx:TestShell3");
+      await dataPlaneService.removeDatasetItem("urn:geodcat:SpatialDataset1");
+      await dataPlaneService.removeDatasetItem(
+        "urn:healthdcat:ClinicalTrialData1"
+      );
 
       await expect(dataPlaneService.getDatasets()).resolves.toHaveLength(2);
 

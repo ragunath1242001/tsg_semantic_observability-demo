@@ -38,6 +38,49 @@ const selectedParticipantHTTPDatasets = ref<DatasetDto[]>();
 const selectedDataset = ref<DatasetDto>();
 const openApiSpec = ref<DereferencedOpenAPIObject>();
 const operationFilter = ref<string>("");
+
+const selectedDatasetDetails = computed(() => {
+  if (!selectedDataset.value) {
+    return null;
+  }
+  const {
+    "@type": _type,
+    "@id": _id,
+    title,
+    description,
+    hasPolicy: _hasPolicy,
+    distribution: _distribution,
+    ...rest
+  } = selectedDataset.value;
+  // Clean up rest to create a Record<string, string> for display purposes
+  const details: Record<string, ["field" | "json", string]> = {};
+  for (const [key, value] of Object.entries(rest)) {
+    if (value === null || value === undefined) {
+      continue;
+    }
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      details[key] = ["field", value.toString()];
+    } else if (Array.isArray(value)) {
+      if (value.every((item) => typeof item === "string")) {
+        details[key] = ["field", value.join(", ")];
+      } else {
+        details[key] = ["json", JSON.stringify(value, null, 2)];
+      }
+    } else {
+      details[key] = ["json", JSON.stringify(value, null, 2)];
+    }
+  }
+  return {
+    title,
+    description,
+    details
+  };
+});
+
 const operations = computed<Operation[]>(() => {
   if (!openApiSpec.value) {
     return [];
@@ -189,6 +232,17 @@ const showOperationDetails = () => {
   });
 };
 
+const showPropertyJson = (key: string, value: any) => {
+  dialog.open(JSONDialog, {
+    props: {
+      header: `Property Details - ${key}`,
+      modal: true,
+      dismissableMask: true
+    },
+    data: value
+  });
+};
+
 onMounted(async () => {
   registryStore.initialize().then(() => {
     registryLoading.value = false;
@@ -270,6 +324,51 @@ onMounted(async () => {
             </template>
           </Select>
         </FormField>
+
+        <Card
+          v-if="selectedDatasetDetails"
+          class="bg-surface-50 dark:bg-surface-800">
+          <template #title>
+            {{ selectedDatasetDetails.title }}
+          </template>
+          <template v-if="selectedDatasetDetails.description" #subtitle>
+            <span
+              v-for="(desc, index) in selectedDatasetDetails.description"
+              :key="index"
+              >{{ desc }}</span
+            >
+          </template>
+          <template
+            v-if="Object.keys(selectedDatasetDetails.details).length"
+            #content>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+              <div
+                v-for="(value, key) in selectedDatasetDetails.details"
+                :key="key"
+                class="flex flex-col py-1">
+                <span
+                  class="text-sm font-semibold text-surface-500 dark:text-surface-400">
+                  {{ key }}
+                </span>
+                <span
+                  class="text-surface-700 dark:text-surface-200 break-words">
+                  <template v-if="value[0] === 'field'">
+                    {{ value[1] }}
+                  </template>
+                  <template v-else-if="value[0] === 'json'">
+                    <Button
+                      label="View JSON"
+                      variant="link"
+                      size="small"
+                      class="p-0!"
+                      @click="showPropertyJson(key, value[1])" />
+                  </template>
+                </span>
+              </div>
+            </div>
+          </template>
+        </Card>
+
         <Skeleton v-if="loadingOpenApiSpec" height="200px" />
         <DataView
           v-else-if="operations.length"

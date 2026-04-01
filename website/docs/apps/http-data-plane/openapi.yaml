@@ -1561,6 +1561,295 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Proxy a request without transfer ID
       tags: *a8
+  /api/management/execute:
+    get:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_get
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Proxy a request without transfer ID
+      tags: *a8
+    post:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_post
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Proxy a request without transfer ID
+      tags: *a8
+    put:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_put
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Proxy a request without transfer ID
+      tags: *a8
+    delete:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_delete
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Proxy a request without transfer ID
+      tags: *a8
+    patch:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_patch
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Proxy a request without transfer ID
+      tags: *a8
+    options:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_options
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Proxy a request without transfer ID
+      tags: *a8
+    head:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_head
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Proxy a request without transfer ID
+      tags: *a8
+    search:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      operationId: TransferManagementController_executeTransferWithoutId_search
+      parameters:
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Proxy a request without transfer ID
+      tags: *a8
   /api/proxy/{id}/{path}:
     get:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
@@ -1585,6 +1874,183 @@ paths:
       summary: Proxy a request
       tags: &a9
         - Proxy
+    post:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_post
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a9
+    put:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_put
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a9
+    delete:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_delete
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a9
+    patch:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_patch
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a9
+    options:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_options
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a9
+    head:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_head
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a9
+    search:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_search
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a9
+  /api/proxy/{id}:
+    get:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      operationId: ProxyController_getData_get
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
+      responses:
+        "200":
+          description: ""
+      summary: Proxy a request
+      tags: *a9
     post:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -2152,17 +2618,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: &a19 []
+          example: &a20 []
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: &a20 []
+          example: &a21 []
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: &a21 []
+          example: &a22 []
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -2693,13 +3159,183 @@ components:
         - participantId
     DatasetConfig:
       type: object
-      properties: {}
+      properties:
+        type:
+          type: string
+          description: Type of the dataset configuration
+          enum:
+            - versioned
+            - collection
+        validateExtraProps:
+          type: string
+          description: Whether to validate extraProps for unknown prefixes and
+            unresolvable keys. Defaults to 'error'.
+          enum:
+            - error
+            - warn
+            - ignore
+          default: error
+      required:
+        - type
+    RuleConstraintConfig:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the constraint
+          example: CredentialType
+        value:
+          type: string
+          description: Value of the constraint
+          example: MembershipCredential
+      required:
+        - type
+        - value
+    PolicyRuleConfig:
+      type: object
+      properties:
+        action:
+          type: string
+          description: Action of the rule
+          example: use
+        constraints:
+          description: Constraints of the rule
+          type: array
+          items:
+            $ref: "#/components/schemas/RuleConstraintConfig"
+      required:
+        - action
+    PolicyConfig:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Definition type of the policy
+          enum:
+            - default
+            - rules
+            - manual
+          default: default
+        permissions:
+          description: Permissions of the policy
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicyRuleConfig"
+        prohibitions:
+          description: Prohibitions of the policy
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicyRuleConfig"
+        raw:
+          type: object
+          description: Raw serialized ODRL offer
+      required:
+        - type
     DatasetItem:
       type: object
-      properties: {}
+      properties:
+        id:
+          type: object
+          description: ID of the dataset item
+          nullable: true
+        title:
+          type: string
+          description: Title of the dataset item
+          example: Example Dataset
+        description:
+          description: Description of the dataset
+          type: array
+          items:
+            type: string
+        version:
+          type: string
+          description: Version of the dataset item
+          example: 1.0.0
+        backendUrl:
+          type: string
+          description: Backend URL of the dataset item
+          example: http://localhost:3000
+        authorization:
+          type: object
+          description: Authorization header required for the backend
+        mediaType:
+          type: object
+          description: Media type of the dataset item
+          example: application/json
+        schemaRef:
+          type: object
+          description: Schema reference of the dataset item
+        openApiSpecRef:
+          type: object
+          description: OpenAPI specification reference of the dataset
+        policy:
+          description: Policy of the dataset item
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicyConfig"
+        extraProps:
+          type: object
+          description: Additional DCAT properties for the dataset item
+          example: &a19
+            dcat:keyword:
+              - example
+      required:
+        - title
+        - version
+        - backendUrl
     DatasetItemWithDto:
       type: object
-      properties: {}
+      properties:
+        id:
+          type: object
+          description: ID of the dataset item
+          nullable: true
+        title:
+          type: string
+          description: Title of the dataset item
+          example: Example Dataset
+        description:
+          description: Description of the dataset
+          type: array
+          items:
+            type: string
+        version:
+          type: string
+          description: Version of the dataset item
+          example: 1.0.0
+        backendUrl:
+          type: string
+          description: Backend URL of the dataset item
+          example: http://localhost:3000
+        authorization:
+          type: object
+          description: Authorization header required for the backend
+        mediaType:
+          type: object
+          description: Media type of the dataset item
+          example: application/json
+        schemaRef:
+          type: object
+          description: Schema reference of the dataset item
+        openApiSpecRef:
+          type: object
+          description: OpenAPI specification reference of the dataset
+        policy:
+          description: Policy of the dataset item
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicyConfig"
+        extraProps:
+          type: object
+          description: Additional DCAT properties for the dataset item
+          example: *a19
+        dataset:
+          type: object
+          description: The full DCAT dataset DTO
+      required:
+        - title
+        - version
+        - backendUrl
     ClientInfo:
       type: object
       properties:
@@ -3013,17 +3649,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: *a19
+          example: *a20
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: *a20
+          example: *a21
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: *a21
+          example: *a22
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"

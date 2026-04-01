@@ -25,7 +25,7 @@ export class ProxyController {
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
-  @All("/proxy/:id/*path")
+  @All(["/proxy/:id/*path", "/proxy/:id"])
   @ApiOperation({
     summary: "Proxy a request",
     description:

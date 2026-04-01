@@ -30,7 +30,8 @@ import {
   Offer,
   Permission,
   Policy,
-  Prohibition
+  Prohibition,
+  validateExtraProps
 } from "@tsg-dsp/common-dsp";
 import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
 import {
@@ -379,6 +380,7 @@ export class DataPlaneService implements OnModuleInit {
       itemDao.schemaRef = item.schemaRef;
       itemDao.openApiSpecRef = item.openApiSpecRef;
       itemDao.policy = item.policy;
+      itemDao.extraProps = item.extraProps;
 
       const dataset = await this.createCollectionDataset(
         itemDao,
@@ -448,12 +450,27 @@ export class DataPlaneService implements OnModuleInit {
       policies = intermediatePolicies.filter((p) => p !== undefined).flat();
     }
 
+    const extraProps = {
+      ...datasetConfig.extraProps,
+      ...item.extraProps
+    };
+
+    const hasExtraProps = Object.keys(extraProps).length > 0;
+    if (hasExtraProps) {
+      await this.validateExtraProps(
+        extraProps,
+        datasetConfig.validateExtraProps
+      );
+    }
+
     const dataset = new Dataset({
       id: item.id,
       title: item.title,
+      description: item.description,
       version: item.version,
       landingPage: datasetConfig.landingPage,
       conformsTo: defArray(datasetConfig.baseSemanticModelRef),
+      extraProps: hasExtraProps ? extraProps : undefined,
       distribution: [
         new Distribution({
           id: `${item.id}:${item.version}:${item.mediaType ?? datasetConfig.mediaType ?? "application/http"}`,
@@ -475,6 +492,33 @@ export class DataPlaneService implements OnModuleInit {
     return item.dataset;
   }
 
+  private async validateExtraProps(
+    extraProps: Record<string, unknown>,
+    validationLevel: "error" | "warn" | "ignore"
+  ) {
+    if (validationLevel === "ignore") return;
+    try {
+      await validateExtraProps(extraProps, {
+        compaction: true
+      });
+    } catch (error) {
+      if (validationLevel === "error") {
+        throw new DataPlaneError(
+          `Dataset has extraProps with unknown prefixes: ${
+            (error as Error).message
+          }. Please ensure all extraProps keys have a known prefix.`,
+          HttpStatus.BAD_REQUEST
+        ).andLog(this.logger);
+      } else {
+        this.logger.warn(
+          `Dataset has extraProps with unknown prefixes, but validation is disabled. Please ensure all extraProps keys have a known prefix. Validation error: ${
+            (error as Error).message
+          }`
+        );
+      }
+    }
+  }
+
   private async createVersionedDatasets(
     datasetConfig: VersionedDatasetConfig
   ): Promise<DatasetDto[]> {
@@ -485,11 +529,28 @@ export class DataPlaneService implements OnModuleInit {
         (v) => v.version === datasetConfig.currentVersion
       )[0]?.version ?? datasetConfig.versions[0].version;
 
+    if (datasetConfig.extraProps) {
+      await this.validateExtraProps(
+        datasetConfig.extraProps,
+        datasetConfig.validateExtraProps
+      );
+    }
+    for (const v of datasetConfig.versions) {
+      if (v.extraProps) {
+        await this.validateExtraProps(
+          v.extraProps,
+          datasetConfig.validateExtraProps
+        );
+      }
+    }
+
     const baseDataset = new Dataset({
       id: id,
       title: datasetConfig.title,
+      description: datasetConfig.description,
       landingPage: datasetConfig.landingPage,
       conformsTo: defArray(datasetConfig.baseSemanticModelRef),
+      extraProps: datasetConfig.extraProps,
       hasVersion: datasetConfig.versions.map((v) => `${id}:${v.version}`),
       hasCurrentVersion: `${id}:${currentDatasetRef}`,
       hasPolicy: await this.constructOffer(id, datasetConfig.policy)
@@ -502,10 +563,16 @@ export class DataPlaneService implements OnModuleInit {
     });
     const datasets = [baseDataset.serialize()];
     for (const v of versions) {
+      const versionExtraProps = {
+        ...datasetConfig.extraProps,
+        ...v.extraProps
+      };
+      const hasVersionExtraProps = Object.keys(versionExtraProps).length > 0;
       datasets.push(
         new Dataset({
           id: `${id}:${v.version}`,
           title: `${datasetConfig.title} (${v.version})`,
+          description: datasetConfig.description,
           version: `${v.version}`,
           landingPage: datasetConfig.landingPage,
           isVersionOf: id,
@@ -515,6 +582,7 @@ export class DataPlaneService implements OnModuleInit {
           conformsTo: defArray(
             v.semanticModelRef ?? datasetConfig.baseSemanticModelRef
           ),
+          extraProps: hasVersionExtraProps ? versionExtraProps : undefined,
           distribution: v.distributions.map(
             (d) =>
               new Distribution({

@@ -39,6 +39,8 @@ const configRaw = ref(false);
 const configString = ref<string>();
 const configForm = ref<VersionedDatasetConfig>();
 const editModal = ref(false);
+const extraPropsString = ref("{}");
+const extraPropsError = ref<string>();
 
 const updateLoading = ref(false);
 const refreshLoading = ref(false);
@@ -50,6 +52,10 @@ const fillFormProperties = (config?: VersionedDatasetConfig) => {
       type: "default"
     };
   }
+  extraPropsString.value = config?.extraProps
+    ? JSON.stringify(config.extraProps, null, 2)
+    : "{}";
+  extraPropsError.value = undefined;
   configString.value = JSON.stringify(config, null, 2);
 };
 
@@ -62,6 +68,15 @@ const update = async () => {
     } else {
       config = configForm.value;
       config.policy = cleanPolicyConfig(configForm.value.policy);
+      try {
+        const parsed = JSON.parse(extraPropsString.value);
+        config.extraProps =
+          parsed && Object.keys(parsed).length > 0 ? parsed : undefined;
+      } catch {
+        extraPropsError.value = "Invalid JSON";
+        updateLoading.value = false;
+        return;
+      }
     }
     await http.put("management/config", config);
     editModal.value = false;
@@ -192,6 +207,17 @@ onMounted(() => {
         </div>
         <h4>Policy</h4>
         <PolicyView :policy="config.policy" />
+        <template
+          v-if="config.extraProps && Object.keys(config.extraProps).length">
+          <h4>Extra Properties</h4>
+          <FormField
+            v-for="(value, key) in config.extraProps"
+            :key="key"
+            class="mb-1"
+            :label="String(key)">
+            {{ typeof value === "object" ? JSON.stringify(value) : value }}
+          </FormField>
+        </template>
       </div>
       <div v-else>No provided datasets configured</div>
     </template>
@@ -272,6 +298,7 @@ onMounted(() => {
         <TabList>
           <Tab value="Versions">Versions</Tab>
           <Tab value="Policy">Policy</Tab>
+          <Tab value="ExtraProps">Extra Properties</Tab>
         </TabList>
         <TabPanels>
           <TabPanel value="Versions">
@@ -397,6 +424,23 @@ onMounted(() => {
           </TabPanel>
           <TabPanel value="Policy">
             <PolicyEditor v-model="configForm.policy" />
+          </TabPanel>
+          <TabPanel value="ExtraProps">
+            <p class="italic pb-4">
+              Add custom DCAT properties as a JSON object. Keys must use
+              namespaced prefixes defined in the JSON-LD contexts (e.g.
+              <code>healthdcatap:numberOfRecords</code>,
+              <code>dcat:spatialResolutionInMeters</code>).
+            </p>
+            <Textarea
+              v-model="extraPropsString"
+              class="w-full font-mono"
+              :rows="10"
+              placeholder='{"healthdcatap:numberOfRecords": 50000}'
+              @input="extraPropsError = undefined" />
+            <small v-if="extraPropsError" class="text-red-500">
+              {{ extraPropsError }}
+            </small>
           </TabPanel>
         </TabPanels>
       </Tabs>
