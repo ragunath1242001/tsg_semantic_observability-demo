@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"title":{"type":"string","description":"Title of the participant"},"didId":{"type":"string","description":"Decentralized identifier of the participant","example":"did:example:participant-1"}},"required":["title","didId"],"title":"ProjectAgreementParticipant"},"schemaType":"response"}

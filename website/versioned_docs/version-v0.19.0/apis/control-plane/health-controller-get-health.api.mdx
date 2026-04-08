@@ -1,0 +1,70 @@
+---
+id: health-controller-get-health
+title: "Health check"
+description: "Retrieves the current health of the app. If the app is running and it is connected to the database it always returns an empty 200 OK"
+sidebar_label: "Health check"
+hide_title: true
+hide_table_of_contents: true
+api: eJztmU1vGzcQhv8KwWOwlQUXvegWuG5qtE2M5qMHIzBG3JGWMZdkyFkrqqD/XnA/yV2myDEB5IuFhy8/3hFJDYYnXqIXTlqSRvMN/xvJSXxGz6hCJhrnUBOrEBRVzOxaCtau2N34mUnPXKO11HsGumSSAhFGaxSEJSPTKksg2ILH0A7qAEfPHFLjtGegGdaWjux6vWZv/uAFNxYdhCXdlXzDf2+nvzGanFEK3eMeqWO84BYc1EjoPN88fCy4Q2+N9uj55sSv1+vwL/XIzwX/ZX39tYaflw3vKmTdhOymQvEUDGpDzDdCoPe7RvGCC6MJNYXeYK2SojVw9cmHIU7ciwprCJ/oaJFvuNl+QkHBgQt2SXZL9gTU+EjnyUm95wXHL1BbFRA6Z1xYrdQ7kxtylJ74EPd4bN5Yfj4XHMpShkWCuk/WMB/O4edGOiz55mEY4+O3rvvr85Br8Fxw3SgF27DYHnTu/t+Vw1Im0/LSHDQveI3ewz50uzGNKtuvqd+L37HlEgmkyi7kW77K4oeOR/9XcIJ9OMT9eQ/j10iVCVfAHtuTAlTxDb+qhsPv0T2PJ9+jaJyk49tw0roVGWiouo79dKDgO2UOrSQA4+S/7Wm9MWUXXWFsN4JwCIQbYVewd4h1e8KzNMQIyrlyyQre2DIzZo6GnaFwqc3RsFVQNEtxFhe8Bg37hThHi8ivAAJl9kkMBjZFYFLNSex+Ui1Z7HzSLVniehJmYOx4Ei5Z4tbonZyZ7VDkddDMQOJ00CxQ4nNQLVDqcpAtWeJxkC1Q7DDcKVaBxsTkRCefsXLJYrexMkdjz7E2RxPnsTiLY/+xOEfnUfBIixh4pFkEOtWczN13qiWbO+90S7Zw3QkzcO64Ey5Z7Fbj3pCEPrnJ88l1qs7R2H2qzvM4Cqk+z5NopB2+0hBHJe2Q53F0rFFSHJPA9GiKyaiZgTgSo2aBYv+jaoES16NsyWKvo2yBYocO99KTSz2OcHIZ6RYodhrpMjB2GykzMHEcSXM0dh1JMzB2Tg6036FLnI9wch7pFih2HukyMHYeKTMwcR5JczR2HkkzMORUQknUdOOwRE0Suhzzkt5c0ptLenNJby7pzSW9uaQ3l/TmR01vQoKzRXDoxgpruA57NLT9ZlwN4dr4cM+LoRBUEdnWQVzn/YBO7mSozLF7hx41teeHacSyq2QLU9eNDrVdZFukA6JmdDBMak+gBfqhSC66ajVrL+NVm4qNxVpJbRX33dtXrC9qs/vxlyOtO0vP3ljUL+/vmLco5K4vKzNfmUNXpEddWiM1jVMnY67YX8bT0DRpwSFzqCCq0P8a7lILIpg3ZIRRBQM/zIsl2x5b3a1Q0npk/xj3FIr+r5xp7NTbr9gbqtDNJvONtcaRfI5XQYbV8BQaHY6vBEyAZltkUJbT4vr0pWifGGbdgNj7OyY1oQMRouPbIShIrAKBK8YeH1+8NoQvHh83LAlriTup29LkUNUPA+l+6i2yUjoUpI5MSf2EJTtIqhgwL/VezYI9boMV4wUPlcn+YaF7HQARXgfOBVdSoO7quBraLfvSgqiQXa/W4QA61e9Qv7m6OhwOK2ibV8btr/q+/urPu5vb129vf7perVcV1ardY9Z4qkFHI/fvFiK8W8w32Gl6tPheXn7640n4ha6sAqlDdbsNyKkv/z7waqwPV8ZTIKdTmOC9U+dzwJ8bDNdlKAo/g5Ndqf3h47kIXctwWzyc+BOGG/WlEGhD/vAMqgkzL95uznEd+tXtO34+/wfw7aSM
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Health check"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/health"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the current health of the app. If the app is running and it is connected to the database it always returns an empty 200 OK
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./health-controller-get-health.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./health-controller-get-health.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./health-controller-get-health.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

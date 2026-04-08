@@ -1,0 +1,1 @@
+{"parameters":[{"name":"id","required":true,"in":"path","schema":{"type":"string"}},{"name":"ruleType","required":true,"in":"path","schema":{"type":"string"}},{"name":"target","required":true,"in":"path","schema":{"type":"string"}}]}

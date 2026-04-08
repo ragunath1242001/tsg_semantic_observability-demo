@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"issued":{"type":"number","example":10},"open":{"type":"number","example":2}},"required":["issued","open"],"title":"StatusIssuanceDto"},"schemaType":"response"}

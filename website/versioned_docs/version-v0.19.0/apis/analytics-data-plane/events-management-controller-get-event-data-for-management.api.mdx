@@ -1,0 +1,70 @@
+---
+id: events-management-controller-get-event-data-for-management
+title: "Download algorithm event data (management)"
+description: "Returns the raw binary data for the specified algorithm event. Requires management access role."
+sidebar_label: "Download algorithm event data (management)"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWMFu2zgQ/ZXBnFpAtYxsTrplk7QIsNst2uwpMAJGGlvsyqRCUnG9gv59QUqWRYnSZYGiB5+avpmhOI/0zOPUmJFOFS8NlwIT/EqmUkKDyQkUO8ALF0wdIWOGwVYqh+uSUr7llAErdlJxk++B3kiYFXyl14or0rBngu1oT8IAS1PSGpQsaIURypIUs197yDDBexun/+y9b6UwShYFqecdGWe9Y4Z9lOrsgxGWTLE9GVIak6caBdsTJthv50Fow0RKDxlGqNo9ZZgYVVGE3OZZMpNjhDrNac8wqdEcS7uENoqLHTZN1K/qUvsfK21soC6l0KSt/Wq9tv/4vP/e8uy+1bKt3ElQhk2E1+vfpiEfpXrhWUYCI0ylMJaZpEZWlgVPHcPxd2096+nm5Mt3Sh2Ryp6H4e3W2ozHKURIP9i+LMjdDy0rldJnaT7KSrjdacNMpZfjrtfX8Fka6INSmQ0/Jar9C6lhyPX6uolwT1qzHYW2fl780V5Weq1IG8pAdVuETJIGIQ3QD67Nyn6VlJJqeaeDXTbDI39q2enT7VLYRGi4cZH3dvE7I7FpGndo19NDO/Hn9rV1n7mc3q93epYXSivFzdEVGMkqk1/ZZRSxLGFZuZIqzUmbtpbhxv7MDdvZeoQ3fVk8FSJtv7Qnk0tb9HbU1jCTY4IxK3l8LpdxX8Q+8FNwXAcqWxO7YqHjuitQTWzrhk2R1FtbGTfnNL7ZS9Tek1My50NpgQi3hTw4FwtIxf91yd12h61TWbYrpIqYIUdDvzNMwnB0pmzoGwAjrMostG4QjjCjggLeQdjeEUqrgHsYj7A9kol7EI6GqadSbPnOp6PDBlz0XmPEY6H3mmJe/r3fFPMz7x0DoJdz7zjFvGztnSsLJshP+AwPch76BkAv86FvEPbyH3oHYZ+FoXsY97gYugdhj5EtL0ZkOGTAQ+fh/9/LvvMYI17Onc8Y8TPtnCaQl1/nNEa8rPxyl8yborkSmcwZvMzHMbMmj4tx1KzJZ2ccNm/z+BqHzZo8Bkslbe97ZjtFrY5Nls0DJkOxC0aP0VDsotljNhS9aPYZDoUv2z2mQ+GLZtu504Lbl4SijIThrNCX5nVpXpfmdWlel+Z1aV6/dvNyL08uttK9zrqX6eO3T3AjWHE0PNVgx2Hwpa8iw+HCY841/FWSuPnycJrStbME0Lk8tFM9ElkpuTAa5NYBoaXtoM6+Idt1uxEFS+2Ioomw4CkJTeeZA96ULM0JrlZre3yqwARzY0qdxPHhcFgxZ15JtYu7WB3/8XB7//nb/Yer1XqVm33hWncptdkzMVj5Th5EIdlk1tgOyd6dH87vx3TU57nKTxhrdk9pQz9MXBaMCzuwcEzU3Uv/CVnJ+xvSXZfAax8jTMKTzPbBb+3nmaR7828izKU29ht1/cI0/a2KprHwa0Xq2E4C3pji7MXeqKcaM67t3xkmW1ZoWqDuXZd89h7m0uxAJo722rCiovbS/EPHmamsHa/+xC2c6Go2TYQ5sYyUY6G13qQplWYQNxnCNcPpzaf7R3twlT3T6QilnxTV4T2FZCZM9SSEZCOE1CEENSCEpB5MRB2MBBxMpBpMRBlM1RdMdBaE5BRMdROE5BGEVBAEtQ6EJA2M5At4YgVGwgRGIgTGegNG2gLm5AOENQLMyQCY6/Qw28thrl3DUjeG+XYLS90UlpolLLZCWOx0px+me5W5ahD8sXhjyGc3sT1F7hQT5tlFNZumaf4DrVWRhA==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Download algorithm event data (management)"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/algorithm-instances/{algorithmInstanceId}/events/{eventId}/data"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Returns the raw binary data for the specified algorithm event. Requires management access role.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./events-management-controller-get-event-data-for-management.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./events-management-controller-get-event-data-for-management.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./events-management-controller-get-event-data-for-management.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

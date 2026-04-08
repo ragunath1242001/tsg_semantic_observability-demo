@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"c_nonce":{"type":"string","example":"wKI4LT17ac15ES9bw8ac4"}},"required":["c_nonce"],"title":"NonceResponse"}}}}}}

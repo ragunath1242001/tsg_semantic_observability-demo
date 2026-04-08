@@ -1,0 +1,1 @@
+{"schema":{"type":"string","enum":["PERMISSION","PROHIBITION","DUTY"],"title":"RuleType"},"schemaType":"response"}

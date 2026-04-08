@@ -1,0 +1,32 @@
+---
+id: divpproof
+title: "DiVpProof"
+description: ""
+sidebar_label: "DiVpProof"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"proof_type":"di_vp","di_vp":{"@context":["https://www.w3.org/ns/credentials/v2"],"type":["VerifiablePresentation"],"holder":"holder-sample","proof":{"id":"proof-id-sample","type":"DataIntegrityProof","cryptosuite":"eddsa","proofPurpose":"authentication","verificationMethod":"verification-method-sample","created":"2023-10-10T00:00:00Z","expires":"2023-10-20T00:00:00Z","domain":"example.com","challenge":"challenge-sample","proofValue":"proof-value-sample"}}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"DiVpProof"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  {...require("./divpproof.Schema.json")}
+>
+  
+</Schema>
+            

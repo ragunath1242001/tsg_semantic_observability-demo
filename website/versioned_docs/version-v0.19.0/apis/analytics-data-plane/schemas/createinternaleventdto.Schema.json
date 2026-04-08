@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"id":{"type":"string"},"name":{"type":"string"},"number":{"type":"number"},"timestamp":{"type":"string"},"data":{"type":"object","additionalProperties":true}},"required":["id","name","number","timestamp"],"title":"CreateInternalEventDto"},"schemaType":"response"}

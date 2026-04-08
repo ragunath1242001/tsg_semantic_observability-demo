@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"id":{"type":"string"},"type":{"example":"ATOMIC","allOf":[{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"}]},"title":{"type":"string","example":"Constraint title"},"description":{"type":"string","example":"Constraint description"}},"required":["type","title"],"title":"ConstraintModel"},"schemaType":"response"}

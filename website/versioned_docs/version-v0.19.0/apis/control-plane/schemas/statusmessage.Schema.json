@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"status":{"type":"string","example":"deadbeef"},"message":{"type":"string","example":"Status message detail"}},"required":["status","message"],"title":"StatusMessage"},"schemaType":"response"}

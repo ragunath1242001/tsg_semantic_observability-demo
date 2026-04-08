@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"orchestrationStatus":{"type":"string","description":"The orchestration status to set","enum":["completed","error"]}},"required":["orchestrationStatus"],"title":"SetOrchestrationStatusDto"},"schemaType":"response"}

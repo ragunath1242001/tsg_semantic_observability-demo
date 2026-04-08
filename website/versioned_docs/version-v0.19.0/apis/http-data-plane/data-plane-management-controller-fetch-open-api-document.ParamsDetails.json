@@ -1,0 +1,1 @@
+{"parameters":[{"name":"url","required":true,"in":"query","description":"URL of the OpenAPI document","schema":{"type":"string"}}]}

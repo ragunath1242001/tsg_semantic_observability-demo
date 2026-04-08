@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"EndpointProperty"},"name":{"type":"string","example":"endpointName"},"value":{"type":"string","example":"endpointValue"}},"required":["@type","name","value"],"title":"EndpointPropertySchema"},"schemaType":"response"}

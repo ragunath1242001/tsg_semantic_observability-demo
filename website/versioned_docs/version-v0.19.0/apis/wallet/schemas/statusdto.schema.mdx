@@ -1,0 +1,32 @@
+---
+id: statusdto
+title: "StatusDto"
+description: ""
+sidebar_label: "StatusDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"database":{"status":"online"},"uptime":3600,"memoryUsage":{"does_zap_garbage":1024,"external_memory":2048,"heap_size_limit":4096,"malloced_memory":512,"number_of_detached_contexts":0,"number_of_native_contexts":2,"peak_malloced_memory":1024,"total_available_size":8192,"total_global_handles_size":256,"total_heap_size":16384,"total_heap_size_executable":4096,"total_physical_size":32768,"used_global_handles_size":128,"used_heap_size":8192},"issuance":{"issued":10,"open":2},"credentials":{"selfSigned":5,"thirdParty":1},"keys":3}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"StatusDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  {...require("./statusdto.Schema.json")}
+>
+  
+</Schema>
+            

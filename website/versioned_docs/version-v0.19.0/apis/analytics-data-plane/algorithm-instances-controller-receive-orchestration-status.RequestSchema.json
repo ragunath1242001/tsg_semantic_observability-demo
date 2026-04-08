@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"orchestrationStatus":{"type":"string","description":"The instance-wide orchestration outcome","enum":["pending","running","completed","error"]}},"required":["orchestrationStatus"],"title":"OrchestrationStatusSignalDto"}}}}}

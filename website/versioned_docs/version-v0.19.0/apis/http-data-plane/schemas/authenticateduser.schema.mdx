@@ -1,0 +1,32 @@
+---
+id: authenticateduser
+title: "AuthenticatedUser"
+description: ""
+sidebar_label: "AuthenticatedUser"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"state":"authenticated","user":{"sub":"user-id-123","name":"John Doe","email":"john.doe@example.com","permissions":["read:credential:own","manage:key"],"didId":"did:example:123456789","refreshToken":"refresh-token-abc123"}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"AuthenticatedUser"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  {...require("./authenticateduser.Schema.json")}
+>
+  
+</Schema>
+            

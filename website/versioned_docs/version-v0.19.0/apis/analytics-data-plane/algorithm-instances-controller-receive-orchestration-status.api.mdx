@@ -1,0 +1,70 @@
+---
+id: algorithm-instances-controller-receive-orchestration-status
+title: "Receive orchestration status"
+description: "Called by the initiator to propagate the instance-wide orchestration outcome (completed / error) to a worker."
+sidebar_label: "Receive orchestration status"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWE1v2zgQ/SvEnFpAsYNuTrpl03QRYNEWSfYUBMWYGltsJZIlqbpeQ/99MZIiizJt9LBY7CG5xH7zQc4bfphvDwV56ZQNymjI4Qarigqx2olQklBaBYXBOBGMsM5Y3GCgweQDakkXW1WQME6W5INDTiNME6SpSbyRprYVBSrEUpBzxr3lRCi2xn0jt4AMjKU+6K6AHK6rjXEqlPXdkN3fGB2cqSpyXxxJUj/o03Soh4Ch8ZCBRYc1BXIe8qc9aKwJcsB5vrsCMnD0vVGOCsiDaygDxYVbDCVk4GVJNUK+h7CznMIHp/QG2jYbs143oTRO/d3N4FS+krAgdzbjcx9KPvxuih17zDNJowPpwCa0tlKyG3L51XOv9sepzeorycB0OCY2KPJsNQnKjuaTzVbC4681GTIg3dSQP4ElXfSZXKN1/2lcAezHKwCe23ZK2VNyds8ZBBUqnl6i3w9qo7F6Hwy0bZ/NW6N9X+zV5W/8Ly7mg3ErVRSk4V8jtV8MxyzST+SSIYd78qZxkj6a8ME0uoA2A3+S/UPc1eWV+GiCGIOkKaZD6aZedUtrDLm6vGozqMl73FBq6ofk3NZh1VEh3DBFURjyQpsg6KfyYcGj9u06O9PJLGdN7dgZyx1KmHT1lpO/dLDNIOCGd+7hBBDjEcBhNYXS8Alhje9awbs1hyVatRw3+cXLcvXLfWLnt8topV2Mc/PkfvQHxzN/kY1TYffAy2DYPtiE8t2U1h7IYF2ZbeeC0yPhZmiXl8b2GaQjDJRjYRfjxCBPw8wjFke+CTCDxhapvEmY9zfvxCPvJMxdJtkk3NN4BjVq3By7J+FsWro0eq02MR0DNuFi9JojEQuj1zEW1T/6HWNx5aNjAoxqHh2PsajaAgPaCjXFBR/gSc1T3wQYVT71TcJR/VPvJByzMHVP4xEXU/ckHDGyVtWMjA6Z8DB4xN+j6gePORLVPPjMkbjSwekIiuobnOZIVFV01sTlxaZJnfOYE4ao8nnMSVPExTzqpClmZx522hbxNQ87aYoYtM7w7fUFN46o7m7s8+YJk6nYM8aI0VTsWXPEbCr6rDlmOBV+3h4xnQo/a+a7V1aKdLhxVJAOCiv/enm9Xl6vl9fr5fV6eb1eXv/vy6t7O/LL/f4gpNy+PE9PCB+jTtGyVLM23cNueJY+PvwhrjVWu6CkF+8xoPg8HkCxOqK8+GRJX3++E96SVOtBSBC+NFvfaWSkC2uUDl6YdQekUrMKxs/PPu+gT6BkfaLNoFKStKeD4ADXFmVJ4t3ikjvvKtaaQrA+Xy632+0CO/PCuM1yiPXLP+9ubj8+3F68W1wuylBX3a3PL+ka9STzfS+wzXSe8ZkcEbA/yCj/uWY4vMID/QxLW6HS3MmOif0gDDwBWgUZJKQByCBPy4JJdeA5g5Ilh/wJ9vsVevrLVW3L8PeG3K7XDH6gU7jiBfS0h0J5/lxAvsbK0xne3twPgslbcaqqAUS941WCVUP9GvlGuxPyZvvcZi/iI0+n97zpB7145HyHTEf6F6ucfcS1lGTDWd+pLvP508MjZLAahMy6k0DA4ZYPNtz2szYdCd2Pyg7bQ4V603SaFfQ5+e8fI6ISQg==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Receive orchestration status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/algorithm-instances/{algorithmInstanceId}/orchestration-status"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Called by the initiator to propagate the instance-wide orchestration outcome (completed / error) to a worker.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./algorithm-instances-controller-receive-orchestration-status.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./algorithm-instances-controller-receive-orchestration-status.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./algorithm-instances-controller-receive-orchestration-status.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

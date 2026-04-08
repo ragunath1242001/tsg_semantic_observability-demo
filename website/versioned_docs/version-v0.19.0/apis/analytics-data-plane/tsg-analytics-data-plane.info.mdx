@@ -1,0 +1,247 @@
+---
+id: tsg-analytics-data-plane
+title: "TSG Analytics Data Plane"
+description: "This OpenAPI specification shows the endpoints of the Analytics Data Plane."
+sidebar_label: Introduction
+sidebar_position: 0
+hide_title: true
+custom_edit_url: null
+---
+
+import ApiLogo from "@theme/ApiLogo";
+import Heading from "@theme/Heading";
+import SchemaTabs from "@theme/SchemaTabs";
+import TabItem from "@theme/TabItem";
+import Export from "@theme/ApiExplorer/Export";
+
+<Export
+  url={"openapi.yaml"}
+  proxy={undefined}
+>
+  
+</Export>
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"TSG Analytics Data Plane"}
+>
+</Heading>
+
+
+
+This OpenAPI specification shows the endpoints of the Analytics Data Plane.
+
+<div
+  style={{"marginBottom":"2rem"}}
+>
+  <Heading
+    id={"authentication"}
+    as={"h2"}
+    className={"openapi-tabs__heading"}
+    children={"Authentication"}
+  >
+  </Heading><SchemaTabs
+    className={"openapi-tabs__security-schemes"}
+  >
+    <TabItem
+      label={"OAuth 2.0: oauth2"}
+      value={"oauth2"}
+    >
+      
+      
+      
+      
+      <div>
+        <table>
+          <tbody>
+            <tr>
+              <th>
+                Security Scheme Type:
+              </th><td>
+                oauth2
+              </td>
+            </tr><tr>
+              <th>
+                OAuth Flow (authorizationCode):
+              </th><td>
+                <span>
+                  Scopes:
+                </span><ul>
+                  <li>
+                    create:adp.algorithm: create:adp.algorithm
+                  </li><li>
+                    read:adp.algorithm: read:adp.algorithm
+                  </li><li>
+                    update:adp.algorithm: update:adp.algorithm
+                  </li><li>
+                    delete:adp.algorithm: delete:adp.algorithm
+                  </li><li>
+                    execute:adp.algorithm: execute:adp.algorithm
+                  </li><li>
+                    manage:adp.algorithm: manage:adp.algorithm
+                  </li><li>
+                    create:adp.config: create:adp.config
+                  </li><li>
+                    read:adp.config: read:adp.config
+                  </li><li>
+                    update:adp.config: update:adp.config
+                  </li><li>
+                    delete:adp.config: delete:adp.config
+                  </li><li>
+                    execute:adp.config: execute:adp.config
+                  </li><li>
+                    manage:adp.config: manage:adp.config
+                  </li><li>
+                    create:adp.dataplane: create:adp.dataplane
+                  </li><li>
+                    read:adp.dataplane: read:adp.dataplane
+                  </li><li>
+                    update:adp.dataplane: update:adp.dataplane
+                  </li><li>
+                    delete:adp.dataplane: delete:adp.dataplane
+                  </li><li>
+                    execute:adp.dataplane: execute:adp.dataplane
+                  </li><li>
+                    manage:adp.dataplane: manage:adp.dataplane
+                  </li><li>
+                    create:adp.file: create:adp.file
+                  </li><li>
+                    read:adp.file: read:adp.file
+                  </li><li>
+                    update:adp.file: update:adp.file
+                  </li><li>
+                    delete:adp.file: delete:adp.file
+                  </li><li>
+                    execute:adp.file: execute:adp.file
+                  </li><li>
+                    manage:adp.file: manage:adp.file
+                  </li><li>
+                    create:adp.orchestration: create:adp.orchestration
+                  </li><li>
+                    read:adp.orchestration: read:adp.orchestration
+                  </li><li>
+                    update:adp.orchestration: update:adp.orchestration
+                  </li><li>
+                    delete:adp.orchestration: delete:adp.orchestration
+                  </li><li>
+                    execute:adp.orchestration: execute:adp.orchestration
+                  </li><li>
+                    manage:adp.orchestration: manage:adp.orchestration
+                  </li><li>
+                    create:adp.project_agreement: create:adp.project_agreement
+                  </li><li>
+                    read:adp.project_agreement: read:adp.project_agreement
+                  </li><li>
+                    update:adp.project_agreement: update:adp.project_agreement
+                  </li><li>
+                    delete:adp.project_agreement: delete:adp.project_agreement
+                  </li><li>
+                    execute:adp.project_agreement: execute:adp.project_agreement
+                  </li><li>
+                    manage:adp.project_agreement: manage:adp.project_agreement
+                  </li>
+                </ul>
+              </td>
+            </tr><tr>
+              <th>
+                OAuth Flow (clientCredentials):
+              </th><td>
+                <span>
+                  Scopes:
+                </span><ul>
+                  <li>
+                    create:adp.algorithm: create:adp.algorithm
+                  </li><li>
+                    read:adp.algorithm: read:adp.algorithm
+                  </li><li>
+                    update:adp.algorithm: update:adp.algorithm
+                  </li><li>
+                    delete:adp.algorithm: delete:adp.algorithm
+                  </li><li>
+                    execute:adp.algorithm: execute:adp.algorithm
+                  </li><li>
+                    manage:adp.algorithm: manage:adp.algorithm
+                  </li><li>
+                    create:adp.config: create:adp.config
+                  </li><li>
+                    read:adp.config: read:adp.config
+                  </li><li>
+                    update:adp.config: update:adp.config
+                  </li><li>
+                    delete:adp.config: delete:adp.config
+                  </li><li>
+                    execute:adp.config: execute:adp.config
+                  </li><li>
+                    manage:adp.config: manage:adp.config
+                  </li><li>
+                    create:adp.dataplane: create:adp.dataplane
+                  </li><li>
+                    read:adp.dataplane: read:adp.dataplane
+                  </li><li>
+                    update:adp.dataplane: update:adp.dataplane
+                  </li><li>
+                    delete:adp.dataplane: delete:adp.dataplane
+                  </li><li>
+                    execute:adp.dataplane: execute:adp.dataplane
+                  </li><li>
+                    manage:adp.dataplane: manage:adp.dataplane
+                  </li><li>
+                    create:adp.file: create:adp.file
+                  </li><li>
+                    read:adp.file: read:adp.file
+                  </li><li>
+                    update:adp.file: update:adp.file
+                  </li><li>
+                    delete:adp.file: delete:adp.file
+                  </li><li>
+                    execute:adp.file: execute:adp.file
+                  </li><li>
+                    manage:adp.file: manage:adp.file
+                  </li><li>
+                    create:adp.orchestration: create:adp.orchestration
+                  </li><li>
+                    read:adp.orchestration: read:adp.orchestration
+                  </li><li>
+                    update:adp.orchestration: update:adp.orchestration
+                  </li><li>
+                    delete:adp.orchestration: delete:adp.orchestration
+                  </li><li>
+                    execute:adp.orchestration: execute:adp.orchestration
+                  </li><li>
+                    manage:adp.orchestration: manage:adp.orchestration
+                  </li><li>
+                    create:adp.project_agreement: create:adp.project_agreement
+                  </li><li>
+                    read:adp.project_agreement: read:adp.project_agreement
+                  </li><li>
+                    update:adp.project_agreement: update:adp.project_agreement
+                  </li><li>
+                    delete:adp.project_agreement: delete:adp.project_agreement
+                  </li><li>
+                    execute:adp.project_agreement: execute:adp.project_agreement
+                  </li><li>
+                    manage:adp.project_agreement: manage:adp.project_agreement
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </TabItem>
+  </SchemaTabs>
+</div><div
+  style={{"marginBottom":"var(--ifm-paragraph-margin-bottom)"}}
+>
+  <h3
+    style={{"marginBottom":"0.25rem"}}
+  >
+    License
+  </h3><a
+    href={"https://www.apache.org/licenses/LICENSE-2.0.html"}
+  >
+    Apache 2.0
+  </a>
+</div>
+      

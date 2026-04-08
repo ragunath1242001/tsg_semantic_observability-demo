@@ -1,0 +1,1 @@
+{"schema":{"type":"string","enum":["EdDSA","ES384","X509"],"title":"KeyType"},"schemaType":"response"}

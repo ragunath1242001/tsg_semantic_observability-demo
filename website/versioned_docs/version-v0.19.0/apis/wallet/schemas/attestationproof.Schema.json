@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"proof_type":{"type":"string","enum":["jwt","di_vp","attestation"],"example":"attestation"},"attestation":{"type":"string","example":"eyJ0eXAiOiJrZXktYXR0ZXN0YXRpb24rand0IiwiYWxnIjoiRVMyNTYifQ..."}},"required":["proof_type","attestation"],"title":"AttestationProof"},"schemaType":"response"}

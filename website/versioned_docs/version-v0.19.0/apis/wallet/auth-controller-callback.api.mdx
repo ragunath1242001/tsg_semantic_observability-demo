@@ -1,0 +1,70 @@
+---
+id: auth-controller-callback
+title: "Login callback"
+description: "Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)"
+sidebar_label: "Login callback"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWN9v2zYQ/lcOfGoL1Q5SYA/GMCBLiyJA0Q5Luj10gXuhzhYRilTJUxzP8P8+kFRsSpEzJHnYHvKS4H5/30mkfLcRJXnpVMPKGjETXz05D+gIHJXKkWQqYeFsDVwRYMuVdepvDN7gyd2QA7bAlfJApmysMgyrSskKVkrrXZIQXSdPCukMkynh1feQcHLn9PX3T99fi0LYhlyscFaKmThpuTq1hp3VmtxcotZXKK9FIRp0WBOT82L2bSMM1iRmwjMyiUI4+tEqR6WYLVB7KoQK/H605NaiGLC+qAhiHOxyikJ4WVGNYrYRdIt1o0N2h6a09XlXg9dNKumUWYrtttihkLZ8Coh+g7skYzg602EAKCV5P2d7TeYpQGI43IXvIRyuGH3n0f74ejEYuuAxwr8SuvhUDgOg20Y58nP1FMIJQEyRmq/CCy6tKf04onc/HR09hEaVT27+2ftHNT68C/MbcmqhYoceWy7EQxZ/+L0/rVBrMkv6Y+89xHUZAPjGGk8+5Hh3dBz+9csG/IJxGU5uPOFkWMnYeHFZiJq4suHwL4njQedKzMQUGzUNJ2SaXQLpEgp5LoMgW6d4fR4YpPI2BBxnDewUhVhou4ouvUN3Gg7WbCO8tE3KIB0h02w1kdYs1DI0fKAJjLHMPfpyIdqmHOQYasKD0dT3GWoKQbck277TPVUhajS47DkNNUXGwVEZuo+6x2yv3bPLPe/rcpa555g2Z5v7jml7rHPnUXXOPnce02ZdKFWZ0w/ijneyZULGNNl6YsYtWXtiziaZ+3KGP5l7YoZYed/S/P472dPvOAy8x7QZq4H3uD7jOfAf1+fMBwEHDFkvBgHj+qw717TOmxLEXS+SLRMy5snWEzOeydoTc1bJ3JczDsncEzPEjSNPhrG7Icf1Ow4D7zFtxmrgPa7PeA78x/U580HAAUPWi0HAuD58JKRWZPh0d2j9y+X8cjm/XM4vl/PL5fxfX87bcD8rs7Dx17XiOChcnH+EP8OUwKOzxt4MygPC+fkZrJLMFTJINBBfG0BTgmfr7kYTvNIE+/vBR4f0ICAHFoZWuCJoPZWwUlwpAyUygm9Qkp/8fOVg+kv6+5cBAAi4VntMqqYSkKFuNau3rMhBSY2265oM+yLmBGsIXlkHtXX0uscAJXtAD+xaz4BGVtbBwjrADEYEr0ypblrUXbiPXoSyAruIi5IGHSupGjTswzwadPscE/hi0ualwSVFoyTDbpcw4Ynd9L3OxdXMFUEYo6iMke+RMSHrng5qrmy7rEDFrhjLcDdXprxckSNAvcK1Dx50i5L1OnYm1nSBRl5Wma4HCf79BzGfv/lsmd7M5zO4CMS+NGROfjuDkhbKqDSWJywqbpAClviw0wJJr0Erc909d0Dwyiz1jpIyntGExolChKGxm0ULIa1hlCxmm20htJJkfBwCuwH7pEFZERxPjsK5deGLVTE3fjadrlarCUbzxLrltIv1009npx8+n394ezw5mlRc6/hbprGeazRZ5k92qQxk42zvxGwiMDL8P1nMdRM00y1PG43KiG3Xj003o38T2ChRxJE69PWO2GUhKus5OGw2V+jpq9PbbVCntUTY35XKhzO+X1sc7MX4um4UXbrW73aCN6hbiuuH4rH1RjdzD5TsPJ5Tsb+Ce6DWYNf3jJq9NdwDFXu7vmfXO7R1ewBAb9f3DADZqu2Batku7xm1hnu2f3l78pXevuplEFz8Goad1zZbln38cCG2238ALKlb6Q==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Login callback"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/auth/callback"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./auth-controller-callback.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./auth-controller-callback.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./auth-controller-callback.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

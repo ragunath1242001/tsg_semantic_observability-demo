@@ -1,0 +1,1 @@
+{"parameters":[{"name":"role","required":true,"in":"path","schema":{"type":"string"}},{"name":"processId","required":true,"in":"query","schema":{"type":"string"}},{"name":"x-remote-party","required":true,"in":"header","schema":{"type":"string"}},{"name":"x-dataset-id","required":true,"in":"header","schema":{"type":"string"}}]}

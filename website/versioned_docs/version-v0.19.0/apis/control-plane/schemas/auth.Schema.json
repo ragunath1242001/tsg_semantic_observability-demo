@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"protocol":{"type":"string","description":"Authentication protocol"},"version":{"type":"string","description":"Authentication protocol version"},"profile":{"description":"Authentication profiles","type":"array","items":{"type":"string"}}},"required":["protocol","version"],"title":"Auth"},"schemaType":"response"}

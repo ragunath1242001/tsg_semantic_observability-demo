@@ -1,0 +1,70 @@
+---
+id: transfer-controller-callback-complete-transfer-process
+title: "Callback to complete transfer process"
+description: "Callback to complete transfer process"
+sidebar_label: "Callback to complete transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWU1vGzcU/CsET22wkVz30HZPTR03MNAkRuykB8MwKO6TxJgiGZJrRRX2vxeP+0XuMkYOvRTQKclw+MgZfoiZPVJtwDIvtLqqaElvLVNuDfZCK2+1lGAfOJNyxfjjhd4ZCR56yrXVHJyjBTXMsh14sI6Wd0eq2A5oSUVFC2rhSy0sVLT0toaCCkVLapjf0oJW4LgVBseORiZXr2lBHd/CjtHySP3BYDXnrVAb2jT3bVFw/g9dHZAxHYNr5UF5bGLGSMGDvOVnh+Mc56X16jNwjzosmuEFOGz9vW2ezqCg8JWhE4lbwRqh1Vtwjm2ANqHak6jAXovq+So98aUR1ctffv0NO3OtXL37js49MXT+6fxn2jSx63edjHQ6af37gnrhnxd005rWNG15Z7RyrU3nZ2f4R7qYF92eIbzbNBXx/fq6muO+WddSHuh/tlrOM1+73IaJ3BpptJtFUIQcB7y2wh/CDl4Bs2BpeXeP282zDW7swRyHjn1Dr9eD5FGxGU7KDvxW4zkz2gUNeBJKumRGLPtz5pZ9R7c8iqpZ8mEx8GCAfWoP2v046bA6rQ+a1X57HvvVAgVdS70PFAS0Ff8Eoy901RrDtWkrcAvMQ8nNgm0swC4sThbFncCqKXOOFbQ2VaZmDkVn0b0pN4fiygKv5+QsXNAdU2wzI+fQItLLmWdSbxIPemx0YGRNkVj9yJpjsfKRN8cS1SMxA8aKR+IcS9RqtRYTsS0Uae05EyBR2nNmUKKzZ82gVGVPm2OJxp42g2KFFfPMSKYgETmio86YOcditTEzh8aaY24OTZTH5Cwc64/JOXTqggM/8wCx1IGWNUWm6lvWHJsqb3lzbKa6JWbAqeKWOMditQo22gvW3dZ5fFSdsnNorD5l5/HYhZSfxxM30g7faIhdSTvk8dgdo6Xgh8SYDho9GTgTIHZi4MygWP/AmkGJ6oE2x2KtA20GxQotbITzNtU4gKPKiDeDYqURLwPGaiNmBkwUR9QcGquOqBkwVt6/JRLlAzgqj3gzKFYe8TJgrDxiZsBEeUTNobHyiJoB8SXHpQDlLyxUoLxg0p2eN6fnzel5c3renJ43p+fN6Xlzet78n583+MDp06kuHMPrsIP6tj+13TG8Nj5d06IPgrbem1nq+gmsWAu2kkCuLThQPpwfogAqDO1CnLWrFcZyQFbg9wCK+L0mQjnPFAdH9Jr4LRDeRsYkXMaL8BTDEO/DGNZejjlcF64+k6BOAtR5SjoJSTNJKMbNax2ysD7fvHlDumibXA8/XUkMvRWOvDegXl1fEWeAi3UXSRK31XsXpIKqjBbKD9qTmgvyVjvfN41cZoFYkMy3xmLja7zMDePovvaaa1kQ5vpxoSKrQ+BdcimMA/K3to9Cbcgbq2sz9nYL8t5vwU4Gc7Ux2nrxFM/Ca7Jjj9hoIdTGHxTCmSIrIKyqxsl176eCMFVNuzFPPl4RoTxYxtEdF0p4pBjJOCwIeXh48U57ePHwUJLE1grWQongqXBEaR8KqW7oFZBKWOBeHogU6hEqshd+SxhxQm3kxOxhHy4ILShGo+06dsky45gsNwWVgoNyYe913ydeGca3QM4XZ3gDWNkdEVcul/v9fsFC80LbzbLr65Z/XV1cvru5fHm+OFts/U6GTY5R7o6pqPL3psHJzhsCWw9f/dJIJhTu4DCxYxcU31FmBCrro2I83UMqXdCyy/aHvPi+oFtMmss7ejyumIOPVjYNwl9qwPsVU+QnZsMNEKLvSjj8e0XLNZMOZpMc4nr6w4fuK8OPJP12k9XRgUzh/f3EZA3tIj3Cof1W1Nw3Bd0Cq0LwfuwaLtrhXt62HzH6jrMvBU3R93jFORj/LPc+CuKv39/c4r3ZfUvahTicWrbHHw+2byepg/zw38eAHalkalPjNVXStibuBAzWo4WcXMpBVdaG47Fl3OpHUE0zuOLx32hM0/wLcvvMKQ==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Callback to complete transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/callbacks/transfers/{id}/completion"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Callback to complete transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./transfer-controller-callback-complete-transfer-process.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./transfer-controller-callback-complete-transfer-process.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./transfer-controller-callback-complete-transfer-process.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

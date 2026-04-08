@@ -1,0 +1,1 @@
+{"parameters":[{"name":"mobile","required":false,"in":"query","description":"Whether the offer is for mobile or server applications","schema":{"default":true,"example":true,"type":"boolean"}}]}

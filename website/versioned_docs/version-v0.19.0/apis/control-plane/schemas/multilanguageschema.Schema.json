@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"@value":{"type":"string","example":"This is a sentence."},"@language":{"type":"string","example":"en"}},"required":["@value","@language"],"title":"MultilanguageSchema"},"schemaType":"response"}

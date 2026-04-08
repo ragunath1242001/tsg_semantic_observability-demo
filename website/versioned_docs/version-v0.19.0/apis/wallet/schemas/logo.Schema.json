@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"uri":{"type":"string","example":"https://example.com/image.png"},"alt_text":{"type":"string","example":"Logo alt text"}},"required":["uri"],"title":"Logo"},"schemaType":"response"}

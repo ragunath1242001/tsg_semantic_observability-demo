@@ -1,0 +1,70 @@
+---
+id: rule-repository-controller-get-rules
+title: "Retrieve rules"
+description: "Retrieve rule templates registered in this control plane"
+sidebar_label: "Retrieve rules"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve rules"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/policy/rule"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieve rule templates registered in this control plane
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./rule-repository-controller-get-rules.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./rule-repository-controller-get-rules.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./rule-repository-controller-get-rules.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

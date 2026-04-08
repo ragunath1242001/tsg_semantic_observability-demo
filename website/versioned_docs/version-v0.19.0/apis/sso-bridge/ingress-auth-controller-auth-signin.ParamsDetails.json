@@ -1,0 +1,1 @@
+{"parameters":[{"name":"clientId","required":true,"in":"query","schema":{"type":"string"}},{"name":"rd","required":true,"in":"query","schema":{"type":"string"}}]}

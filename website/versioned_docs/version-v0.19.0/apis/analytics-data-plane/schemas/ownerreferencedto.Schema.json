@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"apiVersion":{"type":"string"},"blockOwnerDeletion":{"type":"boolean"},"controller":{"type":"boolean"},"kind":{"type":"string"},"name":{"type":"string"},"uid":{"type":"string"}},"required":["apiVersion","blockOwnerDeletion","controller","kind","name","uid"],"title":"OwnerReferenceDto"},"schemaType":"response"}

@@ -1,0 +1,6111 @@
+openapi: 3.0.0
+paths:
+  /api/management/audit-logs:
+    get:
+      description: Fetches paginated audit log entries with optional filters.
+      operationId: AuditLogController_list
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+        - name: callerSub
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: callerType
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: resultAllowed
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: correlationId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: ipAddress
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: requestPath
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: from
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: resourceType
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: action
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: severity
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - debug
+                - info
+                - warning
+                - error
+                - critical
+      responses:
+        "200":
+          description: Successful response
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+      security:
+        - oauth2:
+            - read:cp.audit_log
+      summary: List audit log entries
+      tags: &a1
+        - Audit Logs
+  /api/management/audit-logs/{id}:
+    get:
+      description: Fetches a single audit log entry by its ID.
+      operationId: AuditLogController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - oauth2:
+            - read:cp.audit_log
+      summary: Get audit log entry by ID
+      tags: *a1
+  /.well-known/dspace-version:
+    get:
+      description: Returns the protocol version of the control plane.
+      operationId: VersionsController_getVersions
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionSchema"
+      summary: Retrieve the protocol version metadata
+      tags:
+        - Versions
+  /api/settings:
+    get:
+      description: Retrieves the settings of the control plane.
+      operationId: ConfigController_getSettings
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeConfigDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a2
+        - oauth2:
+            - update:cp.config
+      summary: Retrieve settings
+      tags: &a3
+        - Settings
+  /api/settings/update:
+    post:
+      description: Updates runtime settings for the control plane.
+      operationId: ConfigController_updateSettings
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuntimeConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeConfigDto"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a2
+      summary: Update settings
+      tags: *a3
+  /api/settings/upload:
+    post:
+      description: Uploads logo for the control plane, receive a base64 encoded url.
+      operationId: ConfigController_uploadFile
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      security: *a2
+      summary: Upload logo
+      tags: *a3
+  /health:
+    get:
+      description: Retrieves the current health of the app. If the app is running and
+        it is connected to the database it always returns an empty 200 OK
+      operationId: HealthController_getHealth
+      parameters: []
+      responses:
+        "200":
+          description: ""
+        "502":
+          description: ""
+        "503":
+          description: The Health Check is not successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  info:
+                    type: object
+                    example:
+                      database: &a4
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example:
+                      redis: &a5
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database: *a4
+                      redis: *a5
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+      summary: Health check
+      tags:
+        - Health
+  /api/status:
+    get:
+      description: Retrieves the current health of the control plane. With additional
+        status information
+      operationId: StatusController_getStatus
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusDto"
+      responses:
+        "200":
+          description: ""
+        "502":
+          description: ""
+      summary: Application status
+      tags:
+        - Status
+  /api/auth/user:
+    get:
+      description: Retrieves current user state, whether someone is logged in or not a
+        200 result is provided. This is used in the frontend to determine
+        whether certain aspects should be shown.
+      operationId: AuthController_getUser
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AuthenticatedUser"
+                  - $ref: "#/components/schemas/UnauthenticatedUser"
+      summary: Retrieve current user status
+      tags: &a6
+        - Authentication
+  /api/auth/login:
+    get:
+      description: Redirects user to the correct authorization server
+      operationId: AuthController_login
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      summary: Login redirect
+      tags: *a6
+  /api/auth/logout:
+    get:
+      description: Removes session information and redirects user the root of the
+        frontend (`auth.redirectURL`)
+      operationId: AuthController_logout
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      summary: Logout redirect
+      tags: *a6
+  /api/auth/callback:
+    get:
+      description: Users are redirected from the authorization server to this endpoint
+        which will redirect them to the frontend (`auth.redirectURL`)
+      operationId: AuthController_callback
+      parameters:
+        - name: state
+          required: false
+          in: query
+          description: The state parameter
+          schema:
+            example: randomState
+            type: string
+        - name: code
+          required: false
+          in: query
+          description: The authorization code
+          schema:
+            example: code
+            type: string
+        - name: access_token
+          required: false
+          in: query
+          description: The access token
+          schema:
+            type: string
+        - name: token_type
+          required: false
+          in: query
+          description: The token type
+          schema:
+            example: Bearer
+            type: string
+        - name: expires_in
+          required: false
+          in: query
+          description: The token expiration in seconds
+          schema:
+            example: 3600
+            type: string
+        - name: id_token
+          required: false
+          in: query
+          description: The ID token
+          schema:
+            type: string
+        - name: code_verifier
+          required: false
+          in: query
+          description: The code verifier
+          schema:
+            example: randomChallengeVerifier
+            type: string
+      responses:
+        "302":
+          description: ""
+      summary: Login callback
+      tags: *a6
+  /api/data-plane/init:
+    post:
+      description: Initializes a new data plane with the provided details.
+      operationId: DataPlaneController_init
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneCreation"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
+        "400":
+          description: Invalid data plane details provided
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - create:cp.dataplane
+      summary: Initialize data plane
+      tags: &a7
+        - Data Plane
+  /api/data-plane/{id}/update:
+    post:
+      description: Updates the details of an existing data plane.
+      operationId: DataPlaneController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneDetailsDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
+        "400":
+          description: Identifier mismatch or invalid data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - update:cp.dataplane
+      summary: Update data plane
+      tags: *a7
+  /api/data-plane/{id}/catalog:
+    post:
+      description: Updates the catalog for the specified data plane.
+      operationId: DataPlaneController_updateCatalog
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "400":
+          description: Invalid catalog data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - update:cp.catalog
+      summary: Update catalog
+      tags: *a7
+  /api/data-plane/{id}/dataset:
+    post:
+      description: Adds a new dataset to the specified data plane.
+      operationId: DataPlaneController_addDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Dataset details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetSchema"
+      responses:
+        "200":
+          description: Dataset added successfully
+        "400":
+          description: Invalid dataset details provided
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - create:cp.dataset
+      summary: Add dataset
+      tags: *a7
+  /api/data-plane/{id}/dataset/{datasetId}:
+    put:
+      description: Updates an existing dataset for the specified data plane.
+      operationId: DataPlaneController_updateDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: datasetId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Updated dataset details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetSchema"
+      responses:
+        "200":
+          description: Dataset updated successfully
+        "400":
+          description: Identifier mismatch or invalid dataset data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - update:cp.dataset
+      summary: Update dataset
+      tags: *a7
+    delete:
+      description: Deletes a dataset from the specified data plane.
+      operationId: DataPlaneController_deleteDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: datasetId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Dataset deleted successfully
+        "400":
+          description: Invalid dataset identifier
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - delete:cp.dataset
+      summary: Delete dataset
+      tags: *a7
+  /api/management/dataplanes:
+    get:
+      description: Fetches all the dataplanes.
+      operationId: DataplaneManagementController_getDataPlanes
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DataPlaneDetailsDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.dataplane
+      summary: Get all dataplanes
+      tags: &a8
+        - Data Plane Management
+    post:
+      description: Adds a new dataplane.
+      operationId: DataplaneManagementController_addDataplane
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneDetailsDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
+        "400":
+          description: Invalid dataplane data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - create:cp.dataplane
+      summary: Add a dataplane
+      tags: *a8
+  /api/management/dataplanes/{id}:
+    put:
+      description: Updates an existing dataplane.
+      operationId: DataplaneManagementController_updateDataplane
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneDetailsDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
+        "400":
+          description: Invalid dataplane data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - update:cp.dataplane
+      summary: Update a dataplane
+      tags: *a8
+    delete:
+      description: Deletes a dataplane by ID.
+      operationId: DataplaneManagementController_deleteDataPlane
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: Dataplane deleted successfully
+        "400":
+          description: Invalid dataplane ID
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - delete:cp.dataplane
+      summary: Delete a dataplane
+      tags: *a8
+  /api/management/dataplanes/{id}/datasets:
+    get:
+      description: Fetches all datasets associated with a specific dataplane.
+      operationId: DataplaneManagementController_getDatasets
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DatasetSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.dataplane
+      summary: Get all datasets for a dataplane
+      tags: *a8
+  /api/catalog/request:
+    post:
+      description: Requests a catalog with the provided details.
+      operationId: CatalogController_request
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogRequestMessageSchema"
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "400":
+          description: Invalid catalog request data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a9
+        - bearer: []
+      summary: Request catalog
+      tags: &a10
+        - Catalog
+  /api/catalog/datasets/{id}:
+    get:
+      description: Fetches a dataset by ID.
+      operationId: CatalogController_getDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetSchema"
+        "400":
+          description: Invalid dataset ID
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a9
+      summary: Get dataset
+      tags: *a10
+  /api/management/catalog/request:
+    get:
+      description: Requests a catalog from a remote or local connector.
+      operationId: CatalogManagementController_requestCatalog
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+        - name: address
+          required: false
+          in: query
+          description: The address of the remote connector
+          schema:
+            type: string
+        - name: audience
+          required: false
+          in: query
+          description: The audience for the request
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "400":
+          description: Invalid request parameters
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - &a11
+          bearer: []
+        - oauth2:
+            - read:cp.catalog
+      summary: Request catalog
+      tags: &a12
+        - Catalog Management
+  /api/management/catalog/dataset:
+    get:
+      description: Requests a dataset from a remote or local connector by ID.
+      operationId: CatalogManagementController_requestDataset
+      parameters:
+        - name: id
+          required: true
+          in: query
+          description: The ID of the dataset
+          schema:
+            type: string
+        - name: address
+          required: false
+          in: query
+          description: The address of the remote connector
+          schema:
+            type: string
+        - name: audience
+          required: false
+          in: query
+          description: The audience for the request
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetSchema"
+        "400":
+          description: Invalid request parameters
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - *a11
+        - oauth2:
+            - read:cp.dataset
+      summary: Request dataset
+      tags: *a12
+    post:
+      description: Adds a new dataset to the catalog.
+      operationId: CatalogManagementController_addDataset
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetSchema"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetSchema"
+        "400":
+          description: Invalid dataset data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - *a11
+        - oauth2:
+            - create:cp.dataset
+      summary: Add dataset
+      tags: *a12
+  /api/management/catalog/dataset/{id}:
+    put:
+      description: Updates an existing dataset in the catalog.
+      operationId: CatalogManagementController_updateDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: The ID of the dataset to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetSchema"
+      responses:
+        "202":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetSchema"
+        "400":
+          description: Invalid dataset data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - *a11
+        - oauth2:
+            - update:cp.dataset
+      summary: Update dataset
+      tags: *a12
+    delete:
+      description: Deletes a dataset from the catalog by ID.
+      operationId: CatalogManagementController_deleteDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: The ID of the dataset to delete
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Dataset deleted successfully
+        "400":
+          description: Invalid dataset ID
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - *a11
+        - oauth2:
+            - delete:cp.dataset
+      summary: Delete dataset
+      tags: *a12
+  /api/negotiations/request:
+    post:
+      operationId: NegotiationController_request
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractRequestMessageSchema"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security: &a13
+        - bearer: []
+      summary: Request a new negotiation
+      tags: &a14
+        - Negotiations
+  /api/negotiations/{id}:
+    get:
+      operationId: NegotiationController_getNegotiation
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security: *a13
+      summary: Get negotiation status by ID
+      tags: *a14
+  /api/negotiations/{id}/request:
+    post:
+      operationId: NegotiationController_requestWithId
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractRequestMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security: *a13
+      summary: Request negotiation with ID
+      tags: *a14
+  /api/negotiations/{id}/events:
+    post:
+      operationId: NegotiationController_negotiationEvent
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractNegotiationEventMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a13
+      summary: Handle negotiation event
+      tags: *a14
+  /api/negotiations/{id}/agreement/verification:
+    post:
+      operationId: NegotiationController_agreementVerification
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractAgreementVerificationMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a13
+      summary: Verify agreement
+      tags: *a14
+  /api/negotiations/{id}/termination:
+    post:
+      operationId: NegotiationController_negotiationTermination
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractNegotiationTerminationMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a13
+      summary: Terminate negotiation
+      tags: *a14
+  /api/callbacks/negotiations/{id}:
+    get:
+      operationId: NegotiationController_callbackStatus
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security: *a13
+      summary: Handle negotiation callback status
+      tags: *a14
+  /api/callbacks/negotiations/{id}/offers:
+    post:
+      operationId: NegotiationController_callbackOffer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractOfferMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a13
+      summary: Handle negotiation callback offer
+      tags: *a14
+  /api/callbacks/negotiations/{id}/agreement:
+    post:
+      operationId: NegotiationController_callbackAgreement
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractAgreementMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a13
+      summary: Handle negotiation callback agreement
+      tags: *a14
+  /api/callbacks/negotiations/{id}/events:
+    post:
+      operationId: NegotiationController_callbackEvent
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractNegotiationEventMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a13
+      summary: Handle negotiation callback event
+      tags: *a14
+  /api/callbacks/negotiations/{id}/termination:
+    post:
+      operationId: NegotiationController_callbackTermination
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractNegotiationEventMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a13
+      summary: Handle negotiation callback termination
+      tags: *a14
+  /api/management/negotiations:
+    get:
+      operationId: NegotiationManagementController_getNegotiations
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: Successfully fetched negotiations
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NegotiationStatusDto"
+      security:
+        - oauth2:
+            - read:cp.negotiation
+      summary: Get all negotiations
+      tags: &a15
+        - Negotiations Management
+  /api/management/negotiations/dataset/{datasetId}:
+    get:
+      operationId: NegotiationManagementController_getNegotiationsFromDatasetId
+      parameters:
+        - name: datasetId
+          required: true
+          in: path
+          description: Dataset ID you want to find a negotiation for
+          schema:
+            type: string
+        - name: remoteParty
+          required: false
+          in: query
+          description: Remote party you want a negotiation to find for
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully fetched negotiations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NegotiationStatusDto"
+      security:
+        - oauth2:
+            - read:cp.negotiation
+      summary: Get all negotiations for a dataset
+      tags: *a15
+  /api/management/negotiations/{processId}:
+    get:
+      operationId: NegotiationManagementController_getNegotiation
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully fetched negotiation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NegotiationDetailDto"
+      security:
+        - oauth2:
+            - read:cp.negotiation
+      summary: Get a negotiation by process ID
+      tags: *a15
+  /api/management/negotiations/request:
+    post:
+      operationId: NegotiationManagementController_requestNewNegotiation
+      parameters:
+        - name: dataSet
+          required: true
+          in: query
+          description: Dataset for the negotiation
+          schema:
+            type: string
+        - name: address
+          required: true
+          in: query
+          description: Address for the negotiation
+          schema:
+            type: string
+        - name: audience
+          required: true
+          in: query
+          description: Audience for the negotiation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Offer details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfferSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security:
+        - oauth2:
+            - create:cp.negotiation
+      summary: Request a new negotiation
+      tags: *a15
+  /api/management/negotiations/{processId}/request:
+    post:
+      operationId: NegotiationManagementController_requestExistingNegotiation
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Offer details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfferSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security:
+        - oauth2:
+            - execute:cp.negotiation
+      summary: Request an existing negotiation
+      tags: *a15
+  /api/management/negotiations/{processId}/offers:
+    post:
+      operationId: NegotiationManagementController_offer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+        - name: address
+          required: false
+          in: query
+          description: Address for the negotiation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Offer details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfferSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security:
+        - oauth2:
+            - execute:cp.negotiation
+      summary: Submit an offer for an existing negotiation
+      tags: *a15
+  /api/management/negotiations/{processId}/agreement:
+    post:
+      operationId: NegotiationManagementController_agree
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security:
+        - oauth2:
+            - execute:cp.negotiation
+      summary: Agree to a negotiation
+      tags: *a15
+  /api/management/negotiations/{processId}/verify:
+    post:
+      operationId: NegotiationManagementController_verify
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security:
+        - oauth2:
+            - execute:cp.negotiation
+      summary: Verify a negotiation agreement
+      tags: *a15
+  /api/management/negotiations/{processId}/finalize:
+    post:
+      operationId: NegotiationManagementController_finalize
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security:
+        - oauth2:
+            - execute:cp.negotiation
+      summary: Finalize a negotiation
+      tags: *a15
+  /api/management/negotiations/{processId}/termination:
+    post:
+      operationId: NegotiationManagementController_terminate
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Termination details
+        content:
+          application/json:
+            schema:
+              example:
+                code: string
+                reason: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security:
+        - oauth2:
+            - execute:cp.negotiation
+      summary: Terminate a negotiation
+      tags: *a15
+  /api/transfers/request:
+    post:
+      operationId: TransferController_request
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferRequestMessageSchema"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferProcessSchema"
+      security: &a16
+        - bearer: []
+      summary: Request a transfer
+      tags: &a17
+        - Transfers
+  /api/transfers/{id}:
+    get:
+      operationId: TransferController_getTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferProcessSchema"
+      security: *a16
+      summary: Get transfer status by ID
+      tags: *a17
+  /api/transfers/{id}/start:
+    post:
+      operationId: TransferController_startTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferStartMessageSchema"
+      responses:
+        "200":
+          description: Transfer started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a16
+      summary: Start transfer process
+      tags: *a17
+  /api/transfers/{id}/completion:
+    post:
+      operationId: TransferController_completeTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferCompletionMessageSchema"
+      responses:
+        "200":
+          description: Transfer completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a16
+      summary: Complete transfer process
+      tags: *a17
+  /api/transfers/{id}/termination:
+    post:
+      operationId: TransferController_terminateTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferTerminationMessageSchema"
+      responses:
+        "200":
+          description: Transfer terminated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a16
+      summary: Terminate transfer process
+      tags: *a17
+  /api/transfers/{id}/suspension:
+    post:
+      operationId: TransferController_suspendTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferSuspensionMessageSchema"
+      responses:
+        "200":
+          description: Transfer suspended successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a16
+      summary: Suspend transfer process
+      tags: *a17
+  /api/callbacks/transfers/{id}:
+    get:
+      operationId: TransferController_callbackGetTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferProcessSchema"
+      security: *a16
+      summary: Get transfer status by ID
+      tags: *a17
+  /api/callbacks/transfers/{id}/start:
+    post:
+      operationId: TransferController_callbackStartTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferStartMessageSchema"
+      responses:
+        "200":
+          description: Callback started transfer successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a16
+      summary: Callback to start transfer process
+      tags: *a17
+  /api/callbacks/transfers/{id}/completion:
+    post:
+      operationId: TransferController_callbackCompleteTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferCompletionMessageSchema"
+      responses:
+        "200":
+          description: Callback completed transfer successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a16
+      summary: Callback to complete transfer process
+      tags: *a17
+  /api/callbacks/transfers/{id}/termination:
+    post:
+      operationId: TransferController_callbackTerminateTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferTerminationMessageSchema"
+      responses:
+        "200":
+          description: Callback terminated transfer successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a16
+      summary: Callback to terminate transfer process
+      tags: *a17
+  /api/callbacks/transfers/{id}/suspension:
+    post:
+      operationId: TransferController_callbackSuspendTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferSuspensionMessageSchema"
+      responses:
+        "200":
+          description: Callback suspended transfer successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a16
+      summary: Callback to suspend transfer process
+      tags: *a17
+  /api/management/transfers:
+    get:
+      operationId: TransferManagementController_getTransfers
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransferStatusDto"
+      security:
+        - oauth2:
+            - read:cp.transfer
+      summary: Get all transfers
+      tags: &a18
+        - Transfers Management
+  /api/management/transfers/{processId}:
+    get:
+      operationId: TransferManagementController_getTransfer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferDetailDto"
+      security:
+        - oauth2:
+            - read:cp.transfer
+      summary: Get transfer details by process ID
+      tags: *a18
+  /api/management/transfers/request:
+    post:
+      operationId: TransferManagementController_requestTransfer
+      parameters:
+        - name: address
+          required: true
+          in: query
+          description: Control plane address
+          schema:
+            type: string
+        - name: agreementId
+          required: true
+          in: query
+          description: Agreement ID
+          schema:
+            type: string
+        - name: audience
+          required: true
+          in: query
+          description: Audience
+          schema:
+            type: string
+        - name: format
+          required: true
+          in: query
+          description: Format
+          schema:
+            type: string
+        - name: dataPlaneIdentifier
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferProcessSchema"
+      security:
+        - oauth2:
+            - create:cp.transfer
+      summary: Request a new transfer
+      tags: *a18
+  /api/management/transfers/{processId}/start:
+    post:
+      operationId: TransferManagementController_startTransfer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneAddressDto"
+      responses:
+        "200":
+          description: Transfer started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security:
+        - oauth2:
+            - execute:cp.transfer
+      summary: Start a transfer process
+      tags: *a18
+  /api/management/transfers/{processId}/completion:
+    post:
+      operationId: TransferManagementController_completeTransfer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transfer completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security:
+        - oauth2:
+            - execute:cp.transfer
+      summary: Complete a transfer process
+      tags: *a18
+  /api/management/transfers/{processId}/termination:
+    post:
+      operationId: TransferManagementController_terminateTransfer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                reason:
+                  type: string
+              example:
+                code: TERMINATION_CODE
+                reason: Reason for termination
+      responses:
+        "200":
+          description: Transfer terminated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  status: success
+      security:
+        - oauth2:
+            - execute:cp.transfer
+      summary: Terminate a transfer process
+      tags: *a18
+  /api/management/transfers/{processId}/suspension:
+    post:
+      operationId: TransferManagementController_suspendTransfer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              example:
+                reason: Reason for suspension
+      responses:
+        "200":
+          description: Transfer suspended successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security:
+        - oauth2:
+            - execute:cp.transfer
+      summary: Suspend a transfer process
+      tags: *a18
+  /api/management/agreements/{agreementId}:
+    get:
+      operationId: AgreementManagementController_getAgreement
+      parameters:
+        - name: agreementId
+          required: true
+          in: path
+          description: Agreement ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgreementSchema"
+      security:
+        - oauth2:
+            - read:cp.agreement
+      summary: Get an agreement by agreement ID
+      tags:
+        - Agreement
+  /api/management/policy/evaluation/{transferId}/lastContext:
+    get:
+      description: Retrieve last evaluation context of the specified transfer ID.
+      operationId: PolicyEvaluationController_getLastContext
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationContext"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a19
+        - &a21
+          oauth2:
+            - read:cp.policy
+      summary: Retrieve last evaluation context
+      tags: &a20
+        - Evaluation
+  /api/management/policy/evaluation/{transferId}/lastDecision:
+    get:
+      description: Retrieve last evaluation decision of the specified transfer ID.
+      operationId: PolicyEvaluationController_getLastDecision
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationDecision"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a19
+      summary: Retrieve last evaluation decision
+      tags: *a20
+  /api/management/policy/evaluation/{transferId}/evaluate:
+    post:
+      description: Retrieve last evaluation context of the specified transfer ID.
+      operationId: PolicyEvaluationController_evaluate
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluationContext"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationDecision"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - *a21
+        - oauth2:
+            - execute:cp.policy
+      summary: Retrieve last evaluation context
+      tags: *a20
+  /api/management/policy/evaluation/{transferId}/evaluate/data-plane:
+    post:
+      description: Retrieve last evaluation context of the specified transfer ID.
+      operationId: PolicyEvaluationController_evaluateDataPlane
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationDecision"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a19
+      summary: Retrieve last evaluation context
+      tags: *a20
+  /api/management/policy/constraint:
+    get:
+      description: Retrieve constraint templates registered in this control plane
+      operationId: RuleRepositoryController_getConstraints
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.policy
+      summary: Retrieve constraints
+      tags: &a22
+        - Evaluation
+    post:
+      description: Add new contraint template
+      operationId: RuleRepositoryController_addConstraint
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstraintModel"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - create:cp.policy
+      summary: Add constraint
+      tags: *a22
+  /api/management/policy/constraint/odrl:
+    post:
+      description: Get constraint based on an ODRL constraint
+      operationId: RuleRepositoryController_getConstraintByOdrl
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstraintSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.policy
+      summary: Get constraint by ODRL
+      tags: *a22
+  /api/management/policy/constraint/{id}:
+    get:
+      description: Get constraint based on its identifier
+      operationId: RuleRepositoryController_getConstraint
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.policy
+      summary: Get constraint
+      tags: *a22
+    delete:
+      description: Delete constraint template
+      operationId: RuleRepositoryController_deleteConstraint
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - delete:cp.policy
+      summary: Delete constraint
+      tags: *a22
+    put:
+      description: Update constraint template
+      operationId: RuleRepositoryController_updateConstraint
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstraintModel"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - update:cp.policy
+      summary: Update constraint
+      tags: *a22
+  /api/management/policy/constraint/{id}/odrl:
+    get:
+      description: Get constraint based on its identifier and convert to ODRL
+      operationId: RuleRepositoryController_getConstraintOdrl
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.policy
+      summary: Get constraint ODRL
+      tags: *a22
+  /api/management/policy/rule:
+    get:
+      description: Retrieve rule templates registered in this control plane
+      operationId: RuleRepositoryController_getRules
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Rule"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.policy
+      summary: Retrieve rules
+      tags: *a22
+    post:
+      description: Add new contraint template
+      operationId: RuleRepositoryController_addRule
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Rule"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - create:cp.policy
+      summary: Add rule
+      tags: *a22
+  /api/management/policy/rule/{id}:
+    get:
+      description: Get rule based on its identifier
+      operationId: RuleRepositoryController_getRule
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.policy
+      summary: Get rule
+      tags: *a22
+    delete:
+      description: Delete rule template
+      operationId: RuleRepositoryController_deleteRule
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - delete:cp.policy
+      summary: Delete rule
+      tags: *a22
+    put:
+      description: Update rule template
+      operationId: RuleRepositoryController_updateRule
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Rule"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - update:cp.policy
+      summary: Update rule
+      tags: *a22
+  /api/management/policy/rule/{id}/odrl:
+    get:
+      description: Get rule ODRL based on its identifier
+      operationId: RuleRepositoryController_getRuleOdrl
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: ruleType
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: target
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.policy
+      summary: Get rule ODRL
+      tags: *a22
+  /api/management/registry:
+    get:
+      description: Requests all available catalogs.
+      operationId: RegistryManagementController_requestCatalogs
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.registry
+      summary: Request catalogs
+      tags: &a23
+        - Registry Management
+  /api/management/registry/addresses:
+    get:
+      description: Requests all available credential addresses.
+      operationId: RegistryManagementController_requestAddresses
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CredentialAddress"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.registry
+      summary: Request addresses
+      tags: *a23
+  /api/management/registry/didDocuments:
+    get:
+      description: Requests all DID Documents that could be retrieved at the Wallet
+        this Control Plane is linked to.
+      operationId: RegistryManagementController_requestDIDDocuments
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DIDDocumentDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.registry
+      summary: Request DID Documents
+      tags: *a23
+  /api/management/registry/catalogs:
+    get:
+      description: Fetches all catalogs from the registry.
+      operationId: RegistryManagementController_getCatalogs
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.registry
+      summary: Get catalogs
+      tags: *a23
+  /api/management/registry/catalogs/{participantId}:
+    get:
+      description: Fetches a specific catalog by its participant ID.
+      operationId: RegistryManagementController_getCatalogByParticipantId
+      parameters:
+        - name: participantId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - read:cp.registry
+      summary: Get catalog by participant ID
+      tags: *a23
+  /api/management/registry/refresh:
+    post:
+      description: Force refresh the registry by re-crawling all participant addresses
+        and catalogs.
+      operationId: RegistryManagementController_refreshRegistry
+      parameters: []
+      responses:
+        "200":
+          description: Registry refresh initiated successfully
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - execute:cp.registry
+      summary: Refresh registry
+      tags: *a23
+  /api/registry:
+    get:
+      operationId: RegistryController_getCatalogs
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: Successfully fetched all catalogs
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CatalogSchema"
+      security: &a24
+        - oauth2:
+            - read:cp.registry
+        - bearer: []
+      summary: Get all catalogs
+      tags: &a25
+        - Registry
+  /api/registry/addresses:
+    get:
+      operationId: RegistryController_requestAddresses
+      parameters: []
+      responses:
+        "200":
+          description: Successfully fetched all addresses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CredentialAddress"
+      security: *a24
+      summary: Request all addresses
+      tags: *a25
+info:
+  title: TSG Control Plane
+  description: "This OpenAPI specification shows the endpoints of the Control
+    Plane. Most of the endpoints are related to the Dataspace Protocol, as
+    specified by the Eclipse Working Group Dataspaces. Other endpoints are
+    supportive endpoints to make sure the data can be added to the catalog, and
+    to make sure that UI interactions can take place.  __*Note*__: This OpenAPI
+    definition is not intended to be directly linked with a single Control Plane
+    instance. "
+  version: ""
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: Health
+    description: Health Controller
+  - name: Settings
+    description: Settings Controller
+  - name: Authentication
+    description: Authentication Controller
+  - name: Data Plane
+    description: Data Plane Management Controller
+  - name: Data Plane Management
+    description: Data Plane Management Controller
+  - name: Catalog
+    description: Catalog Controller
+  - name: Catalog Management
+    description: Catalog Management Controller
+  - name: Negotiations
+    description: Negotiations Controller
+  - name: Negotiations Management
+    description: Negotiations Management Controller
+  - name: Transfers
+    description: Transfers Controller
+  - name: Transfers Management
+    description: Transfers Management Controller
+  - name: Registry
+    description: Registry Controller
+  - name: Registry Management
+    description: Registry Management Controller
+servers: []
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          scopes: &a26
+            create:cp.agreement: create:cp.agreement
+            read:cp.agreement: read:cp.agreement
+            update:cp.agreement: update:cp.agreement
+            delete:cp.agreement: delete:cp.agreement
+            execute:cp.agreement: execute:cp.agreement
+            manage:cp.agreement: manage:cp.agreement
+            create:cp.catalog: create:cp.catalog
+            read:cp.catalog: read:cp.catalog
+            update:cp.catalog: update:cp.catalog
+            delete:cp.catalog: delete:cp.catalog
+            execute:cp.catalog: execute:cp.catalog
+            manage:cp.catalog: manage:cp.catalog
+            create:cp.config: create:cp.config
+            read:cp.config: read:cp.config
+            update:cp.config: update:cp.config
+            delete:cp.config: delete:cp.config
+            execute:cp.config: execute:cp.config
+            manage:cp.config: manage:cp.config
+            create:cp.dataplane: create:cp.dataplane
+            read:cp.dataplane: read:cp.dataplane
+            update:cp.dataplane: update:cp.dataplane
+            delete:cp.dataplane: delete:cp.dataplane
+            execute:cp.dataplane: execute:cp.dataplane
+            manage:cp.dataplane: manage:cp.dataplane
+            create:cp.dataset: create:cp.dataset
+            read:cp.dataset: read:cp.dataset
+            update:cp.dataset: update:cp.dataset
+            delete:cp.dataset: delete:cp.dataset
+            execute:cp.dataset: execute:cp.dataset
+            manage:cp.dataset: manage:cp.dataset
+            create:cp.negotiation: create:cp.negotiation
+            read:cp.negotiation: read:cp.negotiation
+            update:cp.negotiation: update:cp.negotiation
+            delete:cp.negotiation: delete:cp.negotiation
+            execute:cp.negotiation: execute:cp.negotiation
+            manage:cp.negotiation: manage:cp.negotiation
+            create:cp.policy: create:cp.policy
+            read:cp.policy: read:cp.policy
+            update:cp.policy: update:cp.policy
+            delete:cp.policy: delete:cp.policy
+            execute:cp.policy: execute:cp.policy
+            manage:cp.policy: manage:cp.policy
+            create:cp.registry: create:cp.registry
+            read:cp.registry: read:cp.registry
+            update:cp.registry: update:cp.registry
+            delete:cp.registry: delete:cp.registry
+            execute:cp.registry: execute:cp.registry
+            manage:cp.registry: manage:cp.registry
+            create:cp.transfer: create:cp.transfer
+            read:cp.transfer: read:cp.transfer
+            update:cp.transfer: update:cp.transfer
+            delete:cp.transfer: delete:cp.transfer
+            execute:cp.transfer: execute:cp.transfer
+            manage:cp.transfer: manage:cp.transfer
+        clientCredentials:
+          scopes: *a26
+    bearer:
+      scheme: bearer
+      bearerFormat: VP
+      type: http
+      description: Verifiable Presentation needed to communicate between two instances
+        of the control plane.
+  schemas:
+    Auth:
+      type: object
+      properties:
+        protocol:
+          type: string
+          description: Authentication protocol
+        version:
+          type: string
+          description: Authentication protocol version
+        profile:
+          description: Authentication profiles
+          type: array
+          items:
+            type: string
+      required:
+        - protocol
+        - version
+    ProtocolVersion:
+      type: object
+      properties:
+        version:
+          description: The version string
+          anyOf:
+            - type: string
+              enum:
+                - "0.8"
+                - 2024-1
+                - 2025-1
+            - type: string
+          example: 2025-1
+        path:
+          type: string
+          description: The path for the protocol version
+        binding:
+          description: The binding type
+          anyOf:
+            - type: string
+              enum:
+                - HTTPS
+            - type: string
+        identifierType:
+          type: string
+          description: Identifier type
+        serviceId:
+          type: string
+          description: Service ID
+        auth:
+          description: Authentication information
+          allOf:
+            - $ref: "#/components/schemas/Auth"
+      required:
+        - version
+        - path
+        - binding
+    VersionSchema:
+      type: object
+      properties:
+        protocolVersions:
+          description: List of protocol versions
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/ProtocolVersion"
+      required:
+        - protocolVersions
+    RuntimeConfigDto:
+      type: object
+      properties:
+        controlPlaneInteractions:
+          type: string
+          example: automatic
+        color:
+          type: string
+          example: "#3B8BF6"
+        darkThemeUrl:
+          type: string
+          example: https://example.com/darktheme.png
+        lightThemeUrl:
+          type: string
+          example: https://example.com/lighttheme.png
+      required:
+        - controlPlaneInteractions
+        - color
+    ErrorDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ResourceNotFound
+        status:
+          type: string
+          example: 404 Not Found
+        code:
+          type: number
+          example: 404
+        message:
+          type: object
+          example: The requested resource does not exist.
+        error:
+          type: string
+          example: Not Found
+      required:
+        - name
+        - status
+        - code
+    DatabaseStatusDto:
+      type: object
+      properties:
+        status:
+          type: string
+          example: connected
+      required:
+        - status
+    MemoryUsageDto:
+      type: object
+      properties:
+        does_zap_garbage:
+          type: number
+          example: 1024
+        external_memory:
+          type: number
+          example: 2048
+        heap_size_limit:
+          type: number
+          example: 4096
+        malloced_memory:
+          type: number
+          example: 512
+        number_of_detached_contexts:
+          type: number
+          example: 0
+        number_of_native_contexts:
+          type: number
+          example: 2
+        peak_malloced_memory:
+          type: number
+          example: 1024
+        total_available_size:
+          type: number
+          example: 8192
+        total_global_handles_size:
+          type: number
+          example: 256
+        total_heap_size:
+          type: number
+          example: 16384
+        total_heap_size_executable:
+          type: number
+          example: 4096
+        total_physical_size:
+          type: number
+          example: 32768
+        used_global_handles_size:
+          type: number
+          example: 128
+        used_heap_size:
+          type: number
+          example: 8192
+      required:
+        - does_zap_garbage
+        - external_memory
+        - heap_size_limit
+        - malloced_memory
+        - number_of_detached_contexts
+        - number_of_native_contexts
+        - peak_malloced_memory
+        - total_available_size
+        - total_global_handles_size
+        - total_heap_size
+        - total_heap_size_executable
+        - total_physical_size
+        - used_global_handles_size
+        - used_heap_size
+    StatusNegotiationDto:
+      type: object
+      properties:
+        role:
+          type: string
+          example: provider
+        state:
+          type: string
+          example: OFFERED
+        count:
+          type: number
+          example: 1
+      required:
+        - role
+        - state
+        - count
+    StatusTransferDto:
+      type: object
+      properties:
+        role:
+          type: string
+          example: provider
+        state:
+          type: string
+          example: COMPLETED
+        count:
+          type: number
+          example: 3
+      required:
+        - role
+        - state
+        - count
+    StatusDto:
+      type: object
+      properties:
+        database:
+          example:
+            status: connected
+          allOf:
+            - $ref: "#/components/schemas/DatabaseStatusDto"
+        memoryUsage:
+          example:
+            does_zap_garbage: 1024
+            external_memory: 2048
+            heap_size_limit: 4096
+            malloced_memory: 512
+            number_of_detached_contexts: 0
+            number_of_native_contexts: 2
+            peak_malloced_memory: 1024
+            total_available_size: 8192
+            total_global_handles_size: 256
+            total_heap_size: 16384
+            total_heap_size_executable: 4096
+            total_physical_size: 32768
+            used_global_handles_size: 128
+            used_heap_size: 8192
+          allOf:
+            - $ref: "#/components/schemas/MemoryUsageDto"
+        uptime:
+          type: number
+          example: 3600
+        negotiations:
+          $ref: "#/components/schemas/StatusNegotiationDto"
+        transfers:
+          $ref: "#/components/schemas/StatusTransferDto"
+      required:
+        - database
+        - memoryUsage
+        - uptime
+        - negotiations
+        - transfers
+    ClientInfo:
+      type: object
+      properties:
+        sub:
+          type: string
+          example: user-id-123
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john.doe@example.com
+        didId:
+          type: string
+          example: did:example:123456789
+        permissions:
+          example:
+            - read:credential:own
+            - manage:key
+          description: ABAC permissions
+          type: array
+          items:
+            type: string
+        refreshToken:
+          type: string
+          example: refresh-token-abc123
+      required:
+        - sub
+        - name
+        - email
+        - permissions
+    AuthenticatedUser:
+      type: object
+      properties:
+        state:
+          type: object
+          example: authenticated
+        user:
+          example:
+            sub: user-id-123
+            name: John Doe
+            email: john.doe@example.com
+            permissions:
+              - read:credential:own
+              - manage:key
+            didId: did:example:123456789
+            refreshToken: refresh-token-abc123
+          allOf:
+            - $ref: "#/components/schemas/ClientInfo"
+      required:
+        - state
+        - user
+    UnauthenticatedUser:
+      type: object
+      properties:
+        state:
+          type: object
+          example: unauthenticated
+      required:
+        - state
+    DataPlaneCreation:
+      type: object
+      properties:
+        dataplaneType:
+          type: string
+          example: exampleType
+        title:
+          type: string
+          example: Dataplane Titel
+        endpointPrefix:
+          type: string
+          example: /api/v1/dataplane
+        callbackAddress:
+          type: string
+          example: http://localhost/callback
+        managementAddress:
+          type: string
+          example: http://localhost/manage
+        catalogSynchronization:
+          type: string
+          enum: &a27
+            - push
+            - pull
+          example: push
+        role:
+          type: string
+          enum: &a28
+            - consumer
+            - provider
+            - both
+          example: consumer
+        id:
+          type: string
+          example: dp-optional-12345
+      required:
+        - dataplaneType
+        - title
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - catalogSynchronization
+        - role
+    DataPlaneDetailsDto:
+      type: object
+      properties:
+        dataplaneType:
+          type: string
+          example: exampleType
+        title:
+          type: string
+          example: Dataplane Titel
+        endpointPrefix:
+          type: string
+          example: /api/v1/dataplane
+        callbackAddress:
+          type: string
+          example: http://localhost/callback
+        managementAddress:
+          type: string
+          example: http://localhost/manage
+        catalogSynchronization:
+          type: string
+          enum: *a27
+          example: push
+        role:
+          type: string
+          enum: *a28
+          example: consumer
+        id:
+          type: string
+          example: dp-12345
+      required:
+        - dataplaneType
+        - title
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - catalogSynchronization
+        - role
+        - id
+    ConstraintSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: Constraint
+        leftOperand:
+          type: string
+          example: leftOperandExample
+        operator:
+          type: string
+          example: operatorExample
+        rightOperand:
+          type: object
+          example:
+            value: rightOperandExample
+        rightOperandReference:
+          type: string
+          example: rightOperandReferenceExample
+      required:
+        - "@type"
+        - leftOperand
+        - operator
+    PermissionSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: Permission
+        assigner:
+          type: string
+          example: assignerExample
+        assignee:
+          type: string
+          example: assigneeExample
+        action:
+          type: string
+          example: actionExample
+        target:
+          type: string
+          example: targetExample
+        constraint:
+          example: &a29 []
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+        Duty:
+          example: []
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - action
+    ProhibitionSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: Prohibition
+        assigner:
+          type: string
+          example: assignerExample
+        assignee:
+          type: string
+          example: assigneeExample
+        action:
+          type: string
+          example: actionExample
+        target:
+          type: string
+          example: targetExample
+        constraint:
+          example: *a29
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+      required:
+        - "@type"
+        - action
+    DutySchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: Duty
+        assigner:
+          type: string
+          example: assignerExample
+        assignee:
+          type: string
+          example: assigneeExample
+        action:
+          type: string
+          example: actionExample
+        target:
+          type: string
+          example: targetExample
+        constraint:
+          example: *a29
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+      required:
+        - "@type"
+        - action
+    PolicySchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        "@type":
+          type: string
+          example: Offer
+        assigner:
+          type: string
+          example: assignerExample
+        assignee:
+          type: string
+          example: assigneeExample
+        profile:
+          type: string
+          example: profileExample
+        permission:
+          example: &a36 []
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionSchema"
+        prohibition:
+          example: &a37 []
+          type: array
+          items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        obligation:
+          example: &a38 []
+          type: array
+          items:
+            $ref: "#/components/schemas/DutySchema"
+        target:
+          type: string
+          example: targetExample
+      required:
+        - "@id"
+        - "@type"
+    DurationSchema:
+      type: object
+      properties:
+        "@value":
+          type: string
+          example: P3Y6M4DT12H30M5S
+        "@type":
+          type: string
+          example: xsd:duration
+      required:
+        - "@value"
+        - "@type"
+    DatasetSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        contactPoint:
+          type: string
+          example: contactPointExample
+        keyword:
+          example: &a30
+            - keyword1
+            - keyword2
+          type: array
+          items:
+            type: string
+        landingPage:
+          type: string
+          example: landingPageExample
+        theme:
+          example: &a31
+            - theme1
+            - theme2
+          type: array
+          items:
+            type: string
+        conformsTo:
+          example: &a32
+            - conformsToExample
+          type: array
+          items:
+            type: string
+        creator:
+          type: string
+          example: creatorExample
+        description:
+          example: &a33
+            - description1
+            - description2
+          type: array
+          items:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
+          example: &a34 []
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: &a35
+            - version1
+            - version2
+          type: array
+          items:
+            type: string
+        isVersionOf:
+          type: string
+          example: isVersionOfExample
+        version:
+          type: string
+          example: versionExample
+        hasCurrentVersion:
+          type: string
+          example: hasCurrentVersionExample
+        previousVersion:
+          type: string
+          example: previousVersionExample
+        "@type":
+          type: string
+          example: Dataset
+        distribution:
+          type: array
+          items:
+            type: string
+        spatialResolutionInMeters:
+          type: string
+          example: "100"
+        temporalResolution:
+          example: P1Y
+          allOf:
+            - $ref: "#/components/schemas/DurationSchema"
+        accrualPeriodicity:
+          type: string
+          example: accrualPeriodicityExample
+        spatial:
+          type: string
+          example: spatialExample
+        temporal:
+          type: string
+          example: temporalExample
+        wasGeneratedBy:
+          type: string
+          example: wasGeneratedByExample
+      required:
+        - "@id"
+        - "@type"
+    ResourceSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        "@type":
+          type: string
+          example: Resource
+        contactPoint:
+          type: string
+          example: contactPointExample
+        keyword:
+          example: *a30
+          type: array
+          items:
+            type: string
+        landingPage:
+          type: string
+          example: landingPageExample
+        theme:
+          example: *a31
+          type: array
+          items:
+            type: string
+        conformsTo:
+          example: *a32
+          type: array
+          items:
+            type: string
+        creator:
+          type: string
+          example: creatorExample
+        description:
+          example: *a33
+          type: array
+          items:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
+          example: *a34
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a35
+          type: array
+          items:
+            type: string
+        isVersionOf:
+          type: string
+          example: isVersionOfExample
+        version:
+          type: string
+          example: versionExample
+        hasCurrentVersion:
+          type: string
+          example: hasCurrentVersionExample
+        previousVersion:
+          type: string
+          example: previousVersionExample
+      required:
+        - "@id"
+        - "@type"
+    CatalogRecordSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        "@type":
+          type: string
+          example: CatalogRecord
+        conformsTo:
+          example:
+            - conformsToExample
+          type: array
+          items:
+            type: string
+        description:
+          example:
+            - Record description
+          type: array
+          items:
+            type: string
+        issued:
+          format: date-time
+          type: string
+          example: 2020-03-01T00:00:00Z
+        modified:
+          format: date-time
+          type: string
+          example: 2020-03-02T00:00:00Z
+        title:
+          type: string
+          example: Catalog title example
+        primaryTopic:
+          example: {}
+          allOf:
+            - $ref: "#/components/schemas/ResourceSchema"
+      required:
+        - "@id"
+        - "@type"
+    DataServiceSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        contactPoint:
+          type: string
+          example: contactPointExample
+        keyword:
+          example: *a30
+          type: array
+          items:
+            type: string
+        landingPage:
+          type: string
+          example: landingPageExample
+        theme:
+          example: *a31
+          type: array
+          items:
+            type: string
+        conformsTo:
+          example: *a32
+          type: array
+          items:
+            type: string
+        creator:
+          type: string
+          example: creatorExample
+        description:
+          example: *a33
+          type: array
+          items:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
+          example: *a34
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a35
+          type: array
+          items:
+            type: string
+        isVersionOf:
+          type: string
+          example: isVersionOfExample
+        version:
+          type: string
+          example: versionExample
+        hasCurrentVersion:
+          type: string
+          example: hasCurrentVersionExample
+        previousVersion:
+          type: string
+          example: previousVersionExample
+        "@type":
+          type: string
+          example: DataService
+        endpointDescription:
+          type: string
+          example: endpointDescriptionExample
+        endpointURL:
+          type: string
+          example: https://example.com/api
+        servesDataset:
+          example: []
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+      required:
+        - "@id"
+        - "@type"
+    CatalogSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        contactPoint:
+          type: string
+          example: contactPointExample
+        keyword:
+          example: *a30
+          type: array
+          items:
+            type: string
+        landingPage:
+          type: string
+          example: landingPageExample
+        theme:
+          example: *a31
+          type: array
+          items:
+            type: string
+        conformsTo:
+          example: *a32
+          type: array
+          items:
+            type: string
+        creator:
+          type: string
+          example: creatorExample
+        description:
+          example: *a33
+          type: array
+          items:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
+          example: *a34
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a35
+          type: array
+          items:
+            type: string
+        isVersionOf:
+          type: string
+          example: isVersionOfExample
+        version:
+          type: string
+          example: versionExample
+        hasCurrentVersion:
+          type: string
+          example: hasCurrentVersionExample
+        previousVersion:
+          type: string
+          example: previousVersionExample
+        distribution:
+          type: array
+          items:
+            type: string
+        spatialResolutionInMeters:
+          type: string
+          example: "100"
+        temporalResolution:
+          example: P1Y
+          allOf:
+            - $ref: "#/components/schemas/DurationSchema"
+        accrualPeriodicity:
+          type: string
+          example: accrualPeriodicityExample
+        spatial:
+          type: string
+          example: spatialExample
+        temporal:
+          type: string
+          example: temporalExample
+        wasGeneratedBy:
+          type: string
+          example: wasGeneratedByExample
+        "@type":
+          type: string
+          example: Catalog
+        participantId:
+          type: string
+          example: did:web:example
+        dataset:
+          example: []
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+        record:
+          example: {}
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogRecordSchema"
+        service:
+          example: []
+          type: array
+          items:
+            $ref: "#/components/schemas/DataServiceSchema"
+        themeTaxonomy:
+          type: string
+          example: themeTaxonomyExample
+        hasPart:
+          example: []
+          type: array
+          items:
+            $ref: "#/components/schemas/ResourceSchema"
+        homepage:
+          type: string
+          example: https://example.com/homepage
+      required:
+        - "@id"
+        - "@type"
+        - participantId
+    CatalogRequestMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: CatalogRequestMessage
+        filter:
+          example: []
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+    OfferSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        "@type":
+          type: string
+          example: Offer
+        assigner:
+          type: string
+          example: did:example:assigner
+        assignee:
+          type: string
+          example: assigneeExample
+        profile:
+          type: string
+          example: profileExample
+        permission:
+          example: *a36
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionSchema"
+        prohibition:
+          example: *a37
+          type: array
+          items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        obligation:
+          example: *a38
+          type: array
+          items:
+            $ref: "#/components/schemas/DutySchema"
+        target:
+          type: string
+          example: targetExample
+      required:
+        - "@id"
+        - "@type"
+    ContractRequestMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: ContractRequestMessage
+        consumerPid:
+          type: string
+          example: urn:example:consumerPid
+        providerPid:
+          type: string
+          example: urn:example:providerPid
+        callbackAddress:
+          type: string
+          example: http://example.com/callback
+        offer:
+          example:
+            "@type": Offer
+            assigner: urn:example:assigner
+          allOf:
+            - $ref: "#/components/schemas/OfferSchema"
+      required:
+        - "@type"
+        - consumerPid
+        - callbackAddress
+        - offer
+    ContractNegotiationSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        "@type":
+          type: string
+          example: ContractNegotiation
+        consumerPid:
+          type: string
+          example: urn:example:consumerPid
+        providerPid:
+          type: string
+          example: urn:example:providerPid
+        state:
+          type: string
+          example: REQUESTED
+      required:
+        - "@id"
+        - "@type"
+        - consumerPid
+        - providerPid
+        - state
+    ContractNegotiationEventMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: ContractNegotiationEventMessage
+        consumerPid:
+          type: string
+          example: urn:example:consumerPid
+        providerPid:
+          type: string
+          example: urn:example:providerPid
+        eventType:
+          type: string
+          example: NEGOTIATION_STARTED
+      required:
+        - "@type"
+        - consumerPid
+        - providerPid
+        - eventType
+    HashedMessageSchema:
+      type: object
+      properties:
+        digest:
+          type: string
+          example: sha256:abcdef1234567890
+        algorithm:
+          type: string
+          example: SHA-256
+      required:
+        - digest
+        - algorithm
+    ContractAgreementVerificationMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: ContractAgreementVerificationMessage
+        consumerPid:
+          type: string
+          example: urn:example:consumerPid
+        providerPid:
+          type: string
+          example: urn:example:providerPid
+        hashedMessage:
+          example:
+            digest: sha256:abcdef1234567890
+            algorithm: SHA-256
+          allOf:
+            - $ref: "#/components/schemas/HashedMessageSchema"
+      required:
+        - "@type"
+        - consumerPid
+        - providerPid
+    MultilanguageSchema:
+      type: object
+      properties:
+        "@value":
+          type: string
+          example: This is a sentence.
+        "@language":
+          type: string
+          example: en
+      required:
+        - "@value"
+        - "@language"
+    ContractNegotiationTerminationMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: ContractNegotiationTerminationMessage
+        consumerPid:
+          type: string
+          example: urn:example:consumerPid
+        providerPid:
+          type: string
+          example: urn:example:providerPid
+        code:
+          type: string
+          example: USER_CANCELLED
+        reason:
+          example:
+            - language: en
+              text: User cancelled negotiation.
+            - language: nl
+              text: Gebruiker heeft de onderhandeling geannuleerd.
+          type: array
+          items:
+            $ref: "#/components/schemas/MultilanguageSchema"
+      required:
+        - "@type"
+        - consumerPid
+        - providerPid
+        - reason
+    ContractOfferMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: ContractOfferMessage
+        consumerPid:
+          type: string
+          example: urn:example:consumerPid
+        providerPid:
+          type: string
+          example: urn:example:providerPid
+        offer:
+          example:
+            "@type": Offer
+            assigner: urn:example:assigner
+          allOf:
+            - $ref: "#/components/schemas/OfferSchema"
+        callbackAddress:
+          type: string
+          example: urn:example:target
+      required:
+        - "@type"
+        - providerPid
+        - offer
+    AgreementSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        "@type":
+          type: string
+          example: Agreement
+        assigner:
+          type: string
+          example: did:example:assigner
+        assignee:
+          type: string
+          example: did:example:assignee
+        profile:
+          type: string
+          example: profileExample
+        permission:
+          example: *a36
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionSchema"
+        prohibition:
+          example: *a37
+          type: array
+          items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        obligation:
+          example: *a38
+          type: array
+          items:
+            $ref: "#/components/schemas/DutySchema"
+        target:
+          type: string
+          example: urn:example:target
+        timestamp:
+          type: string
+          example: 2023-10-01T12:34:56Z
+      required:
+        - "@id"
+        - "@type"
+        - timestamp
+    ContractAgreementMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: ContractAgreementMessage
+        consumerPid:
+          type: string
+          example: urn:example:consumerPid
+        providerPid:
+          type: string
+          example: urn:example:providerPid
+        agreement:
+          example:
+            "@type": Agreement
+            assigner: urn:example:assigner
+            assignee: urn:example:assignee
+            timestamp: 2023-10-01T12:34:56Z
+            target: urn:example:target
+          allOf:
+            - $ref: "#/components/schemas/AgreementSchema"
+      required:
+        - "@type"
+        - consumerPid
+        - providerPid
+        - agreement
+    NegotiationStatusDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        remoteId:
+          type: string
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa7
+        remoteParty:
+          type: string
+          example: Remote Party Name
+        role:
+          type: string
+          enum: &a39
+            - provider
+            - consumer
+          example: provider
+        remoteAddress:
+          type: string
+          example: 192.168.1.100
+        state:
+          type: string
+          enum: &a40
+            - REQUESTED
+            - OFFERED
+            - ACCEPTED
+            - AGREED
+            - VERIFIED
+            - FINALIZED
+            - TERMINATED
+          example: REQUESTED
+        dataSet:
+          type: string
+          example: defaultDataSet
+        modifiedDate:
+          format: date-time
+          type: string
+          example: 2023-10-11T00:00:00.000Z
+      required:
+        - id
+        - remoteId
+        - remoteParty
+        - role
+        - remoteAddress
+        - state
+        - dataSet
+        - modifiedDate
+    NegotiationProcessEventDto:
+      type: object
+      properties:
+        time:
+          format: date-time
+          type: string
+          example: 2023-10-11T00:00:00.000Z
+        state:
+          type: string
+          enum:
+            - REQUESTED
+            - OFFERED
+            - ACCEPTED
+            - AGREED
+            - VERIFIED
+            - FINALIZED
+            - TERMINATED
+          example: REQUESTED
+        localMessage:
+          type: string
+          example: A local message example
+        code:
+          type: string
+          example: ERR_CODE
+        reason:
+          example: []
+          type: array
+          items:
+            $ref: "#/components/schemas/MultilanguageSchema"
+        agreementMessage:
+          type: string
+          example: Agreement reached on event
+        verification:
+          example: {}
+          allOf:
+            - $ref: "#/components/schemas/ContractAgreementVerificationMessageSchema"
+        hashedMessage:
+          example: {}
+          allOf:
+            - $ref: "#/components/schemas/HashedMessageSchema"
+        type:
+          type: string
+          enum:
+            - local
+            - remote
+          example: local
+      required:
+        - time
+        - state
+        - type
+    NegotiationDetailDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        remoteId:
+          type: string
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa7
+        remoteParty:
+          type: string
+          example: Remote Party Name
+        role:
+          type: string
+          enum: *a39
+          example: provider
+        remoteAddress:
+          type: string
+          example: 192.168.1.100
+        state:
+          type: string
+          enum: *a40
+          example: REQUESTED
+        dataSet:
+          type: string
+          example: defaultDataSet
+        modifiedDate:
+          format: date-time
+          type: string
+          example: 2023-10-11T00:00:00.000Z
+        offer:
+          example: {}
+          allOf:
+            - $ref: "#/components/schemas/OfferSchema"
+        agreement:
+          example: {}
+          allOf:
+            - $ref: "#/components/schemas/AgreementSchema"
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/NegotiationProcessEventDto"
+      required:
+        - id
+        - remoteId
+        - remoteParty
+        - role
+        - remoteAddress
+        - state
+        - dataSet
+        - modifiedDate
+        - events
+    EndpointPropertySchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: EndpointProperty
+        name:
+          type: string
+          example: endpointName
+        value:
+          type: string
+          example: endpointValue
+      required:
+        - "@type"
+        - name
+        - value
+    DataAddressSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: DataAddress
+        endpointType:
+          type: string
+          example: http
+        endpoint:
+          type: string
+          example: https://api.example.com
+        endpointProperties:
+          example:
+            - "@type": EndpointProperty
+              name: endpointName
+              value: endpointValue
+          type: array
+          items:
+            $ref: "#/components/schemas/EndpointPropertySchema"
+      required:
+        - "@type"
+        - endpointType
+        - endpoint
+    TransferRequestMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: TransferRequestMessage
+        consumerPid:
+          type: string
+          example: consumer-pid-123
+        agreementId:
+          type: string
+          example: agreement-id-456
+        format:
+          type: string
+          example: application/json
+        dataAddress:
+          example:
+            "@type": DataAddress
+            endpointType: http
+            endpoint: https://api.example.com
+            endpointProperties:
+              - "@type": EndpointProperty
+                name: name
+                value: value
+          allOf:
+            - $ref: "#/components/schemas/DataAddressSchema"
+        callbackAddress:
+          type: string
+          example: https://callback.example.com
+      required:
+        - "@type"
+        - consumerPid
+        - agreementId
+        - format
+        - callbackAddress
+    TransferProcessSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: TransferProcess
+        providerPid:
+          type: string
+          example: provider-pid-789
+        consumerPid:
+          type: string
+          example: consumer-pid-123
+        agreementId:
+          type: string
+          example: agreement-id-456
+        state:
+          type: string
+          example: COMPLETED
+      required:
+        - "@type"
+        - providerPid
+        - consumerPid
+        - agreementId
+        - state
+    TransferStartMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: TransferStartMessage
+        providerPid:
+          type: string
+          example: provider-pid-789
+        consumerPid:
+          type: string
+          example: consumer-pid-123
+        dataAddress:
+          example:
+            "@type": DataAddress
+            endpointType: http
+            endpoint: https://api.example.com
+            endpointProperties:
+              - "@type": EndpointProperty
+                name: name
+                value: value
+          allOf:
+            - $ref: "#/components/schemas/DataAddressSchema"
+      required:
+        - "@type"
+        - providerPid
+        - consumerPid
+    TransferCompletionMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: TransferCompletionMessage
+        providerPid:
+          type: string
+          example: provider-pid-789
+        consumerPid:
+          type: string
+          example: consumer-pid-123
+      required:
+        - "@type"
+        - providerPid
+        - consumerPid
+    TransferTerminationMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: TransferTerminationMessage
+        providerPid:
+          type: string
+          example: provider-pid-789
+        consumerPid:
+          type: string
+          example: consumer-pid-123
+        code:
+          type: string
+          example: TERMINATED
+        reason:
+          example:
+            - Contract breach
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - providerPid
+        - consumerPid
+        - code
+    TransferSuspensionMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: TransferSuspensionMessage
+        providerPid:
+          type: string
+          example: provider-pid-789
+        consumerPid:
+          type: string
+          example: consumer-pid-123
+        reason:
+          example:
+            - Technical issue
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - providerPid
+        - consumerPid
+    TransferStatusDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: local-12345
+        remoteId:
+          type: string
+          example: remote-98765
+        role:
+          type: string
+          example: provider
+        remoteAddress:
+          type: string
+          example: http://example.com/
+        remoteParty:
+          type: string
+          example: party-identifier-001
+        state:
+          type: string
+          enum: &a41
+            - REQUESTED
+            - STARTED
+            - TERMINATED
+            - COMPLETED
+            - SUSPENDED
+          example: REQUESTED
+        agreementId:
+          type: string
+          example: agreement-45678
+        format:
+          type: string
+          example: application/json
+        modifiedDate:
+          format: date-time
+          type: string
+          example: 2023-10-01T12:34:56Z
+      required:
+        - id
+        - role
+        - remoteAddress
+        - remoteParty
+        - state
+        - agreementId
+        - modifiedDate
+    DataPlaneProperty:
+      type: object
+      properties:
+        name:
+          type: string
+          example: propertyName
+        value:
+          type: string
+          example: propertyValue
+      required:
+        - name
+        - value
+    DataPlaneAddressDto:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          example: http://data-plane-endpoint
+        properties:
+          example:
+            - name: propertyName
+              value: propertyValue
+          type: array
+          items:
+            $ref: "#/components/schemas/DataPlaneProperty"
+      required:
+        - endpoint
+        - properties
+    DataPlaneTransferDto:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+          example: true
+        id:
+          type: string
+          example: req-identifier
+        dataAddress:
+          example:
+            endpoint: http://address
+            properties:
+              - name: key
+                value: value
+          allOf:
+            - $ref: "#/components/schemas/DataPlaneAddressDto"
+        callbackAddress:
+          type: string
+          example: http://callback-address
+        dataPlaneId:
+          type: string
+          example: transfer-identifier
+        endpointType:
+          type: string
+          example: type1
+      required:
+        - accepted
+        - id
+        - dataPlaneId
+        - endpointType
+    TransferEventDto:
+      type: object
+      properties:
+        time:
+          format: date-time
+          type: string
+          example: 2023-10-01T12:00:00Z
+        state:
+          type: string
+          enum:
+            - REQUESTED
+            - STARTED
+            - TERMINATED
+            - COMPLETED
+            - SUSPENDED
+          example: COMPLETED
+        localMessage:
+          type: string
+          example: The transfer completed successfully.
+        code:
+          type: string
+          example: ERR_NONE
+        reason:
+          example:
+            - language: en
+              value: Operation successful
+          allOf:
+            - $ref: "#/components/schemas/MultilanguageSchema"
+        type:
+          type: string
+          enum:
+            - local
+            - remote
+          example: local
+      required:
+        - time
+        - state
+        - type
+    TransferDetailDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: local-12345
+        remoteId:
+          type: string
+          example: remote-98765
+        role:
+          type: string
+          example: provider
+        remoteAddress:
+          type: string
+          example: http://example.com/
+        remoteParty:
+          type: string
+          example: party-identifier-001
+        state:
+          type: string
+          enum: *a41
+          example: REQUESTED
+        agreementId:
+          type: string
+          example: agreement-45678
+        format:
+          type: string
+          example: application/json
+        modifiedDate:
+          format: date-time
+          type: string
+          example: 2023-10-01T12:34:56Z
+        dataAddress:
+          example:
+            type: S3
+            bucketName: example-bucket
+            region: us-east-1
+          allOf:
+            - $ref: "#/components/schemas/DataAddressSchema"
+        dataPlaneTransfer:
+          example:
+            transportProtocol: HTTP
+            endpoint: https://data-plane.example.com/transfer
+          allOf:
+            - $ref: "#/components/schemas/DataPlaneTransferDto"
+        events:
+          example:
+            - time: 2023-10-01T12:00:00Z
+              state: STARTED
+              localMessage: Upload started.
+              code: STARTED
+              reason:
+                - language: en
+                  value: Transfer initiated
+              type: local
+          type: array
+          items:
+            $ref: "#/components/schemas/TransferEventDto"
+      required:
+        - id
+        - role
+        - remoteAddress
+        - remoteParty
+        - state
+        - agreementId
+        - modifiedDate
+        - dataPlaneTransfer
+        - events
+    StatusMessage:
+      type: object
+      properties:
+        status:
+          type: string
+          example: deadbeef
+        message:
+          type: string
+          example: Status message detail
+      required:
+        - status
+        - message
+    CredentialStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          example: did:example:credential-status
+        type:
+          type: string
+          enum:
+            - BitstringStatusListEntry
+          example: BitstringStatusListEntry
+        statusPurpose:
+          type: string
+          enum:
+            - refresh
+            - revocation
+            - suspension
+            - message
+          example: suspension
+        statusListIndex:
+          type: string
+          example: "0"
+        statusListCredential:
+          type: string
+          example: did:example:status-credential
+        statusSize:
+          type: string
+          example: "10"
+        statusMessage:
+          example:
+            - status: deadbeef
+              message: Status message detail
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusMessage"
+        statusReference:
+          type: string
+          example: https://example.com/status
+      required:
+        - id
+        - type
+        - statusPurpose
+        - statusListIndex
+        - statusListCredential
+    CredentialSubject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: did:example:subject-1
+      required:
+        - id
+    Credential:
+      type: object
+      properties:
+        "@context":
+          type: array
+          example:
+            - https://www.w3.org/ns/credentials/v2
+          items:
+            type: string
+            enum:
+              - https://www.w3.org/ns/credentials/v2
+              - string
+        type:
+          example:
+            - VerifiableCredential
+            - TestCredential
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+          example: http://example.edu/credentials/1872
+        credentialSubject:
+          additionalProperties: true
+          example:
+            id: did:example:subject-1
+            customProp: value
+          allOf:
+            - $ref: "#/components/schemas/CredentialSubject"
+        issuer:
+          type: string
+          example: did:example:issuer
+        issuanceDate:
+          type: string
+          example: 2020-01-01T00:00:00Z
+        expirationDate:
+          type: string
+          example: 2030-01-01T00:00:00Z
+        validFrom:
+          type: string
+          example: 2020-01-01T00:00:00Z
+        validUntil:
+          type: string
+          example: 2030-01-01T00:00:00Z
+        evidence:
+          type: object
+          additionalProperties: true
+          example:
+            type: DocumentVerification
+            verifier: did:example:verifier
+        credentialStatus:
+          oneOf:
+            - &a42
+              $ref: "#/components/schemas/CredentialStatus"
+            - type: array
+              items: *a42
+      required:
+        - "@context"
+        - type
+        - credentialSubject
+        - issuer
+    DataIntegrityProof:
+      type: object
+      properties:
+        id:
+          type: string
+          example: did:example:xyz#proof-1
+        type:
+          type: string
+          enum:
+            - DataIntegrityProof
+          example: DataIntegrityProof
+        proofPurpose:
+          type: string
+          example: assertionMethod
+        verificationMethod:
+          type: string
+          example: did:example:author#verificationKey
+        cryptosuite:
+          type: string
+          example: ecdsa-2019
+        created:
+          type: string
+          example: 2021-01-01T00:00:00Z
+        expires:
+          type: string
+          example: 2022-01-01T00:00:00Z
+        domain:
+          example:
+            - example.com
+          type: array
+          items:
+            type: string
+        challenge:
+          type: string
+          example: "1234567890"
+        proofValue:
+          type: string
+          example: ProofValueString
+        previousProof:
+          example:
+            - PreviousProof1
+            - PreviousProof2
+          type: array
+          items:
+            type: string
+        nonce:
+          type: string
+          example: nonce-string
+      required:
+        - type
+        - proofPurpose
+        - cryptosuite
+        - proofValue
+    CredentialContainer:
+      type: object
+      properties:
+        credential:
+          example:
+            "@context":
+              - https://www.w3.org/ns/credentials/v2
+            type:
+              - VerifiableCredential
+            credentialSubject:
+              id: did:example:subject-1
+            issuer: did:example:issuer
+            validFrom: 2020-01-01T00:00:00Z
+            proof:
+              type: DataIntegrityProof
+              created: 2020-01-01T00:00:00Z
+              proofPurpose: assertionMethod
+              cryptosuite: eddsa-jcs-2022
+              proofValue: ""
+              verificationMethod: did:example:123456#key-1
+          allOf:
+            - $ref: "#/components/schemas/Credential"
+        jwt:
+          type: string
+          example: eyJraWQiOiJFeEhrQk1XOWZtYmt2VjI2Nm1ScHVQMnNVWV9OX0VXSU4xbGFwVXpPOHJvIiwiYWxnIjoiRVMyNTYifQ.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiLCJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjIiXSwiaWQiOiJodHRwOi8vdW5pdmVyc2l0eS5leGFtcGxlL2NyZWRlbnRpYWxzLzM3MzIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiRXhhbXBsZURlZ3JlZUNyZWRlbnRpYWwiXSwiaXNzdWVyIjoiaHR0cHM6Ly91bml2ZXJzaXR5LmV4YW1wbGUvaXNzdWVycy81NjUwNDkiLCJ2YWxpZEZyb20iOiIyMDEwLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmV4YW1wbGU6ZWJmZWIxZjcxMmViYzZmMWMyNzZlMTJlYzIxIiwiZGVncmVlIjp7InR5cGUiOiJFeGFtcGxlQmFjaGVsb3JEZWdyZWUiLCJuYW1lIjoiQmFjaGVsb3Igb2YgU2NpZW5jZSBhbmQgQXJ0cyJ9fX0.YEsG9at9Hnt_j-UykCrnl494fcYMTjzpgvlK0KzzjvfmZmSg-sNVJqMZWizYhWv_eRUvAoZohvSJWeagwj_Ajw
+        proof:
+          example:
+            - type: DataIntegrityProof
+              created: 2020-01-01T00:00:00Z
+              proofPurpose: assertionMethod
+              cryptosuite: eddsa-jcs-2022
+              proofValue: ""
+              verificationMethod: did:example:123456#key-1
+          type: array
+          items:
+            $ref: "#/components/schemas/DataIntegrityProof"
+      required:
+        - credential
+        - jwt
+        - proof
+    EvaluationContext:
+      type: object
+      properties:
+        transferId:
+          type: string
+          example: b86483f3-3792-4a54-b11e-f1c6face9935
+        localParticipant:
+          type: string
+          example: did:example:localParticipant
+        remoteParticipant:
+          type: string
+          example: did:example:remoteParticipant
+        target:
+          type: string
+          example: randomDataSetID
+        action:
+          type: string
+          example: USE
+        verifiableCredentials:
+          $ref: "#/components/schemas/CredentialContainer"
+        evaluationTime:
+          format: date-time
+          type: string
+          example: 2025-02-21T10:26:42.206Z
+      required:
+        - localParticipant
+        - remoteParticipant
+        - target
+        - action
+        - verifiableCredentials
+        - evaluationTime
+    EvaluationDecision:
+      type: object
+      properties:
+        decision:
+          type: string
+          example: DENY
+        reason:
+          type: string
+          example: Invalid signature
+        permissions:
+          example:
+            - VALID
+          type: array
+          items:
+            type: string
+        prohibitions:
+          example:
+            - INVALID
+          type: array
+          items:
+            type: string
+        obligations:
+          example:
+            - INDECISIVE
+          type: array
+          items:
+            type: string
+        context:
+          $ref: "#/components/schemas/EvaluationContext"
+      required:
+        - decision
+    ConstraintType:
+      type: string
+      enum:
+        - ATOMIC
+        - LOGICAL
+    ConstraintModel:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          example: ATOMIC
+          allOf:
+            - $ref: "#/components/schemas/ConstraintType"
+        title:
+          type: string
+          example: Constraint title
+        description:
+          type: string
+          example: Constraint description
+      required:
+        - type
+        - title
+    RuleType:
+      type: string
+      enum:
+        - PERMISSION
+        - PROHIBITION
+        - DUTY
+    Rule:
+      type: object
+      properties:
+        id:
+          type: string
+        action:
+          example:
+            - READ
+            - USE
+          type: array
+          items:
+            type: string
+        assignee:
+          example:
+            - did:example:assignee
+          type: array
+          items:
+            type: string
+        constraints:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintModel"
+        duties:
+          type: array
+          items:
+            $ref: "#/components/schemas/Rule"
+        type:
+          allOf:
+            - $ref: "#/components/schemas/RuleType"
+        target:
+          type: string
+      required:
+        - action
+        - constraints
+        - duties
+    CredentialAddress:
+      type: object
+      properties:
+        didId:
+          type: string
+          example: did:web:example134234
+        address:
+          type: string
+          example: https://example.com/
+      required:
+        - didId
+        - address
+    JsonWebKeyDto:
+      type: object
+      properties:
+        alg:
+          type: string
+          example: RS256
+        crv:
+          type: string
+          example: P-256
+        e:
+          type: string
+          example: AQAB
+        ext:
+          type: boolean
+          example: false
+        key_ops:
+          example:
+            - sign
+            - verify
+          type: array
+          items:
+            type: string
+        kid:
+          type: string
+          example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+        kty:
+          type: string
+          example: RSA
+        n:
+          type: string
+          example: sample_modulus
+        use:
+          type: string
+          example: sig
+        x:
+          type: string
+          example: sample_x_coordinate
+        y:
+          type: string
+          example: sample_y_coordinate
+      required:
+        - kty
+    VerificationMethodDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+        type:
+          type: string
+          example: Ed25519VerificationKey2020
+        controller:
+          type: string
+          example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+        publicKeyJwk:
+          $ref: "#/components/schemas/JsonWebKeyDto"
+      required:
+        - id
+        - type
+        - controller
+    ServiceDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+        type:
+          type: string
+          example: LinkedDomains
+        serviceEndpoint:
+          example: https://example.com
+          oneOf:
+            - &a43
+              type: string
+            - type: array
+              items: *a43
+      required:
+        - id
+        - type
+        - serviceEndpoint
+    DIDDocumentDto:
+      type: object
+      properties:
+        "@context":
+          example: https://www.w3.org/ns/did/v1
+          oneOf:
+            - &a44
+              type: string
+            - type: array
+              items: *a44
+        id:
+          type: string
+          example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+        alsoKnownAs:
+          example:
+            - https://example.com/profile
+          type: array
+          items:
+            type: string
+        controller:
+          example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+          oneOf:
+            - &a45
+              type: string
+            - type: array
+              items: *a45
+        verificationMethod:
+          example:
+            - id: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+              type: Ed25519VerificationKey2020
+              controller: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+              publicKeyJwk:
+                kty: RSA
+          type: array
+          items:
+            $ref: "#/components/schemas/VerificationMethodDto"
+        service:
+          example:
+            - id: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+              type: LinkedDomains
+              serviceEndpoint: https://example.com
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceDto"
+        publicKey:
+          example:
+            - id: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+              type: Ed25519VerificationKey2020
+              controller: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
+              publicKeyJwk:
+                kty: RSA
+          type: array
+          items:
+            $ref: "#/components/schemas/VerificationMethodDto"
+        authentication:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        assertionMethod:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        keyAgreement:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        capabilityInvocation:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        capabilityDelegation:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+      required:
+        - id
+externalDocs:
+  description: Git Repository
+  url: https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway

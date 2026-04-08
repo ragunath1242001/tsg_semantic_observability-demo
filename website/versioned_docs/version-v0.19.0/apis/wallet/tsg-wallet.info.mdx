@@ -1,0 +1,249 @@
+---
+id: tsg-wallet
+title: "TSG Wallet"
+description: "The TSG Wallet is a SSI wallet that can issue and store verifiable credentials and create presentations to be used within data spaces.<br /><br />"
+sidebar_label: Introduction
+sidebar_position: 0
+hide_title: true
+custom_edit_url: null
+---
+
+import ApiLogo from "@theme/ApiLogo";
+import Heading from "@theme/Heading";
+import SchemaTabs from "@theme/SchemaTabs";
+import TabItem from "@theme/TabItem";
+import Export from "@theme/ApiExplorer/Export";
+
+<Export
+  url={"openapi.yaml"}
+  proxy={undefined}
+>
+  
+</Export>
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"TSG Wallet"}
+>
+</Heading>
+
+
+
+The TSG Wallet is a SSI wallet that can issue and store verifiable credentials and create presentations to be used within data spaces.<br /><br />
+    The wallet is aimed at multi-tier deployments, with one (or more) wallet that acts as trust anchor for a data space and indivual wallets for each of the participants in the data space. On this page the central wallet that issues credentials will be called the Dataspace Wallet although it is not required that there always is exactly one issuer of credentials in a dataspace.<br /><br />
+    __*Note*__: This OpenAPI definition is not intended to be directly linked with a single Wallet instance. 
+
+<div
+  style={{"marginBottom":"2rem"}}
+>
+  <Heading
+    id={"authentication"}
+    as={"h2"}
+    className={"openapi-tabs__heading"}
+    children={"Authentication"}
+  >
+  </Heading><SchemaTabs
+    className={"openapi-tabs__security-schemes"}
+  >
+    <TabItem
+      label={"OAuth 2.0: oauth2"}
+      value={"oauth2"}
+    >
+      
+      
+      
+      
+      <div>
+        <table>
+          <tbody>
+            <tr>
+              <th>
+                Security Scheme Type:
+              </th><td>
+                oauth2
+              </td>
+            </tr><tr>
+              <th>
+                OAuth Flow (authorizationCode):
+              </th><td>
+                <span>
+                  Scopes:
+                </span><ul>
+                  <li>
+                    create:w.config: create:w.config
+                  </li><li>
+                    read:w.config: read:w.config
+                  </li><li>
+                    update:w.config: update:w.config
+                  </li><li>
+                    delete:w.config: delete:w.config
+                  </li><li>
+                    execute:w.config: execute:w.config
+                  </li><li>
+                    manage:w.config: manage:w.config
+                  </li><li>
+                    create:w.credential: create:w.credential
+                  </li><li>
+                    read:w.credential: read:w.credential
+                  </li><li>
+                    update:w.credential: update:w.credential
+                  </li><li>
+                    delete:w.credential: delete:w.credential
+                  </li><li>
+                    execute:w.credential: execute:w.credential
+                  </li><li>
+                    manage:w.credential: manage:w.credential
+                  </li><li>
+                    create:w.did: create:w.did
+                  </li><li>
+                    read:w.did: read:w.did
+                  </li><li>
+                    update:w.did: update:w.did
+                  </li><li>
+                    delete:w.did: delete:w.did
+                  </li><li>
+                    execute:w.did: execute:w.did
+                  </li><li>
+                    manage:w.did: manage:w.did
+                  </li><li>
+                    create:w.issue_config: create:w.issue_config
+                  </li><li>
+                    read:w.issue_config: read:w.issue_config
+                  </li><li>
+                    update:w.issue_config: update:w.issue_config
+                  </li><li>
+                    delete:w.issue_config: delete:w.issue_config
+                  </li><li>
+                    execute:w.issue_config: execute:w.issue_config
+                  </li><li>
+                    manage:w.issue_config: manage:w.issue_config
+                  </li><li>
+                    create:w.key: create:w.key
+                  </li><li>
+                    read:w.key: read:w.key
+                  </li><li>
+                    update:w.key: update:w.key
+                  </li><li>
+                    delete:w.key: delete:w.key
+                  </li><li>
+                    execute:w.key: execute:w.key
+                  </li><li>
+                    manage:w.key: manage:w.key
+                  </li><li>
+                    create:w.presentation: create:w.presentation
+                  </li><li>
+                    read:w.presentation: read:w.presentation
+                  </li><li>
+                    update:w.presentation: update:w.presentation
+                  </li><li>
+                    delete:w.presentation: delete:w.presentation
+                  </li><li>
+                    execute:w.presentation: execute:w.presentation
+                  </li><li>
+                    manage:w.presentation: manage:w.presentation
+                  </li>
+                </ul>
+              </td>
+            </tr><tr>
+              <th>
+                OAuth Flow (clientCredentials):
+              </th><td>
+                <span>
+                  Scopes:
+                </span><ul>
+                  <li>
+                    create:w.config: create:w.config
+                  </li><li>
+                    read:w.config: read:w.config
+                  </li><li>
+                    update:w.config: update:w.config
+                  </li><li>
+                    delete:w.config: delete:w.config
+                  </li><li>
+                    execute:w.config: execute:w.config
+                  </li><li>
+                    manage:w.config: manage:w.config
+                  </li><li>
+                    create:w.credential: create:w.credential
+                  </li><li>
+                    read:w.credential: read:w.credential
+                  </li><li>
+                    update:w.credential: update:w.credential
+                  </li><li>
+                    delete:w.credential: delete:w.credential
+                  </li><li>
+                    execute:w.credential: execute:w.credential
+                  </li><li>
+                    manage:w.credential: manage:w.credential
+                  </li><li>
+                    create:w.did: create:w.did
+                  </li><li>
+                    read:w.did: read:w.did
+                  </li><li>
+                    update:w.did: update:w.did
+                  </li><li>
+                    delete:w.did: delete:w.did
+                  </li><li>
+                    execute:w.did: execute:w.did
+                  </li><li>
+                    manage:w.did: manage:w.did
+                  </li><li>
+                    create:w.issue_config: create:w.issue_config
+                  </li><li>
+                    read:w.issue_config: read:w.issue_config
+                  </li><li>
+                    update:w.issue_config: update:w.issue_config
+                  </li><li>
+                    delete:w.issue_config: delete:w.issue_config
+                  </li><li>
+                    execute:w.issue_config: execute:w.issue_config
+                  </li><li>
+                    manage:w.issue_config: manage:w.issue_config
+                  </li><li>
+                    create:w.key: create:w.key
+                  </li><li>
+                    read:w.key: read:w.key
+                  </li><li>
+                    update:w.key: update:w.key
+                  </li><li>
+                    delete:w.key: delete:w.key
+                  </li><li>
+                    execute:w.key: execute:w.key
+                  </li><li>
+                    manage:w.key: manage:w.key
+                  </li><li>
+                    create:w.presentation: create:w.presentation
+                  </li><li>
+                    read:w.presentation: read:w.presentation
+                  </li><li>
+                    update:w.presentation: update:w.presentation
+                  </li><li>
+                    delete:w.presentation: delete:w.presentation
+                  </li><li>
+                    execute:w.presentation: execute:w.presentation
+                  </li><li>
+                    manage:w.presentation: manage:w.presentation
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </TabItem>
+  </SchemaTabs>
+</div><div
+  style={{"marginBottom":"var(--ifm-paragraph-margin-bottom)"}}
+>
+  <h3
+    style={{"marginBottom":"0.25rem"}}
+  >
+    License
+  </h3><a
+    href={"https://www.apache.org/licenses/LICENSE-2.0.html"}
+  >
+    Apache 2.0
+  </a>
+</div>
+      

@@ -1,0 +1,1 @@
+{"parameters":[{"name":"Authorization","required":true,"in":"header","schema":{"type":"string"}}]}

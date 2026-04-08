@@ -1,0 +1,1 @@
+{"parameters":[{"name":"id","required":true,"in":"path","schema":{"type":"string"}},{"name":"hard","required":false,"in":"query","description":"When true, permanently deletes the algorithm instance instead of soft-deleting it.","schema":{"type":"boolean"}}]}

@@ -1,0 +1,1 @@
+{"parameters":[{"name":"podName","required":true,"in":"path","description":"The pod name","schema":{"example":"12345678-1234-5678-1234-567812345678","type":"string"}},{"name":"tail","required":false,"in":"path","description":"Number of lines to include from the end of the logs","schema":{"example":100,"type":"number"}}]}

@@ -1,0 +1,1 @@
+{"parameters":[{"name":"id","required":true,"in":"path","description":"Project Agreement ID","schema":{"type":"string"}},{"name":"datasetId","required":true,"in":"path","description":"Dataset ID","schema":{"type":"string"}}]}

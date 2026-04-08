@@ -1,0 +1,32 @@
+---
+id: transferdetaildto
+title: "TransferDetailDto"
+description: ""
+sidebar_label: "TransferDetailDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"id":"local-12345","remoteId":"remote-98765","role":"provider","remoteAddress":"http://example.com/","remoteParty":"party-identifier-001","state":"REQUESTED","agreementId":"agreement-45678","format":"application/json","modifiedDate":"2023-10-01T12:34:56Z","dataAddress":{"type":"S3","bucketName":"example-bucket","region":"us-east-1"},"dataPlaneTransfer":{"transportProtocol":"HTTP","endpoint":"https://data-plane.example.com/transfer"},"events":[{"time":"2023-10-01T12:00:00Z","state":"STARTED","localMessage":"Upload started.","code":"STARTED","reason":[{"language":"en","value":"Transfer initiated"}],"type":"local"}]}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"TransferDetailDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  {...require("./transferdetaildto.Schema.json")}
+>
+  
+</Schema>
+            

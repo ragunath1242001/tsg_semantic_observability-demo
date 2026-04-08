@@ -1,0 +1,70 @@
+---
+id: health-controller-get-health
+title: "Health check"
+description: "Retrieves the current health of the app. If the app is running and it is connected to the database it always returns an empty 200 OK"
+sidebar_label: "Health check"
+hide_title: true
+hide_table_of_contents: true
+api: eJztl8GO2zYQhl+FmLNqGy5y0S11F8miQRPU25OxKLjUWGJCkQw5Wsc19O7FSLRrSk6RS4AU2L2s9fMXOR/NoWdOUGFUQXvSzkIJfyAFjc8YBTUoVBcCWhINSkONcPtBld4vxP3ls9BRhM5abWshbSU0saKctagIK0FucFaS5JOMyOPSHOQxioDUBRuFtAJbT0exXq3E+9+gAOcxSA7pvoIS3g7Lb5yl4IzB8FeNNGpQgJdBtkgYIpS7xwICRu9sxAjlCdarFf/LGaEv4NVq/bWBn+cDDw2KcUGxaVB9YkDrSMROKYxx3xkoQDlLaInflt4brQaA5cfIU5wgqgZbyZ/o6BFKcE8fURETBMYlPYYcSVIXr3yRgrY1FIBfZOsNSxiCCxyttnt3a8qL9QTnfb+eGzoPfV+ArCrNQUrzIYthOl3Az50OWEG5O8/x+K1xf30dCh32BdjOGPnEwSZhpPtvqoCVzpaFyh0sFNBijLLm1zauM9XwNaWz+AMjV0hSm5uBfMtXWfyv9yP9FUCy5iRO+c7zt0iN4yugxiFTJDVQwrI5J3/E8HzJ/IiqC5qOW860MSInO2rW1zyjUMDeuMNgYcEF/feQrRtXjburnB9nUAElYRmjWyijh/y+ofH+yCp3TZUCOl/N5pprfBoMTn1zjY8Gqm5qvCEW0Eor64lxrhUZmbN7XU9oR+2a9uyaKjnt2TXXctqzb65NaM/GG2JOezbOtYzWOD56M+WKNDny54wyOaZKRpg8UyWnS6aZlJEl01TJqIIbfi6myhVVcuTPGVVyTJWMKnmmSk6VTDMpo0qmqZJRdRFDTjUoV1TJkT9nVMkxVTKq5JkqOVUyzaSMKpmmCt95Y+ptAlZoScvxN+Dl+nm5fl6un5fr53tfP0PVdekhNA3wD9s3Yrt9L34JuqrHnc56oWxYvP5wL351qmvR0lBCCSiAa7LUUo19kVTcF/UFGK3QjhWslS0v99pL1aBYL1a8RcFACQ2Rj+VyeTgcFnIYXrhQL9O7cfnufnP3+/bup/VitWioNcNF6l2kVtqrmVPHprhjm2Kc/m3XfpSeN1WohF9o6Y3Uluv6YUNOqfDdQXOpjBsXiZXTiRf4M5i+Z/lzh+E4lsPPMuixydg99gW/WvEx2J3gEx5545VCz7fuszQdrzzrWvvrCvzN3QP0/T/FF7HM
+sidebar_class_name: "get api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Health check"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/health"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the current health of the app. If the app is running and it is connected to the database it always returns an empty 200 OK
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./health-controller-get-health.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./health-controller-get-health.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./health-controller-get-health.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

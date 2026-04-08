@@ -1,0 +1,70 @@
+---
+id: audit-log-controller-list
+title: "List audit log entries"
+description: "Fetches paginated audit log entries with optional filters."
+sidebar_label: "List audit log entries"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWMFu2zgQ/ZUBT7uAYqc56pZN0yJA0C3gLPYQGAEtjSWiFKmSVJys4X9fDCXbIpkmSpvdU27S6HGGj6RmHmfLSrSFEa0TWrGcfUJX1Gih5ZVQ3GEJvCuFA6krQOWMQAsb4WrQfgSXsBbSobEzljHdouFkvipZzs5p4LWuLrRyRkuJ5k4K61jGWm54gzSK5bdbpniDLGfalGhYxgx+74TBkuVrLi1mTNDEvndoHlnGbFFjw1m+ZSWueScdy9nHy8UFy5h7bMmPdUaoimUMVdew/Jad+68etNztsjDg3erxp2I2uhRrgeVH7jCJPY7S8gpfEaERSjQ07w/ZMdqHQwDVNSs0YQA0d78QpOEPw/Pp6Tgkvf04aMFpQxfd6hVRf7xGvbcb+v4W7gzaTrpzKfUGy9d7XGktkatwhtoYlPvD/RaTFO15WRq09o0of+/Quq/c1W/ib2108yaOnH6rLdWdKfDnzgg3htMH4bCxTwUaReKFT4X/aQyL92iEe03mmRblmPRKXHX0LtSadmDDjRoAxmhKs4URThRcUk7cLWkittXKovd6dnrap7txbVh0RYHWrjsJezDLWI289Jl8yx5OfB5KBl6pEh9Ar8HVCEVnDCpHFQbhN+u4cUJVwB18+P0pxkI5rPrsQwEM3k+JQjihO1/I8Fm3yRb4OAof3JQ4hPvZGC2aH4T44hMuxfD7DC2al4N4n047Lr1Xm7q9oY+gDs572DSfL3vrj+QL3qRQ31JXf+MKroX6RgfBadCuHgjbfp2FhX0CeDZf0E/GLBad/7lIW2jeufqMfgiDvMyt1TMvaO6krtiSzr3jlfUqweuca11ZtsxYg67WpGIq7BWLq1nO5rwV84YrXmGDys29qxNJYyiuue8lzfI4iQXNtd+L/VQO0x4MGVtLvfEQMmgj/vF15kKX/mjYQre9h8Igd+hJFFKgIh2S2rIj1QMqtmSsa8vEV2ojQSAxxqW2jOEDFl0MfMJIgoPWLwSmtixgptVaVBHb3jZmu0fFlpDtHpXaQrZ7XGqL2O6BTxhDtntgagvY+vOUJ5YR0wERvgcsB0RsCRgOmNgSshtAiSlgNoBiS8DKaIkhK28ZsRoQ4XvAakDEloDVgIktIasBlJgCVgMotgSsOosmZOUtI1YDInwPWA2I2BKwGjCxJWQ1gBJTwGoAxRbKnP2vd2GwROUEl/Y9/bynn/f0855+/o/047Wbv62QQhLOk79ZfIbF4k/4w4iy6lc6kKDBZzj/egUfddGRNvMSCljGSJP1aFo6rRwvHMu3XosWSHeY/HAvO295USOczU5piYxkOauda20+n282mxn3n2faVPNhrJ1fX11cfllcnpzNTme1a6RPpK22ruFq5PlaWJe20mJCWz/BPif9UiduUJgOH9y8lVwouoN4QttBy94y3orD1jR9zhvp2WXGam0dAbfbFbf4l5G7HZn7uymJ61JYvpKju+s3fBw18u657GgWjG6+z2H7HtwU+HAJmgQ9tsWmwMcNren4oR0xZUDclJoUJOo6TRkz7itNm9e4czRlxNAbmgL13Z+JqzPu70wZcmjUTAGPOi5H+JJejCA83dp2o2vf58sb/z/Qr5Je2A63ymNfRo1dJ6oIIgUEidaBRNVAKl8gESqQSBKI5AckQgMSSQGpdoBEJUCkCCCo/xDVeojqOsQlHKJyDVFphqAQQ1R0ISqwENdSiOomRDUSgooIUfWDqNJBXNQgLmCHg0Zy2Z/EJ09GcMO/K+iKvx9ZGa7cnR+1o57cv2Tk5ow=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"List audit log entries"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/audit-logs"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Fetches paginated audit log entries with optional filters.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./audit-log-controller-list.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./audit-log-controller-list.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./audit-log-controller-list.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

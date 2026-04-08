@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"accessToken":{"type":"string","example":"access-token"},"credentialIdentifier":{"type":"string","example":"credential-type"},"additionalRequestParams":{"type":"object"}},"required":["accessToken","credentialIdentifier"],"title":"AuthorizedRequestParams"},"schemaType":"response"}

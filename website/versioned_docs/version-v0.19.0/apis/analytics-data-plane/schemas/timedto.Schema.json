@@ -1,0 +1,1 @@
+{"schema":{"type":"object","properties":{"format":{"type":"string","description":"Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON."}},"required":["format"],"title":"TimeDto"},"schemaType":"response"}
