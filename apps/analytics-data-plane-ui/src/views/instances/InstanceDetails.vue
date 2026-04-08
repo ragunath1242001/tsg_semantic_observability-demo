@@ -8,20 +8,26 @@ import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { formatDate, formatRelative } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
+import { useConfirm } from "primevue";
 import { useToast } from "primevue";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import AlgorithmUIComponent from "../../components/event-ui/AlgorithmUIComponent.vue";
 import JobComponent from "../../components/JobComponent.vue";
 import { useAlgorithmInstancesStore } from "../../stores/algorithm-instances";
 import { useRuntimeStore } from "../../stores/runtime";
-import { getStatusSeverity } from "../../utils/algorithm-instance-status";
+import {
+  getOrchestrationStatusLabel,
+  getOrchestrationStatusSeverity,
+  getStatusSeverity
+} from "../../utils/algorithm-instance-status";
 import { triggerBlobDownload } from "../../utils/downloadBlob";
 
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
+const confirm = useConfirm();
 const algorithmInstancesStore = useAlgorithmInstancesStore();
 algorithmInstancesStore.bindEvents();
 const runtimeStore = useRuntimeStore();
@@ -34,6 +40,65 @@ const algorithmInstance = ref<AlgorithmInstanceDto>();
 
 const refreshing = ref(false);
 const lastEventCount = ref(0);
+let pollTimer: ReturnType<typeof setTimeout> | undefined;
+
+const isInitiator = computed(
+  () => algorithmInstance.value?.isInitiator ?? false
+);
+const canSignalError = computed(
+  () =>
+    isInitiator.value &&
+    algorithmInstance.value?.orchestrationStatus !== "error" &&
+    algorithmInstance.value?.orchestrationStatus !== "completed"
+);
+
+const participantStatusEntries = computed(() => {
+  const instance = algorithmInstance.value;
+  if (!instance) return [];
+  const statuses = instance.participantStatuses ?? {};
+  return instance.participants.map((p) => ({
+    didId: p.didId,
+    role: p.role,
+    status: statuses[p.didId] as
+      | "completed"
+      | "failed"
+      | "terminated"
+      | undefined
+  }));
+});
+
+const signalError = () => {
+  confirm.require({
+    header: "Signal Error",
+    message:
+      "This will broadcast an error status to all participants. Continue?",
+    icon: "pi pi-exclamation-triangle",
+    acceptClass: "p-button-danger",
+    accept: async () => {
+      try {
+        const updated = await algorithmInstancesStore.setOrchestrationStatus(
+          algorithmInstanceId,
+          "error"
+        );
+        algorithmInstance.value = updated;
+        toast.add({
+          severity: "warn",
+          summary: "Error signalled",
+          detail: "Orchestration error has been broadcast to all participants",
+          life: 3000
+        });
+      } catch (error) {
+        toast.add(
+          toastError({
+            error,
+            summary: "Signal error failed",
+            defaultMessage: "Could not set orchestration status"
+          })
+        );
+      }
+    }
+  });
+};
 
 const events = computed(() => {
   const instanceEvents =
@@ -110,6 +175,9 @@ const loadAlgorithmInstance = async () => {
       await algorithmInstancesStore.fetchAlgorithmInstanceById(
         algorithmInstanceId
       );
+    if (!algorithmInstance.value?.finishedAt) {
+      pollTimer = setTimeout(loadAlgorithmInstance, 10000);
+    }
   } catch (error) {
     toast.add(
       toastError({
@@ -237,6 +305,10 @@ onMounted(async () => {
   // Set initial event count for future comparison
   lastEventCount.value = events.value.length;
 });
+
+onUnmounted(() => {
+  clearTimeout(pollTimer);
+});
 </script>
 
 <template>
@@ -252,15 +324,34 @@ onMounted(async () => {
       <template #title>
         <div class="flex justify-between items-center">
           <span>{{ algorithmInstance?.algorithmDefinition.title }}</span>
-          <Tag
-            v-if="algorithmInstance?.status"
-            :severity="getStatusSeverity(algorithmInstance.status)"
-            :value="algorithmInstance.status" />
+          <div class="flex gap-2">
+            <Tag
+              v-if="algorithmInstance?.orchestrationStatus"
+              v-tooltip.left="
+                'Instance-wide orchestration status across all participants'
+              "
+              :severity="
+                getOrchestrationStatusSeverity(
+                  algorithmInstance.orchestrationStatus
+                )
+              "
+              :value="
+                'orchestration: ' +
+                getOrchestrationStatusLabel(
+                  algorithmInstance.orchestrationStatus
+                )
+              " />
+            <Tag
+              v-if="algorithmInstance?.status"
+              v-tooltip.left="'Local job status for this participant'"
+              :severity="getStatusSeverity(algorithmInstance.status)"
+              :value="'job: ' + algorithmInstance.status" />
+          </div>
         </div>
       </template>
 
       <template #content>
-        <div class="grid grid-cols-12">
+        <div class="grid grid-cols-12 gap-y-1">
           <div class="col-span-12 xl:col-span-6">
             <FormField label="ID">
               <code class="text-xs">{{ algorithmInstance?.id }}</code>
@@ -293,12 +384,38 @@ onMounted(async () => {
 
           <div class="col-span-12 xl:col-span-6">
             <FormField label="Participants">
-              <div class="flex flex-wrap gap-2">
-                <Tag
-                  v-for="participant in algorithmInstance?.participants || []"
-                  :key="participant.didId"
-                  :value="`${participant.didId} (${participant.role})`"
-                  severity="info" />
+              <div class="flex flex-col gap-2">
+                <div
+                  v-for="entry in participantStatusEntries"
+                  :key="entry.didId"
+                  class="flex items-center gap-2">
+                  <Tag
+                    :value="`${entry.didId} (${entry.role})`"
+                    severity="info" />
+                  <Tag
+                    v-if="isInitiator && entry.status === 'completed'"
+                    value="completed"
+                    severity="success"
+                    icon="pi pi-check"
+                    class="text-xs" />
+                  <Tag
+                    v-else-if="isInitiator && entry.status === 'failed'"
+                    value="failed"
+                    severity="danger"
+                    icon="pi pi-times"
+                    class="text-xs" />
+                  <Tag
+                    v-else-if="isInitiator && entry.status === 'terminated'"
+                    value="terminated (by other failure)"
+                    severity="warn"
+                    icon="pi pi-ban"
+                    class="text-xs" />
+                  <Tag
+                    v-else-if="isInitiator"
+                    value="pending"
+                    severity="secondary"
+                    class="text-xs" />
+                </div>
               </div>
             </FormField>
             <FormField
@@ -326,6 +443,15 @@ onMounted(async () => {
               </div>
             </FormField>
           </div>
+        </div>
+        <div v-if="canSignalError" class="flex justify-end mt-4 pt-3">
+          <Button
+            label="Signal Error to Participants"
+            icon="pi pi-exclamation-triangle"
+            severity="secondary"
+            size="small"
+            text
+            @click="signalError" />
         </div>
       </template>
     </Card>

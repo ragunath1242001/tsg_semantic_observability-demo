@@ -19,9 +19,10 @@ import {
 } from "@nestjs/swagger";
 import {
   AlgorithmInstanceDto,
-  CreateAlgorithmInstanceDto
+  CreateAlgorithmInstanceDto,
+  SetOrchestrationStatusDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
-import { Requires } from "@tsg-dsp/common-api";
+import { Requires, validationPipe } from "@tsg-dsp/common-api";
 import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import {
   Action,
@@ -153,6 +154,31 @@ export class AlgorithmInstancesManagementController {
     return this.algorithmInstancesService.removeAlgorithmInstance(
       id,
       hard === "true"
+    );
+  }
+
+  @Post(":id/orchestration-status")
+  @Requires(Action.CREATE, Resource.ADP_ALGORITHM)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Manually set orchestration status",
+    description:
+      "Allows the operator to manually set the orchestration status " +
+      "(e.g. signal an error when a job silently fails)."
+  })
+  @ApiBody({ type: SetOrchestrationStatusDto })
+  @ApiOkResponse({
+    type: AlgorithmInstanceDto,
+    description: "The updated algorithm instance"
+  })
+  @ApiForbiddenResponseDefault()
+  setOrchestrationStatus(
+    @Param("id") id: string,
+    @Body(validationPipe) body: SetOrchestrationStatusDto
+  ) {
+    return this.algorithmInstancesService.setOrchestrationStatusManually(
+      id,
+      body.orchestrationStatus
     );
   }
 }

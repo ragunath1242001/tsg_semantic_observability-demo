@@ -36,10 +36,20 @@ export interface EnvVar {
   value?: string;
 }
 
+export interface JobCondition {
+  type: string;
+  status: string;
+  lastTransitionTime?: Date;
+  reason?: string;
+  message?: string;
+}
+
 export interface JobStatus {
   active?: number;
+  ready?: number;
   succeeded?: number;
   failed?: number;
+  conditions?: JobCondition[];
   startTime?: Date;
   completionTime?: Date;
 }

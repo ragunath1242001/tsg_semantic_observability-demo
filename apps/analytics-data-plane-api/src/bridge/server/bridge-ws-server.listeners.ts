@@ -109,4 +109,18 @@ export class BridgeWsServerListeners {
       payload as BridgePushAlgorithmEventDataDto
     );
   }
+
+  @OnEvent(INTERNAL_EVENTS.ORCHESTRATION_STATUS_UPDATED)
+  onOrchestrationStatusUpdated(
+    payload: InternalEventMap[typeof INTERNAL_EVENTS.ORCHESTRATION_STATUS_UPDATED]
+  ): void {
+    if (!this.splitMode.shouldBridgeAlgorithmInstancesToClients) {
+      return;
+    }
+
+    this.logger.debug(
+      `Publishing orchestration status update for instance ${payload.algorithmInstance.id}`
+    );
+    this.publisher.pushAlgorithmInstance(payload.algorithmInstance, "updated");
+  }
 }

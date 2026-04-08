@@ -14,7 +14,11 @@ import {
 } from "class-validator";
 
 import { AlgorithmDefinitionDto } from "./algorithm-definition.dto.js";
-import { AlgorithmParticipant } from "./algorithm-instance.dto.js";
+import {
+  AlgorithmParticipant,
+  ORCHESTRATION_STATUSES,
+  type OrchestrationStatus
+} from "./algorithm-instance.dto.js";
 import { CreateAlgorithmEventDto } from "./create-algorithm-event.dto.js";
 import { FileMetadataDto } from "./files.dto.js";
 import { ProjectAgreementSummaryDto } from "./project-agreement.dto.js";
@@ -84,6 +88,30 @@ export class BridgeAlgorithmInstanceMetadataDto {
   @IsOptional()
   @Type(() => ProjectAgreementSummaryDto)
   projectAgreement?: ProjectAgreementSummaryDto;
+
+  @ApiProperty({
+    required: false,
+    description: "Instance-wide orchestration outcome",
+    enum: ORCHESTRATION_STATUSES
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn([...ORCHESTRATION_STATUSES])
+  orchestrationStatus?: OrchestrationStatus;
+
+  @ApiProperty({
+    required: false,
+    description: "Whether this ADP is the initiator of the algorithm instance"
+  })
+  @IsOptional()
+  isInitiator?: boolean;
+
+  @ApiProperty({
+    required: false,
+    description: "Per-participant job status as reported to the initiator"
+  })
+  @IsOptional()
+  participantStatuses?: Record<string, "completed" | "failed" | "terminated">;
 }
 
 export class BridgePushAlgorithmInstanceDto {
@@ -234,4 +262,33 @@ export class BridgeAlgorithmEventDataChunkDto {
   @ApiProperty({ required: false, type: String, format: "binary" })
   @IsOptional()
   chunkData?: Uint8Array;
+}
+
+/**
+ * Sent by the initiator to all workers to propagate the instance-wide
+ * orchestration outcome (e.g. error when one or more participants failed,
+ * or completed when everyone succeeded).
+ */
+export class OrchestrationStatusSignalDto {
+  @ApiProperty({
+    description: "The instance-wide orchestration outcome",
+    enum: ORCHESTRATION_STATUSES
+  })
+  @IsString()
+  @IsIn([...ORCHESTRATION_STATUSES])
+  orchestrationStatus!: OrchestrationStatus;
+}
+
+/**
+ * Used by the management API to manually set the orchestration status
+ * of an algorithm instance (e.g. when a job fails silently with exit code 0).
+ */
+export class SetOrchestrationStatusDto {
+  @ApiProperty({
+    description: "The orchestration status to set",
+    enum: ["completed", "error"]
+  })
+  @IsString()
+  @IsIn(["completed", "error"])
+  orchestrationStatus!: "completed" | "error";
 }

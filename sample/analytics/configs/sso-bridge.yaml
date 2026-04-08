@@ -196,6 +196,78 @@ initClients:
       - read:adp.dataplane
     secretName: sso-bravo-analytics-data-plane-client-secret
 
+  # Charlie clients
+  - clientId: charlie-wallet
+    name: Charlie Wallet
+    description: Charlie Wallet
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: e0g5kJ9OoDFIKTxHD8pW94VD_9BLVDFnkqQgNckiNHc
+      y: LzJDC4ZhbMogA9QF362bSYfgb8MF1apWFuX-rDqlSfU
+      crv: P-256
+      kid: charlie-wallet-key
+      alg: ES256
+      use: sig
+    redirectUris:
+      - http://localhost:3850/.*
+    permissions:
+      - execute:sso.config
+    secretName: sso-charlie-wallet-secret
+
+  - clientId: charlie-control-plane
+    name: Charlie Control Plane
+    description: Charlie Control Plane
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: bRvVdoTj_Ye1Bt0L0FvP_An7CNGRYLes4O9-Oy_KMX8
+      y: 0Mn2vW2q2pxzbnlxt_jJMih76PpGsDGznaNTZ8-6m-M
+      crv: P-256
+      kid: charlie-control-plane-key
+      alg: ES256
+      use: sig
+    redirectUris:
+      - http://localhost:3851/.*
+    permissions:
+      - execute:sso.config
+      - read:w.did
+      - manage:w.issue_config
+      - execute:w.key
+      - read:w.credential
+      - read:w.presentation
+      - manage:dp.*
+    secretName: sso-charlie-control-plane-secret
+
+  - clientId: charlie-analytics-data-plane
+    name: Charlie Analytics Data Plane
+    description: Charlie Analytics Data Plane
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: ozReQ0FlHmMVSK0QYOcXF3LYpcKZpS0MpQk5RPNWpi0
+      y: qmO8ZDpbRtY3UlvJFIHCwxhD4vG2s_-PRFk1HE1H6hk
+      crv: P-256
+      kid: charlie-analytics-data-plane-key
+      alg: ES256
+      use: sig
+    redirectUris:
+      - http://localhost:3852/.*
+    permissions:
+      - execute:sso.config
+      - execute:w.key
+      - read:cp.catalog
+      - manage:cp.dataset
+      - manage:cp.dataplane
+      - manage:cp.negotiation
+      - manage:cp.transfer
+      - read:cp.agreement
+      - read:cp.policy
+      - manage:cp.registry
+      - create:w.credential
+      - manage:adp.project_agreement
+    secretName: sso-charlie-analytics-data-plane-secret
+
 initUsers:
   - username: tsg
     password: tsg

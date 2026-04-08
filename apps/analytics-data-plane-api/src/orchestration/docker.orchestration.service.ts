@@ -118,6 +118,14 @@ export class DockerOrchestrationService
     await this.deleteJobsForAlgorithmInstance(event.algorithmInstanceId);
   }
 
+  @OnEvent("job.stop")
+  async handleJobStopEvent(event: { algorithmInstanceId: string }) {
+    this.logger.log(
+      `Stopping Docker containers for algorithm instance ${event.algorithmInstanceId}`
+    );
+    await this.stopJobsForAlgorithmInstance(event.algorithmInstanceId);
+  }
+
   @OnEvent("job.spawn")
   async handleJobSpawnEvent(event: {
     algorithmInstanceId: string;
@@ -383,6 +391,41 @@ export class DockerOrchestrationService
         `Failed to get logs for container ${podName}: ${String(error)}`,
         { cause: error }
       );
+    }
+  }
+
+  async stopJobsForAlgorithmInstance(
+    algorithmInstanceId: string
+  ): Promise<void> {
+    const docker = this.getClientOrThrow();
+
+    // Remove from job status polling so the cron doesn't report new statuses
+    this.followingJobStatus = this.followingJobStatus.filter(
+      (id) => id !== algorithmInstanceId
+    );
+
+    const containers = await docker.listContainers({
+      filters: {
+        label: [`adp.tsg.app/algorithm-instance-id=${algorithmInstanceId}`],
+        status: ["running"]
+      }
+    });
+
+    for (const containerInfo of containers) {
+      const containerId = containerInfo.Id;
+      const containerName = containerInfo.Names?.[0] ?? containerId;
+      try {
+        const container = docker.getContainer(containerId);
+        await container.stop({ t: 5 });
+        this.logger.log(
+          `Stopped Docker container ${containerName} for algorithm instance ${algorithmInstanceId}`
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Failed to stop Docker container ${containerName} for algorithm instance ${algorithmInstanceId}`,
+          error
+        );
+      }
     }
   }
 

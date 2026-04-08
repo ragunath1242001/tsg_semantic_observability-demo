@@ -14,7 +14,11 @@ import type {
   JobInfo,
   PodInfo
 } from "../types.js";
-import { getErrorMessage, getSessionErrorMessage } from "../utils.js";
+import {
+  allJobsFinished,
+  getErrorMessage,
+  getSessionErrorMessage
+} from "../utils.js";
 import {
   algorithmEventToMerged,
   appendMergedEvent,
@@ -250,6 +254,31 @@ export function InstanceDetailScreen({
       setLogsLoading(false);
     }
   }, [client, instance.id]);
+
+  const jobsRef = useRef(jobs);
+  useEffect(() => {
+    jobsRef.current = jobs;
+  }, [jobs]);
+
+  // Auto-refresh jobs every 10 seconds while in the jobs sub-view, until all
+  // jobs have reached a terminal state.
+  useEffect(() => {
+    if (view !== "logs" || logsSubView !== "jobs") return;
+
+    const interval = setInterval(async () => {
+      if (allJobsFinished(jobsRef.current)) return;
+
+      try {
+        const nextJobs = await client.getJobsForInstance(instance.id);
+        setJobs(nextJobs);
+        setStatusMsg(`${nextJobs.length} job(s)`);
+      } catch {
+        // Silently ignore background refresh failures.
+      }
+    }, 10_000);
+
+    return () => clearInterval(interval);
+  }, [client, instance.id, view, logsSubView]);
 
   const loadPods = useCallback(
     async (jobName: string) => {

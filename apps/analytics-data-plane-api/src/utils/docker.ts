@@ -3,7 +3,11 @@ import Dockerode, { AuthConfig } from "dockerode";
 import { Readable } from "stream";
 import tarStream from "tar-stream";
 
-import { JobInfo, PodInfo } from "../orchestration/orchestration.interface.js";
+import {
+  JobCondition,
+  JobInfo,
+  PodInfo
+} from "../orchestration/orchestration.interface.js";
 
 export type ContainerStatus = "running" | "succeeded" | "failed";
 export type PodPhase =
@@ -56,6 +60,21 @@ export function containerToJob(
   opts: { containerName: string }
 ): JobInfo {
   const status = getContainerStatus(container);
+  const conditions: JobCondition[] = [];
+
+  if (status === "succeeded") {
+    conditions.push({
+      type: "Complete",
+      status: "True",
+      lastTransitionTime: new Date((container.Created ?? 0) * 1000)
+    });
+  } else if (status === "failed") {
+    conditions.push({
+      type: "Failed",
+      status: "True",
+      lastTransitionTime: new Date((container.Created ?? 0) * 1000)
+    });
+  }
 
   return {
     apiVersion: "batch/v1",
@@ -80,8 +99,10 @@ export function containerToJob(
     },
     status: {
       active: status === "running" ? 1 : 0,
+      ready: status === "running" ? 1 : 0,
       succeeded: status === "succeeded" ? 1 : 0,
       failed: status === "failed" ? 1 : 0,
+      conditions: conditions.length > 0 ? conditions : undefined,
       startTime: new Date((container.Created ?? 0) * 1000)
     }
   };

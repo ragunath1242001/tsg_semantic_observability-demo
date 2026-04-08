@@ -16,7 +16,8 @@ import {
 } from "@nestjs/swagger";
 import {
   AlgorithmInstanceDto,
-  OrchestrationStatusDto
+  OrchestrationStatusDto,
+  OrchestrationStatusSignalDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import {
   DisableOAuthGuard,
@@ -83,5 +84,33 @@ export class AlgorithmInstancesController {
       isInitiator: false,
       authorizationHeader
     });
+  }
+
+  @Post(":algorithmInstanceId/orchestration-status")
+  @ApiForbiddenResponseDefault()
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: "algorithmInstanceId",
+    type: String,
+    required: true
+  })
+  @ApiBody({ type: OrchestrationStatusSignalDto })
+  @ApiOperation({
+    summary: "Receive orchestration status",
+    description:
+      "Called by the initiator to propagate the instance-wide orchestration " +
+      "outcome (completed / error) to a worker."
+  })
+  async receiveOrchestrationStatus(
+    @Param("algorithmInstanceId", nonEmptyStringPipe)
+    algorithmInstanceId: string,
+    @Body(validationPipe) body: OrchestrationStatusSignalDto,
+    @Headers("Authorization") authorizationHeader?: string
+  ): Promise<void> {
+    return this.algorithmInstancesService.receiveOrchestrationStatusFromPeer(
+      algorithmInstanceId,
+      body.orchestrationStatus,
+      authorizationHeader
+    );
   }
 }

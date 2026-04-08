@@ -4,7 +4,11 @@ import type {
   InternalEventDto
 } from "../types.js";
 import type { InkColor } from "../utils.js";
-import { formatDateWithSeconds, instanceStatusColor } from "../utils.js";
+import {
+  formatDateWithSeconds,
+  instanceStatusColor,
+  orchestrationStatusColor
+} from "../utils.js";
 
 export type EventFilter = "all" | "algorithm" | "internal";
 export type DetailView = "info" | "events" | "data" | "logs";
@@ -146,6 +150,13 @@ export function getInstanceInfoRows(
 
   return [
     { label: "Status", value: status, color: instanceStatusColor(status) },
+    {
+      label: "Orchestration",
+      value: instance.orchestrationStatus?.toUpperCase() || "-",
+      color: instance.orchestrationStatus
+        ? orchestrationStatusColor(instance.orchestrationStatus)
+        : undefined
+    },
     { label: "ID", value: instance.id },
     {
       label: "Created",

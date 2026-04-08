@@ -2,7 +2,12 @@ import { Box, Text } from "ink";
 
 import { Spinner } from "../components/spinner.js";
 import type { AlgorithmInstanceDto, JobInfo, PodInfo } from "../types.js";
-import { formatTime, truncateStr } from "../utils.js";
+import {
+  determineJobStatus,
+  formatTime,
+  jobStatusColor,
+  truncateStr
+} from "../utils.js";
 import type {
   EventFilter,
   InstanceInfoRow,
@@ -271,6 +276,7 @@ export function InstanceJobsView({
             const active = job.status?.active ?? 0;
             const succeeded = job.status?.succeeded ?? 0;
             const failed = job.status?.failed ?? 0;
+            const status = determineJobStatus(job.status);
             const isSelected = jobsOffset + index === jobsCursor;
 
             return (
@@ -282,6 +288,8 @@ export function InstanceJobsView({
                     {isSelected ? "❯ " : "  "}
                     {name}
                   </Text>
+                  <Text> </Text>
+                  <Text color={jobStatusColor(status)}>[{status}]</Text>
                 </Text>
                 <Text dimColor>
                   {"    "}active:{active} · succeeded:{succeeded} · failed:

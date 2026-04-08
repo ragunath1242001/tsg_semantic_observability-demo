@@ -167,4 +167,38 @@ describe("BridgeWsServerListeners", () => {
     expect(gateway.pushAlgorithmInstance).not.toHaveBeenCalled();
     expect(gateway.pushAlgorithmEventCreated).not.toHaveBeenCalled();
   });
+
+  it("publishes orchestration status update to clients", async () => {
+    const { gateway, emitter } = await buildModule("server");
+
+    const instance: BridgeAlgorithmInstanceMetadataDto = {
+      id: "urn:uuid:inst",
+      algorithmDefinition: {} as any,
+      participants: [],
+      status: "running",
+      createdDate: new Date(),
+      orchestrationStatus: "error"
+    };
+
+    emitter.emit(INTERNAL_EVENTS.ORCHESTRATION_STATUS_UPDATED, {
+      algorithmInstance: instance
+    });
+    await tick();
+
+    expect(gateway.pushAlgorithmInstance).toHaveBeenCalledWith({
+      algorithmInstance: instance,
+      reason: "updated"
+    });
+  });
+
+  it("does not forward orchestration status update in standalone mode", async () => {
+    const { gateway, emitter } = await buildModule("standalone");
+
+    emitter.emit(INTERNAL_EVENTS.ORCHESTRATION_STATUS_UPDATED, {
+      algorithmInstance: { id: "inst-1", orchestrationStatus: "error" }
+    });
+    await tick();
+
+    expect(gateway.pushAlgorithmInstance).not.toHaveBeenCalled();
+  });
 });

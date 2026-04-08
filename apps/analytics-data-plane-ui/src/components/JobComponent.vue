@@ -42,9 +42,16 @@ const refreshIntervalSeconds = computed(() =>
   Math.round(refreshIntervalMs.value / 1000)
 );
 
+const allJobsFinished = computed(() => {
+  if (jobs.value.length === 0) return false;
+  return jobs.value.every(
+    (job) => !job.status?.active || job.status.active === 0
+  );
+});
+
 const autoRefreshLabel = computed(() => {
   if (!autoRefreshEnabled.value) return "Off";
-  return `${countdownSeconds.value}s`;
+  return `${Math.max(0, countdownSeconds.value - 1)}s`;
 });
 
 const scheduleTick = () => {
@@ -56,6 +63,10 @@ const scheduleTick = () => {
       scheduleTick();
     } else {
       await getJobs(algorithmInstanceId);
+      if (allJobsFinished.value) {
+        autoRefreshEnabled.value = false;
+        return;
+      }
       countdownSeconds.value = refreshIntervalSeconds.value;
       scheduleTick();
     }
@@ -132,12 +143,12 @@ const getPods = async () => {
 
 const determineSeverity = (
   status?: V1JobStatus
-): "warn" | "success" | "danger" => {
-  if (status?.active >= 1) {
-    return "warn";
-  } else if (status?.succeeded >= 1) {
+): "warn" | "info" | "success" | "danger" => {
+  if ((status?.active ?? 0) >= 1) {
+    return (status?.ready ?? 0) >= 1 ? "info" : "warn";
+  } else if ((status?.succeeded ?? 0) >= 1) {
     return "success";
-  } else if (status?.failed >= 1) {
+  } else if ((status?.failed ?? 0) >= 1) {
     return "danger";
   } else {
     return "danger";
@@ -146,12 +157,12 @@ const determineSeverity = (
 
 const determineStatus = (
   status?: V1JobStatus
-): "Pending" | "Completed" | "Failed" | "Unknown" => {
-  if (status?.active >= 1) {
-    return "Pending";
-  } else if (status?.succeeded >= 1) {
+): "Pending" | "Running" | "Completed" | "Failed" | "Unknown" => {
+  if ((status?.active ?? 0) >= 1) {
+    return (status?.ready ?? 0) >= 1 ? "Running" : "Pending";
+  } else if ((status?.succeeded ?? 0) >= 1) {
     return "Completed";
-  } else if (status?.failed >= 1) {
+  } else if ((status?.failed ?? 0) >= 1) {
     return "Failed";
   } else {
     return "Unknown";
@@ -366,7 +377,9 @@ onUnmounted(() => {
               "
               :on-label="autoRefreshLabel"
               off-label="Off"
-              on-icon="pi pi-sync"
+              :on-icon="
+                countdownSeconds < 2 ? 'pi pi-sync pi-spin' : 'pi pi-sync'
+              "
               off-icon="pi pi-pause"
               :severity="autoRefreshEnabled ? undefined : 'secondary'"
               size="small" />

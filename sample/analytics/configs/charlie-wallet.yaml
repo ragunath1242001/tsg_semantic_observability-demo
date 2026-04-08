@@ -1,0 +1,80 @@
+server:
+  publicAddress: http://localhost:3800
+  publicDomain: localhost:3800
+  port: 3800
+  listen: "0.0.0.0"
+
+db:
+  type: "sqlite"
+  database: "charlie.db"
+
+auth:
+  enabled: true
+  openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
+  callbackURL: http://localhost:3850/api/auth/callback
+  clientId: charlie-wallet
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: e0g5kJ9OoDFIKTxHD8pW94VD_9BLVDFnkqQgNckiNHc
+    y: LzJDC4ZhbMogA9QF362bSYfgb8MF1apWFuX-rDqlSfU
+    crv: P-256
+    d: NnvqIQKwDMy1kaaLuVBBfyDeQpPBNjSimlnwXapCm4o
+    kid: charlie-wallet-key
+    alg: ES256
+    use: sig
+  redirectURL: http://localhost:3850/
+
+initKeys:
+  - id: key-0
+    type: EdDSA
+    default: true
+
+runtime:
+  title: Charlie
+  color: "#3B8BF6"
+  acceptUnauthenticatedCredentialRequests: true
+  issueMobileCredentials: true
+  issueDebugCredentials: true
+
+issuance:
+  dcp:
+    - credentialType:
+        - ExampleCredential
+      issuerId: did:web:localhost%3A3400
+      preAuthorizedCode: abc36d8a131567803961be4a9fd724e53600a81be2ad5430a540c06710fbb9b0f6c99693be71950268b28f9a0655c637
+
+trustAnchors:
+  - id: did:web:localhost%3A3400
+    credentialTypes:
+      - ExampleCredential
+      - charlie:ExampleCredential
+      - http://localhost:3400/credentials/ExampleCredential
+
+didServices:
+  - id: did:web:localhost%3A3800#control-plane
+    type: connector
+    serviceEndpoint: http://localhost:3801/
+
+did:
+  method: "did:web:"
+
+issueConfigurations:
+  - id: ProjectAgreementCredential
+    credentialType: ProjectAgreementCredential
+    description: Project Agreement Credential
+    document:
+      "@context":
+        "@protected": true
+        "@version": 1.1
+        ProjectAgreementCredential:
+          "@context":
+            - https://www.w3.org/ns/credentials/v2
+          "@id": adp:ProjectAgreementCredential
+        adp: https://tsg.dataspac.es/context/adp
+        hash: "https://w3id.org/security#hash"
+        id: "@id"
+        type: "@type"
+
+audit:
+  logExecute: true

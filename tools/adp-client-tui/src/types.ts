@@ -193,6 +193,9 @@ export interface AlgorithmInstanceDto {
   algorithmEvents?: AlgorithmEventDto[];
   internalEvents?: InternalEventDto[];
   projectAgreement?: ProjectAgreementSummaryDto;
+  orchestrationStatus?: string;
+  isInitiator?: boolean;
+  participantStatuses?: Record<string, "completed" | "failed" | "terminated">;
 }
 
 export interface OIDCDiscovery {
@@ -231,6 +234,7 @@ export interface JobInfo {
   };
   status?: {
     active?: number;
+    ready?: number;
     succeeded?: number;
     failed?: number;
     startTime?: string;
