@@ -13,7 +13,9 @@ export const INTERNAL_EVENTS = {
   ALGORITHM_EVENTS_RECEIVED: "algorithm-events.received",
   ALGORITHM_EVENT_DATA_RECEIVED: "algorithm-events.data-received",
   JOB_SPAWN: "job.spawn",
-  JOB_DELETE: "job.delete"
+  JOB_STOP: "job.stop",
+  JOB_DELETE: "job.delete",
+  ORCHESTRATION_STATUS_UPDATED: "orchestration-status.updated"
 } as const;
 
 export type InternalEventMap = {
@@ -39,8 +41,14 @@ export type InternalEventMap = {
     command?: string;
     datasetId?: string;
   };
+  [INTERNAL_EVENTS.JOB_STOP]: {
+    algorithmInstanceId: string;
+  };
   [INTERNAL_EVENTS.JOB_DELETE]: {
     algorithmInstanceId: string;
+  };
+  [INTERNAL_EVENTS.ORCHESTRATION_STATUS_UPDATED]: {
+    algorithmInstance: BridgeAlgorithmInstanceMetadataDto;
   };
 };
 

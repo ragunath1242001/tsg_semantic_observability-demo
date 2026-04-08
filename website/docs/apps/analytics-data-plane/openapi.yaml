@@ -1579,6 +1579,41 @@ paths:
             - delete:adp.algorithm
       summary: Prune soft-deleted algorithm instances
       tags: *a12
+  /api/management/algorithm-instances/{id}/orchestration-status:
+    post:
+      description: Allows the operator to manually set the orchestration status (e.g.
+        signal an error when a job silently fails).
+      operationId: AlgorithmInstancesManagementController_setOrchestrationStatus
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetOrchestrationStatusDto"
+      responses:
+        "200":
+          description: The updated algorithm instance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlgorithmInstanceDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - create:adp.algorithm
+      summary: Manually set orchestration status
+      tags: *a12
   /api/algorithm-instances/create:
     post:
       description: Creates a new algorithm instance with the provided details.
@@ -1636,6 +1671,37 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Start an algorithm instance
+      tags: *a13
+  /api/algorithm-instances/{algorithmInstanceId}/orchestration-status:
+    post:
+      description: Called by the initiator to propagate the instance-wide
+        orchestration outcome (completed / error) to a worker.
+      operationId: AlgorithmInstancesController_receiveOrchestrationStatus
+      parameters:
+        - name: algorithmInstanceId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrchestrationStatusSignalDto"
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Receive orchestration status
       tags: *a13
   /api/project-agreements/signature-request:
     post:
@@ -3855,6 +3921,24 @@ components:
           description: The project agreement linked to this algorithm instance
           allOf:
             - $ref: "#/components/schemas/ProjectAgreementSummaryDto"
+        orchestrationStatus:
+          type: string
+          description: "Instance-wide orchestration outcome. Distinct from the local job
+            status: 'error' means a remote participant failed, not necessarily
+            the local job."
+          enum: &a28
+            - pending
+            - running
+            - completed
+            - error
+        isInitiator:
+          type: boolean
+          description: Whether this ADP is the initiator of the algorithm instance. The
+            initiator tracks orchestration status across all participants.
+        participantStatuses:
+          type: object
+          description: Per-participant job status as reported to the initiator. Keys are
+            participant DID IDs, values are 'completed' or 'failed'.
       required:
         - id
         - algorithmDefinition
@@ -3884,6 +3968,17 @@ components:
         - id
         - algorithmDefinition
         - participants
+    SetOrchestrationStatusDto:
+      type: object
+      properties:
+        orchestrationStatus:
+          type: string
+          description: The orchestration status to set
+          enum:
+            - completed
+            - error
+      required:
+        - orchestrationStatus
     OrchestrationStatusDto:
       type: object
       properties:
@@ -3904,6 +3999,15 @@ components:
           example: 60
       required:
         - status
+    OrchestrationStatusSignalDto:
+      type: object
+      properties:
+        orchestrationStatus:
+          type: string
+          description: The instance-wide orchestration outcome
+          enum: *a28
+      required:
+        - orchestrationStatus
     ProjectAgreementParticipant:
       type: object
       properties:

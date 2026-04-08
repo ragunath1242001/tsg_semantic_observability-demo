@@ -13,7 +13,9 @@ import {
   AlgorithmParticipant,
   BridgeAlgorithmInstanceMetadataDto,
   CreateAlgorithmInstanceDto,
+  type OrchestrationStatus,
   OrchestrationStatusDto,
+  OrchestrationStatusSignalDto,
   ProjectAgreementSummaryDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { parseNetworkError } from "@tsg-dsp/common-api";
@@ -22,7 +24,7 @@ import {
   DataPlaneError,
   ITransferHandler
 } from "@tsg-dsp/common-data-plane-api";
-import { OfferDto } from "@tsg-dsp/common-dsp";
+import { OfferDto, TransferState } from "@tsg-dsp/common-dsp";
 import axios, { AxiosResponse } from "axios";
 import { plainToInstance } from "class-transformer";
 import { randomBytes } from "crypto";
@@ -95,7 +97,10 @@ export class AlgorithmInstancesService {
           status: instance.status,
           startedAt: instance.startedAt,
           finishedAt: instance.finishedAt,
-          projectAgreement
+          projectAgreement,
+          orchestrationStatus: instance.orchestrationStatus,
+          isInitiator: instance.isInitiator,
+          participantStatuses: instance.participantStatuses
         } as AlgorithmInstanceDao;
       })
     );
@@ -167,7 +172,10 @@ export class AlgorithmInstancesService {
       status: dto.status,
       startedAt: dto.startedAt,
       finishedAt: dto.finishedAt,
-      projectAgreement: dto.projectAgreement
+      projectAgreement: dto.projectAgreement,
+      orchestrationStatus: dto.orchestrationStatus,
+      isInitiator: dto.isInitiator,
+      participantStatuses: dto.participantStatuses
     };
   }
 
@@ -199,24 +207,6 @@ export class AlgorithmInstancesService {
     }
 
     return this.mapToDto(algorithmInstance);
-  }
-
-  private async getAlgorithmInstanceForJob(
-    algorithmInstanceId: string
-  ): Promise<AlgorithmInstanceDao> {
-    const algorithmInstance = await this.algorithmInstanceRepository.findOne({
-      where: { id: algorithmInstanceId },
-      relations: ["transfers", "algorithmEvents", "internalEvents"]
-    });
-
-    if (!algorithmInstance) {
-      throw new DataPlaneError(
-        `AlgorithmInstance with id ${algorithmInstanceId} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger);
-    }
-
-    return algorithmInstance;
   }
 
   private async getAlgorithmInstanceForPeer(
@@ -355,6 +345,15 @@ export class AlgorithmInstancesService {
   ): Promise<AlgorithmInstanceDto> {
     const algorithmInstance =
       await this.getAlgorithmInstance(algorithmInstanceId);
+
+    const terminalStatuses = ["completed", "failed", "terminated", "cancelled"];
+    if (terminalStatuses.includes(algorithmInstance.status)) {
+      this.logger.debug(
+        `Ignoring status update '${status}' for instance ${algorithmInstanceId}: already in terminal state '${algorithmInstance.status}'`
+      );
+      return this.mapToDto(algorithmInstance);
+    }
+
     algorithmInstance.status = status;
 
     const observedAt = options?.observedAt;
@@ -373,7 +372,62 @@ export class AlgorithmInstancesService {
 
     this.notifyStatusChange(updatedInstance, options);
 
+    if (status === "completed" || status === "failed") {
+      setImmediate(() => this.propagateJobResult(updatedInstance, status));
+    }
+
     return this.mapToDto(updatedInstance);
+  }
+
+  private async propagateJobResult(
+    instance: AlgorithmInstanceDao,
+    status: "completed" | "failed"
+  ): Promise<void> {
+    if (this.splitMode.shouldBridgeJobStatusToServer) {
+      return;
+    }
+
+    if (!instance.isInitiator) {
+      try {
+        const transfers = instance.transfers ?? [];
+        if (transfers.length === 0) {
+          this.logger.warn(
+            `No transfers found for instance ${instance.id}; cannot signal job result`
+          );
+          return;
+        }
+        await Promise.all(
+          transfers.map(async (transfer) => {
+            if (!this.transferHandler) {
+              this.logger.warn(
+                `Transfer handler not available; cannot signal job result for instance ${instance.id}`
+              );
+              return;
+            }
+            if (status === "completed") {
+              await this.transferHandler.requestTransferCompletion(transfer);
+            } else {
+              await this.transferHandler.requestTransferTermination(
+                transfer,
+                "JOB_FAILED",
+                `Job failed for algorithm instance ${instance.id}`
+              );
+            }
+            this.logger.log(
+              `Signaled job result '${status}' via transfer ${status === "completed" ? "completion" : "termination"} for instance ${instance.id}`
+            );
+          })
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Failed to signal job result via transfer lifecycle: ${String(error)}`
+        );
+      }
+    } else {
+      await this.recordOwnJobResult(instance.id, status).catch((err) =>
+        this.logger.warn(`Failed to record own job result: ${String(err)}`)
+      );
+    }
   }
 
   private notifyStatusChange(
@@ -395,6 +449,230 @@ export class AlgorithmInstancesService {
           algorithmInstance: this.mapToBridgeMetadata(instance)
         }
       );
+    }
+  }
+
+  private registerTransferListeners(
+    algorithmInstanceId: string,
+    transfers: TransferDao[]
+  ): void {
+    if (!this.transferHandler) return;
+
+    for (const transfer of transfers) {
+      this.transferHandler.addListener(
+        transfer.id,
+        TransferState.COMPLETED,
+        (completedTransfer) => {
+          this.handleTransferStateChange(
+            algorithmInstanceId,
+            completedTransfer.remoteParty,
+            "completed"
+          );
+        }
+      );
+
+      this.transferHandler.addListener(
+        transfer.id,
+        TransferState.TERMINATED,
+        (terminatedTransfer) => {
+          this.handleTransferStateChange(
+            algorithmInstanceId,
+            terminatedTransfer.remoteParty,
+            "failed"
+          );
+        }
+      );
+    }
+  }
+
+  private async handleTransferStateChange(
+    algorithmInstanceId: string,
+    participantId: string,
+    status: "completed" | "failed"
+  ): Promise<void> {
+    try {
+      this.logger.log(
+        `Transfer ${status === "completed" ? "completion" : "termination"} observed for participant ${participantId} on instance ${algorithmInstanceId}`
+      );
+      const instance = await this.getAlgorithmInstance(algorithmInstanceId);
+
+      const statuses = instance.participantStatuses ?? {};
+      statuses[participantId] = status;
+      instance.participantStatuses = statuses;
+      await this.algorithmInstanceRepository.save(instance);
+
+      await this.evaluateOrchestrationStatus(instance);
+    } catch (error) {
+      this.logger.warn(
+        `Failed to handle transfer state change for participant ${participantId} on instance ${algorithmInstanceId}: ${String(error)}`
+      );
+    }
+  }
+
+  async recordOwnJobResult(
+    algorithmInstanceId: string,
+    status: "completed" | "failed"
+  ): Promise<void> {
+    const ownParticipantId = await this.catalog.getParticipantId();
+    const instance = await this.getAlgorithmInstance(algorithmInstanceId);
+
+    const statuses = instance.participantStatuses ?? {};
+    statuses[ownParticipantId] = status;
+    instance.participantStatuses = statuses;
+    await this.algorithmInstanceRepository.save(instance);
+
+    await this.evaluateOrchestrationStatus(instance);
+  }
+
+  private async evaluateOrchestrationStatus(
+    instance: AlgorithmInstanceDao
+  ): Promise<void> {
+    const results = instance.participantStatuses;
+    if (!results) return;
+
+    const totalParticipants = instance.participants.length;
+    const totalReported = Object.keys(results).length;
+
+    const hasFailed = Object.values(results).some((s) => s === "failed");
+    if (hasFailed) {
+      await this.setOrchestrationStatus(instance, "error");
+      return;
+    }
+
+    if (totalReported >= totalParticipants) {
+      await this.setOrchestrationStatus(instance, "completed");
+    }
+  }
+
+  private async setOrchestrationStatus(
+    instance: AlgorithmInstanceDao,
+    orchestrationStatus: OrchestrationStatus
+  ): Promise<void> {
+    this.logger.log(
+      `Setting orchestration status '${orchestrationStatus}' for instance ${instance.id}`
+    );
+
+    instance.orchestrationStatus = orchestrationStatus;
+
+    if (
+      orchestrationStatus === "error" &&
+      !["completed", "failed", "terminated", "cancelled"].includes(
+        instance.status
+      )
+    ) {
+      instance.status = "terminated";
+      if (!instance.finishedAt) {
+        instance.finishedAt = new Date();
+      }
+    }
+
+    if (orchestrationStatus === "error") {
+      const statuses = instance.participantStatuses ?? {};
+      for (const participant of instance.participants) {
+        if (!(participant.didId in statuses)) {
+          statuses[participant.didId] = "terminated";
+        }
+      }
+      instance.participantStatuses = statuses;
+    }
+
+    const updatedInstance =
+      await this.algorithmInstanceRepository.save(instance);
+
+    emitInternalEvent(
+      this.eventEmitter,
+      INTERNAL_EVENTS.ORCHESTRATION_STATUS_UPDATED,
+      { algorithmInstance: this.mapToBridgeMetadata(updatedInstance) }
+    );
+    this.notifyStatusChange(updatedInstance);
+
+    if (orchestrationStatus === "error") {
+      emitInternalEvent(this.eventEmitter, INTERNAL_EVENTS.JOB_STOP, {
+        algorithmInstanceId: updatedInstance.id
+      });
+    }
+
+    await this.broadcastOrchestrationStatus(
+      updatedInstance,
+      orchestrationStatus
+    );
+  }
+
+  async setOrchestrationStatusManually(
+    algorithmInstanceId: string,
+    orchestrationStatus: "completed" | "error"
+  ): Promise<AlgorithmInstanceDto> {
+    const instance = await this.getAlgorithmInstance(algorithmInstanceId);
+    await this.setOrchestrationStatus(instance, orchestrationStatus);
+    return this.mapToDto(instance);
+  }
+
+  private async broadcastOrchestrationStatus(
+    instance: AlgorithmInstanceDao,
+    orchestrationStatus: OrchestrationStatus
+  ): Promise<void> {
+    const transfers = instance.transfers ?? [];
+    const outboundTransfers = transfers.filter((t) => t.dataAddress?.endpoint);
+
+    await Promise.allSettled(
+      outboundTransfers.map(async (transfer) => {
+        try {
+          await axios.post<void>(
+            `${transfer.dataAddress!.endpoint}/algorithm-instances/${instance.id}/orchestration-status`,
+            { orchestrationStatus } satisfies OrchestrationStatusSignalDto,
+            getAxiosConfigFromDataAddress(transfer)
+          );
+        } catch (error) {
+          this.logger.warn(
+            `Failed to send orchestration status to ${transfer.dataAddress!.endpoint}: ${String(error)}`
+          );
+        }
+      })
+    );
+  }
+
+  async receiveOrchestrationStatusFromPeer(
+    algorithmInstanceId: string,
+    orchestrationStatus: OrchestrationStatus,
+    authorizationHeader: string | undefined
+  ): Promise<void> {
+    const instance = await this.getAlgorithmInstanceForPeer(
+      algorithmInstanceId,
+      authorizationHeader
+    );
+
+    this.logger.log(
+      `Received orchestration status '${orchestrationStatus}' for instance ${algorithmInstanceId}`
+    );
+
+    instance.orchestrationStatus = orchestrationStatus;
+
+    if (
+      orchestrationStatus === "error" &&
+      !["completed", "failed", "terminated", "cancelled"].includes(
+        instance.status
+      )
+    ) {
+      instance.status = "terminated";
+      if (!instance.finishedAt) {
+        instance.finishedAt = new Date();
+      }
+    }
+
+    const updatedInstance =
+      await this.algorithmInstanceRepository.save(instance);
+
+    emitInternalEvent(
+      this.eventEmitter,
+      INTERNAL_EVENTS.ORCHESTRATION_STATUS_UPDATED,
+      { algorithmInstance: this.mapToBridgeMetadata(updatedInstance) }
+    );
+    this.notifyStatusChange(updatedInstance);
+
+    if (orchestrationStatus === "error") {
+      emitInternalEvent(this.eventEmitter, INTERNAL_EVENTS.JOB_STOP, {
+        algorithmInstanceId: updatedInstance.id
+      });
     }
   }
 
@@ -517,6 +795,8 @@ export class AlgorithmInstancesService {
         ...createAlgorithmInstance,
         createdDate: new Date(),
         status: "pending",
+        orchestrationStatus: "pending",
+        isInitiator: true,
         startedAt: undefined,
         finishedAt: undefined,
         transfers: [],
@@ -564,7 +844,8 @@ export class AlgorithmInstancesService {
         `${transfer.dataAddress.endpoint}/algorithm-instances/create`,
         {
           ...algorithmInstance,
-          transfers: []
+          transfers: [],
+          isInitiator: false
         },
         getAxiosConfigFromDataAddress(transfer)
       );
@@ -611,6 +892,8 @@ export class AlgorithmInstancesService {
     const transfers =
       await this.createTransfersForParticipants(algorithmInstance);
     await this.sendStartSignalsToParticipants(transfers, algorithmInstance.id);
+
+    this.registerTransferListeners(algorithmInstance.id, transfers);
 
     if (this.splitMode.shouldDelegateStartToClientRunner) {
       // Server mode delegates job execution to the client runner via the bridge.
@@ -782,7 +1065,9 @@ export class AlgorithmInstancesService {
           status: createAlgorithmInstance.status,
           startedAt: createAlgorithmInstance.startedAt,
           finishedAt: createAlgorithmInstance.finishedAt,
-          projectAgreement: createAlgorithmInstance.projectAgreement
+          projectAgreement: createAlgorithmInstance.projectAgreement,
+          orchestrationStatus: createAlgorithmInstance.orchestrationStatus,
+          isInitiator: createAlgorithmInstance.isInitiator
         }
       }
     );
@@ -826,7 +1111,7 @@ export class AlgorithmInstancesService {
     authorizationHeader: string | undefined
   ): Promise<AlgorithmInstanceDao> {
     return isInitiator
-      ? await this.getAlgorithmInstanceForJob(algorithmInstanceId)
+      ? await this.getAlgorithmInstance(algorithmInstanceId)
       : await this.getAlgorithmInstanceForPeer(
           algorithmInstanceId,
           authorizationHeader
@@ -848,7 +1133,12 @@ export class AlgorithmInstancesService {
       this.algorithmInstanceRepository.create({
         ...algorithmInstance,
         startedAt: new Date(),
-        status: "running"
+        status: "running",
+        orchestrationStatus:
+          algorithmInstance.orchestrationStatus === "pending" ||
+          !algorithmInstance.orchestrationStatus
+            ? "running"
+            : algorithmInstance.orchestrationStatus
       })
     );
   }

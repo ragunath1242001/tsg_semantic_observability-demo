@@ -1260,4 +1260,713 @@ describe("AlgorithmInstancesService", () => {
       });
     });
   });
+
+  describe("Orchestration fault tolerance", () => {
+    const orchestrationInstanceBase = {
+      ...sampleAlgorithmInstanceDto,
+      participants: [
+        {
+          didId: "did:web:localhost",
+          role: "participant",
+          dataset: "urn:uuid:local-dataset"
+        },
+        {
+          didId: "did:web:remote-1.com",
+          role: "participant",
+          dataset: "urn:uuid:remote-1-dataset"
+        },
+        {
+          didId: "did:web:remote-2.com",
+          role: "participant",
+          dataset: "urn:uuid:remote-2-dataset"
+        }
+      ]
+    };
+
+    beforeEach(() => {
+      vi.spyOn(
+        algorithmInstancesService,
+        "distributeAlgorithmInstance"
+      ).mockResolvedValue();
+    });
+
+    it("should set orchestrationStatus to 'pending' on creation", async () => {
+      const result = await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-pending-test"
+      });
+
+      expect(result.orchestrationStatus).toBe("pending");
+    });
+
+    it("should set orchestrationStatus to 'running' when markInstanceAsRunning is called", async () => {
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-running-test"
+      });
+
+      const instance =
+        await algorithmInstancesService["getAlgorithmInstance"](
+          "orch-running-test"
+        );
+      await algorithmInstancesService["markInstanceAsRunning"](instance);
+
+      const reloaded =
+        await algorithmInstancesService.getAlgorithmInstanceDto(
+          "orch-running-test"
+        );
+      expect(reloaded.orchestrationStatus).toBe("running");
+    });
+
+    it("should set orchestrationStatus to 'completed' when all participants succeed (initiator)", async () => {
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-all-succeed"
+      });
+
+      // Simulate initiator recording own result
+      await algorithmInstancesService.recordOwnJobResult(
+        "orch-all-succeed",
+        "completed"
+      );
+
+      // Set participant statuses directly on the DB entity
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const instance = await repo.findOneByOrFail({ id: "orch-all-succeed" });
+      instance.participantStatuses = {
+        ...instance.participantStatuses,
+        "did:web:remote-1.com": "completed",
+        "did:web:remote-2.com": "completed"
+      };
+      await repo.save(instance);
+
+      await algorithmInstancesService["evaluateOrchestrationStatus"](instance);
+
+      const reloaded =
+        await algorithmInstancesService.getAlgorithmInstanceDto(
+          "orch-all-succeed"
+        );
+      expect(reloaded.orchestrationStatus).toBe("completed");
+    });
+
+    it("should set orchestrationStatus to 'error' when any participant fails (initiator)", async () => {
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-one-fails"
+      });
+
+      // First participant succeeds
+      await algorithmInstancesService.recordOwnJobResult(
+        "orch-one-fails",
+        "completed"
+      );
+
+      // Second participant fails — should immediately trigger error
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const instance = await repo.findOneByOrFail({ id: "orch-one-fails" });
+      instance.participantStatuses = {
+        ...instance.participantStatuses,
+        "did:web:remote-1.com": "failed"
+      };
+      await repo.save(instance);
+
+      await algorithmInstancesService["evaluateOrchestrationStatus"](instance);
+
+      const reloaded =
+        await algorithmInstancesService.getAlgorithmInstanceDto(
+          "orch-one-fails"
+        );
+      expect(reloaded.orchestrationStatus).toBe("error");
+    });
+
+    it("should set error immediately on first failure without waiting for all participants", async () => {
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-immediate-error"
+      });
+
+      // Only one participant reports — and it failed
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const instance = await repo.findOneByOrFail({
+        id: "orch-immediate-error"
+      });
+      instance.participantStatuses = {
+        "did:web:remote-1.com": "failed"
+      };
+      await repo.save(instance);
+
+      await algorithmInstancesService["evaluateOrchestrationStatus"](instance);
+
+      const reloaded = await algorithmInstancesService.getAlgorithmInstanceDto(
+        "orch-immediate-error"
+      );
+      expect(reloaded.orchestrationStatus).toBe("error");
+    });
+
+    it("should not resolve orchestration status when not all participants have reported and none failed", async () => {
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-partial-report"
+      });
+
+      // Only 1 of 3 participants has reported
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const instance = await repo.findOneByOrFail({
+        id: "orch-partial-report"
+      });
+      instance.participantStatuses = {
+        "did:web:localhost": "completed"
+      };
+      await repo.save(instance);
+
+      await algorithmInstancesService["evaluateOrchestrationStatus"](instance);
+
+      const reloaded = await algorithmInstancesService.getAlgorithmInstanceDto(
+        "orch-partial-report"
+      );
+      // Should still be pending (from creation), not completed
+      expect(reloaded.orchestrationStatus).toBe("pending");
+    });
+
+    it("should persist participantStatuses in the database after completion", async () => {
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-persist-completed"
+      });
+
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const instance = await repo.findOneByOrFail({
+        id: "orch-persist-completed"
+      });
+      instance.participantStatuses = {
+        "did:web:localhost": "completed",
+        "did:web:remote-1.com": "completed",
+        "did:web:remote-2.com": "completed"
+      };
+      await repo.save(instance);
+
+      await algorithmInstancesService["evaluateOrchestrationStatus"](instance);
+
+      const reloaded = await repo.findOneByOrFail({
+        id: "orch-persist-completed"
+      });
+      expect(reloaded.participantStatuses).toEqual({
+        "did:web:localhost": "completed",
+        "did:web:remote-1.com": "completed",
+        "did:web:remote-2.com": "completed"
+      });
+      expect(reloaded.orchestrationStatus).toBe("completed");
+    });
+
+    it("should persist participantStatuses in the database after error", async () => {
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-persist-error"
+      });
+
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const instance = await repo.findOneByOrFail({
+        id: "orch-persist-error"
+      });
+      instance.participantStatuses = {
+        "did:web:remote-1.com": "failed"
+      };
+      await repo.save(instance);
+
+      await algorithmInstancesService["evaluateOrchestrationStatus"](instance);
+
+      const reloaded = await repo.findOneByOrFail({
+        id: "orch-persist-error"
+      });
+      expect(reloaded.participantStatuses).toEqual({
+        "did:web:localhost": "terminated",
+        "did:web:remote-1.com": "failed",
+        "did:web:remote-2.com": "terminated"
+      });
+      expect(reloaded.orchestrationStatus).toBe("error");
+    });
+
+    it("should emit orchestration-status.updated event when status is resolved", async () => {
+      const emitSpy = vi.spyOn(eventEmitter, "emit");
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-emit-test"
+      });
+
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const instance = await repo.findOneByOrFail({ id: "orch-emit-test" });
+      instance.participantStatuses = {
+        "did:web:localhost": "completed",
+        "did:web:remote-1.com": "completed",
+        "did:web:remote-2.com": "completed"
+      };
+      await repo.save(instance);
+
+      emitSpy.mockClear();
+      await algorithmInstancesService["evaluateOrchestrationStatus"](instance);
+
+      expect(emitSpy).toHaveBeenCalledWith(
+        "orchestration-status.updated",
+        expect.objectContaining({
+          algorithmInstance: expect.objectContaining({
+            id: "orch-emit-test",
+            orchestrationStatus: "completed"
+          })
+        })
+      );
+    });
+
+    it("should allow manually setting orchestration status to error", async () => {
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-manual-error"
+      });
+
+      const result =
+        await algorithmInstancesService.setOrchestrationStatusManually(
+          "orch-manual-error",
+          "error"
+        );
+
+      expect(result.orchestrationStatus).toBe("error");
+
+      const reloaded =
+        await algorithmInstancesService.getAlgorithmInstanceDto(
+          "orch-manual-error"
+        );
+      expect(reloaded.orchestrationStatus).toBe("error");
+    });
+
+    it("should emit job.stop when orchestration status becomes error", async () => {
+      const emitSpy = vi.spyOn(eventEmitter, "emit");
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-stop-on-error"
+      });
+
+      emitSpy.mockClear();
+
+      await algorithmInstancesService.setOrchestrationStatusManually(
+        "orch-stop-on-error",
+        "error"
+      );
+
+      expect(emitSpy).toHaveBeenCalledWith(
+        "job.stop",
+        expect.objectContaining({
+          algorithmInstanceId: "orch-stop-on-error"
+        })
+      );
+    });
+
+    it("should not emit job.stop when orchestration status becomes completed", async () => {
+      const emitSpy = vi.spyOn(eventEmitter, "emit");
+
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-no-stop-on-completed"
+      });
+
+      emitSpy.mockClear();
+
+      await algorithmInstancesService.setOrchestrationStatusManually(
+        "orch-no-stop-on-completed",
+        "completed"
+      );
+
+      expect(emitSpy).not.toHaveBeenCalledWith("job.stop", expect.anything());
+    });
+
+    it("should allow manually setting orchestration status to completed", async () => {
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-manual-completed"
+      });
+
+      const result =
+        await algorithmInstancesService.setOrchestrationStatusManually(
+          "orch-manual-completed",
+          "completed"
+        );
+
+      expect(result.orchestrationStatus).toBe("completed");
+    });
+
+    it("should preserve isInitiator when receiving an instance from a peer", async () => {
+      const secret = "orch-peer-secret";
+      await algorithmInstancesService["algorithmInstanceRepository"]["manager"]
+        ["getRepository"](TransferDao)
+        .save({
+          id: "orch-peer-transfer",
+          role: "provider",
+          processId: "orch-peer-process",
+          remoteParty: "did:web:initiator.example",
+          datasetId: "urn:uuid:orch-peer-dataset",
+          secret,
+          state: TransferState.REQUESTED,
+          request: {} as TransferRequestMessageDto,
+          response: {} as DataPlaneRequestResponseDto
+        });
+
+      const incoming: AlgorithmInstanceDto = {
+        id: "orch-peer-instance",
+        algorithmDefinition: sampleAlgorithmInstanceDto.algorithmDefinition,
+        participants: sampleAlgorithmInstanceDto.participants,
+        createdDate: new Date(),
+        status: "pending",
+        orchestrationStatus: "pending",
+        isInitiator: false,
+        transfers: [],
+        algorithmEvents: [],
+        internalEvents: []
+      };
+
+      await algorithmInstancesService.receiveAlgorithmInstanceFromPeer({
+        createAlgorithmInstance: incoming,
+        authorizationHeader: `Bearer ${secret}`
+      });
+
+      const reloaded =
+        await algorithmInstancesService.getAlgorithmInstanceDto(
+          "orch-peer-instance"
+        );
+      expect(reloaded.isInitiator).toBe(false);
+      expect(reloaded.orchestrationStatus).toBe("pending");
+    });
+
+    it("should receive orchestration status from peer (worker side)", async () => {
+      // Re-use the instance created above (orch-peer-instance) which has
+      // isInitiator: false and a valid transfer secret
+      await algorithmInstancesService.receiveOrchestrationStatusFromPeer(
+        "orch-peer-instance",
+        "error",
+        "Bearer orch-peer-secret"
+      );
+
+      const reloaded =
+        await algorithmInstancesService.getAlgorithmInstanceDto(
+          "orch-peer-instance"
+        );
+      expect(reloaded.orchestrationStatus).toBe("error");
+    });
+
+    it("should reject orchestration status from peer with invalid token", async () => {
+      await expect(
+        algorithmInstancesService.receiveOrchestrationStatusFromPeer(
+          "orch-peer-instance",
+          "completed",
+          "Bearer invalid-token"
+        )
+      ).rejects.toThrow("not found or not accessible");
+    });
+
+    it("should emit job.stop when receiving error orchestration status from peer", async () => {
+      const emitSpy = vi.spyOn(eventEmitter, "emit");
+
+      // Create a fresh peer instance for this test
+      const secret = "orch-peer-stop-secret";
+      await algorithmInstancesService["algorithmInstanceRepository"]["manager"]
+        ["getRepository"](TransferDao)
+        .save({
+          id: "orch-peer-stop-transfer",
+          role: "provider",
+          processId: "orch-peer-stop-process",
+          remoteParty: "did:web:initiator.example",
+          datasetId: "urn:uuid:orch-peer-stop-dataset",
+          secret,
+          state: TransferState.REQUESTED,
+          request: {} as TransferRequestMessageDto,
+          response: {} as DataPlaneRequestResponseDto
+        });
+
+      const incoming: AlgorithmInstanceDto = {
+        id: "orch-peer-stop-instance",
+        algorithmDefinition: sampleAlgorithmInstanceDto.algorithmDefinition,
+        participants: sampleAlgorithmInstanceDto.participants,
+        createdDate: new Date(),
+        status: "running",
+        orchestrationStatus: "pending",
+        isInitiator: false,
+        transfers: [],
+        algorithmEvents: [],
+        internalEvents: []
+      };
+
+      await algorithmInstancesService.receiveAlgorithmInstanceFromPeer({
+        createAlgorithmInstance: incoming,
+        authorizationHeader: `Bearer ${secret}`
+      });
+
+      emitSpy.mockClear();
+
+      await algorithmInstancesService.receiveOrchestrationStatusFromPeer(
+        "orch-peer-stop-instance",
+        "error",
+        `Bearer ${secret}`
+      );
+
+      expect(emitSpy).toHaveBeenCalledWith(
+        "job.stop",
+        expect.objectContaining({
+          algorithmInstanceId: "orch-peer-stop-instance"
+        })
+      );
+    });
+
+    it("should record participant status when transfer completes (initiator side)", async () => {
+      // Create an initiator instance with a consumer-role transfer
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-transfer-listener"
+      });
+
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const transferRepo = repo.manager.getRepository(TransferDao);
+      const transfer = await transferRepo.save({
+        id: "orch-listener-transfer-1",
+        role: "consumer" as const,
+        processId: "orch-listener-process-1",
+        remoteParty: "did:web:remote-worker-1.com",
+        datasetId: "urn:uuid:orch-listener-dataset-1",
+        state: TransferState.STARTED as TransferState,
+        request: {} as TransferRequestMessageDto,
+        response: {} as DataPlaneRequestResponseDto,
+        dataAddress: {
+          endpoint: "http://remote-worker-1.com:3000",
+          endpointType: "HttpData",
+          endpointProperties: [
+            { name: "Authorization", value: "Bearer worker-1-secret" }
+          ]
+        }
+      });
+      await algorithmInstancesService.linkTransfer({
+        algorithmInstanceId: "orch-transfer-listener",
+        transfer
+      });
+
+      // Register listeners (as the initiator would during distribution)
+      algorithmInstancesService["registerTransferListeners"](
+        "orch-transfer-listener",
+        [transfer]
+      );
+
+      // Simulate transfer completion by firing the listener through the transfer handler
+      const transferHandler = algorithmInstancesService["transferHandler"]!;
+      // Simulate the DSP completion arriving by directly calling notifyListeners
+      transfer.state = TransferState.COMPLETED;
+      transferHandler["notifyListeners"](transfer, TransferState.COMPLETED);
+
+      // Wait for the async handleTransferStateChange to complete
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const reloaded = await repo.findOneByOrFail({
+        id: "orch-transfer-listener"
+      });
+      expect(reloaded.participantStatuses).toEqual(
+        expect.objectContaining({
+          "did:web:remote-worker-1.com": "completed"
+        })
+      );
+    });
+
+    it("should record participant as failed when transfer is terminated (initiator side)", async () => {
+      // Create an initiator instance with a consumer-role transfer
+      await algorithmInstancesService.createAlgorithmInstance({
+        ...orchestrationInstanceBase,
+        id: "orch-transfer-terminated"
+      });
+
+      const repo = algorithmInstancesService["algorithmInstanceRepository"];
+      const transferRepo = repo.manager.getRepository(TransferDao);
+      const transfer = await transferRepo.save({
+        id: "orch-terminated-transfer-1",
+        role: "consumer" as const,
+        processId: "orch-terminated-process-1",
+        remoteParty: "did:web:remote-worker-fail.com",
+        datasetId: "urn:uuid:orch-terminated-dataset-1",
+        state: TransferState.STARTED as TransferState,
+        request: {} as TransferRequestMessageDto,
+        response: {} as DataPlaneRequestResponseDto,
+        dataAddress: {
+          endpoint: "http://remote-worker-fail.com:3000",
+          endpointType: "HttpData",
+          endpointProperties: [
+            { name: "Authorization", value: "Bearer worker-fail-secret" }
+          ]
+        }
+      });
+      await algorithmInstancesService.linkTransfer({
+        algorithmInstanceId: "orch-transfer-terminated",
+        transfer
+      });
+
+      // Register listeners
+      algorithmInstancesService["registerTransferListeners"](
+        "orch-transfer-terminated",
+        [transfer]
+      );
+
+      // Mock the broadcast HTTP call that will happen when orchestration status
+      // is set to error (evaluateOrchestrationStatus fires broadcastOrchestrationStatus)
+      server.use(
+        http.post(
+          "http://remote-worker-fail.com:3000/algorithm-instances/:id/orchestration-status",
+          () => HttpResponse.json({ status: "ok" })
+        )
+      );
+
+      // Simulate transfer termination
+      const transferHandler = algorithmInstancesService["transferHandler"]!;
+      transfer.state = TransferState.TERMINATED;
+      transferHandler["notifyListeners"](transfer, TransferState.TERMINATED);
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const reloaded = await repo.findOneByOrFail({
+        id: "orch-transfer-terminated"
+      });
+      expect(reloaded.participantStatuses).toEqual(
+        expect.objectContaining({
+          "did:web:remote-worker-fail.com": "failed"
+        })
+      );
+    });
+
+    it("should propagate job result to initiator when worker reaches terminal status", async () => {
+      // Create instance as a worker (isInitiator: false)
+      const workerSecret = "orch-worker-propagate-secret";
+      await algorithmInstancesService["algorithmInstanceRepository"]["manager"]
+        ["getRepository"](TransferDao)
+        .save({
+          id: "orch-worker-propagate-transfer",
+          role: "provider",
+          processId: "orch-worker-propagate-process",
+          remoteParty: "did:web:initiator.example",
+          datasetId: "urn:uuid:orch-worker-propagate-dataset",
+          secret: workerSecret,
+          state: TransferState.REQUESTED,
+          request: {} as TransferRequestMessageDto,
+          response: {} as DataPlaneRequestResponseDto
+        });
+
+      const workerInstance: AlgorithmInstanceDto = {
+        id: "orch-worker-propagate",
+        algorithmDefinition: sampleAlgorithmInstanceDto.algorithmDefinition,
+        participants: [
+          {
+            didId: "did:web:localhost",
+            role: "participant",
+            dataset: "ds1"
+          }
+        ],
+        createdDate: new Date(),
+        status: "pending",
+        orchestrationStatus: "pending",
+        isInitiator: false,
+        transfers: [],
+        algorithmEvents: [],
+        internalEvents: []
+      };
+
+      await algorithmInstancesService.receiveAlgorithmInstanceFromPeer({
+        createAlgorithmInstance: workerInstance,
+        authorizationHeader: `Bearer ${workerSecret}`
+      });
+
+      // Spy on the transfer handler to verify completion is requested
+      const transferHandler = algorithmInstancesService["transferHandler"]!;
+      const completionSpy = vi
+        .spyOn(transferHandler, "requestTransferCompletion")
+        .mockResolvedValue();
+      const terminationSpy = vi
+        .spyOn(transferHandler, "requestTransferTermination")
+        .mockResolvedValue();
+
+      // Update status to completed - this should trigger propagateJobResult
+      const updated = await algorithmInstancesService.updateStatus(
+        "orch-worker-propagate",
+        "completed"
+      );
+
+      // propagateJobResult is called via setImmediate, so wait for it
+      await new Promise((resolve) => setImmediate(resolve));
+
+      expect(updated.status).toBe("completed");
+      expect(completionSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ id: "orch-worker-propagate-transfer" })
+      );
+      expect(terminationSpy).not.toHaveBeenCalled();
+
+      completionSpy.mockRestore();
+      terminationSpy.mockRestore();
+    });
+
+    it("should signal transfer termination when worker job fails", async () => {
+      const workerSecret = "orch-worker-fail-secret";
+      await algorithmInstancesService["algorithmInstanceRepository"]["manager"]
+        ["getRepository"](TransferDao)
+        .save({
+          id: "orch-worker-fail-transfer",
+          role: "provider",
+          processId: "orch-worker-fail-process",
+          remoteParty: "did:web:initiator.example",
+          datasetId: "urn:uuid:orch-worker-fail-dataset",
+          secret: workerSecret,
+          state: TransferState.REQUESTED,
+          request: {} as TransferRequestMessageDto,
+          response: {} as DataPlaneRequestResponseDto
+        });
+
+      const workerInstance: AlgorithmInstanceDto = {
+        id: "orch-worker-fail",
+        algorithmDefinition: sampleAlgorithmInstanceDto.algorithmDefinition,
+        participants: [
+          {
+            didId: "did:web:localhost",
+            role: "participant",
+            dataset: "ds1"
+          }
+        ],
+        createdDate: new Date(),
+        status: "pending",
+        orchestrationStatus: "pending",
+        isInitiator: false,
+        transfers: [],
+        algorithmEvents: [],
+        internalEvents: []
+      };
+
+      await algorithmInstancesService.receiveAlgorithmInstanceFromPeer({
+        createAlgorithmInstance: workerInstance,
+        authorizationHeader: `Bearer ${workerSecret}`
+      });
+
+      const transferHandler = algorithmInstancesService["transferHandler"]!;
+      const completionSpy = vi
+        .spyOn(transferHandler, "requestTransferCompletion")
+        .mockResolvedValue();
+      const terminationSpy = vi
+        .spyOn(transferHandler, "requestTransferTermination")
+        .mockResolvedValue();
+
+      await algorithmInstancesService.updateStatus(
+        "orch-worker-fail",
+        "failed"
+      );
+
+      await new Promise((resolve) => setImmediate(resolve));
+
+      expect(terminationSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ id: "orch-worker-fail-transfer" }),
+        "JOB_FAILED",
+        expect.stringContaining("orch-worker-fail")
+      );
+      expect(completionSpy).not.toHaveBeenCalled();
+
+      completionSpy.mockRestore();
+      terminationSpy.mockRestore();
+    });
+  });
 });

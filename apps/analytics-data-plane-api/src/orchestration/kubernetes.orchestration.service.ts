@@ -4,6 +4,8 @@ import {
   CoreV1Api,
   KubeConfig,
   Log,
+  PatchStrategy,
+  setHeaderOptions,
   V1EnvVar,
   V1Job,
   V1OwnerReference,
@@ -112,6 +114,14 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
       `Deleting jobs for algorithm instance ${event.algorithmInstanceId}`
     );
     await this.deleteJobsForAlgorithmInstance(event.algorithmInstanceId);
+  }
+
+  @OnEvent("job.stop")
+  async handleJobStopEvent(event: { algorithmInstanceId: string }) {
+    this.logger.log(
+      `Stopping jobs for algorithm instance ${event.algorithmInstanceId}`
+    );
+    await this.stopJobsForAlgorithmInstance(event.algorithmInstanceId);
   }
 
   @OnEvent("job.spawn")
@@ -429,6 +439,41 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
       container: this.containerName,
       tailLines: 1000
     });
+  }
+
+  async stopJobsForAlgorithmInstance(
+    algorithmInstanceId: string
+  ): Promise<void> {
+    // Remove from job status polling so the cron doesn't report new statuses
+    this.followingJobStatus = this.followingJobStatus.filter(
+      (id) => id !== algorithmInstanceId
+    );
+
+    const jobs = await this.getJobsForAlgorithmInstance(algorithmInstanceId);
+
+    for (const job of jobs) {
+      const jobName = job.metadata?.name;
+      if (!jobName) continue;
+
+      try {
+        await this.batchV1Api.patchNamespacedJob(
+          {
+            name: jobName,
+            namespace: this.kubernetesConfig.namespace,
+            body: { spec: { suspend: true } }
+          },
+          setHeaderOptions("Content-Type", PatchStrategy.StrategicMergePatch)
+        );
+        this.logger.log(
+          `Suspended K8s Job ${jobName} for algorithm instance ${algorithmInstanceId}`
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Failed to suspend K8s Job ${jobName} for algorithm instance ${algorithmInstanceId}`,
+          error
+        );
+      }
+    }
   }
 
   async deleteJobsForAlgorithmInstance(

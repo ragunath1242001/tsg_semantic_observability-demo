@@ -1,6 +1,7 @@
 import {
   AlgorithmDefinitionDto,
-  AlgorithmParticipant
+  AlgorithmParticipant,
+  type OrchestrationStatus
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { OwnableEntity } from "@tsg-dsp/common-api";
 import { Resource } from "@tsg-dsp/common-dtos";
@@ -55,4 +56,13 @@ export class AlgorithmInstanceDao extends OwnableEntity {
   @ManyToOne(() => ProjectAgreementDao, { nullable: true, eager: true })
   @JoinColumn()
   projectAgreement?: ProjectAgreementDao;
+
+  @Column({ type: String, nullable: true })
+  orchestrationStatus?: OrchestrationStatus;
+
+  @Column({ type: Boolean, nullable: true })
+  isInitiator?: boolean;
+
+  @Column("simple-json", { nullable: true })
+  participantStatuses?: Record<string, "completed" | "failed" | "terminated">;
 }

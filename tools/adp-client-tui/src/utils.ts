@@ -88,6 +88,67 @@ export function instanceStatusColor(status: string): InkColor {
   }
 }
 
+export function orchestrationStatusColor(status: string): InkColor {
+  switch (status?.toLowerCase()) {
+    case "running":
+      return "green";
+    case "completed":
+      return "cyan";
+    case "pending":
+      return "yellow";
+    case "error":
+      return "red";
+    default:
+      return "white";
+  }
+}
+
+export type JobStatus =
+  | "Pending"
+  | "Running"
+  | "Completed"
+  | "Failed"
+  | "Unknown";
+
+export function determineJobStatus(status?: {
+  active?: number;
+  ready?: number;
+  succeeded?: number;
+  failed?: number;
+}): JobStatus {
+  if ((status?.active ?? 0) >= 1) {
+    return (status?.ready ?? 0) >= 1 ? "Running" : "Pending";
+  } else if ((status?.succeeded ?? 0) >= 1) {
+    return "Completed";
+  } else if ((status?.failed ?? 0) >= 1) {
+    return "Failed";
+  } else {
+    return "Unknown";
+  }
+}
+
+export function jobStatusColor(status: JobStatus): InkColor {
+  switch (status) {
+    case "Running":
+      return "green";
+    case "Completed":
+      return "cyan";
+    case "Pending":
+      return "yellow";
+    case "Failed":
+      return "red";
+    default:
+      return "white";
+  }
+}
+
+export function allJobsFinished(
+  jobs: Array<{ status?: { active?: number } }>
+): boolean {
+  if (jobs.length === 0) return false;
+  return jobs.every((job) => !job.status?.active || job.status.active === 0);
+}
+
 export function metadataStatusColor(status: string): InkColor {
   switch (status?.toLowerCase()) {
     case "complete":

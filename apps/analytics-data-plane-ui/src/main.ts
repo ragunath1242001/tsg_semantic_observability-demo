@@ -131,7 +131,6 @@ app.component("Stepper", Stepper);
 app.component("StepList", StepList);
 app.component("StepPanel", StepPanel);
 app.component("StepPanels", StepPanels);
-app.component("Stepper", Stepper);
 app.component("Tab", Tab);
 app.component("Tabs", Tabs);
 app.component("TabList", TabList);

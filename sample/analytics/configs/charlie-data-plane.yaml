@@ -1,0 +1,45 @@
+server:
+  publicAddress: http://localhost:3802
+  publicDomain: localhost:3802
+  port: 3802
+  listen: "0.0.0.0"
+
+db:
+  type: "sqlite"
+  database: "charlie.db"
+
+auth:
+  enabled: true
+  openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
+  callbackURL: http://localhost:3852/api/auth/callback
+  clientId: charlie-analytics-data-plane
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: ozReQ0FlHmMVSK0QYOcXF3LYpcKZpS0MpQk5RPNWpi0
+    y: qmO8ZDpbRtY3UlvJFIHCwxhD4vG2s_-PRFk1HE1H6hk
+    crv: P-256
+    d: qKZ8reohU0EQHVhtugHz4DumgY0KvIlB2f0qeCfmkc4
+    kid: charlie-analytics-data-plane-key
+    alg: ES256
+    use: sig
+  redirectURL: http://localhost:3852/
+
+controlPlane:
+  dataPlaneEndpoint: http://localhost:3801/data-plane
+  managementEndpoint: http://localhost:3801/management
+  controlEndpoint: http://localhost:3801
+  walletEndpoint: http://localhost:3800
+
+runtime:
+  color: "#3B8BF6"
+
+files:
+  path: "./uploads"
+
+orchestration:
+  type: "docker"
+  mountFiles: true
+
+audit:
+  logExecute: true

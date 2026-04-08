@@ -5,6 +5,7 @@ import {
   ArrayNotEmpty,
   IsDate,
   IsDefined,
+  IsIn,
   IsNumber,
   IsOptional,
   IsString,
@@ -15,6 +16,22 @@ import { AlgorithmDefinitionDto } from "./algorithm-definition.dto.js";
 import { AlgorithmEventDto } from "./algorithm-event.dto.js";
 import { InternalEventDto } from "./internal-event.dto.js";
 import { ProjectAgreementSummaryDto } from "./project-agreement.dto.js";
+
+/**
+ * Instance-wide orchestration status, distinct from the local job status.
+ * - `pending`: The instance has been created but not all participants have confirmed.
+ * - `running`: All participants are executing.
+ * - `completed`: The initiator has confirmed that all participants completed successfully.
+ * - `error`: The initiator has determined that one or more participants failed.
+ */
+export const ORCHESTRATION_STATUSES = [
+  "pending",
+  "running",
+  "completed",
+  "error"
+] as const;
+
+export type OrchestrationStatus = (typeof ORCHESTRATION_STATUSES)[number];
 
 export class AlgorithmParticipant {
   @ApiProperty({ example: "did:example:123456789" })
@@ -121,4 +138,31 @@ export class AlgorithmInstanceDto {
   @Type(() => ProjectAgreementSummaryDto)
   @IsOptional()
   projectAgreement?: ProjectAgreementSummaryDto;
+
+  @ApiPropertyOptional({
+    description:
+      "Instance-wide orchestration outcome. Distinct from the local job status: " +
+      "'error' means a remote participant failed, not necessarily the local job.",
+    enum: ORCHESTRATION_STATUSES
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn([...ORCHESTRATION_STATUSES])
+  orchestrationStatus?: OrchestrationStatus;
+
+  @ApiPropertyOptional({
+    description:
+      "Whether this ADP is the initiator of the algorithm instance. " +
+      "The initiator tracks orchestration status across all participants."
+  })
+  @IsOptional()
+  isInitiator?: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      "Per-participant job status as reported to the initiator. " +
+      "Keys are participant DID IDs, values are 'completed' or 'failed'."
+  })
+  @IsOptional()
+  participantStatuses?: Record<string, "completed" | "failed" | "terminated">;
 }

@@ -8,6 +8,7 @@ import {
   formatDate,
   getSessionErrorMessage,
   instanceStatusColor,
+  orchestrationStatusColor,
   truncateStr
 } from "../utils.js";
 
@@ -142,6 +143,14 @@ export function AlgorithmInstancesScreen({
           </Text>
           <Text> </Text>
           <Text color={sColor}>{status}</Text>
+          {inst.orchestrationStatus ? (
+            <Text>
+              <Text> </Text>
+              <Text color={orchestrationStatusColor(inst.orchestrationStatus)}>
+                [{inst.orchestrationStatus.toUpperCase()}]
+              </Text>
+            </Text>
+          ) : null}
         </Text>
         <Text dimColor>
           {"    "}

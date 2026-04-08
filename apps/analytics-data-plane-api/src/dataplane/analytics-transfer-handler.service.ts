@@ -292,4 +292,16 @@ export class AnalyticsTransferHandler implements ITransferHandler {
     await this.transferRepository.save(transfer);
     this.notifyListeners(transfer, TransferState.SUSPENDED);
   }
+
+  async requestTransferCompletion(transfer: TransferDao): Promise<void> {
+    await this.transfer.transferComplete(transfer);
+  }
+
+  async requestTransferTermination(
+    transfer: TransferDao,
+    code: string,
+    reason: string
+  ): Promise<void> {
+    await this.transfer.transferTerminate(transfer, code, reason);
+  }
 }

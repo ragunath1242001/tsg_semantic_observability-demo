@@ -55,6 +55,11 @@ issuance:
       credentialType: ExampleCredential
       holderId: did:web:localhost%3A3600
       preAuthorizedCode: 84f3eb915ac95caf5ab5edf03359d0424e3c546a51ed0a4f96691c63f24b92cd3f58c97aa35e52bc7f6429157b5d4c7b
+    - credentialSubject:
+        id: did:web:localhost%3A3800
+      credentialType: ExampleCredential
+      holderId: did:web:localhost%3A3800
+      preAuthorizedCode: abc36d8a131567803961be4a9fd724e53600a81be2ad5430a540c06710fbb9b0f6c99693be71950268b28f9a0655c637
 
 issueConfigurations:
   - backgroundColor: "#3B8BF6"

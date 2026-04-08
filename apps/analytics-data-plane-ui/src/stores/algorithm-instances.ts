@@ -2,7 +2,8 @@ import {
   AlgorithmEventDto,
   AlgorithmInstanceDto,
   CreateAlgorithmInstanceDto,
-  InternalEventDto
+  InternalEventDto,
+  type OrchestrationStatus
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { defineStore } from "pinia";
@@ -243,6 +244,25 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
             new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );
       }
+    },
+
+    async setOrchestrationStatus(
+      id: string,
+      orchestrationStatus: OrchestrationStatus
+    ) {
+      const response = await http.post<AlgorithmInstanceDto>(
+        `management/algorithm-instances/${id}/orchestration-status`,
+        { orchestrationStatus }
+      );
+
+      const existingIndex = this.algorithmInstances.findIndex(
+        (a) => a.id === id
+      );
+      if (existingIndex >= 0) {
+        this.algorithmInstances[existingIndex] = response.data;
+      }
+
+      return response.data;
     },
 
     clearError() {

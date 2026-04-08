@@ -783,4 +783,43 @@ describe("AlgorithmInstancesService – client mode (bridge)", () => {
       ).rejects.toThrow("not available in client mode");
     });
   });
+
+  describe("propagateJobResult skipped in client mode", () => {
+    it("should not attempt transfer completion and only bridge status to server", async () => {
+      const repo = service["algorithmInstanceRepository"];
+      await repo.save(
+        repo.create({
+          id: "client-propagate-skip",
+          algorithmDefinition: sampleAlgorithmDefinition,
+          participants: sampleCreateDto.participants,
+          createdDate: new Date(),
+          status: "running",
+          startedAt: new Date(),
+          isInitiator: false,
+          transfers: [],
+          algorithmEvents: [],
+          internalEvents: []
+        })
+      );
+
+      bridgeWsMock.emit.mockClear();
+
+      await service.updateStatus("client-propagate-skip", "completed");
+
+      await new Promise((resolve) => setImmediate(resolve));
+
+      expect(bridgeWsMock.emit).toHaveBeenCalledWith(
+        "client.job.status",
+        expect.objectContaining({
+          algorithmInstanceId: "client-propagate-skip",
+          status: "completed"
+        })
+      );
+
+      const instance = await service.getAlgorithmInstanceDto(
+        "client-propagate-skip"
+      );
+      expect(instance.status).toBe("completed");
+    });
+  });
 });

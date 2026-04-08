@@ -1,0 +1,53 @@
+server:
+  publicAddress: http://localhost:3801
+  publicDomain: localhost:3801
+  port: 3801
+  listen: "0.0.0.0"
+
+db:
+  type: sqlite
+  database: "charlie.db"
+
+auth:
+  enabled: true
+  openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
+  callbackURL: http://localhost:3851/api/auth/callback
+  clientId: charlie-control-plane
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: bRvVdoTj_Ye1Bt0L0FvP_An7CNGRYLes4O9-Oy_KMX8
+    y: 0Mn2vW2q2pxzbnlxt_jJMih76PpGsDGznaNTZ8-6m-M
+    crv: P-256
+    d: 3yV1X-DVMPyhMOEgAhWmy-TscMmM5YjchntloD2yvNc
+    kid: charlie-control-plane-key
+    alg: ES256
+    use: sig
+  redirectURL: http://localhost:3851/
+
+runtime:
+  controlPlaneInteractions: automatic
+  color: "#3B8BF6"
+
+registry:
+  useRegistry: true
+  registryIntervalInMilliseconds: 30000
+
+iam:
+  type: tsg
+  didId: did:web:localhost%3A3800
+  issuerFilter: did:web:localhost%3A3400
+  typeFilter: ExampleCredential
+  walletUrl: http://localhost:3800
+  siopUrl: http://localhost:3800/management/dcp/holder/token
+  verifyUrl: http://localhost:3800/management/dcp/verifier/verify
+
+initCatalog:
+  participantId: did:web:localhost%3A3800
+  creator: did:web:localhost%3A3800
+  publisher: did:web:localhost%3A3800
+  title: Charlie
+  description: Charlie connector
+
+audit:
+  logExecute: true
