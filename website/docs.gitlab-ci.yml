@@ -4,6 +4,8 @@ pages:
     - saas-linux-large-amd64
   stage: release
   needs: []
+  variables:
+    NODE_OPTIONS: "--max-old-space-size=8192"
   script:
     - cd website/
     - npm ci
@@ -26,6 +28,8 @@ website-build:
     - saas-linux-large-amd64
   stage: package
   needs: []
+  variables:
+    NODE_OPTIONS: "--max-old-space-size=8192"
   script:
     - cd website/
     - npm ci
