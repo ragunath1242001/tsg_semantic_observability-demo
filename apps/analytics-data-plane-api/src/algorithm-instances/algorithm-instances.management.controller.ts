@@ -23,7 +23,6 @@ import {
   SetOrchestrationStatusDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { Requires, validationPipe } from "@tsg-dsp/common-api";
-import { CatalogClientService } from "@tsg-dsp/common-data-plane-api";
 import {
   Action,
   ApiForbiddenResponseDefault,
@@ -36,8 +35,7 @@ import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 @ApiTags("Algorithm Instances")
 export class AlgorithmInstancesManagementController {
   constructor(
-    private readonly algorithmInstancesService: AlgorithmInstancesService,
-    private readonly catalog: CatalogClientService
+    private readonly algorithmInstancesService: AlgorithmInstancesService
   ) {}
 
   @Get()
@@ -70,7 +68,9 @@ export class AlgorithmInstancesManagementController {
     type: CreateAlgorithmInstanceDto
   })
   @ApiForbiddenResponseDefault()
-  create(@Body() createAlgorithmInstance: CreateAlgorithmInstanceDto) {
+  create(
+    @Body(validationPipe) createAlgorithmInstance: CreateAlgorithmInstanceDto
+  ) {
     return this.algorithmInstancesService.createAlgorithmInstance(
       createAlgorithmInstance
     );

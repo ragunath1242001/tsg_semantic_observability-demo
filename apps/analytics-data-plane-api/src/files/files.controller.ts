@@ -6,6 +6,7 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
+  Logger,
   Param,
   ParseIntPipe,
   Post,
@@ -15,7 +16,7 @@ import {
   UploadedFiles,
   UseInterceptors
 } from "@nestjs/common";
-import { AnyFilesInterceptor } from "@nestjs/platform-express";
+import { AnyFilesInterceptor, FileInterceptor } from "@nestjs/platform-express";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import {
   CSVW,
@@ -36,10 +37,12 @@ import {
   Resource
 } from "@tsg-dsp/common-dtos";
 
+import { runDeferred } from "../utils/deferred.js";
 import { FilesService } from "./files.service.js";
 
 @Controller("files")
 export class FilesController {
+  private readonly logger = new Logger(FilesController.name);
   constructor(private readonly filesService: FilesService) {}
 
   @Get()
@@ -72,9 +75,7 @@ export class FilesController {
   )
   async uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
     await this.filesService.uploadFiles(files);
-    setImmediate(() => {
-      this.filesService.createMetadata(files);
-    });
+    runDeferred(() => this.filesService.createMetadata(files), this.logger);
   }
 
   @Post("sync")
@@ -153,7 +154,7 @@ export class FilesController {
   @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
-    AnyFilesInterceptor({
+    FileInterceptor("file", {
       limits: {
         fileSize: 1024 * 1024 * 1024 // 1GB - TODO: Configurable
       }
@@ -164,9 +165,7 @@ export class FilesController {
     @UploadedFile() file: Express.Multer.File
   ) {
     await this.filesService.updateFile(id, file);
-    setImmediate(() => {
-      this.filesService.createMetadata([file]);
-    });
+    runDeferred(() => this.filesService.createMetadata([file]), this.logger);
   }
 
   @Delete(":id")

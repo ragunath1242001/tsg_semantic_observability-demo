@@ -1919,6 +1919,11 @@ paths:
           in: path
           schema:
             type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -2038,6 +2043,11 @@ paths:
           in: query
           schema:
             type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
       responses:
         "200":
           description: The next algorithm event has been found
@@ -2062,6 +2072,11 @@ paths:
           in: path
           schema:
             type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
       responses:
         "200":
           description: The events have been successfully retrieved.
@@ -2073,6 +2088,32 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get all events for an algorithm instance
       tags: *a16
+  /api/management/algorithm-instances/{algorithmInstanceId}/events:
+    get:
+      description: Retrieves all algorithm and internal events for the specified
+        algorithm instance. Requires management access role.
+      operationId: EventsManagementController_getEventsForAlgorithmInstance
+      parameters:
+        - name: algorithmInstanceId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The events have been successfully retrieved.
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a17
+        - oauth2:
+            - read:adp.orchestration
+      summary: Get all events for an algorithm instance (management)
+      tags: &a18
+        - Algorithm Instances
   /api/management/algorithm-instances/{algorithmInstanceId}/events/{eventId}/data:
     get:
       description: Returns the raw binary data for the specified algorithm event.
@@ -2104,12 +2145,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security:
-        - oauth2:
-            - read:adp.orchestration
+      security: *a17
       summary: Download algorithm event data (management)
-      tags:
-        - Algorithm Instances
+      tags: *a18
 info:
   title: TSG Analytics Data Plane
   description: This OpenAPI specification shows the endpoints of the Analytics Data Plane.
@@ -2138,7 +2176,7 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          scopes: &a17
+          scopes: &a19
             create:adp.algorithm: create:adp.algorithm
             read:adp.algorithm: read:adp.algorithm
             update:adp.algorithm: update:adp.algorithm
@@ -2176,7 +2214,7 @@ components:
             execute:adp.project_agreement: execute:adp.project_agreement
             manage:adp.project_agreement: manage:adp.project_agreement
         clientCredentials:
-          scopes: *a17
+          scopes: *a19
   schemas:
     RuntimeConfigDto:
       type: object
@@ -2320,7 +2358,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: &a18 []
+          example: &a20 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -2351,7 +2389,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a18
+          example: *a20
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -2377,7 +2415,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a18
+          example: *a20
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -2403,17 +2441,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: &a25 []
+          example: &a27 []
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: &a26 []
+          example: &a28 []
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: &a27 []
+          example: &a29 []
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -2445,7 +2483,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: &a19
+          example: &a21
             - keyword1
             - keyword2
           type: array
@@ -2455,14 +2493,14 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: &a20
+          example: &a22
             - theme1
             - theme2
           type: array
           items:
             type: string
         conformsTo:
-          example: &a21
+          example: &a23
             - conformsToExample
           type: array
           items:
@@ -2471,7 +2509,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: &a22
+          example: &a24
             - description1
             - description2
           type: array
@@ -2508,12 +2546,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: &a23 []
+          example: &a25 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: &a24
+          example: &a26
             - version1
             - version2
           type: array
@@ -2573,7 +2611,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a19
+          example: *a21
           type: array
           items:
             type: string
@@ -2581,12 +2619,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a20
+          example: *a22
           type: array
           items:
             type: string
         conformsTo:
-          example: *a21
+          example: *a23
           type: array
           items:
             type: string
@@ -2594,7 +2632,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a22
+          example: *a24
           type: array
           items:
             type: string
@@ -2629,12 +2667,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a23
+          example: *a25
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a24
+          example: *a26
           type: array
           items:
             type: string
@@ -2702,7 +2740,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a19
+          example: *a21
           type: array
           items:
             type: string
@@ -2710,12 +2748,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a20
+          example: *a22
           type: array
           items:
             type: string
         conformsTo:
-          example: *a21
+          example: *a23
           type: array
           items:
             type: string
@@ -2723,7 +2761,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a22
+          example: *a24
           type: array
           items:
             type: string
@@ -2758,12 +2796,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a23
+          example: *a25
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a24
+          example: *a26
           type: array
           items:
             type: string
@@ -2806,7 +2844,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a19
+          example: *a21
           type: array
           items:
             type: string
@@ -2814,12 +2852,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a20
+          example: *a22
           type: array
           items:
             type: string
         conformsTo:
-          example: *a21
+          example: *a23
           type: array
           items:
             type: string
@@ -2827,7 +2865,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a22
+          example: *a24
           type: array
           items:
             type: string
@@ -2862,12 +2900,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a23
+          example: *a25
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a24
+          example: *a26
           type: array
           items:
             type: string
@@ -3246,17 +3284,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: *a25
+          example: *a27
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: *a26
+          example: *a28
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: *a27
+          example: *a29
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -3926,7 +3964,7 @@ components:
           description: "Instance-wide orchestration outcome. Distinct from the local job
             status: 'error' means a remote participant failed, not necessarily
             the local job."
-          enum: &a28
+          enum: &a30
             - pending
             - running
             - completed
@@ -4005,7 +4043,7 @@ components:
         orchestrationStatus:
           type: string
           description: The instance-wide orchestration outcome
-          enum: *a28
+          enum: *a30
       required:
         - orchestrationStatus
     ProjectAgreementParticipant:

@@ -254,6 +254,11 @@ describe("EventsService", () => {
     algorithmInstanceId = algorithmInstance.id;
   });
 
+  it("should create a job access token", async () => {
+    eventsAccessToken =
+      await algorithmInstancesService.createAccessToken(algorithmInstanceId);
+  });
+
   it("should create an internal event", async () => {
     const EVENT_NUMBER = 1;
     const EVENT_TIMESTAMP = new Date().toISOString();
@@ -264,16 +269,12 @@ describe("EventsService", () => {
         name: "Test Internal Event",
         number: EVENT_NUMBER,
         timestamp: EVENT_TIMESTAMP
-      }
+      },
+      authorizationHeader: `Bearer ${eventsAccessToken}`
     });
 
     expect(event).toBeDefined();
     expect(event.id).toBe(INTERNAL_EVENT_ID);
-  });
-
-  it("should create a job access token", async () => {
-    eventsAccessToken =
-      await algorithmInstancesService.createAccessToken(algorithmInstanceId);
   });
 
   it("should create a job algorithm event", async () => {
@@ -521,10 +522,16 @@ describe("EventsService", () => {
       })
     });
     await expect(
-      eventsService.pollForAlgorithmEvent(algorithmInstanceId, undefined, 10)
+      eventsService.pollForAlgorithmEvent(
+        algorithmInstanceId,
+        `Bearer ${eventsAccessToken}`,
+        undefined,
+        10
+      )
     ).rejects.toThrow();
     const pollingListener = eventsService.pollForAlgorithmEvent(
       algorithmInstanceId,
+      `Bearer ${eventsAccessToken}`,
       undefined,
       1000
     );
@@ -544,12 +551,18 @@ describe("EventsService", () => {
     await expect(pollingListener).resolves.toBeDefined();
 
     await expect(
-      eventsService.pollForAlgorithmEvent(algorithmInstanceId, undefined, 10)
+      eventsService.pollForAlgorithmEvent(
+        algorithmInstanceId,
+        `Bearer ${eventsAccessToken}`,
+        undefined,
+        10
+      )
     ).resolves.toBeDefined();
 
     await expect(
       eventsService.pollForAlgorithmEvent(
         algorithmInstanceId,
+        `Bearer ${eventsAccessToken}`,
         `${new Date(Date.now() + 1000).toISOString()}`,
         10
       )
@@ -571,6 +584,7 @@ describe("EventsService", () => {
 
     const polledEvent = await eventsService.pollForAlgorithmEvent(
       algorithmInstanceId,
+      `Bearer ${eventsAccessToken}`,
       undefined,
       10
     );
@@ -579,6 +593,7 @@ describe("EventsService", () => {
 
     const polledEvent2 = await eventsService.pollForAlgorithmEvent(
       algorithmInstanceId,
+      `Bearer ${eventsAccessToken}`,
       event.timestamp.toISOString(),
       10
     );

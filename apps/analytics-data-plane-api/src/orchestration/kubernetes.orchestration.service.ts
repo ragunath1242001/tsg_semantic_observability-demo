@@ -12,7 +12,7 @@ import {
   V1Volume,
   V1VolumeMount
 } from "@kubernetes/client-node";
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { hostname } from "os";
@@ -30,7 +30,9 @@ import {
 } from "./orchestration.interface.js";
 
 @Injectable()
-export class KubernetesOrchestrationService implements IOrchestrationService {
+export class KubernetesOrchestrationService
+  implements IOrchestrationService, OnModuleInit
+{
   private readonly batchV1Api: BatchV1Api;
   private readonly coreV1Api: CoreV1Api;
   private readonly appsV1Api: AppsV1Api;
@@ -62,6 +64,26 @@ export class KubernetesOrchestrationService implements IOrchestrationService {
   private deploymentOwnerRef: V1OwnerReference | null = null;
 
   private followingJobStatus: Array<string> = [];
+
+  async onModuleInit(): Promise<void> {
+    try {
+      const allInstances =
+        await this.algorithmInstancesService.getAlgorithmInstances();
+      const runningIds = allInstances
+        .filter((i) => i.status === "running")
+        .map((i) => i.id);
+      if (runningIds.length > 0) {
+        this.followingJobStatus.push(...runningIds);
+        this.logger.log(
+          `Recovered ${runningIds.length} running algorithm instance(s) for job status polling`
+        );
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Failed to recover running instances on startup: ${String(error)}`
+      );
+    }
+  }
 
   @Cron(CronExpression.EVERY_30_SECONDS)
   async handleCron() {

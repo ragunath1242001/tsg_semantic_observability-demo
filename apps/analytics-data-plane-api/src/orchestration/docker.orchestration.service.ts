@@ -63,6 +63,25 @@ export class DockerOrchestrationService
       this.logger.error("Failed to connect to Docker daemon", error);
       throw error;
     }
+
+    // Recover running algorithm instances into the polling list
+    try {
+      const allInstances =
+        await this.algorithmInstancesService.getAlgorithmInstances();
+      const runningIds = allInstances
+        .filter((i) => i.status === "running")
+        .map((i) => i.id);
+      if (runningIds.length > 0) {
+        this.followingJobStatus.push(...runningIds);
+        this.logger.log(
+          `Recovered ${runningIds.length} running algorithm instance(s) for job status polling`
+        );
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Failed to recover running instances on startup: ${String(error)}`
+      );
+    }
   }
 
   @Cron(CronExpression.EVERY_30_SECONDS)

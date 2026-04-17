@@ -16,7 +16,7 @@ const confirm = useConfirm();
 
 const userStore = useUserStore();
 const canSignAgreements = computed(() =>
-  userStore.canAccessRoute(Action.UPDATE, Resource.ADP_PROJECT_AGREEMENT)
+  userStore.canAccessRoute(Action.EXECUTE, Resource.ADP_PROJECT_AGREEMENT)
 );
 
 const agreements = ref<ProjectAgreementDetailDto[]>([]);
@@ -30,9 +30,10 @@ const catalog = useCatalogStore();
 const selectedDatasetToLink = ref<string | null>(null);
 
 const datasetOptions = computed(() => {
+  if (!catalog.catalog?.dataset || !selectedAgreement.value) return [];
   return catalog.catalog.dataset
     .filter(
-      (ds) => !selectedAgreement.value.datasets.some((d) => d.id === ds["@id"])
+      (ds) => !selectedAgreement.value!.datasets.some((d) => d.id === ds["@id"])
     )
     .map((ds) => ({
       label: ds.title || ds["@id"],

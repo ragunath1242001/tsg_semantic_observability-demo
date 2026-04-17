@@ -42,6 +42,7 @@ import {
 import { ProjectAgreementDao } from "../project-agreements/project-agreement.dao.js";
 import { ProjectAgreementsService } from "../project-agreements/project-agreements.service.js";
 import { getAxiosConfigFromDataAddress } from "../utils/axios.js";
+import { runDeferred } from "../utils/deferred.js";
 import { promiseAllOrThrow } from "../utils/promises.js";
 import { parseToken } from "../utils/token.js";
 import { AlgorithmInstanceDao } from "./algorithm-instance.dao.js";
@@ -71,7 +72,7 @@ export class AlgorithmInstancesService {
 
   async getAlgorithmInstances(): Promise<AlgorithmInstanceDto[]> {
     const result = await this.algorithmInstanceRepository.find({
-      relations: ["transfers", "algorithmEvents", "internalEvents"]
+      relations: ["transfers"]
     });
     return result.map((instance) => this.mapToDto(instance));
   }
@@ -122,6 +123,9 @@ export class AlgorithmInstancesService {
       algorithmInstanceId
     });
 
+    // Revoke in-memory access tokens
+    this.revokeAccessTokens(algorithmInstanceId);
+
     // Soft-delete the local copy if it exists
     await this.algorithmInstanceRepository.softDelete(algorithmInstanceId);
 
@@ -133,7 +137,7 @@ export class AlgorithmInstancesService {
   async getAlgorithmInstance(id: string): Promise<AlgorithmInstanceDao> {
     const algorithmInstance = await this.algorithmInstanceRepository.findOne({
       where: { id },
-      relations: ["transfers", "algorithmEvents", "internalEvents"]
+      relations: ["transfers"]
     });
 
     if (!algorithmInstance) {
@@ -152,6 +156,8 @@ export class AlgorithmInstancesService {
 
   private mapToDto(instance: AlgorithmInstanceDao): AlgorithmInstanceDto {
     const dto = plainToInstance(AlgorithmInstanceDto, instance);
+    dto.algorithmEvents = dto.algorithmEvents ?? [];
+    dto.internalEvents = dto.internalEvents ?? [];
     if (instance.projectAgreement) {
       dto.projectAgreement = this.mapProjectAgreementToSummary(
         instance.projectAgreement
@@ -196,7 +202,7 @@ export class AlgorithmInstancesService {
       where: {
         transfers: { id: transferId }
       },
-      relations: ["transfers", "algorithmEvents", "internalEvents"]
+      relations: ["transfers"]
     });
 
     if (!algorithmInstance) {
@@ -219,12 +225,12 @@ export class AlgorithmInstancesService {
         id: algorithmInstanceId,
         transfers: { secret: token }
       },
-      relations: ["transfers", "algorithmEvents", "internalEvents"]
+      relations: ["transfers"]
     });
 
     if (!algorithmInstance) {
       throw new DataPlaneError(
-        `AlgorithmInstance with id ${algorithmInstanceId} not found or not accessible with provided token ${token}`,
+        `AlgorithmInstance with id ${algorithmInstanceId} not found or not accessible with provided token`,
         HttpStatus.NOT_FOUND
       ).andLog(this.logger);
     }
@@ -260,6 +266,9 @@ export class AlgorithmInstancesService {
     emitInternalEvent(this.eventEmitter, INTERNAL_EVENTS.JOB_DELETE, {
       algorithmInstanceId: id
     });
+
+    // Revoke in-memory access tokens for the instance
+    this.revokeAccessTokens(id);
 
     // Delete the algorithm instance
     const result = hardDelete
@@ -311,6 +320,7 @@ export class AlgorithmInstancesService {
     }
 
     for (const instance of softDeletedInstances) {
+      this.revokeAccessTokens(instance.id);
       await this.algorithmInstanceRepository.remove(instance);
     }
 
@@ -330,10 +340,17 @@ export class AlgorithmInstancesService {
     this.logger.log(
       "Running scheduled prune of soft-deleted algorithm instances"
     );
-    const result = await this.pruneAlgorithmInstances(14);
-    if (result.pruned > 0) {
-      this.logger.log(
-        `Scheduled prune completed: ${result.pruned} instances removed`
+    try {
+      const result = await this.pruneAlgorithmInstances(14);
+      if (result.pruned > 0) {
+        this.logger.log(
+          `Scheduled prune completed: ${result.pruned} instances removed`
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Scheduled prune failed: ${error instanceof Error ? error.message : String(error)}`,
+        error instanceof Error ? error.stack : undefined
       );
     }
   }
@@ -370,10 +387,17 @@ export class AlgorithmInstancesService {
     const updatedInstance =
       await this.algorithmInstanceRepository.save(algorithmInstance);
 
+    if (terminalStatuses.includes(status)) {
+      this.revokeAccessTokens(algorithmInstanceId);
+    }
+
     this.notifyStatusChange(updatedInstance, options);
 
     if (status === "completed" || status === "failed") {
-      setImmediate(() => this.propagateJobResult(updatedInstance, status));
+      runDeferred(
+        () => this.propagateJobResult(updatedInstance, status),
+        this.logger
+      );
     }
 
     return this.mapToDto(updatedInstance);
@@ -773,7 +797,7 @@ export class AlgorithmInstancesService {
           (constraint) =>
             constraint.leftOperand === "tsg:presentationScope" &&
             constraint.rightOperand ===
-              `nl.tsg.adp.project:${encodeURIComponent(projectAgreement.initiator)}:${projectAgreement.hash}}`
+              `nl.tsg.adp.project:${encodeURIComponent(projectAgreement.initiator)}:${projectAgreement.hash}`
         )
       )
     );
@@ -814,9 +838,17 @@ export class AlgorithmInstancesService {
       }
     );
 
-    setImmediate(() => {
-      this.distributeAlgorithmInstance(algorithmInstance);
-    }); // Use setImmediate to avoid blocking the event loop
+    runDeferred(
+      () => this.distributeAlgorithmInstance(algorithmInstance),
+      this.logger,
+      async () => {
+        await this.updateStatus(algorithmInstance.id, "failed").catch((err) =>
+          this.logger.error(
+            `Failed to mark instance ${algorithmInstance.id} as failed: ${String(err)}`
+          )
+        );
+      }
+    );
 
     return this.mapToDto(algorithmInstance);
   }
@@ -1015,6 +1047,14 @@ export class AlgorithmInstancesService {
   ): Promise<void> {
     if (!this.isValidJobAccessToken(token, algorithmInstanceId)) {
       throw new DataPlaneError(`Invalid token for algorithm instance`, 403);
+    }
+  }
+
+  private revokeAccessTokens(algorithmInstanceId: string): void {
+    for (const [token, id] of this.accessTokens) {
+      if (id === algorithmInstanceId) {
+        this.accessTokens.delete(token);
+      }
     }
   }
 

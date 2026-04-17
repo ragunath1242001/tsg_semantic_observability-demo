@@ -601,7 +601,7 @@ onMounted(async () => {
                     severity="info"
                     size="small"
                     @click="
-                      showDatasetDetails(file.identifier, file.originalFileName)
+                      showDatasetDetails(file.id, file.originalFileName)
                     " />
                   <Button
                     v-if="file.datasetId"
@@ -789,7 +789,7 @@ onMounted(async () => {
                     severity="info"
                     size="small"
                     @click="
-                      showDatasetDetails(file.identifier, file.originalFileName)
+                      showDatasetDetails(file.id, file.originalFileName)
                     " />
                   <Button
                     v-if="file.datasetId"

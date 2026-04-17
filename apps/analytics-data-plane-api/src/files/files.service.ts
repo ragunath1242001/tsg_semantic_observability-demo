@@ -29,6 +29,7 @@ import { randomBytes } from "crypto";
 import { parse } from "csv-parse";
 import fs, { createReadStream } from "fs";
 import * as fsPromises from "fs/promises";
+import path from "path";
 import { finished } from "stream/promises";
 import { Repository } from "typeorm";
 
@@ -140,6 +141,15 @@ export class FilesService {
     });
   }
 
+  private resolveFilePath(fileName: string): string {
+    const basePath = path.resolve(this.filesConfig.path);
+    const resolved = path.resolve(basePath, fileName);
+    if (!resolved.startsWith(basePath + path.sep) && resolved !== basePath) {
+      throw new DataPlaneError("Invalid file path", HttpStatus.BAD_REQUEST);
+    }
+    return resolved;
+  }
+
   async getFile(
     id: string,
     authorizationHeader?: string
@@ -173,7 +183,7 @@ export class FilesService {
         HttpStatus.NOT_FOUND
       );
     }
-    const filePath = this.filesConfig.path + "/" + file.fileName;
+    const filePath = this.resolveFilePath(file.fileName);
     if (!fs.existsSync(filePath)) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
     }
@@ -194,7 +204,7 @@ export class FilesService {
         HttpStatus.NOT_FOUND
       );
     }
-    const filePath = this.filesConfig.path + "/" + file.fileName;
+    const filePath = this.resolveFilePath(file.fileName);
     if (!fs.existsSync(filePath)) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
     }
@@ -226,7 +236,7 @@ export class FilesService {
       parseOptions.to_line = maxLines;
     }
     const parser = fs
-      .createReadStream(this.filesConfig.path + "/" + file.filename)
+      .createReadStream(this.resolveFilePath(file.filename))
       .pipe(parse(parseOptions));
     parser.on("readable", () => {
       let record: string[] | null;
@@ -611,11 +621,12 @@ export class FilesService {
     if (!dbentry) {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
     }
-    const filePath = this.filesConfig.path + "/" + dbentry.fileName;
-    if (fs.existsSync(filePath)) {
-      fs.rmSync(filePath);
+    const oldFilePath = this.resolveFilePath(dbentry.fileName);
+    if (fs.existsSync(oldFilePath)) {
+      fs.rmSync(oldFilePath);
     }
-    fs.renameSync(file.path, filePath);
+    const newFilePath = this.resolveFilePath(file.filename);
+    fs.renameSync(file.path, newFilePath);
     dbentry.fileSizeInBytes = file.size;
     dbentry.fileName = file.filename;
     dbentry.originalFileName = file.originalname;
@@ -711,7 +722,7 @@ export class FilesService {
       this.logger.log(`Deleting dataset for file: ${id}`);
       await this.dataplaneService.deleteDataset(dbentry.datasetId);
     }
-    const filePath = this.filesConfig.path + "/" + dbentry.fileName;
+    const filePath = this.resolveFilePath(dbentry.fileName);
     if (fs.existsSync(filePath)) {
       this.logger.log(`Deleting file: ${filePath}`);
       fs.rmSync(filePath);
@@ -736,6 +747,20 @@ export class FilesService {
           }
         );
       }
+      const restoredFiles = filesToFind.filter(
+        (file) => !file.presentInLastCheck && files.includes(file.fileName)
+      );
+      if (restoredFiles.length > 0) {
+        await this.fileRepository.update(
+          restoredFiles.map((file) => file.id),
+          {
+            presentInLastCheck: true
+          }
+        );
+        this.logger.log(
+          `Restored ${restoredFiles.length} file(s) that reappeared on disk`
+        );
+      }
     } catch (err) {
       throw new Error(`Error reading directory: ${err}`, { cause: err });
     }
@@ -751,9 +776,7 @@ export class FilesService {
       for (const file of files) {
         if (!dbEntries.find((dbEntry) => dbEntry.fileName === file)) {
           // eslint-disable-next-line no-await-in-loop
-          const stat = await fsPromises.stat(
-            this.filesConfig.path + "/" + file
-          );
+          const stat = await fsPromises.stat(this.resolveFilePath(file));
           if (!stat.isFile()) {
             continue;
           }
@@ -822,7 +845,11 @@ export class FilesService {
       );
     }
     setImmediate(() => {
-      this.createMetadata([multerMock]);
+      this.createMetadata([multerMock]).catch((err) => {
+        this.logger.error(
+          `Failed to create metadata for ${file}: ${err instanceof Error ? err.message : String(err)}`
+        );
+      });
     });
   }
 }
