@@ -44,14 +44,14 @@ export class AlgorithmInstanceDao extends OwnableEntity {
 
   @OneToMany(() => AlgorithmEventDao, (event) => event.algorithmInstance)
   @JoinTable()
-  algorithmEvents!: AlgorithmEventDao[];
+  algorithmEvents?: AlgorithmEventDao[];
 
   @OneToMany(
     () => InternalEventDao,
     (internalEvent) => internalEvent.algorithmInstance
   )
   @JoinTable()
-  internalEvents!: InternalEventDao[];
+  internalEvents?: InternalEventDao[];
 
   @ManyToOne(() => ProjectAgreementDao, { nullable: true, eager: true })
   @JoinColumn()

@@ -67,9 +67,11 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
       }
     },
 
-    async fetchAlgorithmInstanceById(id: string) {
-      this.loading = true;
-      this.error = null;
+    async fetchAlgorithmInstanceById(id: string, silent = false) {
+      if (!silent) {
+        this.loading = true;
+        this.error = null;
+      }
 
       try {
         const response = await http.get(`management/algorithm-instances/${id}`);
@@ -90,7 +92,9 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
         console.error("Error fetching algorithm instance:", error);
         throw error;
       } finally {
-        this.loading = false;
+        if (!silent) {
+          this.loading = false;
+        }
       }
     },
 
@@ -199,7 +203,9 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
       this.error = null;
 
       try {
-        const response = await http.get(`events/${algorithmInstanceId}`);
+        const response = await http.get(
+          `management/algorithm-instances/${algorithmInstanceId}/events`
+        );
         this.events[algorithmInstanceId] = response.data;
         return response.data;
       } catch (error) {
@@ -275,7 +281,7 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
      */
     async refreshAlgorithmInstance(algorithmInstanceId: string) {
       try {
-        await this.fetchAlgorithmInstanceById(algorithmInstanceId);
+        await this.fetchAlgorithmInstanceById(algorithmInstanceId, true);
       } catch {
         // Instance may not be in the list (e.g. belongs to another view); ignore
       }

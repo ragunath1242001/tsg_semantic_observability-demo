@@ -277,7 +277,7 @@ export class ApiClient {
     algorithmInstanceId: string
   ): Promise<EventsForInstanceDto> {
     const res = await this.http.get<EventsForInstanceDto>(
-      `events/${algorithmInstanceId}`
+      `management/algorithm-instances/${algorithmInstanceId}/events`
     );
 
     return {

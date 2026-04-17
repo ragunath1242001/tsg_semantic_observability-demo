@@ -5,29 +5,17 @@ import type {
   V1Pod,
   V1PodStatus
 } from "@kubernetes/client-node";
-import { FileMetadataDto } from "@tsg-dsp/analytics-data-plane-dtos";
-import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
-import http from "@tsg-dsp/common-ui/utils/http";
-import { DataTableRowSelectEvent, useToast } from "primevue";
+import { DataTableRowSelectEvent } from "primevue";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 import { useK8sStore } from "../stores/k8s";
 import { useRuntimeStore } from "../stores/runtime";
 
-interface CreateJob {
-  imageName: string;
-  command?: string;
-  fileId?: string;
-}
-
 const k8sStore = useK8sStore();
 const runtimeStore = useRuntimeStore();
-const toast = useToast();
 
-const { algorithmInstanceId, debug } = defineProps<{
+const { algorithmInstanceId } = defineProps<{
   algorithmInstanceId: string;
-  debug: boolean;
 }>();
 
 const autoRefreshEnabled = ref(true);
@@ -106,17 +94,6 @@ const pods = ref<V1Pod[]>([]);
 const selectedJob = ref<V1Job>();
 
 const selectedPod = ref<V1Pod>();
-
-const creating = ref(false);
-
-const createJob = ref<CreateJob>({
-  imageName:
-    "registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/adp-test-image",
-  command: undefined,
-  fileId: undefined
-});
-
-const filesList = ref<FileMetadataDto[]>([]);
 
 const getJobs = async (algorithmInstanceId: string) => {
   try {
@@ -221,65 +198,8 @@ const onRowSelectPod = async (event: DataTableRowSelectEvent<V1Pod>) => {
   await getLogs(event.data.metadata.name);
 };
 
-const spawnK8sJob = async () => {
-  try {
-    // Process the command properly - filter out empty strings
-    let commandArray: string[] | undefined = undefined;
-    if (createJob.value.command?.trim()) {
-      commandArray = createJob.value.command
-        .split(",")
-        .map((c) => c.trim())
-        .filter((c) => c.length > 0);
-    }
-
-    await k8sStore.spawnJob(
-      createJob.value.imageName,
-      algorithmInstanceId,
-      commandArray,
-      createJob.value.fileId
-    );
-    toast.add({
-      severity: "success",
-      summary: "Job spawned",
-      detail: "Job has been spawned successfully",
-      life: 3000
-    });
-    creating.value = false;
-    createJob.value = {
-      imageName: "",
-      command: undefined,
-      fileId: undefined
-    };
-    await getJobs(algorithmInstanceId);
-  } catch (error) {
-    console.error("Error spawning job:", error);
-    toast.add(
-      toastError({
-        error,
-        summary: "Error spawning job",
-        defaultMessage: "Could not spawn job for algorithm instance"
-      })
-    );
-  }
-};
-
-const getFiles = async () => {
-  try {
-    const response = await http.get<FileMetadataDto[]>("files");
-    filesList.value = response.data;
-  } catch (error) {
-    toast.add(
-      toastError({
-        error,
-        summary: "Loading state failed",
-        defaultMessage: "Could not load state from the analytics data plane"
-      })
-    );
-  }
-};
-
 onMounted(async () => {
-  await Promise.allSettled([getJobs(algorithmInstanceId), getFiles()]);
+  await getJobs(algorithmInstanceId);
   if (autoRefreshEnabled.value) {
     startAutoRefresh();
   }
@@ -291,78 +211,11 @@ onUnmounted(() => {
 </script>
 <template>
   <div>
-    <Dialog
-      v-model:visible="creating"
-      modal
-      header="Create a new Job"
-      width="30rem">
-      <div class="flex-col items-center gap-4 mb-4">
-        <FormField label="Image name">
-          <InputText
-            v-model="createJob.imageName"
-            placeholder="e.g., fl-simulation, python:3.9, busybox"
-            class="w-full" />
-        </FormField>
-      </div>
-      <div class="flex-col items-center gap-4 mb-4">
-        <FormField label="Command">
-          <InputText
-            id="command"
-            v-model="createJob.command"
-            aria-describedby="command-help"
-            placeholder="python, src/fl_participant.py (leave empty for default command)"
-            class="w-full" />
-
-          <Message
-            id="command-help"
-            size="small"
-            variant="simple"
-            severity="secondary"
-            >Command to run in the container, separate array entries with a
-            comma. Leave empty to use the image's default command. Examples:
-            "python, src/fl_participant.py" or "sh, -c, echo hello
-            world"</Message
-          >
-        </FormField>
-      </div>
-      <div class="flex-col items-center gap-4 mb-4">
-        <FormField label="File">
-          <Select
-            id="file"
-            v-model="createJob.fileId"
-            show-clear
-            :options="filesList"
-            option-label="originalFileName"
-            option-value="identifier"
-            aria-describedby="file-help"
-            placeholder="No file selected"
-            class="w-full" />
-          <Message
-            id="file-help"
-            size="small"
-            variant="simple"
-            severity="secondary"
-            >File to be used in job, leave empty for no file</Message
-          >
-        </FormField>
-      </div>
-      <div class="flex justify-end gap-2">
-        <form @submit.prevent="spawnK8sJob">
-          <Button type="submit" label="Create" />
-        </form>
-      </div>
-    </Dialog>
     <Card>
       <template #title>
         <div class="flex justify-between items-center">
           <span>Jobs</span>
           <div class="flex items-center gap-2">
-            <Button
-              v-if="debug"
-              icon="pi pi-plus"
-              label="Create Job"
-              size="small"
-              @click="creating = true" />
             <Button
               icon="pi pi-refresh"
               label="Refresh"

@@ -17,6 +17,25 @@ import { EventsService } from "./events.service.js";
 export class EventsManagementController {
   constructor(private readonly eventsService: EventsService) {}
 
+  @Get()
+  @ApiOperation({
+    summary: "Get all events for an algorithm instance (management)",
+    description:
+      "Retrieves all algorithm and internal events for the specified algorithm instance. Requires management access role."
+  })
+  @ApiOkResponse({
+    description: "The events have been successfully retrieved."
+  })
+  @ApiForbiddenResponseDefault()
+  async getEventsForAlgorithmInstance(
+    @Param("algorithmInstanceId", nonEmptyStringPipe)
+    algorithmInstanceId: string
+  ) {
+    return await this.eventsService.getEventsForAlgorithmInstanceForManagement(
+      algorithmInstanceId
+    );
+  }
+
   @Get(":eventId/data")
   @ApiOperation({
     summary: "Download algorithm event data (management)",

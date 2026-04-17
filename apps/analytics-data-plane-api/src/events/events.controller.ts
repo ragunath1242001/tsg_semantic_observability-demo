@@ -47,11 +47,13 @@ export class EventsController {
     @Param("algorithmInstanceId", nonEmptyStringPipe)
     algorithmInstanceId: string,
     @Body(validationPipe)
-    createInternalEvent: CreateInternalEventDto
+    createInternalEvent: CreateInternalEventDto,
+    @Headers("Authorization") authorizationHeader?: string
   ) {
     return await this.eventsService.createInternalEvent({
       algorithmInstanceId,
-      createInternalEvent
+      createInternalEvent,
+      authorizationHeader
     });
   }
 
@@ -78,7 +80,7 @@ export class EventsController {
     @Headers("Authorization") authorizationHeader?: string
   ) {
     Logger.log(
-      `Creating algorithm event for instance ${algorithmInstanceId} with event ${JSON.stringify(createEvent)} and authorization header ${authorizationHeader}`,
+      `Creating algorithm event for instance ${algorithmInstanceId} with event ${JSON.stringify(createEvent)}`,
       EventsController.name
     );
     return this.eventsService.createAlgorithmEvent({
@@ -161,10 +163,12 @@ export class EventsController {
   async pollForAlgorithmEvent(
     @Param("algorithmInstanceId", nonEmptyStringPipe)
     algorithmInstanceId: string,
-    @Query("since") since?: string
+    @Query("since") since?: string,
+    @Headers("Authorization") authorizationHeader?: string
   ) {
     return await this.eventsService.pollForAlgorithmEvent(
       algorithmInstanceId,
+      authorizationHeader,
       since
     );
   }
@@ -181,10 +185,12 @@ export class EventsController {
   @ApiForbiddenResponseDefault()
   async getEventsForAlgorithmInstance(
     @Param("algorithmInstanceId", nonEmptyStringPipe)
-    algorithmInstanceId: string
+    algorithmInstanceId: string,
+    @Headers("Authorization") authorizationHeader?: string
   ) {
     return await this.eventsService.getEventsForAlgorithmInstance(
-      algorithmInstanceId
+      algorithmInstanceId,
+      authorizationHeader
     );
   }
 }

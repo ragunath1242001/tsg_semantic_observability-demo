@@ -62,6 +62,25 @@ export class EventsService {
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
+  private validateJobAccess(
+    algorithmInstanceId: string,
+    authorizationHeader?: string
+  ): void {
+    const token = authorizationHeader?.split(" ")?.[1];
+    if (
+      !token ||
+      !this.algorithmInstancesService.isValidJobAccessToken(
+        token,
+        algorithmInstanceId
+      )
+    ) {
+      throw new DataPlaneError(
+        "Invalid or missing access token",
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+  }
+
   @OnEvent(INTERNAL_EVENTS.ALGORITHM_INSTANCES_DELETED)
   onAlgorithmInstanceDeleted(
     payload: InternalEventMap[typeof INTERNAL_EVENTS.ALGORITHM_INSTANCES_DELETED]
@@ -74,11 +93,14 @@ export class EventsService {
 
   async createInternalEvent({
     algorithmInstanceId,
-    createInternalEvent: createInternalEvent
+    createInternalEvent: createInternalEvent,
+    authorizationHeader
   }: {
     algorithmInstanceId: string;
     createInternalEvent: CreateInternalEventDto;
+    authorizationHeader?: string;
   }) {
+    this.validateJobAccess(algorithmInstanceId, authorizationHeader);
     const algorithmInstance =
       await this.algorithmInstancesService.getAlgorithmInstance(
         algorithmInstanceId
@@ -621,6 +643,10 @@ export class EventsService {
         return event.data;
       }
     }
+    throw new DataPlaneError(
+      `Unauthorized access to algorithm event data for event ${eventId}`,
+      HttpStatus.FORBIDDEN
+    ).andLog(this.logger);
   }
 
   async getAlgorithmEvent(algorithmInstanceId: string, eventId: string) {
@@ -652,7 +678,20 @@ export class EventsService {
     return event.data;
   }
 
-  async getEventsForAlgorithmInstance(algorithmInstanceId: string): Promise<{
+  async getEventsForAlgorithmInstance(
+    algorithmInstanceId: string,
+    authorizationHeader?: string
+  ): Promise<{
+    algorithmEvents: AlgorithmEventDto[];
+    internalEvents: InternalEventDto[];
+  }> {
+    this.validateJobAccess(algorithmInstanceId, authorizationHeader);
+    return this.getEventsForAlgorithmInstanceForManagement(algorithmInstanceId);
+  }
+
+  async getEventsForAlgorithmInstanceForManagement(
+    algorithmInstanceId: string
+  ): Promise<{
     algorithmEvents: AlgorithmEventDto[];
     internalEvents: InternalEventDto[];
   }> {
@@ -698,9 +737,11 @@ export class EventsService {
 
   async pollForAlgorithmEvent(
     algorithmInstanceId: string,
+    authorizationHeader?: string,
     since?: string,
     longPollingInterval: number = 27500
   ): Promise<AlgorithmEventDto> {
+    this.validateJobAccess(algorithmInstanceId, authorizationHeader);
     const sinceDate = since ? new Date(since) : undefined;
 
     await this.algorithmInstancesService.getAlgorithmInstance(

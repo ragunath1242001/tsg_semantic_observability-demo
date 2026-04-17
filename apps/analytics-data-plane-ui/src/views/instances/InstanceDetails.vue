@@ -422,7 +422,7 @@ onUnmounted(() => {
               v-if="algorithmInstance?.projectAgreement"
               label="Project Agreement">
               <div
-                class="p-3 bg-surface-50 dark:bg-surface-800 rounded border border-surface-200 dark:border-surface-700">
+                class="md:mt-2 p-3 bg-surface-50 dark:bg-surface-800 rounded border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-2">
                   <Tag
                     :value="algorithmInstance.projectAgreement.status"
@@ -458,8 +458,7 @@ onUnmounted(() => {
     <JobComponent
       v-if="!runtimeStore.isServerMode"
       class="col-span-12"
-      :algorithm-instance-id="algorithmInstanceId"
-      :debug="false" />
+      :algorithm-instance-id="algorithmInstanceId" />
 
     <div class="col-span-12 columns-1 xl:columns-2 gap-4">
       <AlgorithmUIComponent

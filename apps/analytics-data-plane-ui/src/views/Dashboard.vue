@@ -16,11 +16,9 @@ import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 
 import router from "../router";
-import { useK8sStore } from "../stores/k8s";
 import { useRuntimeStore } from "../stores/runtime";
 import { stateSeverity } from "../utils/stateseverity";
 
-const k8sStore = useK8sStore();
 const runtimeStore = useRuntimeStore();
 
 const toast = useToast();
@@ -149,29 +147,6 @@ const action = async (
       target.classList.remove("p-button-loading");
     }
   });
-};
-
-const spawnK8sJob = async (_transfer: TransferDto) => {
-  try {
-    await k8sStore.spawnJob("busybox", _transfer.id, [
-      "sh",
-      "-c",
-      "echo Hello from the Kubernetes cluster! && sleep 5"
-    ]);
-    console.log([
-      "sh",
-      "-c",
-      "echo Hello from the Kubernetes cluster! && sleep 5"
-    ]);
-  } catch (error) {
-    toast.add(
-      toastError({
-        error,
-        summary: "Error spawning job",
-        defaultMessage: "Could not spawn job for transfer"
-      })
-    );
-  }
 };
 
 onMounted(async () => {
@@ -421,15 +396,6 @@ onMounted(async () => {
                 aria-label="Complete"
                 outlined
                 @click="action($event, 'complete', props.data)" />
-              <Button
-                v-tooltip.bottom="'Execute'"
-                class="ml-2"
-                :disabled="props.data.state !== 'STARTED'"
-                icon="pi pi-play"
-                severity="info"
-                aria-label="Execute"
-                outlined
-                @click="spawnK8sJob(props.data)" />
             </template>
           </Column>
           <template #expansion="props">

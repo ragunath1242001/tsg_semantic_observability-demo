@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 
-export const socket = io(window.location.origin + window.location.pathname, {
-  path: "/api/socket.io"
+export const socket = io(window.location.origin, {
+  path: `${window.location.pathname.replace(/\/$/, "")}/api/socket.io`
 });
 
 socket.on("connect", () => {

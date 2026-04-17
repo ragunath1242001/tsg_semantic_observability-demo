@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { isAxiosError } from "axios";
 import { useToast } from "primevue";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -25,6 +26,9 @@ const fetchAlgorithmInstanceForTransfer = async () => {
       );
     algorithmInstanceId.value = algorithmInstance.id;
   } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 404) {
+      return;
+    }
     toast.add(
       toastError({
         error,
@@ -44,6 +48,7 @@ onMounted(async () => {
     <TransferComponent :transfer-id="transferId" />
     <JobComponent
       v-if="algorithmInstanceId"
+      class="mt-5"
       :algorithm-instance-id="algorithmInstanceId"
       role="consumer" />
   </div>

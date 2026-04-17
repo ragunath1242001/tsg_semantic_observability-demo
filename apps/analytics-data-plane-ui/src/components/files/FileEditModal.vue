@@ -29,7 +29,7 @@ const save = async () => {
   }
   if (data.value.mediaType === "text/csv") {
     try {
-      data.value.csvw = JSON.parse(csvwString.value);
+      formData.value.csvw = JSON.parse(csvwString.value);
     } catch (_error) {
       toast.add({
         severity: "error",
@@ -40,7 +40,7 @@ const save = async () => {
       return;
     }
   } else {
-    data.value.csvw = undefined;
+    formData.value.csvw = undefined;
   }
   try {
     await http.post(`files/${data.value.id}`, formData.value);
