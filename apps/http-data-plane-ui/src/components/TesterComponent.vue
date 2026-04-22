@@ -194,18 +194,52 @@ const fullUrl = computed(() => {
   }
 });
 
-const truncatedData = computed(() => {
-  if (response?.value?.axios?.data) {
-    const data = response.value.axios.data;
-    if (typeof data === "string") {
-      return data.slice(0, 10240);
-    } else {
-      return data;
-    }
-  } else {
-    return "";
-  }
+const MAX_DISPLAY_SIZE = 10240;
+
+const rawResponseData = computed(() => {
+  const data = response.value?.axios?.data;
+  if (!data) return "";
+  return typeof data === "string" ? data : JSON.stringify(data, null, 2);
 });
+
+const truncatedData = computed(() => {
+  const data = rawResponseData.value;
+  return data.length > MAX_DISPLAY_SIZE
+    ? data.slice(0, MAX_DISPLAY_SIZE)
+    : data;
+});
+
+const isDataTruncated = computed(() => {
+  return rawResponseData.value.length > MAX_DISPLAY_SIZE;
+});
+
+const downloadFullResponse = () => {
+  const data = rawResponseData.value;
+  if (!data) return;
+  const contentType =
+    response.value?.axios?.headers?.["content-type"]?.split(";")[0]?.trim() ??
+    "application/octet-stream";
+  const extMap: Record<string, string> = {
+    "application/json": ".json",
+    "application/xml": ".xml",
+    "text/xml": ".xml",
+    "text/html": ".html",
+    "text/plain": ".txt",
+    "text/csv": ".csv",
+    "image/png": ".png",
+    "image/jpeg": ".jpg",
+    "image/gif": ".gif",
+    "image/svg+xml": ".svg"
+  };
+  const ext = extMap[contentType] ?? ".bin";
+  const blob = new Blob([data], { type: contentType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `response-body${ext}`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
 const removeHeader = (header: string) => {
   headers.value = headers.value.filter(
@@ -450,9 +484,24 @@ onMounted(async () => {
           </DataTable>
         </FormField>
         <FormField label="Body">
+          <Message
+            v-if="isDataTruncated"
+            severity="warn"
+            :closable="false"
+            class="mb-2">
+            The response body has been truncated for display.
+            <Button
+              label="Download full response"
+              severity="warn"
+              text
+              size="small"
+              icon="pi pi-download"
+              class="ml-2"
+              @click="downloadFullResponse" />
+          </Message>
           <MonacoEditorVue
             :static="truncatedData"
-            :raw="typeof truncatedData === 'string'"
+            :raw="true"
             :read-only="true"
             :max-lines="50" />
         </FormField>
