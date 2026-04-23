@@ -17,6 +17,7 @@ import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
 import { vi } from "vitest";
 
 import { RecoveryCodeService } from "../auth/recovery-code.service.js";
+import { TokenService } from "../auth/token.service.js";
 import { TotpService } from "../auth/totp.service.js";
 import { TwoFactorHelper } from "../auth/two-factor.helper.js";
 import { WebAuthnService } from "../auth/webauthn.service.js";
@@ -33,7 +34,6 @@ import { WebAuthnCredential } from "../model/webauthn-credential.dao.js";
 import { PermissionsService } from "../permissions/permissions.service.js";
 import { UsersService } from "../users/users.service.js";
 import { OauthService } from "./oauth.service.js";
-import { TokenService } from "./token.service.js";
 
 describe("Oauth", () => {
   let oauth: OauthService;

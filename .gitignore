@@ -59,4 +59,7 @@ website/docs/apis/*/**
 
 # Helm chart dependencies
 helm-charts/**/charts/
+
+# Generated API types (SDK)
+libs/tsg-sdk/.generated/
 helm-charts/**/Chart.lock

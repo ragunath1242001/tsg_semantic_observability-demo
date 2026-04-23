@@ -72,6 +72,34 @@ config_docs:
     - git diff --exit-code
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+sdk-api-check:
+  extends: .base-rules
+  stage: test
+  needs:
+    - job: warm-cache
+      optional: true
+  script:
+    - pnpm install --frozen-lockfile
+    # Build only the libs needed by the SDK-relevant APIs
+    - pnpm --filter "./libs/common*" --filter "./libs/wallet-dtos" --filter
+      "./libs/sso-bridge-dtos" --filter "./libs/control-plane-dtos" -r build
+    # Regenerate OpenAPI specs from the SDK-relevant APIs
+    - pnpm --filter "./apps/control-plane-api" --filter "./apps/wallet-api"
+      --filter "./apps/sso-bridge-api" swagger
+    # Regenerate SDK typed clients from the new specs and rebuild
+    - pnpm --filter @tsg-dsp/tsg-sdk build
+    # Run SDK tests to verify API compatibility
+    - pnpm --filter @tsg-dsp/tsg-sdk test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "apps/control-plane-api/**/*"
+        - "apps/wallet-api/**/*"
+        - "apps/sso-bridge-api/**/*"
+        - "libs/common-dsp/**/*"
+        - "libs/common-dtos/**/*"
+
 lint:
   extends: .base-rules
   stage: test
@@ -166,9 +194,12 @@ update_deployments:
     GIT_EMAIL: semantic-release-bot@dataspac.es
     GIT_NAME: semantic-release
   script:
-    - git clone https://semantic-release:${DEPLOYMENTS_TOKEN}@${CI_SERVER_HOST}/tno-tsg/deployments.git
+    - git clone
+      https://semantic-release:${DEPLOYMENTS_TOKEN}@${CI_SERVER_HOST}/tno-tsg/deployments.git
     - cd deployments
-    - 'find . -type f -name "*.yaml" -exec sed -i -e "s/v${OLD_VERSION}/v${NEW_VERSION}/g" -e "s/\([^v]\)${OLD_VERSION}/\1${NEW_VERSION}/g" {} +'
+    - "find . -type f -name \"*.yaml\" -exec sed -i -e
+      \"s/v${OLD_VERSION}/v${NEW_VERSION}/g\" -e
+      \"s/\\([^v]\\)${OLD_VERSION}/\\1${NEW_VERSION}/g\" {} +"
     - git config user.email "${GIT_EMAIL}"
     - git config user.name "${GIT_NAME}"
     - git add .

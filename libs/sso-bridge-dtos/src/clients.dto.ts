@@ -1,4 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PartialType
+} from "@nestjs/swagger";
 import {
   IsArray,
   IsIn,
@@ -88,3 +93,9 @@ export class ClientDto {
   @IsArray()
   redirectUris!: string[];
 }
+
+export class CreateClientDto extends OmitType(ClientDto, ["id"] as const) {}
+
+export class UpdateClientDto extends PartialType(
+  OmitType(ClientDto, ["id"] as const)
+) {}

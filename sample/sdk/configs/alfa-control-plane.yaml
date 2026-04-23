@@ -1,0 +1,53 @@
+server:
+  publicAddress: http://localhost:3501
+  publicDomain: localhost:3501
+  port: 3501
+  listen: "0.0.0.0"
+
+db:
+  type: sqlite
+  database: "alfa.db"
+
+auth:
+  enabled: true
+  openIdConfigurationURL: http://localhost:3700/.well-known/openid-configuration
+  callbackURL: http://localhost:3551/api/auth/callback
+  clientId: alfa-control-plane
+  tokenEndpointAuthMethod: private_key_jwt
+  privateKeyJwk:
+    kty: EC
+    x: RWgYhy6g8MKdk4lVK8JmPn1h4qLmeCDCXDoO1scOz3k
+    y: e8kOUNmcJTBNrI3XZxWL2BGcsPLogFZ8XCVTS7jk3mI
+    crv: P-256
+    d: j6gN5EMxjTlLs40asYnybT7d9PhYPAOSeu5dAoPNdkc
+    kid: alfa-control-plane-key-1767782613388
+    alg: ES256
+    use: sig
+  redirectURL: http://localhost:3551/
+
+runtime:
+  controlPlaneInteractions: automatic
+  color: "#3B8BF6"
+
+registry:
+  useRegistry: true
+  registryIntervalInMilliseconds: 30000
+
+iam:
+  type: tsg
+  didId: did:web:localhost%3A3500
+  issuerFilter: did:web:localhost%3A3400
+  typeFilter: ExampleCredential
+  walletUrl: http://localhost:3500
+  siopUrl: http://localhost:3500/management/dcp/holder/token
+  verifyUrl: http://localhost:3500/management/dcp/verifier/verify
+
+initCatalog:
+  participantId: did:web:localhost%3A3500
+  creator: did:web:localhost%3A3500
+  publisher: did:web:localhost%3A3500
+  title: Alfa
+  description: Alfa connector
+
+audit:
+  logExecute: true

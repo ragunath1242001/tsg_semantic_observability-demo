@@ -79,6 +79,7 @@ export class CredentialsManagementController {
       "List all credentials, that the current user is allowed to view, in this wallet"
   })
   @DisableOAuthGuard()
+  @DisableAbac
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: [CredentialsDto]

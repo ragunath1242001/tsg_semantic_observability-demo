@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import { IsBoolean, IsDate, IsIn, IsObject, IsString } from "class-validator";
 import { JWK } from "jose";
 
@@ -16,9 +17,11 @@ export class KeyInfo {
   publicKey!: JWK;
 
   @IsDate()
+  @Type(() => Date)
   createdDate!: Date;
 
   @IsDate()
+  @Type(() => Date)
   modifiedDate!: Date;
 }
 

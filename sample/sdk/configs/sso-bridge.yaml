@@ -1,0 +1,141 @@
+server:
+  port: 3700
+  listen: "0.0.0.0"
+  publicAddress: http://localhost:3750
+  publicDomain: localhost
+
+db:
+  type: "sqlite"
+  database: "sso-bridge.db"
+
+twoFactorIssuerName: "TSG SDK SSO Bridge"
+
+initClients:
+  # ── SDK client (client_secret_post for easy interactive testing) ─────────
+  - clientId: sdk-client
+    name: SDK Client
+    description: Interactive SDK test client
+    tokenEndpointAuthMethod: client_secret_post
+    clientSecret: sdk-secret
+    redirectUris:
+      - http://localhost:9999/.*
+    permissions:
+      - manage:*
+    secretName: sso-sdk-client-secret
+
+  # ── Authority wallet ────────────────────────────────────────────────────
+  - clientId: authority-wallet
+    name: Authority Wallet
+    description: Authority Wallet
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: 7s2R3zVi4FI8BRZ0979i-NGrmA13xGk1eOoYo5Gy2Tc
+      y: 3bMs_vp_cJKOI4nFVhGQywMvJDveGblOYpQd4uMAXDk
+      crv: P-256
+      kid: authority-wallet-key-1767782795718
+      alg: ES256
+      use: sig
+    redirectUris:
+      - http://localhost:3450/.*
+    permissions:
+      - execute:sso.config
+    secretName: sso-authority-wallet-secret
+
+  # ── Alfa clients ────────────────────────────────────────────────────────
+  - clientId: alfa-wallet
+    name: Alfa Wallet
+    description: Alfa Wallet
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: TNroQXAH5gSedz9Wh5Gwb36PqPbQcUUhDjoaOkuOVP4
+      y: oxlGyXlgptnf93RBtGOG1TXBo3_xC8nJyNXMylJ3CHs
+      crv: P-256
+      kid: alfa-wallet-key-1767782612424
+      alg: ES256
+      use: sig
+    redirectUris:
+      - http://localhost:3550/.*
+    permissions:
+      - execute:sso.config
+    secretName: sso-alfa-wallet-secret
+
+  - clientId: alfa-control-plane
+    name: Alfa Control Plane
+    description: Alfa Control Plane
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: RWgYhy6g8MKdk4lVK8JmPn1h4qLmeCDCXDoO1scOz3k
+      y: e8kOUNmcJTBNrI3XZxWL2BGcsPLogFZ8XCVTS7jk3mI
+      crv: P-256
+      kid: alfa-control-plane-key-1767782613388
+      alg: ES256
+      use: sig
+    redirectUris:
+      - http://localhost:3551/.*
+    permissions:
+      - execute:sso.config
+      - read:w.did
+      - manage:w.issue_config
+      - execute:w.key
+      - read:w.credential
+      - read:w.presentation
+    secretName: sso-alfa-control-plane-secret
+
+  # ── Bravo clients ───────────────────────────────────────────────────────
+  - clientId: bravo-wallet
+    name: Bravo Wallet
+    description: Bravo Wallet
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: 8tZ2ZIxxOfe49RD0Xma_K4YsssSCaIOc9mnxIhlNukA
+      y: pOvBaPMO85dDDANercNoIlczmSlOQ90cO1fZWLM9YCI
+      crv: P-256
+      kid: bravo-wallet-key-1767782796583
+      alg: ES256
+      use: sig
+    redirectUris:
+      - http://localhost:3650/.*
+    permissions:
+      - manage:sso.client
+    secretName: sso-bravo-wallet-secret
+
+  - clientId: bravo-control-plane
+    name: Bravo Control Plane
+    description: Bravo Control Plane
+    tokenEndpointAuthMethod: private_key_jwt
+    jwk:
+      kty: EC
+      x: FEoIkUEOd9kvrv62_5ZSHPuMZyeAsgqJjPtmUiB_CyM
+      y: 8rQTOzJT6PnvTyw-GWz6DGAF_S3oMgFGiE-MjBloppg
+      crv: P-256
+      kid: bravo-control-plane-key-1767782797384
+      alg: ES256
+      use: sig
+    redirectUris:
+      - http://localhost:3651/.*
+    permissions:
+      - execute:sso.config
+      - read:w.did
+      - manage:w.issue_config
+      - execute:w.key
+      - read:w.credential
+      - read:w.presentation
+    secretName: sso-bravo-control-plane-secret
+
+initUsers:
+  - username: alice
+    password: alice
+    email: alice@example.com
+    require2FA: false
+    permissions:
+      - manage:*
+  - username: bob
+    password: bob
+    email: bob@example.com
+    require2FA: false
+    permissions:
+      - read:cp.catalog

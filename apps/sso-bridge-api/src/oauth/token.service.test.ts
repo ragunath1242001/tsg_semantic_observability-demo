@@ -6,11 +6,11 @@ import { randomUUID } from "crypto";
 import { decodeJwt } from "jose";
 import { vi } from "vitest";
 
+import { TokenService } from "../auth/token.service.js";
 import { OauthClient } from "../model/client.dao.js";
 import { KeyDao } from "../model/keys.dao.js";
 import { TokenDao } from "../model/token.dao.js";
 import { OauthUser } from "../model/user.dao.js";
-import { TokenService } from "./token.service.js";
 
 describe("TokenService", () => {
   let tokenService: TokenService;

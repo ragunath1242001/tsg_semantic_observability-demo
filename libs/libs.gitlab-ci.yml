@@ -55,6 +55,43 @@ common-signing-and-validation-test:
   variables:
     LIB: common-signing-and-validation
 
+tsg-sdk-test:
+  extends:
+    - .base-rules
+    - .pnpm-cache-readonly
+  stage: test
+  needs:
+    - job: warm-cache
+      optional: true
+  tags:
+    - saas-linux-medium-amd64
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
+      changes:
+        - "libs/tsg-sdk/**/*"
+        - "libs/common-dsp/**/*"
+        - "libs/common-dtos/**/*"
+        - "libs/wallet-dtos/**/*"
+        - "libs/sso-bridge-dtos/**/*"
+        - "apps/control-plane-api/**/*"
+        - "apps/wallet-api/**/*"
+        - "apps/sso-bridge-api/**/*"
+        - libs/libs.gitlab-ci.yml
+        - .gitlab-ci.yml
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm run --filter "./libs/common*" --filter "./libs/wallet-dtos" --filter
+      "./libs/sso-bridge-dtos" -r build
+    - pnpm test:tsg-sdk-ci
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  artifacts:
+    reports:
+      junit:
+        - libs/tsg-sdk/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: libs/tsg-sdk/coverage/cobertura-coverage.xml
+
 common-dsp-package:
   extends: .npm-package
   id_tokens:
@@ -66,3 +103,18 @@ common-dsp-package:
     - pnpm install --frozen-lockfile
     - pnpm --filter common-dsp build
     - pnpm --filter common-dsp publish --no-git-checks
+
+tsg-sdk-package:
+  extends: .npm-package
+  id_tokens:
+    NPM_ID_TOKEN:
+      aud: "npm:registry.npmjs.org"
+    SIGSTORE_ID_TOKEN:
+      aud: sigstore
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm run --filter "./libs/common*" --filter "./libs/wallet-dtos" --filter
+      "./libs/sso-bridge-dtos" -r build
+    - pnpm -r swagger
+    - pnpm --filter @tsg-dsp/tsg-sdk build
+    - pnpm --filter @tsg-dsp/tsg-sdk publish --no-git-checks

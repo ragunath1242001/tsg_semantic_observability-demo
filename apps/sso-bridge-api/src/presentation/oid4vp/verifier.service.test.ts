@@ -16,6 +16,7 @@ import { SetupServer, setupServer } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { RecoveryCodeService } from "../../auth/recovery-code.service.js";
+import { TokenService } from "../../auth/token.service.js";
 import { TotpService } from "../../auth/totp.service.js";
 import { TwoFactorHelper } from "../../auth/two-factor.helper.js";
 import { WebAuthnService } from "../../auth/webauthn.service.js";
@@ -31,7 +32,6 @@ import { TotpCredential } from "../../model/totp-credential.dao.js";
 import { OauthUser } from "../../model/user.dao.js";
 import { WebAuthnCredential } from "../../model/webauthn-credential.dao.js";
 import { OauthService } from "../../oauth/oauth.service.js";
-import { TokenService } from "../../oauth/token.service.js";
 import { PermissionsService } from "../../permissions/permissions.service.js";
 import { UsersService } from "../../users/users.service.js";
 import { OID4VPVerifierService } from "./verifier.service.js";

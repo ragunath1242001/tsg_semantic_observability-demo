@@ -64,7 +64,7 @@ const canDeleteClient = computed(() =>
 
 const submitted = ref(false);
 
-const clientObj: ClientDto = {
+const clientObj: Partial<ClientDto> = {
   id: undefined,
   name: undefined,
   secretName: undefined,
@@ -78,7 +78,7 @@ const clientObj: ClientDto = {
   redirectUris: []
 };
 
-const client = ref<ClientDto>(clientObj);
+const client = ref<Partial<ClientDto>>(clientObj);
 
 const authMethods: Array<{
   label: string;
@@ -333,7 +333,7 @@ const deleteClient = async () => {
   }
 };
 
-const openDeleteClientDialog = (data) => {
+const openDeleteClientDialog = (data: ClientDto) => {
   client.value = data;
   deleteClientDialog.value = true;
 };

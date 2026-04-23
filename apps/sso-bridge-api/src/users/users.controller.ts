@@ -9,15 +9,26 @@ import {
   Req,
   UseGuards
 } from "@nestjs/common";
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags
+} from "@nestjs/swagger";
 import {
   PaginationOptionsDto,
   PaginationQuery,
   Requires,
-  UsePagination
+  UsePagination,
+  validationPipe
 } from "@tsg-dsp/common-api";
 import { Action, Resource } from "@tsg-dsp/common-dtos";
-import { UserWithPasswordDto } from "@tsg-dsp/sso-bridge-dtos";
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  UserDto
+} from "@tsg-dsp/sso-bridge-dtos";
 import { Request } from "express";
 
 import { AuthGuard } from "../auth/auth.guard.js";
@@ -34,7 +45,11 @@ export class UsersController {
   @Requires(Action.READ, Resource.SSO_USER)
   @UsePagination()
   @ApiOperation({ summary: "Get all users" })
-  @ApiResponse({ status: 200, description: "List of users returned." })
+  @ApiResponse({
+    status: 200,
+    description: "List of users returned.",
+    type: [UserDto]
+  })
   async getUsers(@PaginationQuery() paginationOptions: PaginationOptionsDto) {
     return await this.usersService.getUsers(paginationOptions);
   }
@@ -42,12 +57,14 @@ export class UsersController {
   @Post("create")
   @Requires(Action.CREATE, Resource.SSO_USER)
   @ApiOperation({ summary: "Create a new user" })
+  @ApiBody({ type: CreateUserDto, description: "Data for the new user" })
   @ApiResponse({
     status: 201,
-    description: "The user has been successfully created."
+    description: "The user has been successfully created.",
+    type: UserDto
   })
   async createUser(
-    @Body() createUserDto: Partial<UserWithPasswordDto>,
+    @Body(validationPipe) createUserDto: CreateUserDto,
     @Req() request: Request
   ) {
     const ownershipFields = getOwnershipFieldsFromSession(request);
@@ -57,7 +74,7 @@ export class UsersController {
   @Delete(":id")
   @Requires(Action.DELETE, Resource.SSO_USER)
   @ApiOperation({ summary: "Delete a user" })
-  @ApiParam({ name: "id", type: Number, description: "User id" })
+  @ApiParam({ name: "id", type: String, description: "User id" })
   @ApiResponse({ status: 200, description: "User successfully deleted." })
   async deleteUser(@Param("id") id: string, @Req() request: Request) {
     return this.usersService.deleteUser(id, request);
@@ -66,11 +83,16 @@ export class UsersController {
   @Patch("update/:id")
   @Requires(Action.UPDATE, Resource.SSO_USER)
   @ApiOperation({ summary: "Update an existing user" })
-  @ApiParam({ name: "id", type: Number, description: "User id" })
-  @ApiResponse({ status: 200, description: "User successfully updated." })
+  @ApiParam({ name: "id", type: String, description: "User id" })
+  @ApiBody({ type: UpdateUserDto, description: "Updated user data" })
+  @ApiResponse({
+    status: 200,
+    description: "User successfully updated.",
+    type: UserDto
+  })
   async updateUser(
     @Param("id") id: string,
-    @Body() updateUserDto: Partial<UserWithPasswordDto>
+    @Body(validationPipe) updateUserDto: UpdateUserDto
   ) {
     return this.usersService.updateUser(id, updateUserDto);
   }
@@ -82,7 +104,7 @@ export class UsersController {
     description:
       "Admin endpoint to reset two-factor authentication for a user. Deletes all TOTP credentials, WebAuthn credentials, and recovery codes."
   })
-  @ApiParam({ name: "id", type: Number, description: "User id" })
+  @ApiParam({ name: "id", type: String, description: "User id" })
   @ApiResponse({
     status: 200,
     description: "2FA successfully reset for the user."

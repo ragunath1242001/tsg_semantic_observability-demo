@@ -1,0 +1,117 @@
+layout {
+    /**
+    /--------------------------------------------------------------\
+    | Service name             | Config                    | Port  |
+    | ============================================================ |
+    | SSO Bridge API           | sso-bridge.yaml           | 3700  |
+    | >   Bridge UI            | -                         | 3750  |
+    | ------------------------------------------------------------ |
+    | Authority Wallet API     | authority-wallet.yaml     | 3400  |
+    | >         Wallet UI      | -                         | 3450  |
+    | ------------------------------------------------------------ |
+    | Alfa Wallet API          | alfa-wallet.yaml          | 3500  |
+    | >    Wallet UI           | -                         | 3550  |
+    | >    Control Plane API   | alfa-control-plane.yaml   | 3501  |
+    | >    Control Plane UI    | -                         | 3551  |
+    | ------------------------------------------------------------ |
+    | Bravo Wallet API         | bravo-wallet.yaml         | 3600  |
+    | >     Wallet UI          | -                         | 3650  |
+    | >     Control Plane API  | bravo-control-plane.yaml  | 3601  |
+    | >     Control Plane UI   | -                         | 3651  |
+    | ------------------------------------------------------------ |
+    | SDK playground           | -                         | -     |
+    \--------------------------------------------------------------/
+
+    SDK auth: clientId=sdk-client, clientSecret=sdk-secret (client_secret_post)
+    **/
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+    tab name="📦 sdk" focus=true split_direction="vertical" {
+        pane name="sdk-playground" command="bash" {
+            args "-c" "
+                cd $(git rev-parse --show-toplevel) &&
+                pnpm --filter tsg-sdk build &&
+                pnpm --filter tsg-sdk playground
+            "
+        }
+    }
+    tab name="🔐 sso-bridge" split_direction="vertical" {
+        pane name="sso-bridge-api" command="bash" {
+            args "-c" "
+                cd $(git rev-parse --show-toplevel) &&
+                rm -f $(pwd)/apps/sso-bridge-api/sso-bridge.db &&
+                SESSION_NAME=connect.sid.tsgsb CONFIG_PATH=$(pwd)/sample/sdk/configs/sso-bridge.yaml pnpm dev:sso-bridge-api
+            "
+        }
+        pane name="sso-bridge-ui" command="bash" {
+            args "-c" "BACKEND=http://localhost:3700 pnpm dev:sso-bridge-ui --port 3750"
+        }
+    }
+    tab name="🔑 authority/wallet" split_direction="vertical" {
+        pane name="authority/wallet-api" command="bash" {
+            args "-c" "
+                cd $(git rev-parse --show-toplevel) &&
+                rm -f $(pwd)/apps/wallet-api/authority.db &&
+                SESSION_NAME=connect.sid.tsgaw CONFIG_PATH=$(pwd)/sample/sdk/configs/authority-wallet.yaml pnpm dev:wallet-api
+            "
+        }
+        pane name="authority/wallet-ui" command="bash" {
+            args "-c" "BACKEND=http://localhost:3400 pnpm dev:wallet-ui --port 3450"
+        }
+    }
+    tab name="🔑 alfa/wallet" split_direction="vertical" {
+        pane name="alfa/wallet-api" command="bash" {
+            args "-c" "
+                cd $(git rev-parse --show-toplevel) &&
+                rm -f $(pwd)/apps/wallet-api/alfa.db &&
+                SESSION_NAME=connect.sid.tsgalfaw CONFIG_PATH=$(pwd)/sample/sdk/configs/alfa-wallet.yaml pnpm dev:wallet-api
+            "
+        }
+        pane name="alfa/wallet-ui" command="bash" {
+            args "-c" "BACKEND=http://localhost:3500 pnpm dev:wallet-ui --port 3550"
+        }
+    }
+    tab name="🕹️ alfa/control-plane" split_direction="vertical" {
+        pane name="alfa/control-plane-api" command="bash" {
+            args "-c" "
+                cd $(git rev-parse --show-toplevel) &&
+                rm -f $(pwd)/apps/control-plane-api/alfa.db &&
+                SESSION_NAME=connect.sid.tsgalfacp CONFIG_PATH=$(pwd)/sample/sdk/configs/alfa-control-plane.yaml pnpm dev:control-plane-api
+            "
+        }
+        pane name="alfa/control-plane-ui" command="bash" {
+            args "-c" "BACKEND=http://localhost:3501 pnpm dev:control-plane-ui --port 3551"
+        }
+    }
+    tab name="🔑 bravo/wallet" split_direction="vertical" {
+        pane name="bravo/wallet-api" command="bash" {
+            args "-c" "
+                cd $(git rev-parse --show-toplevel) &&
+                rm -f $(pwd)/apps/wallet-api/bravo.db &&
+                SESSION_NAME=connect.sid.tsgbravow CONFIG_PATH=$(pwd)/sample/sdk/configs/bravo-wallet.yaml pnpm dev:wallet-api
+            "
+        }
+        pane name="bravo/wallet-ui" command="bash" {
+            args "-c" "BACKEND=http://localhost:3600 pnpm dev:wallet-ui --port 3650"
+        }
+    }
+    tab name="🕹️ bravo/control-plane" split_direction="vertical" {
+        pane name="bravo/control-plane-api" command="bash" {
+            args "-c" "
+                cd $(git rev-parse --show-toplevel) &&
+                rm -f $(pwd)/apps/control-plane-api/bravo.db &&
+                SESSION_NAME=connect.sid.tsgbravocp CONFIG_PATH=$(pwd)/sample/sdk/configs/bravo-control-plane.yaml pnpm dev:control-plane-api
+            "
+        }
+        pane name="bravo/control-plane-ui" command="bash" {
+            args "-c" "BACKEND=http://localhost:3601 pnpm dev:control-plane-ui --port 3651"
+        }
+    }
+}
