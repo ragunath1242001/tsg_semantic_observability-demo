@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  Logger,
   UnauthorizedException
 } from "@nestjs/common";
 import { APP_GUARD, Reflector } from "@nestjs/core";
@@ -14,9 +15,11 @@ import {
 } from "@tsg-dsp/common-api";
 import { PermissionString } from "@tsg-dsp/common-dtos";
 import { Request } from "express";
+import { decodeJwt } from "jose";
 
 import { OauthUser } from "../model/user.dao.js";
 import { getUser } from "../utils/session.js";
+import { TokenService } from "./token.service.js";
 
 export const DisableAuthGuard = Reflector.createDecorator<boolean>();
 
@@ -28,8 +31,13 @@ export const User = createParamDecorator(
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
-  canActivate(context: ExecutionContext) {
+  private readonly logger = new Logger(AuthGuard.name);
+
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly tokenService: TokenService
+  ) {}
+  async canActivate(context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest();
     const disabled =
       this.reflector.get(DisableAuthGuard, context.getHandler()) ||
@@ -37,7 +45,32 @@ export class AuthGuard implements CanActivate {
     if (disabled) {
       return true;
     }
-    const user = getUser(request);
+
+    // Try session auth first
+    let user = getUser(request);
+
+    // Fall back to Bearer token auth
+    if (!user && request.headers.authorization?.startsWith("Bearer ")) {
+      const token = request.headers.authorization.substring(7);
+      try {
+        const payload = await this.validateAccessToken(token);
+        // Create an OauthUser-like object from the token payload
+        user = Object.assign(new OauthUser(), {
+          id: payload.sub,
+          username: payload.azp ?? payload.sub,
+          permissions: payload.permissions ?? []
+        });
+        // Also set req.user for the ABAC middleware
+        (request as Request & { user?: unknown }).user = {
+          sub: payload.sub,
+          permissions: payload.permissions ?? []
+        };
+      } catch {
+        this.logger.warn("Bearer token validation failed");
+        throw new UnauthorizedException();
+      }
+    }
+
     if (!user) {
       throw new UnauthorizedException();
     }
@@ -100,6 +133,13 @@ export class AuthGuard implements CanActivate {
     }
 
     return true;
+  }
+
+  private async validateAccessToken(
+    token: string
+  ): Promise<Record<string, unknown>> {
+    await this.tokenService.validateToken(token, "access_token");
+    return decodeJwt(token) as Record<string, unknown>;
   }
 
   private hasPermission(

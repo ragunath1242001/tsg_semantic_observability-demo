@@ -2,7 +2,9 @@
 
 import eslint from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
+import jsdoc from "eslint-plugin-jsdoc";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
+import tsdoc from "eslint-plugin-tsdoc";
 import pluginVue from "eslint-plugin-vue";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -51,6 +53,32 @@ export default tseslint.config(
       ],
       "vue/multi-word-component-names": "warn",
       "vue/no-reserved-component-names": "warn"
+    }
+  },
+  {
+    files: ["libs/tsg-sdk/src/**/*.ts"],
+    ignores: ["**/*.test.ts"],
+    plugins: { tsdoc, jsdoc },
+    extends: [jsdoc.configs["flat/recommended-typescript-error"]],
+    rules: {
+      "tsdoc/syntax": "error",
+      "jsdoc/check-param-names": "error",
+      "jsdoc/require-param": "error",
+      "jsdoc/require-returns": "error",
+      // Disable rules that conflict with TSDoc syntax
+      "jsdoc/require-throws-type": "off", // TSDoc @throws doesn't use {Type}
+      "jsdoc/check-tag-names": [
+        "error",
+        { typed: true, definedTags: ["typeParam"] }
+      ]
+    },
+    settings: {
+      jsdoc: {
+        mode: "typescript",
+        tagNamePreference: {
+          typeParam: "typeParam" // Keep TSDoc's @typeParam instead of JSDoc's @template
+        }
+      }
     }
   }
 );

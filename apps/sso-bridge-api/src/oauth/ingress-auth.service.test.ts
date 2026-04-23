@@ -6,6 +6,7 @@ import { Request } from "express";
 import { vi } from "vitest";
 
 import { RecoveryCodeService } from "../auth/recovery-code.service.js";
+import { TokenService } from "../auth/token.service.js";
 import { TotpService } from "../auth/totp.service.js";
 import { TwoFactorHelper } from "../auth/two-factor.helper.js";
 import { WebAuthnService } from "../auth/webauthn.service.js";
@@ -23,7 +24,6 @@ import { PermissionsService } from "../permissions/permissions.service.js";
 import { UsersService } from "../users/users.service.js";
 import { IngressAuthService } from "./ingress-auth.service.js";
 import { OauthService } from "./oauth.service.js";
-import { TokenService } from "./token.service.js";
 
 describe("IngressAuthService", () => {
   let ingressAuthService: IngressAuthService;

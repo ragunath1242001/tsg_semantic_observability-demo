@@ -14,10 +14,15 @@ import {
   PaginationOptionsDto,
   PaginationQuery,
   Requires,
-  UsePagination
+  UsePagination,
+  validationPipe
 } from "@tsg-dsp/common-api";
 import { Action, Resource } from "@tsg-dsp/common-dtos";
-import { ClientDto } from "@tsg-dsp/sso-bridge-dtos";
+import {
+  ClientDto,
+  CreateClientDto,
+  UpdateClientDto
+} from "@tsg-dsp/sso-bridge-dtos";
 import { Request } from "express";
 
 import { AuthGuard } from "../auth/auth.guard.js";
@@ -36,7 +41,8 @@ export class ClientsController {
   @ApiOperation({ summary: "Retrieve all clients" })
   @ApiResponse({
     status: 200,
-    description: "List of clients returned successfully."
+    description: "List of clients returned successfully.",
+    type: [ClientDto]
   })
   async getClients(@PaginationQuery() paginationOptions: PaginationOptionsDto) {
     const result = await this.clientsService.getClients(paginationOptions);
@@ -50,10 +56,14 @@ export class ClientsController {
   @Post("create")
   @Requires(Action.CREATE, Resource.SSO_CLIENT)
   @ApiOperation({ summary: "Create a new client" })
-  @ApiBody({ type: ClientDto, description: "Data for the new client" })
-  @ApiResponse({ status: 201, description: "Client created successfully." })
-  async createUser(
-    @Body() createClientDto: Partial<ClientDto>,
+  @ApiBody({ type: CreateClientDto, description: "Data for the new client" })
+  @ApiResponse({
+    status: 201,
+    description: "Client created successfully.",
+    type: ClientDto
+  })
+  async createClient(
+    @Body(validationPipe) createClientDto: CreateClientDto,
     @Req() request: Request
   ) {
     const ownershipFields = getOwnershipFieldsFromSession(request);
@@ -74,11 +84,15 @@ export class ClientsController {
   @Patch("update/:id")
   @Requires(Action.UPDATE, Resource.SSO_CLIENT)
   @ApiOperation({ summary: "Update an existing client" })
-  @ApiBody({ type: ClientDto, description: "Updated client data" })
-  @ApiResponse({ status: 200, description: "Client updated successfully." })
+  @ApiBody({ type: UpdateClientDto, description: "Updated client data" })
+  @ApiResponse({
+    status: 200,
+    description: "Client updated successfully.",
+    type: ClientDto
+  })
   async updateClient(
     @Param("id") id: string,
-    @Body() updateClientDto: Partial<ClientDto>
+    @Body(validationPipe) updateClientDto: UpdateClientDto
   ) {
     return this.clientsService.updateClient(id, updateClientDto);
   }

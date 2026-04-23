@@ -86,7 +86,7 @@ export class RegistryManagementController {
     summary: "Get catalogs",
     description: "Fetches all catalogs from the registry."
   })
-  @ApiOkResponse({ type: CatalogSchema })
+  @ApiOkResponse({ type: [CatalogSchema] })
   @ApiForbiddenResponseDefault()
   async getCatalogs(
     @PaginationQuery() paginationOptions: PaginationOptionsDto

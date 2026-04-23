@@ -3420,7 +3420,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CatalogSchema"
+                type: array
+                items:
+                  $ref: "#/components/schemas/CatalogSchema"
         "403":
           description: Forbidden
           content:

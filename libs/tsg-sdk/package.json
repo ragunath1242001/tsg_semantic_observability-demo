@@ -1,0 +1,69 @@
+{
+  "name": "@tsg-dsp/tsg-sdk",
+  "version": "0.19.0",
+  "description": "TypeScript SDK for interacting with TSG Dataspace Protocol capabilities",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway.git",
+    "directory": "libs/tsg-sdk"
+  },
+  "homepage": "https://tno-tsg.gitlab.io/dataspace-protocol/tno-security-gateway/",
+  "keywords": [
+    "tsg",
+    "dataspace",
+    "dsp",
+    "sdk",
+    "tno",
+    "security-gateway",
+    "catalog",
+    "negotiation",
+    "transfer",
+    "wallet",
+    "sso"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "*.md"
+  ],
+  "scripts": {
+    "generate": "tsx scripts/generate-api.ts",
+    "prebuild": "pnpm generate",
+    "build": "tsc -p tsconfig.build.json",
+    "playground": "tsx samples/playground.ts",
+    "repl": "tsx",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=junit.xml"
+  },
+  "dependencies": {
+    "@tsg-dsp/common-dsp": "workspace:*",
+    "@tsg-dsp/common-dtos": "workspace:*",
+    "@tsg-dsp/sso-bridge-dtos": "workspace:*",
+    "@tsg-dsp/wallet-dtos": "workspace:*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "jose": "^6.2.1",
+    "openapi-fetch": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^3.2.1",
+    "openapi-typescript": "^7.13.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.1"
+  }
+}

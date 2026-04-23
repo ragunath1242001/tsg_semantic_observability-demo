@@ -1,5 +1,7 @@
 import { Body, Controller, Get, Patch, Req, UseGuards } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { validationPipe } from "@tsg-dsp/common-api";
+import { ChangePasswordDto, UserDto } from "@tsg-dsp/sso-bridge-dtos";
 import { Request } from "express";
 
 import { AuthGuard } from "../auth/auth.guard.js";
@@ -13,23 +15,30 @@ export class ProfileController {
 
   @Get()
   @ApiOperation({ summary: "Get current user profile" })
-  @ApiResponse({ status: 200, description: "Current user profile returned." })
+  @ApiResponse({
+    status: 200,
+    description: "Current user profile returned.",
+    type: UserDto
+  })
   async getProfile(@Req() request: Request) {
     return await this.usersService.getUserProfile(request);
   }
 
   @Patch("password")
   @ApiOperation({ summary: "Change current user password" })
+  @ApiBody({
+    type: ChangePasswordDto,
+    description: "Current and new password"
+  })
   @ApiResponse({ status: 200, description: "Password successfully updated." })
   async changePassword(
-    @Body("currentPassword") currentPassword: string,
-    @Body("newPassword") newPassword: string,
+    @Body(validationPipe) changePasswordDto: ChangePasswordDto,
     @Req() request: Request
   ) {
     return await this.usersService.changePassword(
       request,
-      currentPassword,
-      newPassword
+      changePasswordDto.currentPassword,
+      changePasswordDto.newPassword
     );
   }
 }

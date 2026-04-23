@@ -1,4 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PartialType
+} from "@nestjs/swagger";
 import {
   IsArray,
   IsBoolean,
@@ -11,7 +16,7 @@ import {
 import { GrantType } from "./grants.js";
 
 export class UserDto {
-  @ApiProperty({ example: "1" })
+  @ApiPropertyOptional({ example: "1" })
   @IsString()
   @IsOptional()
   id?: string;
@@ -40,15 +45,35 @@ export class UserDto {
   @IsNotEmpty()
   grants!: GrantType[];
 
-  @ApiProperty({ example: false })
+  @ApiPropertyOptional({ example: false })
   @IsBoolean()
   @IsOptional()
   require2FA?: boolean;
 }
 
 export class UserWithPasswordDto extends UserDto {
-  @ApiProperty({ example: "strongpassword123" })
+  @ApiPropertyOptional({ example: "strongpassword123" })
   @IsString()
   @IsOptional()
   password?: string;
+}
+
+export class CreateUserDto extends OmitType(UserWithPasswordDto, [
+  "id"
+] as const) {}
+
+export class UpdateUserDto extends PartialType(
+  OmitType(UserWithPasswordDto, ["id"] as const)
+) {}
+
+export class ChangePasswordDto {
+  @ApiProperty({ example: "currentpassword123" })
+  @IsString()
+  @IsNotEmpty()
+  currentPassword!: string;
+
+  @ApiProperty({ example: "newpassword456" })
+  @IsString()
+  @IsNotEmpty()
+  newPassword!: string;
 }

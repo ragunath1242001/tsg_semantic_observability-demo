@@ -15,6 +15,7 @@ import { Request, Response } from "express";
 import { decodeJwt, JWTPayload } from "jose";
 
 import { RecoveryCodeService } from "../auth/recovery-code.service.js";
+import { TokenService } from "../auth/token.service.js";
 import { TotpService } from "../auth/totp.service.js";
 import { TwoFactorHelper } from "../auth/two-factor.helper.js";
 import { ClientsService } from "../clients/clients.service.js";
@@ -22,7 +23,6 @@ import { OauthUser } from "../model/user.dao.js";
 import { UsersService } from "../users/users.service.js";
 import { encodeParams } from "../utils/params.js";
 import { getSession } from "../utils/session.js";
-import { TokenService } from "./token.service.js";
 
 @Injectable()
 export class OauthService {

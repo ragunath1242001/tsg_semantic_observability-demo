@@ -42,13 +42,23 @@ export class OAuthGuard implements CanActivate {
     const disabled =
       this.reflector.get(DisableOAuthGuard, context.getHandler()) ||
       this.reflector.get(DisableOAuthGuard, context.getClass());
-    if (disabled) {
-      return true;
-    }
 
     const session = getSession(request);
     if (session?.user) {
       request.user = session.user;
+      return true;
+    }
+
+    if (disabled) {
+      // Still try to extract user from Bearer token, but don't require it
+      if (request.headers.authorization?.startsWith("Bearer ")) {
+        try {
+          const token = request.headers.authorization.substring(7);
+          request.user = await this.oAuthService.validateToken(token);
+        } catch {
+          // Ignore — auth is optional for this route
+        }
+      }
       return true;
     }
 

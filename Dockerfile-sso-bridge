@@ -21,7 +21,7 @@ ARG TSG_STATIC_MODE=${TSG_MODE}
 ARG TSG_STATIC_VERSION=${TSG_VERSION}
 
 # Build all libs
-RUN pnpm run --filter "./libs/*" -r build
+RUN pnpm run --filter "./libs/*" --filter "!tsg-sdk" -r build
 
 # Build API and UI
 RUN pnpm run --filter "./apps/sso-bridge*" --parallel -r build
