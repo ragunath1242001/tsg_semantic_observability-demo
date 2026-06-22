@@ -1,0 +1,41 @@
+db:
+  type: "sqlite"
+  database: "/app/data/alfa-data-plane.db"
+
+auth:
+  enabled: false
+
+server:
+  port: 3000
+  listen: "0.0.0.0"
+  publicAddress: http://alfa-data-plane:3000
+  publicDomain: alfa-data-plane:3000
+
+controlPlane:
+  dataPlaneEndpoint: http://alfa-control-plane:3000/data-plane
+  managementEndpoint: http://alfa-control-plane:3000/management
+  controlEndpoint: http://alfa-control-plane:3000
+
+runtime:
+  color: "#3B8BF6"
+
+semanticObservability:
+  enabled: true
+  participantId: did:web:localhost%3A3501
+  refreshIntervalInMilliseconds: 3600000
+
+dataset:
+  type: versioned
+  title: Alfa Demo Dataset
+  description:
+    - Synthetic HTTP dataset used for the semantic observability Docker demo.
+  baseSemanticModelRef: https://example.org/semantic/alfa/base
+  currentVersion: 1.0.0
+  versions:
+    - version: 1.0.0
+      semanticModelRef: https://example.org/semantic/alfa/1.0.0
+      distributions:
+        - backendUrl: https://mockhttp.org/anything
+          mediaType: application/json
+          schemaRef: https://example.org/schemas/alfa-demo-1.0.0.json
+          openApiSpecRef: https://mockhttp.org/docs/json

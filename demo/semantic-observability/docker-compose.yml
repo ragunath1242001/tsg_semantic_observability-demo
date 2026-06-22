@@ -1,0 +1,59 @@
+name: tsg-semantic-observability-demo
+
+services:
+  alfa-control-plane:
+    build:
+      context: ../..
+      dockerfile: Dockerfile-control-plane
+    image: tsg-semantic-observability/control-plane:local
+    environment:
+      CONFIG_PATH: /app/config/config.yaml
+      TSG_MODE: semantic-observability-demo
+      TSG_VERSION: local
+    ports:
+      - "3501:3000"
+    volumes:
+      - ./configs/alfa-control-plane.yaml:/app/config/config.yaml:ro
+      - alfa-control-plane-data:/app/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  alfa-data-plane:
+    build:
+      context: ../..
+      dockerfile: Dockerfile-http-data-plane
+    image: tsg-semantic-observability/http-data-plane:local
+    depends_on:
+      alfa-control-plane:
+        condition: service_healthy
+    environment:
+      CONFIG_PATH: /app/config/config.yaml
+      TSG_MODE: semantic-observability-demo
+      TSG_VERSION: local
+    ports:
+      - "3502:3000"
+    volumes:
+      - ./configs/alfa-data-plane.yaml:/app/config/config.yaml:ro
+      - alfa-data-plane-data:/app/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+volumes:
+  alfa-control-plane-data:
+  alfa-data-plane-data:

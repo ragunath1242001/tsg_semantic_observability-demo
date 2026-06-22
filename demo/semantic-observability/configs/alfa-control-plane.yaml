@@ -1,0 +1,35 @@
+db:
+  type: sqlite
+  database: "/app/data/alfa-control-plane.db"
+
+server:
+  port: 3000
+  listen: "0.0.0.0"
+  publicDomain: localhost:3501
+  publicAddress: http://localhost:3501
+
+auth:
+  enabled: false
+
+runtime:
+  controlPlaneInteractions: automatic
+  color: "#3B8BF6"
+
+registry:
+  useRegistry: false
+  registryIntervalInMilliseconds: 30000
+
+iam:
+  type: dev
+  didId: did:web:localhost%3A3501
+
+initCatalog:
+  participantId: did:web:localhost%3A3501
+  creator: did:web:localhost%3A3501
+  publisher: did:web:localhost%3A3501
+  title: Alfa
+  description: Alfa semantic observability demo connector
+
+semanticObservability:
+  enabled: true
+  refreshIntervalInMilliseconds: 3600000
