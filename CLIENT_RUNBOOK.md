@@ -188,6 +188,62 @@ This can be acceptable in this demo. The script uses synthetic policy data and m
 
 Continue checking the later output. The important validation is that combined events and metric counts are printed.
 
+## Test With Your Own Dataset
+
+Clients can test semantic observability with their own dataset metadata and backend API.
+
+Start from the example config:
+
+```text
+demo/semantic-observability/client-data/dataset-config.example.json
+```
+
+Create a copy and update:
+
+- `title`
+- `description`
+- `landingPage`
+- `baseSemanticModelRef`
+- `semanticModelRef`
+- `backendUrl`
+- `mediaType`
+- `schemaRef`
+- `openApiSpecRef`
+- `extraProps`
+
+Important Docker networking rule:
+
+- If the backend API is on the public internet, use its normal `https://...` URL.
+- If the backend API runs on the client's same laptop, do not use `localhost` in `backendUrl`.
+- For a backend running on the client's laptop, use:
+
+```text
+http://host.docker.internal:<port>
+```
+
+Example:
+
+```json
+"backendUrl": "http://host.docker.internal:8080/api/data"
+```
+
+Load the client dataset config:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability\scripts\load-client-dataset.ps1 `
+  -DatasetConfig .\demo\semantic-observability\client-data\dataset-config.example.json `
+  -RefreshSnapshots
+```
+
+Then open:
+
+```text
+Control Plane observability UI: http://localhost:3501/semantic-observability
+HTTP Data Plane observability:  http://localhost:3502/semantic-observability
+```
+
+This flow updates the HTTP Data Plane dataset configuration, refreshes Data Plane registration/catalog synchronization, refreshes observability snapshots when `-RefreshSnapshots` is provided, and prints recent combined observability events.
+
 ## Expected Successful Output
 
 At the end of a successful smoke run, the script prints URLs like:
@@ -204,4 +260,3 @@ It should also print non-error sections for:
 - Recent combined observability events
 - Recent HTTP Data Plane listener events
 - Current combined report
-

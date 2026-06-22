@@ -263,6 +263,67 @@ The script:
 
 The synthetic policy evaluation may be skipped or return a controlled error because it does not create a real stored agreement from a full two-party transfer flow. That is acceptable for this demo.
 
+## Client Dataset Testing Flow
+
+Clients can replace the default demo dataset metadata with their own dataset metadata and backend API.
+
+The example client dataset config is:
+
+```text
+demo/semantic-observability/client-data/dataset-config.example.json
+```
+
+The loader script is:
+
+```text
+demo/semantic-observability/scripts/load-client-dataset.ps1
+```
+
+The client updates the JSON config with their own:
+
+- dataset title and description
+- landing page
+- semantic model references
+- backend API URL
+- media type
+- schema reference
+- OpenAPI spec reference
+- optional extra DCAT properties
+
+Then they run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability\scripts\load-client-dataset.ps1 `
+  -DatasetConfig .\demo\semantic-observability\client-data\dataset-config.example.json `
+  -RefreshSnapshots
+```
+
+The loader script:
+
+1. Validates that the dataset config is valid JSON.
+2. Checks Control Plane and Data Plane health.
+3. Sends the dataset config to the HTTP Data Plane management API.
+4. Refreshes Data Plane registration and catalog synchronization.
+5. Optionally refreshes combined hourly snapshots.
+6. Prints recent combined observability events.
+7. Prints current combined report metric counts.
+
+For public client APIs, `backendUrl` can be a normal public `https://...` URL.
+
+For a backend API running on the client's same laptop, `backendUrl` must use Docker's host gateway name:
+
+```text
+http://host.docker.internal:<port>
+```
+
+For example:
+
+```json
+"backendUrl": "http://host.docker.internal:8080/api/data"
+```
+
+Using `http://localhost:<port>` inside the dataset config would point to the Data Plane container itself, not to the client's host machine.
+
 ## Why Distributed Storage Is Acceptable
 
 The distributed model is acceptable for the current demo and MVP because:
@@ -290,4 +351,3 @@ Recommended production topics:
 - define whether Data Plane observability data can leave the Data Plane boundary
 
 The current Docker demo is intentionally optimized for client validation, resetability, and low setup friction.
-

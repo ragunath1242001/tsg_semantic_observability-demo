@@ -57,6 +57,28 @@ The script:
 
 Policy evaluation may be skipped in this smoke demo because a synthetic agreement is not a real stored agreement from a full two-party flow.
 
+## Test With Client Data
+
+Copy and edit the example dataset config:
+
+```text
+demo/semantic-observability/client-data/dataset-config.example.json
+```
+
+Load it into the running HTTP Data Plane:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability\scripts\load-client-dataset.ps1 `
+  -DatasetConfig .\demo\semantic-observability\client-data\dataset-config.example.json `
+  -RefreshSnapshots
+```
+
+If the backend API runs on the same machine as Docker Desktop, use `host.docker.internal` in `backendUrl`, for example:
+
+```json
+"backendUrl": "http://host.docker.internal:8080/api/data"
+```
+
 ## Reset
 
 ```powershell

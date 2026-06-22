@@ -1,0 +1,32 @@
+{
+  "type": "versioned",
+  "title": "Client Example Dataset",
+  "description": [
+    "Replace this example with the client's dataset metadata.",
+    "The backendUrl must be reachable from inside the Docker container."
+  ],
+  "landingPage": "https://client.example/datasets/example",
+  "baseSemanticModelRef": "https://client.example/semantic/base",
+  "currentVersion": "1.0.0",
+  "versions": [
+    {
+      "version": "1.0.0",
+      "semanticModelRef": "https://client.example/semantic/example/1.0.0",
+      "distributions": [
+        {
+          "backendUrl": "https://mockhttp.org/anything",
+          "mediaType": "application/json",
+          "schemaRef": "https://client.example/schemas/example-dataset.schema.json",
+          "openApiSpecRef": "https://client.example/openapi/example-dataset.json"
+        }
+      ]
+    }
+  ],
+  "policy": {
+    "type": "default"
+  },
+  "extraProps": {
+    "dcat:keyword": ["client-test", "semantic-observability"],
+    "dct:publisher": "Client Organization"
+  }
+}
