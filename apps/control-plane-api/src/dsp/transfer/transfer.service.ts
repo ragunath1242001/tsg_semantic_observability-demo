@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   ClientInfo,
@@ -44,6 +44,7 @@ import {
 } from "../../model/transfer.dao.js";
 import { EvaluationTrigger } from "../../policy/constraint.dto.js";
 import { PolicyEvaluationService } from "../../policy/policy.evaluation.service.js";
+import { TransferObserverService } from "../../semantic-observability/transfer-observer.service.js";
 import { normalizeAddress } from "../../utils/address.js";
 import { DSPError } from "../../utils/errors/error.js";
 import { DspClientService } from "../client/client.service.js";
@@ -61,7 +62,8 @@ export class TransferService {
     @InjectRepository(TransferEventDao)
     private readonly transferEventRepository: Repository<TransferEventDao>,
     private readonly dataPlaneService: DataPlaneService,
-    private readonly policyEvaluationService: PolicyEvaluationService
+    private readonly policyEvaluationService: PolicyEvaluationService,
+    @Optional() private readonly transferObserver?: TransferObserverService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -334,6 +336,7 @@ export class TransferService {
         ...getOwnershipFieldsFromClient(client)
       })
     );
+    await this.transferObserver?.recordTransferStateChanged(transfer, "local");
     this.dspGateway.sendUpdateToClients("transfer:create", transfer.id);
     return {
       id,
@@ -400,6 +403,7 @@ export class TransferService {
       );
     }
     await this.transferDetailRepository.save(transfer);
+    await this.transferObserver?.recordTransferStateChanged(transfer, "remote");
     if (dataPlaneTransfer.dataAddress) {
       this.start(
         transferProcess.providerPid,
@@ -462,6 +466,7 @@ export class TransferService {
     );
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
+    await this.transferObserver?.recordTransferStateChanged(transfer, "local");
     if (this.runtime.controlPlaneInteractions === "manual") {
       this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
@@ -498,6 +503,7 @@ export class TransferService {
     }
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
+    await this.transferObserver?.recordTransferStateChanged(transfer, "remote");
     if (this.runtime.controlPlaneInteractions === "manual") {
       this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
@@ -536,6 +542,7 @@ export class TransferService {
     );
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
+    await this.transferObserver?.recordTransferStateChanged(transfer, "local");
     this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     return {
       status: "OK"
@@ -568,6 +575,7 @@ export class TransferService {
 
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
+    await this.transferObserver?.recordTransferStateChanged(transfer, "remote");
     this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     return {
       status: "OK"
@@ -610,6 +618,7 @@ export class TransferService {
     );
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
+    await this.transferObserver?.recordTransferStateChanged(transfer, "local");
     this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     return {
       status: "OK"
@@ -644,6 +653,7 @@ export class TransferService {
 
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
+    await this.transferObserver?.recordTransferStateChanged(transfer, "remote");
     this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     return {
       status: "OK"
@@ -692,6 +702,7 @@ export class TransferService {
     );
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
+    await this.transferObserver?.recordTransferStateChanged(transfer, "local");
     if (this.runtime.controlPlaneInteractions === "manual") {
       this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }
@@ -726,6 +737,7 @@ export class TransferService {
     );
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
+    await this.transferObserver?.recordTransferStateChanged(transfer, "remote");
     if (this.runtime.controlPlaneInteractions === "manual") {
       this.dspGateway.sendUpdateToClients("transfer:update", transfer.id);
     }

@@ -49,6 +49,22 @@ export class RegistryConfig {
   public readonly registryIntervalInMilliseconds: number = 30000;
 }
 
+export class SemanticObservabilityConfig {
+  @Description("Enable automatic semantic observability snapshot refresh")
+  @IsBoolean()
+  @Transform(valueToBoolean)
+  @IsOptional()
+  public readonly enabled: boolean = true;
+
+  @Description(
+    "Interval in milliseconds to refresh semantic observability snapshots"
+  )
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  public readonly refreshIntervalInMilliseconds: number = 3600000;
+}
+
 export abstract class IamConfig {
   @Description("Type of IAM service")
   @IsString()
@@ -273,4 +289,11 @@ export class RootConfig {
   @Type(() => AuditModuleConfig)
   @IsOptional()
   public readonly audit: AuditModuleConfig = new AuditModuleConfig();
+
+  @Description("Semantic observability configuration")
+  @ValidateNested()
+  @Type(() => SemanticObservabilityConfig)
+  @IsOptional()
+  public readonly semanticObservability: SemanticObservabilityConfig =
+    new SemanticObservabilityConfig();
 }

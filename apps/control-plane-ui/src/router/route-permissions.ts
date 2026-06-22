@@ -14,6 +14,7 @@ import DataplaneVue from "../views/Dataplane.vue";
 import NegotiationsVue from "../views/Negotiations.vue";
 import OwnCatalog from "../views/OwnCatalog.vue";
 import Registry from "../views/Registry.vue";
+import SemanticObservabilityView from "../views/SemanticObservability.vue";
 import TransfersVue from "../views/Transfers.vue";
 
 export const routeConfigs: RouteConfig[] = [
@@ -111,6 +112,21 @@ export const routeConfigs: RouteConfig[] = [
       icon: "pi pi-fw pi-shield",
       group: "audit",
       menuLabel: "Audit Logs"
+    }
+  },
+  {
+    path: "semantic-observability",
+    name: "semantic-observability",
+    component: SemanticObservabilityView,
+    requires: {
+      action: Action.READ,
+      resource: Resource.CP_SEMANTIC_OBSERVABILITY
+    },
+    meta: {
+      title: "Semantic Observability",
+      icon: "pi pi-fw pi-chart-line",
+      group: "audit",
+      menuLabel: "Semantic Observability"
     }
   }
 ];

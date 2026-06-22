@@ -1,10 +1,11 @@
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CredentialContainer } from "@tsg-dsp/common-dsp";
 import { Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
 import { TransferMonitorDao } from "../model/agreement.dao.js";
+import { PolicyObserverService } from "../semantic-observability/policy-observer.service.js";
 import { DSPError } from "../utils/errors/error.js";
 import { AgreementService } from "./agreement.service.js";
 import { EvaluationTrigger } from "./constraint.dto.js";
@@ -19,7 +20,8 @@ export class PolicyEvaluationService {
     private readonly ruleRepositoryService: RuleRepositoryService,
     @InjectRepository(TransferMonitorDao)
     private readonly transferMonitorRepository: Repository<TransferMonitorDao>,
-    private readonly agreementService: AgreementService
+    private readonly agreementService: AgreementService,
+    @Optional() private readonly policyObserver?: PolicyObserverService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -76,6 +78,7 @@ export class PolicyEvaluationService {
         })
       );
     }
+    await this.policyObserver?.recordPolicyEvaluationResult(context, decision);
     return decision;
   }
 

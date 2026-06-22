@@ -35,6 +35,7 @@ export enum Resource {
   CP_REGISTRY = "cp.registry",
   CP_POLICY = "cp.policy",
   CP_CONFIG = "cp.config",
+  CP_SEMANTIC_OBSERVABILITY = "cp.semantic_observability",
   CP_AUDIT_LOG = "cp.audit_log",
 
   // ===========================================
@@ -59,6 +60,7 @@ export enum Resource {
   HDP_DATAPLANE = "hdp.dataplane",
   HDP_CONFIG = "hdp.config",
   HDP_LOGS = "hdp.logs",
+  HDP_SEMANTIC_OBSERVABILITY = "hdp.semantic_observability",
   HDP_AUDIT_LOG = "hdp.audit_log",
 
   // ===========================================
@@ -230,6 +232,15 @@ export const Permissions = {
   CP_AUDIT_LOG_READ: permission(Action.READ, Resource.CP_AUDIT_LOG),
   CP_AUDIT_LOG_MANAGE: permission(Action.MANAGE, Resource.CP_AUDIT_LOG),
 
+  CP_SEMANTIC_OBSERVABILITY_READ: permission(
+    Action.READ,
+    Resource.CP_SEMANTIC_OBSERVABILITY
+  ),
+  CP_SEMANTIC_OBSERVABILITY_MANAGE: permission(
+    Action.MANAGE,
+    Resource.CP_SEMANTIC_OBSERVABILITY
+  ),
+
   // ===========================================
   // Common Data Plane Permissions (dp.*)
   // ===========================================
@@ -323,6 +334,15 @@ export const Permissions = {
 
   HDP_LOGS_READ: permission(Action.READ, Resource.HDP_LOGS),
   HDP_LOGS_MANAGE: permission(Action.MANAGE, Resource.HDP_LOGS),
+
+  HDP_SEMANTIC_OBSERVABILITY_READ: permission(
+    Action.READ,
+    Resource.HDP_SEMANTIC_OBSERVABILITY
+  ),
+  HDP_SEMANTIC_OBSERVABILITY_MANAGE: permission(
+    Action.MANAGE,
+    Resource.HDP_SEMANTIC_OBSERVABILITY
+  ),
 
   HDP_AUDIT_LOG_READ: permission(Action.READ, Resource.HDP_AUDIT_LOG),
   HDP_AUDIT_LOG_MANAGE: permission(Action.MANAGE, Resource.HDP_AUDIT_LOG),

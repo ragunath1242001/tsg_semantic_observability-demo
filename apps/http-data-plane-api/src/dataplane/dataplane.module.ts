@@ -12,6 +12,7 @@ import {
 } from "./dataplane.dao.js";
 import { DataPlaneManagementController } from "./dataplane.management.controller.js";
 import { DataPlaneService } from "./dataplane.service.js";
+import { SemanticObservabilityModule } from "../semantic-observability/semantic-observability.module.js";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { DataPlaneService } from "./dataplane.service.js";
     ]),
     AuthModule,
     LoggingModule,
+    SemanticObservabilityModule,
     CommonDataPlaneModule
   ],
   controllers: [DataPlaneController, DataPlaneManagementController],

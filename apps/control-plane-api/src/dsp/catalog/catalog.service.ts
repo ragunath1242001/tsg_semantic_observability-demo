@@ -42,6 +42,7 @@ import {
   ResourceDao
 } from "../../model/catalog.dao.js";
 import { DataPlaneDao } from "../../model/dataPlanes.dao.js";
+import { CatalogObserverService } from "../../semantic-observability/catalog-observer.service.js";
 import { DSPError } from "../../utils/errors/error.js";
 
 @Injectable()
@@ -57,6 +58,7 @@ export class CatalogService {
     private readonly distributionRepository: Repository<DistributionDao>,
     @InjectRepository(ResourceDao)
     private readonly resourceRepository: Repository<ResourceDao>,
+    @Optional() private readonly catalogObserver?: CatalogObserverService,
     @Optional() private readonly initCatalog?: InitCatalog,
     @Optional() private readonly server?: ServerConfig,
     @Optional() private readonly defaultPolicy?: PolicyConfig
@@ -313,6 +315,7 @@ export class CatalogService {
     newDataset._catalog = catalog.data;
     newDataset._dataPlane = dataPlaneDao;
     await this.datasetRepository.save(newDataset);
+    await this.catalogObserver?.recordDatasetObserved(dataset, "created");
     this.logger.debug(`Added dataset ${dataset.id}`);
     return newDataset;
   }
@@ -351,7 +354,7 @@ export class CatalogService {
     const newResource = this.resourceRepository.create(dataset);
     const catalog = await this.getCatalogDao();
     this.logger.debug(`Updated dataset ${datasetId}`);
-    return await this.datasetRepository.save(
+    const updatedDataset = await this.datasetRepository.save(
       this.datasetRepository.create({
         ...dataset,
         _resource: newResource,
@@ -388,6 +391,8 @@ export class CatalogService {
         })
       })
     );
+    await this.catalogObserver?.recordDatasetObserved(dataset, "updated");
+    return updatedDataset;
   }
 
   async removeDataset(datasetId: string): Promise<void> {
@@ -399,6 +404,10 @@ export class CatalogService {
       ).andLog(this.logger, "warn");
     }
     await this.datasetRepository.remove(dataset);
+    await this.catalogObserver?.recordDatasetObserved(
+      new Dataset(dataset),
+      "deleted"
+    );
   }
 
   async request(

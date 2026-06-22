@@ -16,10 +16,12 @@ import { createDataPlaneHttpMocks } from "@tsg-dsp/common-data-plane-api/testing
 import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
 import { plainToClass } from "class-transformer";
 import { SetupServer, setupServer } from "msw/node";
+import { vi } from "vitest";
 
 import { LoggingConfig, RootConfig } from "../config.js";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
+import { DatasetConfigObserverService } from "../semantic-observability/dataset-config-observer.service.js";
 import { TransferDao } from "../transfer/transfer.dao.js";
 import { DataPlaneController } from "./dataplane.controller.js";
 import {
@@ -84,6 +86,14 @@ describe("Starting without initial dataset configuration", () => {
         AuthClientService,
         DataPlaneRegistrationService,
         CatalogClientService,
+        {
+          provide: DatasetConfigObserverService,
+          useValue: {
+            recordDatasetConfigObserved: vi.fn(),
+            recordDatasetItemObserved: vi.fn(),
+            recordMetadataValidationResult: vi.fn()
+          }
+        },
         {
           provide: AuthConfig,
           useValue: { enabled: false }

@@ -49,10 +49,10 @@ export const useUserStore = defineStore("user", {
         if (response.data.state === "authenticated") {
           this.user = response.data.user;
         }
-        loadedResolver();
       } catch (e) {
         console.log(e);
-        throw new Error("Login failed", { cause: e });
+      } finally {
+        loadedResolver();
       }
     },
     async login() {

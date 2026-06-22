@@ -5,7 +5,8 @@ import {
   Description,
   PostgresConfig,
   ServerConfig,
-  SQLiteConfig
+  SQLiteConfig,
+  valueToBoolean
 } from "@tsg-dsp/common-api";
 import { ControlPlaneConfig } from "@tsg-dsp/common-data-plane-api";
 import {
@@ -14,11 +15,12 @@ import {
   DatasetItem,
   VersionedDatasetConfig
 } from "@tsg-dsp/http-data-plane-dtos";
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
   IsIn,
+  IsNumber,
   IsOptional,
   IsString,
   ValidateNested
@@ -63,6 +65,27 @@ export class RuntimeConfig {
   @IsOptional()
   @IsString()
   darkThemeUrl?: string;
+}
+
+export class SemanticObservabilityConfig {
+  @Description("Local participant identifier used for semantic observability")
+  @IsString()
+  @IsOptional()
+  public readonly participantId?: string;
+
+  @Description("Enable automatic semantic observability snapshot refresh")
+  @IsBoolean()
+  @Transform(valueToBoolean)
+  @IsOptional()
+  public readonly enabled: boolean = true;
+
+  @Description(
+    "Interval in milliseconds to refresh semantic observability snapshots"
+  )
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  public readonly refreshIntervalInMilliseconds: number = 3600000;
 }
 
 export class RootConfig {
@@ -144,4 +167,11 @@ export class RootConfig {
   @Type(() => AuditModuleConfig)
   @IsOptional()
   public readonly audit: AuditModuleConfig = new AuditModuleConfig();
+
+  @Description("Semantic observability configuration")
+  @ValidateNested()
+  @Type(() => SemanticObservabilityConfig)
+  @IsOptional()
+  public readonly semanticObservability: SemanticObservabilityConfig =
+    new SemanticObservabilityConfig();
 }

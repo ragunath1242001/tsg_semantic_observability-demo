@@ -6,6 +6,7 @@ import { CatalogModule } from "../dsp/catalog/catalog.module.js";
 import { TransferModule } from "../dsp/transfer/transfer.module.js";
 import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
+import { SemanticObservabilityModule } from "../semantic-observability/semantic-observability.module.js";
 import { AgreementManagementController } from "./agreement.management.controller.js";
 import { AgreementMonitorService } from "./agreement.monitor.service.js";
 import { AgreementService } from "./agreement.service.js";
@@ -24,6 +25,7 @@ import { RuleRepositoryService } from "./rule.repository.service.js";
       TransferMonitorDao
     ]),
     AuthModule,
+    SemanticObservabilityModule,
     TransferModule
   ],
   controllers: [

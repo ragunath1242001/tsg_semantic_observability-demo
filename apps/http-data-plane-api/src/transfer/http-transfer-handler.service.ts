@@ -40,6 +40,7 @@ import { RootConfig } from "../config.js";
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { LogEntry } from "../logging/logging.dto.js";
 import { LoggingService } from "../logging/logging.service.js";
+import { TransferExecutionObserverService } from "../semantic-observability/transfer-execution-observer.service.js";
 import { TransferDao } from "./transfer.dao.js";
 
 @Injectable()
@@ -52,6 +53,7 @@ export class HTTPTransferHandler implements ITransferHandler {
     private readonly negotiation: NegotiationClientService,
     private readonly transfer: TransferClientService,
     private readonly dataPlaneService: DataPlaneService,
+    private readonly transferExecutionObserver: TransferExecutionObserverService,
     @InjectRepository(TransferDao)
     readonly transferRepository: Repository<TransferDao>
   ) {}
@@ -127,6 +129,13 @@ export class HTTPTransferHandler implements ITransferHandler {
         }
       })
     );
+    await this.transferExecutionObserver.recordTransferStateChanged({
+      transferId: transfer.id,
+      datasetId: transfer.datasetId,
+      remoteParty: transfer.remoteParty,
+      state: transfer.state,
+      role: transfer.role
+    });
 
     return transfer.response;
   }
@@ -146,6 +155,13 @@ export class HTTPTransferHandler implements ITransferHandler {
       transfer.dataAddress = transferStartMessage.dataAddress;
     }
     await this.transferRepository.save(transfer);
+    await this.transferExecutionObserver.recordTransferStateChanged({
+      transferId: transfer.id,
+      datasetId: transfer.datasetId,
+      remoteParty: transfer.remoteParty,
+      state: transfer.state,
+      role: transfer.role
+    });
   }
   async handleTransferComplete(
     _transferCompletionMessage: TransferCompletionMessageDto,
@@ -154,6 +170,13 @@ export class HTTPTransferHandler implements ITransferHandler {
     const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.COMPLETED;
     await this.transferRepository.save(transfer);
+    await this.transferExecutionObserver.recordTransferStateChanged({
+      transferId: transfer.id,
+      datasetId: transfer.datasetId,
+      remoteParty: transfer.remoteParty,
+      state: transfer.state,
+      role: transfer.role
+    });
   }
   async handleTransferTerminate(
     _transferTerminationMessage: TransferTerminationMessageDto,
@@ -162,6 +185,13 @@ export class HTTPTransferHandler implements ITransferHandler {
     const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.TERMINATED;
     await this.transferRepository.save(transfer);
+    await this.transferExecutionObserver.recordTransferStateChanged({
+      transferId: transfer.id,
+      datasetId: transfer.datasetId,
+      remoteParty: transfer.remoteParty,
+      state: transfer.state,
+      role: transfer.role
+    });
   }
   async handleTransferSuspend(
     _transferSuspensionMessage: TransferSuspensionMessageDto,
@@ -170,6 +200,13 @@ export class HTTPTransferHandler implements ITransferHandler {
     const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.SUSPENDED;
     await this.transferRepository.save(transfer);
+    await this.transferExecutionObserver.recordTransferStateChanged({
+      transferId: transfer.id,
+      datasetId: transfer.datasetId,
+      remoteParty: transfer.remoteParty,
+      state: transfer.state,
+      role: transfer.role
+    });
   }
 
   async getStartedTransferWithBackoff(
@@ -298,7 +335,23 @@ export class HTTPTransferHandler implements ITransferHandler {
         };
       }
       await this.loggingService.insertEgressLog(logEntry);
+      await this.transferExecutionObserver.recordDataPlaneAccess({
+        transferId: transfer.id,
+        datasetId: transfer.datasetId,
+        remoteParty: transfer.remoteParty,
+        direction: "egress",
+        method: request.method,
+        status: response.statusCode
+      });
     } catch (e) {
+      await this.transferExecutionObserver.recordDataPlaneAccessFailure({
+        transferId: transfer.id,
+        datasetId: transfer.datasetId,
+        remoteParty: transfer.remoteParty,
+        direction: "egress",
+        method: request.method,
+        error: e
+      });
       this.logger.log(`Error in executing transfer: ${e}`);
       throw new HttpException(
         `Error in executing transfer: ${e}`,
@@ -393,7 +446,23 @@ export class HTTPTransferHandler implements ITransferHandler {
         };
       }
       await this.loggingService.insertIngressLog(logEntry);
+      await this.transferExecutionObserver.recordDataPlaneAccess({
+        transferId: transfer.id,
+        datasetId: transfer.datasetId,
+        remoteParty: transfer.remoteParty,
+        direction: "ingress",
+        method: request.method,
+        status: response.statusCode
+      });
     } catch (e) {
+      await this.transferExecutionObserver.recordDataPlaneAccessFailure({
+        transferId: transfer.id,
+        datasetId: transfer.datasetId,
+        remoteParty: transfer.remoteParty,
+        direction: "ingress",
+        method: request.method,
+        error: e
+      });
       this.logger.log(`Error in executing transfer: ${e}`);
       throw new HttpException(
         `Error in executing transfer: ${e}`,

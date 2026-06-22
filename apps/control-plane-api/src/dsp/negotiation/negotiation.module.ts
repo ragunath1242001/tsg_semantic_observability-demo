@@ -7,6 +7,7 @@ import {
   NegotiationProcessEventDao
 } from "../../model/negotiation.dao.js";
 import { PolicyModule } from "../../policy/policy.module.js";
+import { SemanticObservabilityModule } from "../../semantic-observability/semantic-observability.module.js";
 import { VCAuthModule } from "../../vc-auth/vc.auth.module.js";
 import { CatalogModule } from "../catalog/catalog.module.js";
 import { DspClientModule } from "../client/client.module.js";
@@ -23,6 +24,7 @@ import { NegotiationManagementController } from "./negotiationManagement.control
     DspClientModule,
     CatalogModule,
     TransferModule,
+    SemanticObservabilityModule,
     TypeOrmModule.forFeature([
       NegotiationDetailDao,
       NegotiationProcessEventDao

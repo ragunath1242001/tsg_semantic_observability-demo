@@ -7,9 +7,13 @@ import { onBeforeMount } from "vue";
 const userStore = useUserStore();
 
 const initialPreset = async () => {
-  const settings = await http.get("/settings");
-  const colorSetting = settings.data.color;
-  updateColorPalette(colorSetting);
+  try {
+    const settings = await http.get("/settings");
+    const colorSetting = settings.data.color;
+    updateColorPalette(colorSetting);
+  } catch (error) {
+    console.debug("Could not load runtime settings", error);
+  }
 };
 
 onBeforeMount(async () => {

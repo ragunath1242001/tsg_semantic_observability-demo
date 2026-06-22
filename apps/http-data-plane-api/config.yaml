@@ -10,12 +10,15 @@ server:
   publicAddress: http://localhost:3001
 
 controlPlane:
-  dataPlaneEndpoint: http://localhost:3000/api/data-plane
-  managementEndpoint: http://localhost:3000/api/management
+  dataPlaneEndpoint: http://localhost:3000/data-plane
+  managementEndpoint: http://localhost:3000/management
   controlEndpoint: http://localhost:3000
 
 runtime:
   color: "#3B8BF6"
+
+semanticObservability:
+  participantId: did:web:localhost%3A3001
 
 # dataset:
 #   type: collection

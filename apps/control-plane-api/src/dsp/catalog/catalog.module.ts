@@ -10,6 +10,7 @@ import {
   DistributionDao,
   ResourceDao
 } from "../../model/catalog.dao.js";
+import { SemanticObservabilityModule } from "../../semantic-observability/semantic-observability.module.js";
 import { VCAuthModule } from "../../vc-auth/vc.auth.module.js";
 import { DspClientModule } from "../client/client.module.js";
 import { CatalogController } from "./catalog.controller.js";
@@ -21,6 +22,7 @@ import { CatalogManagementController } from "./catalogManagement.controller.js";
     AuthModule,
     VCAuthModule,
     DspClientModule,
+    SemanticObservabilityModule,
     TypeOrmModule.forFeature([
       CatalogDao,
       DatasetDao,

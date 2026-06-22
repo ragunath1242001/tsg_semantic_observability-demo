@@ -70,6 +70,18 @@ function actionMatches(userAction: Action, requiredAction: Action): boolean {
   return false;
 }
 
+function resourceMatches(
+  userResource: string,
+  requiredResource: Resource
+): boolean {
+  if (userResource === requiredResource) return true;
+  if (!userResource.includes("*")) return false;
+
+  const escaped = userResource.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(`^${escaped.replace(/\*/g, ".*")}$`);
+  return pattern.test(requiredResource);
+}
+
 /**
  * Check whether the provided permission strings satisfy a route requirement.
  * Accounts for MANAGE subsumption just as the backend AbacPolicyService does.
@@ -81,7 +93,7 @@ export function canAccessRoute(
   for (const perm of userPermissions) {
     try {
       const parsed = parsePermission(perm as PermissionString);
-      if (parsed.resource !== requirement.resource) continue;
+      if (!resourceMatches(parsed.resource, requirement.resource)) continue;
       if (actionMatches(parsed.action, requirement.action)) return true;
     } catch {
       // skip malformed permission strings

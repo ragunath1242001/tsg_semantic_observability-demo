@@ -44,6 +44,8 @@ import {
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
+import { DatasetConfigObserverService } from "../semantic-observability/dataset-config-observer.service.js";
+import { TransferExecutionObserverService } from "../semantic-observability/transfer-execution-observer.service.js";
 import { HTTPTransferHandler } from "./http-transfer-handler.service.js";
 import { TransferDao } from "./transfer.dao.js";
 
@@ -210,6 +212,22 @@ describe.each(["Authorization"])(
           CatalogClientService,
           NegotiationClientService,
           TransferClientService,
+          {
+            provide: DatasetConfigObserverService,
+            useValue: {
+              recordDatasetConfigObserved: vi.fn(),
+              recordDatasetItemObserved: vi.fn(),
+              recordMetadataValidationResult: vi.fn()
+            }
+          },
+          {
+            provide: TransferExecutionObserverService,
+            useValue: {
+              recordDataPlaneAccess: vi.fn(),
+              recordDataPlaneAccessFailure: vi.fn(),
+              recordTransferStateChanged: vi.fn()
+            }
+          },
           {
             provide: AuthConfig,
             useValue: { enabled: false }

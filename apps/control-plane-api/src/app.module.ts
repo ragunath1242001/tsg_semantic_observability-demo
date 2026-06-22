@@ -27,6 +27,7 @@ import { TransferModule } from "./dsp/transfer/transfer.module.js";
 import { NegotiationDetailDao } from "./model/negotiation.dao.js";
 import { TransferDetailDao } from "./model/transfer.dao.js";
 import { RegistryModule } from "./registry/registry.module.js";
+import { SemanticObservabilityModule } from "./semantic-observability/semantic-observability.module.js";
 import { SessionModule } from "./session.module.js";
 import { StatusController } from "./status.controller.js";
 import { VCAuthModule } from "./vc-auth/vc.auth.module.js";
@@ -67,6 +68,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     CatalogModule,
     NegotiationModule,
     TransferModule,
+    SemanticObservabilityModule,
     ...embeddedFrontend,
     RegistryModule.register(),
     TerminusModule

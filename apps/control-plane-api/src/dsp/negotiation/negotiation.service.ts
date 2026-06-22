@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
@@ -41,6 +41,7 @@ import {
   NegotiationProcessEventDao
 } from "../../model/negotiation.dao.js";
 import { AgreementService } from "../../policy/agreement.service.js";
+import { NegotiationObserverService } from "../../semantic-observability/negotiation-observer.service.js";
 import { DSPError } from "../../utils/errors/error.js";
 import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
 import { DspClientService } from "../client/client.service.js";
@@ -63,7 +64,9 @@ export class NegotiationService {
     @InjectRepository(NegotiationDetailDao)
     private readonly negotiationDetailRepository: Repository<NegotiationDetailDao>,
     @InjectRepository(NegotiationProcessEventDao)
-    private readonly negotiationProcessEventRepository: Repository<NegotiationProcessEventDao>
+    private readonly negotiationProcessEventRepository: Repository<NegotiationProcessEventDao>,
+    @Optional()
+    private readonly negotiationObserver?: NegotiationObserverService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -327,6 +330,10 @@ export class NegotiationService {
       ...getOwnershipFieldsFromClient(client)
     };
     await this.negotiationDetailRepository.save(negotiationWithOwnership);
+    await this.negotiationObserver?.recordNegotiationStateChanged(
+      negotiation,
+      type
+    );
     this.dspGateway.sendUpdateToClients("negotiation:create", negotiation.id);
     return negotiation;
   }
@@ -619,6 +626,10 @@ export class NegotiationService {
     negotiation.events.push(event);
     negotiation.state = newState;
     await this.negotiationDetailRepository.save(negotiation);
+    await this.negotiationObserver?.recordNegotiationStateChanged(
+      negotiation,
+      "remote"
+    );
 
     if (
       this.config.runtime?.controlPlaneInteractions === "manual" ||
@@ -919,6 +930,10 @@ export class NegotiationService {
       ...negotiation,
       agreementDao: agreementDao
     });
+    await this.negotiationObserver?.recordNegotiationStateChanged(
+      negotiation,
+      "local"
+    );
     this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     return {
       status: "OK"
@@ -959,6 +974,10 @@ export class NegotiationService {
     );
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
+    await this.negotiationObserver?.recordNegotiationStateChanged(
+      negotiation,
+      "local"
+    );
     this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     return {
       status: "OK"
@@ -986,6 +1005,10 @@ export class NegotiationService {
     negotiation.events.push(event);
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
+    await this.negotiationObserver?.recordNegotiationStateChanged(
+      negotiation,
+      "remote"
+    );
     this.dspGateway.sendUpdateToClients("negotiation:update", negotiation.id);
     return {
       status: "OK"

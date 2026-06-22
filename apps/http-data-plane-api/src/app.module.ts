@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { ScheduleModule } from "@nestjs/schedule";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -17,6 +18,7 @@ import { ConfigController } from "./config.controller.js";
 import { RootConfig } from "./config.js";
 import { DataPlaneModule } from "./dataplane/dataplane.module.js";
 import { LoggingModule } from "./logging/logging.module.js";
+import { SemanticObservabilityModule } from "./semantic-observability/semantic-observability.module.js";
 import { TransferModule } from "./transfer/transfer.module.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
@@ -32,10 +34,12 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 @Module({
   imports: [
     AbacModule.forRoot(),
+    ScheduleModule.forRoot(),
     AuditLogModule,
     DataPlaneModule,
     TransferModule,
     LoggingModule,
+    SemanticObservabilityModule,
     AuthModule,
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({

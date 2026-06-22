@@ -49,6 +49,7 @@ import { Response } from "express";
 import { IsNull, Not, Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
+import { DatasetConfigObserverService } from "../semantic-observability/dataset-config-observer.service.js";
 import { defArray } from "../utils/arrays.js";
 import {
   DatasetItemDao,
@@ -62,6 +63,7 @@ export class DataPlaneService implements OnModuleInit {
     private readonly config: RootConfig,
     private readonly registration: DataPlaneRegistrationService,
     private readonly catalog: CatalogClientService,
+    private readonly datasetConfigObserver: DatasetConfigObserverService,
     @InjectRepository(HttpDatasetConfigDao)
     private readonly configRepository: Repository<HttpDatasetConfigDao>,
     @InjectRepository(DatasetItemDao)
@@ -142,6 +144,11 @@ export class DataPlaneService implements OnModuleInit {
         datasetConfig: this.activeConfig?.datasetConfig || this.config.dataset
       })
     );
+    if (this.activeConfig.datasetConfig) {
+      await this.datasetConfigObserver.recordDatasetConfigObserved(
+        this.activeConfig.datasetConfig
+      );
+    }
   }
 
   async fetchOpenApiDocument(url: string, response: Response): Promise<void> {
@@ -314,6 +321,7 @@ export class DataPlaneService implements OnModuleInit {
         datasetConfig: datasetConfig
       })
     );
+    await this.datasetConfigObserver.recordDatasetConfigObserved(datasetConfig);
   }
 
   async getBackendConfig(dataset: DatasetDto) {
@@ -489,6 +497,10 @@ export class DataPlaneService implements OnModuleInit {
     });
     item.dataset = dataset.serialize();
     await this.itemRepository.save(item);
+    await this.datasetConfigObserver.recordDatasetItemObserved(
+      item,
+      datasetConfig
+    );
     return item.dataset;
   }
 
@@ -501,7 +513,14 @@ export class DataPlaneService implements OnModuleInit {
       await validateExtraProps(extraProps, {
         compaction: true
       });
+      await this.datasetConfigObserver.recordMetadataValidationResult(
+        validationLevel
+      );
     } catch (error) {
+      await this.datasetConfigObserver.recordMetadataValidationResult(
+        validationLevel,
+        error as Error
+      );
       if (validationLevel === "error") {
         throw new DataPlaneError(
           `Dataset has extraProps with unknown prefixes: ${

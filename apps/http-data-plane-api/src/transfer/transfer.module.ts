@@ -9,6 +9,7 @@ import {
 
 import { DataPlaneModule } from "../dataplane/dataplane.module.js";
 import { LoggingModule } from "../logging/logging.module.js";
+import { SemanticObservabilityModule } from "../semantic-observability/semantic-observability.module.js";
 import { HTTPTransferHandler } from "./http-transfer-handler.service.js";
 import { ProxyController } from "./proxy.controller.js";
 import { TransferDao } from "./transfer.dao.js";
@@ -19,6 +20,7 @@ import { TransferManagementController } from "./transfer.management.controller.j
     TypeOrmModule.forFeature([TransferDao]),
     AuthModule,
     LoggingModule,
+    SemanticObservabilityModule,
     DataPlaneModule,
     CommonDataPlaneModule
   ],

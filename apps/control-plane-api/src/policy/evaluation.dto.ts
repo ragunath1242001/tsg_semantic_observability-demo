@@ -76,6 +76,7 @@ export class EvaluationContext {
   @ApiProperty({ type: () => CredentialContainer })
   verifiableCredentials!: CredentialContainer[];
   @IsDate()
+  @Type(() => Date)
   @ApiProperty({ example: "2025-02-21T10:26:42.206Z" })
   evaluationTime!: Date;
   @ValidateNested()

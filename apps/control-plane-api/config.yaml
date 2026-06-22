@@ -1,6 +1,6 @@
 db:
   type: sqlite
-  database: ":memory:"
+  database: "test.db"
 
 server:
   port: "3000"

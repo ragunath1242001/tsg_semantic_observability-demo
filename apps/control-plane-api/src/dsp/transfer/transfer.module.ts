@@ -8,6 +8,7 @@ import {
   TransferEventDao
 } from "../../model/transfer.dao.js";
 import { PolicyModule } from "../../policy/policy.module.js";
+import { SemanticObservabilityModule } from "../../semantic-observability/semantic-observability.module.js";
 import { VCAuthModule } from "../../vc-auth/vc.auth.module.js";
 import { DspClientModule } from "../client/client.module.js";
 import { TransferController } from "./transfer.controller.js";
@@ -20,6 +21,7 @@ import { TransferManagementController } from "./transferManagement.controller.js
     VCAuthModule,
     DspClientModule,
     forwardRef(() => DataPlaneModule),
+    SemanticObservabilityModule,
     TypeOrmModule.forFeature([TransferDetailDao, TransferEventDao]),
     forwardRef(() => PolicyModule)
   ],

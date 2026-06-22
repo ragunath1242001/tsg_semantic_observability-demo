@@ -452,6 +452,9 @@ importers:
       '@tsg-dsp/control-plane-dtos':
         specifier: workspace:*
         version: link:../../libs/control-plane-dtos
+      '@tsg-dsp/semantic-observability':
+        specifier: workspace:*
+        version: link:../../libs/semantic-observability
       '@types/jsonpath':
         specifier: ^0.2.4
         version: 0.2.4
@@ -485,9 +488,6 @@ importers:
       jose:
         specifier: ^6.2.1
         version: 6.2.1
-      jsonld:
-        specifier: ^9.0.0
-        version: 9.0.0
       jsonpath:
         specifier: ^1.3.0
         version: 1.3.0
@@ -534,9 +534,6 @@ importers:
       '@types/express-session':
         specifier: ^1.18.2
         version: 1.18.2
-      '@types/jsonld':
-        specifier: ^1.5.15
-        version: 1.5.15
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
@@ -703,6 +700,9 @@ importers:
       '@nestjs/platform-express':
         specifier: ^11.1.16
         version: 11.1.16(@nestjs/common@11.1.16(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)
+      '@nestjs/schedule':
+        specifier: ^6.1.1
+        version: 6.1.1(@nestjs/common@11.1.16(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)
       '@nestjs/serve-static':
         specifier: ^5.0.3
         version: 5.0.4(@nestjs/common@11.1.16(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(express@5.2.1)
@@ -727,6 +727,9 @@ importers:
       '@tsg-dsp/http-data-plane-dtos':
         specifier: workspace:*
         version: link:../../libs/http-data-plane-dtos
+      '@tsg-dsp/semantic-observability':
+        specifier: workspace:*
+        version: link:../../libs/semantic-observability
       axios:
         specifier: ^1.13.6
         version: 1.13.6
@@ -748,9 +751,6 @@ importers:
       jose:
         specifier: ^6.2.1
         version: 6.2.1
-      jsonld:
-        specifier: ^9.0.0
-        version: 9.0.0
       jsonpath:
         specifier: ^1.3.0
         version: 1.3.0
@@ -794,9 +794,6 @@ importers:
       '@types/express-session':
         specifier: ^1.18.2
         version: 1.18.2
-      '@types/jsonld':
-        specifier: ^1.5.15
-        version: 1.5.15
       '@types/jsonpath':
         specifier: ^0.2.4
         version: 0.2.4
@@ -2002,6 +1999,19 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+
+  libs/semantic-observability:
+    dependencies:
+      tslib:
+        specifier: ^2.8.1
+        version: 2.8.1
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.17
+        version: 4.1.0(@opentelemetry/api@1.9.0)(@types/node@25.6.0)(msw@2.12.10(@types/node@25.6.0)(typescript@5.9.3))(vite@7.3.1(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass@1.98.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
 
   libs/sso-bridge-dtos:
     dependencies:
@@ -10198,6 +10208,15 @@ snapshots:
       msw: 2.12.10(@types/node@25.5.0)(typescript@5.9.3)
       vite: 7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass@1.98.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
+  '@vitest/mocker@4.1.0(msw@2.12.10(@types/node@25.6.0)(typescript@5.9.3))(vite@7.3.1(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass@1.98.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))':
+    dependencies:
+      '@vitest/spy': 4.1.0
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      msw: 2.12.10(@types/node@25.6.0)(typescript@5.9.3)
+      vite: 7.3.1(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass@1.98.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+
   '@vitest/pretty-format@3.2.4':
     dependencies:
       tinyrainbow: 2.0.0
@@ -14073,6 +14092,34 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/node': 25.5.0
+    transitivePeerDependencies:
+      - msw
+
+  vitest@4.1.0(@opentelemetry/api@1.9.0)(@types/node@25.6.0)(msw@2.12.10(@types/node@25.6.0)(typescript@5.9.3))(vite@7.3.1(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass@1.98.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)):
+    dependencies:
+      '@vitest/expect': 4.1.0
+      '@vitest/mocker': 4.1.0(msw@2.12.10(@types/node@25.6.0)(typescript@5.9.3))(vite@7.3.1(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass@1.98.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      '@vitest/pretty-format': 4.1.0
+      '@vitest/runner': 4.1.0
+      '@vitest/snapshot': 4.1.0
+      '@vitest/spy': 4.1.0
+      '@vitest/utils': 4.1.0
+      es-module-lexer: 2.0.0
+      expect-type: 1.3.0
+      magic-string: 0.30.21
+      obug: 2.1.1
+      pathe: 2.0.3
+      picomatch: 4.0.3
+      std-env: 4.0.0
+      tinybench: 2.9.0
+      tinyexec: 1.0.2
+      tinyglobby: 0.2.15
+      tinyrainbow: 3.1.0
+      vite: 7.3.1(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass@1.98.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@opentelemetry/api': 1.9.0
+      '@types/node': 25.6.0
     transitivePeerDependencies:
       - msw
 

@@ -11,6 +11,7 @@ import { RouteRecordRaw } from "vue-router";
 import Dashboard from "../views/Dashboard.vue";
 import Logging from "../views/Logging.vue";
 import Metadata from "../views/Metadata.vue";
+import SemanticObservabilityView from "../views/SemanticObservability.vue";
 import Tester from "../views/Tester.vue";
 
 export const routeConfigs: RouteConfig[] = [
@@ -79,6 +80,21 @@ export const routeConfigs: RouteConfig[] = [
       icon: "pi pi-fw pi-shield",
       group: "audit",
       menuLabel: "Audit Logs"
+    }
+  },
+  {
+    path: "semantic-observability",
+    name: "semantic-observability",
+    component: SemanticObservabilityView,
+    requires: {
+      action: Action.READ,
+      resource: Resource.HDP_SEMANTIC_OBSERVABILITY
+    },
+    meta: {
+      title: "Semantic Observability",
+      icon: "pi pi-fw pi-chart-line",
+      group: "audit",
+      menuLabel: "Semantic Observability"
     }
   }
 ];
