@@ -72,12 +72,12 @@ $datasetConfig = @{
     }
   )
 }
-Invoke-DemoJson -Method PUT -Uri "$HttpDataPlaneUrl/management/config" -Body $datasetConfig | Out-Null
+Invoke-DemoJson -Method PUT -Uri "$HttpDataPlaneUrl/api/management/config" -Body $datasetConfig | Out-Null
 Write-Host "Data Plane dataset config updated."
 
 Write-Step "Refreshing Data Plane registration/catalog synchronization"
 try {
-  Invoke-DemoJson -Method POST -Uri "$HttpDataPlaneUrl/management/refresh" | Out-Null
+  Invoke-DemoJson -Method POST -Uri "$HttpDataPlaneUrl/api/management/refresh" | Out-Null
   Write-Host "Data Plane registration refresh requested."
 } catch {
   Write-Host "Registration refresh did not complete: $($_.Exception.Message)"
@@ -118,7 +118,7 @@ $catalogDataset = @{
   )
 }
 try {
-  Invoke-DemoJson -Method POST -Uri "$ControlPlaneUrl/management/catalog/dataset" -Body $catalogDataset | Out-Null
+  Invoke-DemoJson -Method POST -Uri "$ControlPlaneUrl/api/management/catalog/dataset" -Body $catalogDataset | Out-Null
   Write-Host "Catalog dataset added: $datasetId"
 } catch {
   Write-Host "Catalog dataset add did not complete: $($_.Exception.Message)"
@@ -155,7 +155,7 @@ $evaluationContext = @{
 try {
   $decision = Invoke-DemoJson `
     -Method POST `
-    -Uri "$ControlPlaneUrl/management/policy/evaluation/$([uri]::EscapeDataString($transferId))/evaluate" `
+    -Uri "$ControlPlaneUrl/api/management/policy/evaluation/$([uri]::EscapeDataString($transferId))/evaluate" `
     -Body $evaluationContext
   Write-Host "Policy decision: $($decision.decision)"
 } catch {
@@ -164,23 +164,23 @@ try {
 }
 
 Write-Step "Refreshing semantic observability snapshots"
-Invoke-DemoJson -Method POST -Uri "$ControlPlaneUrl/management/semantic-observability/combined/report/snapshots/refresh" -Body @{ bucket = "hour" } | Out-Null
+Invoke-DemoJson -Method POST -Uri "$ControlPlaneUrl/api/management/semantic-observability/combined/report/snapshots/refresh" -Body @{ bucket = "hour" } | Out-Null
 Write-Host "Combined snapshots refreshed."
 
 Write-Step "Recent combined observability events"
-$events = Invoke-DemoJson -Method GET -Uri "$ControlPlaneUrl/management/semantic-observability/combined/events?take=12&order=DESC&order_by=timestamp"
+$events = Invoke-DemoJson -Method GET -Uri "$ControlPlaneUrl/api/management/semantic-observability/combined/events?take=12&order=DESC&order_by=timestamp"
 $events.data |
   Select-Object timestamp, component, eventType, status, failureCategory |
   Format-Table -AutoSize
 
 Write-Step "Recent HTTP Data Plane listener events"
-$dataPlaneEvents = Invoke-DemoJson -Method GET -Uri "$HttpDataPlaneUrl/management/semantic-observability/events?take=12&order=DESC"
+$dataPlaneEvents = Invoke-DemoJson -Method GET -Uri "$HttpDataPlaneUrl/api/management/semantic-observability/events?take=12&order=DESC"
 $dataPlaneEvents.data |
   Select-Object timestamp, component, eventType, status, failureCategory |
   Format-Table -AutoSize
 
 Write-Step "Current combined report"
-$report = Invoke-DemoJson -Method GET -Uri "$ControlPlaneUrl/management/semantic-observability/combined/report"
+$report = Invoke-DemoJson -Method GET -Uri "$ControlPlaneUrl/api/management/semantic-observability/combined/report"
 Write-Host "Adoption metrics:  $($report.adoption.Count)"
 Write-Host "Friction metrics:  $($report.friction.Count)"
 Write-Host "Evolution metrics: $($report.evolution.Count)"

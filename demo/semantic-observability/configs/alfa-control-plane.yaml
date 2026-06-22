@@ -1,6 +1,6 @@
 db:
   type: sqlite
-  database: "/app/data/alfa-control-plane.db"
+  database: "alfa-control-plane.db"
 
 server:
   port: 3000

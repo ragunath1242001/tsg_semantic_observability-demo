@@ -14,7 +14,6 @@ services:
       - "3501:3000"
     volumes:
       - ./configs/alfa-control-plane.yaml:/app/config/config.yaml:ro
-      - alfa-control-plane-data:/app/data
     healthcheck:
       test:
         [
@@ -42,7 +41,6 @@ services:
       - "3502:3000"
     volumes:
       - ./configs/alfa-data-plane.yaml:/app/config/config.yaml:ro
-      - alfa-data-plane-data:/app/data
     healthcheck:
       test:
         [
@@ -53,7 +51,3 @@ services:
       timeout: 5s
       retries: 30
       start_period: 30s
-
-volumes:
-  alfa-control-plane-data:
-  alfa-data-plane-data:

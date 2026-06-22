@@ -114,12 +114,13 @@ export class DataPlaneService implements OnModuleInit {
   }
 
   async registerDataplane() {
+    const publicApiAddress = apiAddress(this.config.server.publicAddress);
     const dataPlaneCreation: DataPlaneCreation = {
       title: this.config.controlPlane.dataPlaneTitle,
       dataplaneType: "tsg:HTTP",
-      endpointPrefix: `${this.config.server.publicAddress}/data`,
-      callbackAddress: this.config.server.publicAddress,
-      managementAddress: this.config.server.publicAddress,
+      endpointPrefix: `${publicApiAddress}/data`,
+      callbackAddress: publicApiAddress,
+      managementAddress: `${publicApiAddress}/management`,
       catalogSynchronization: "push",
       role: this.config.dataset ? "both" : "consumer"
     };
@@ -719,4 +720,13 @@ export class DataPlaneService implements OnModuleInit {
         });
     }
   }
+}
+
+function apiAddress(publicAddress: string): string {
+  const normalizedPublicAddress = publicAddress.replace(/\/$/, "");
+  const apiPrefix = `${process.env["SUBPATH"] ?? ""}/api`;
+  if (normalizedPublicAddress.endsWith(apiPrefix)) {
+    return normalizedPublicAddress;
+  }
+  return `${normalizedPublicAddress}${apiPrefix}`;
 }

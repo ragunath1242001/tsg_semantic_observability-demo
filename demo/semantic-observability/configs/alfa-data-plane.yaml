@@ -1,6 +1,6 @@
 db:
   type: "sqlite"
-  database: "/app/data/alfa-data-plane.db"
+  database: "alfa-data-plane.db"
 
 auth:
   enabled: false
@@ -12,9 +12,9 @@ server:
   publicDomain: alfa-data-plane:3000
 
 controlPlane:
-  dataPlaneEndpoint: http://alfa-control-plane:3000/data-plane
-  managementEndpoint: http://alfa-control-plane:3000/management
-  controlEndpoint: http://alfa-control-plane:3000
+  dataPlaneEndpoint: http://alfa-control-plane:3000/api/data-plane
+  managementEndpoint: http://alfa-control-plane:3000/api/management
+  controlEndpoint: http://alfa-control-plane:3000/api
 
 runtime:
   color: "#3B8BF6"

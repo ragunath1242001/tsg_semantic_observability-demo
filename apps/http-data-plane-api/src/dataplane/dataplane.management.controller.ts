@@ -55,6 +55,16 @@ export class DataPlaneManagementController {
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
+  @Get("/health")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Get Data Plane management health",
+    description: "Returns 200 OK when the data plane management API is running."
+  })
+  async healthCheck(): Promise<void> {
+    return;
+  }
+
   @Get("/state")
   @Requires(Action.READ, Resource.HDP_DATAPLANE)
   @ApiOperation({
