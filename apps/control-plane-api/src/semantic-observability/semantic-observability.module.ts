@@ -12,6 +12,7 @@ import {
   SemanticObservabilityEventDao,
   SemanticObservabilityMetricSnapshotDao
 } from "./semantic-observability.dao.js";
+import { SemanticObservabilitySdoExporterService } from "./semantic-observability-sdo-exporter.service.js";
 import { SemanticObservabilityService } from "./semantic-observability.service.js";
 import { TransferObserverService } from "./transfer-observer.service.js";
 
@@ -30,6 +31,7 @@ import { TransferObserverService } from "./transfer-observer.service.js";
     NegotiationObserverService,
     PolicyObserverService,
     SemanticObservabilityCombinedService,
+    SemanticObservabilitySdoExporterService,
     SemanticObservabilityService,
     TransferObserverService
   ],
@@ -37,6 +39,7 @@ import { TransferObserverService } from "./transfer-observer.service.js";
     CatalogObserverService,
     NegotiationObserverService,
     PolicyObserverService,
+    SemanticObservabilitySdoExporterService,
     SemanticObservabilityService,
     TransferObserverService
   ]

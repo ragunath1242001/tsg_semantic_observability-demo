@@ -1,0 +1,55 @@
+name: ${COMPOSE_PROJECT_NAME:-tsg-distributed-sdo-participant}
+
+services:
+  control-plane:
+    image: tsg-distributed-sdo/control-plane:local
+    build:
+      context: ../../..
+      dockerfile: Dockerfile-control-plane
+    environment:
+      CONFIG_PATH: /app/config/config.yaml
+      EMBEDDED_FRONTEND: /app/control-plane-ui
+    ports:
+      - "${CONTROL_PLANE_PORT:-3701}:3000"
+    volumes:
+      - ./configs/generated/control-plane.yaml:/app/config/config.yaml:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  data-plane:
+    image: tsg-distributed-sdo/http-data-plane:local
+    build:
+      context: ../../..
+      dockerfile: Dockerfile-http-data-plane
+    depends_on:
+      control-plane:
+        condition: service_healthy
+    environment:
+      CONFIG_PATH: /app/config/config.yaml
+      EMBEDDED_FRONTEND: /app/http-data-plane-ui
+    ports:
+      - "${DATA_PLANE_PORT:-3702}:3000"
+    volumes:
+      - ./configs/generated/data-plane.yaml:/app/config/config.yaml:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s

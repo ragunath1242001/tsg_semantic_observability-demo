@@ -1,0 +1,45 @@
+db:
+  type: "sqlite"
+  database: "alfa-sharing-data-plane.db"
+
+auth:
+  enabled: false
+
+server:
+  port: 3000
+  listen: "0.0.0.0"
+  publicAddress: http://alfa-data-plane:3000
+  publicDomain: alfa-data-plane:3000
+
+controlPlane:
+  dataPlaneEndpoint: http://alfa-control-plane:3000/api/data-plane
+  managementEndpoint: http://alfa-control-plane:3000/api/management
+  controlEndpoint: http://alfa-control-plane:3000/api
+
+runtime:
+  color: "#3B8BF6"
+
+semanticObservability:
+  enabled: true
+  participantId: did:web:alfa-control-plane
+  refreshIntervalInMilliseconds: 3600000
+  sdoExport:
+    enabled: false
+
+dataset:
+  type: versioned
+  title: Alfa Sharing Dataset
+  description:
+    - Provider dataset used for end-to-end semantic observability during TSG data exchange.
+  baseSemanticModelRef: https://example.org/semantic/sharing/base
+  currentVersion: 1.0.0
+  policy:
+    type: "default"
+  versions:
+    - version: 1.0.0
+      semanticModelRef: https://example.org/semantic/sharing/1.0.0
+      distributions:
+        - backendUrl: https://mockhttp.org/
+          mediaType: application/json
+          schemaRef: https://example.org/schemas/sharing-demo-1.0.0.json
+          openApiSpecRef: https://mockhttp.org/docs/json

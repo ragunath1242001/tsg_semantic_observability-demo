@@ -263,6 +263,36 @@ The script:
 
 The synthetic policy evaluation may be skipped or return a controlled error because it does not create a real stored agreement from a full two-party transfer flow. That is acceptable for this demo.
 
+## Real Sharing Demo Flow
+
+The real sharing demo is:
+
+```powershell
+docker compose -f .\demo\semantic-observability-sharing\docker-compose.yml up --build -d
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1
+```
+
+This scenario runs four services:
+
+- Alfa Control Plane on `http://localhost:3701`
+- Alfa HTTP Data Plane on `http://localhost:3702`
+- Bravo Control Plane on `http://localhost:3801`
+- Bravo HTTP Data Plane on `http://localhost:3802`
+
+The script performs the normal TSG exchange path:
+
+1. Bravo requests Alfa's catalog.
+2. Bravo selects a dataset distribution from the catalog.
+3. Bravo creates a contract negotiation.
+4. Alfa agrees, Bravo verifies, and Alfa finalizes the agreement.
+5. Bravo requests a `tsg:HTTP` transfer.
+6. The provider and consumer data planes create started transfer records.
+7. Bravo Data Plane executes a request through Alfa Data Plane's provider proxy.
+8. Both control planes refresh combined hourly observability snapshots.
+9. The script prints recent combined observability events.
+
+This is the preferred client validation path for observability during actual data exchange.
+
 ## Client Dataset Testing Flow
 
 Clients can replace the default demo dataset metadata with their own dataset metadata and backend API.
@@ -351,3 +381,30 @@ Recommended production topics:
 - define whether Data Plane observability data can leave the Data Plane boundary
 
 The current Docker demo is intentionally optimized for client validation, resetability, and low setup friction.
+
+## Optional SDO Export
+
+Participant-side Control Plane and HTTP Data Plane services can optionally push sanitized semantic observability events to a central SDO collector.
+
+This is disabled by default:
+
+```yaml
+semanticObservability:
+  enabled: true
+  sdoExport:
+    enabled: false
+```
+
+When an SDO-level dashboard is required, enable it explicitly:
+
+```yaml
+semanticObservability:
+  enabled: true
+  sdoExport:
+    enabled: true
+    endpoint: "https://sdo.example.org/api/ingest/events"
+    apiKey: "${SDO_API_KEY}"
+    participantId: "participant-alfa"
+```
+
+The exporter sends the same sanitized event that was persisted locally. It does not send raw business payloads, raw semantic artefact contents, credentials, or backend response bodies.

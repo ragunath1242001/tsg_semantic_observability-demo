@@ -33,6 +33,7 @@ import {
   SemanticObservabilityMetricSnapshotDao
 } from "./semantic-observability.dao.js";
 import { SemanticObservabilityEventFilterDto } from "./semantic-observability.dto.js";
+import { SemanticObservabilitySdoExporterService } from "./semantic-observability-sdo-exporter.service.js";
 
 @Injectable()
 export class SemanticObservabilityService
@@ -61,7 +62,9 @@ export class SemanticObservabilityService
     @Optional()
     private readonly semanticObservabilityConfig?: SemanticObservabilityConfig,
     @Optional()
-    private readonly rootConfig?: RootConfig
+    private readonly rootConfig?: RootConfig,
+    @Optional()
+    private readonly sdoExporter?: SemanticObservabilitySdoExporterService
   ) {}
 
   onApplicationBootstrap() {
@@ -108,6 +111,7 @@ export class SemanticObservabilityService
         timestamp: persistedEvent.timestamp
       })
     );
+    void this.sdoExporter?.exportEvent(savedEvent);
     return savedEvent;
   }
 

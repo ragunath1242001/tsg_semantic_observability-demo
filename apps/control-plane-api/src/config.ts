@@ -49,6 +49,36 @@ export class RegistryConfig {
   public readonly registryIntervalInMilliseconds: number = 30000;
 }
 
+export class SemanticObservabilitySdoExportConfig {
+  @Description("Enable export of sanitized semantic observability events to SDO")
+  @IsBoolean()
+  @Transform(valueToBoolean)
+  @IsOptional()
+  public readonly enabled: boolean = false;
+
+  @Description("SDO collector endpoint")
+  @IsString()
+  @IsUrl({ require_tld: false, require_protocol: true })
+  @IsOptional()
+  public readonly endpoint?: string;
+
+  @Description("API key used for SDO collector ingestion")
+  @IsString()
+  @IsOptional()
+  public readonly apiKey?: string;
+
+  @Description("Participant identifier reported to the SDO collector")
+  @IsString()
+  @IsOptional()
+  public readonly participantId?: string;
+
+  @Description("Request timeout in milliseconds for SDO exports")
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  public readonly timeoutInMilliseconds: number = 5000;
+}
+
 export class SemanticObservabilityConfig {
   @Description("Enable automatic semantic observability snapshot refresh")
   @IsBoolean()
@@ -63,6 +93,13 @@ export class SemanticObservabilityConfig {
   @Type(() => Number)
   @IsOptional()
   public readonly refreshIntervalInMilliseconds: number = 3600000;
+
+  @Description("SDO semantic observability export configuration")
+  @ValidateNested()
+  @Type(() => SemanticObservabilitySdoExportConfig)
+  @IsOptional()
+  public readonly sdoExport: SemanticObservabilitySdoExportConfig =
+    new SemanticObservabilitySdoExportConfig();
 }
 
 export abstract class IamConfig {

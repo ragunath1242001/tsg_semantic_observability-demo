@@ -101,8 +101,9 @@ export class HTTPTransferHandler implements ITransferHandler {
     let secret: string | undefined;
     if (role === "provider") {
       secret = crypto.randomBytes(32).toString("hex");
+      const publicApiAddress = apiAddress(this.config.server.publicAddress);
       dataAddress = {
-        endpoint: `${this.config.server.publicAddress}/proxy/${id}`,
+        endpoint: `${publicApiAddress}/proxy/${id}`,
         properties: [
           {
             name: this.config.authorizationHeader,
@@ -589,4 +590,8 @@ export class HTTPTransferHandler implements ITransferHandler {
       ).andLog(this.logger);
     }
   }
+}
+
+function apiAddress(publicAddress: string): string {
+  return `${publicAddress}/api`.replace(/([^:]\/)\/+/g, "$1");
 }

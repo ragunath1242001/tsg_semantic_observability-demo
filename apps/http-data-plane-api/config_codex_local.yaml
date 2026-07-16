@@ -1,0 +1,31 @@
+db:
+  type: "sqlite"
+  database: "test.db"
+
+auth:
+  enabled: false
+
+server:
+  port: 3001
+  publicAddress: http://localhost:3001
+
+controlPlane:
+  dataPlaneEndpoint: http://127.0.0.1:3000/data-plane
+  managementEndpoint: http://127.0.0.1:3000/management
+  controlEndpoint: http://127.0.0.1:3000
+
+runtime:
+  color: "#3B8BF6"
+
+semanticObservability:
+  participantId: did:web:localhost%3A3001
+
+dataset:
+  type: versioned
+  title: Test HTTPBin A
+  currentVersion: 0.9.2
+  versions:
+    - version: 0.9.2
+      distributions:
+        - backendUrl: https://mockhttp.org/
+          openApiSpecRef: https://mockhttp.org/docs/json

@@ -1,0 +1,48 @@
+db:
+  type: "sqlite"
+  database: "__PARTICIPANT_ID__-data-plane.db"
+
+auth:
+  enabled: false
+
+server:
+  port: 3000
+  listen: "0.0.0.0"
+  publicAddress: http://__PUBLIC_HOST__:__DATA_PLANE_PORT__
+  publicDomain: __PUBLIC_HOST__:__DATA_PLANE_PORT__
+
+controlPlane:
+  dataPlaneEndpoint: http://control-plane:3000/api/data-plane
+  managementEndpoint: http://control-plane:3000/api/management
+  controlEndpoint: http://control-plane:3000/api
+
+runtime:
+  color: "#3B8BF6"
+
+semanticObservability:
+  enabled: true
+  participantId: did:web:__PARTICIPANT_ID__
+  refreshIntervalInMilliseconds: 3600000
+  sdoExport:
+    enabled: true
+    endpoint: __SDO_OBSERVABILITY_ENDPOINT__
+    apiKey: __SDO_API_KEY__
+    participantId: __PARTICIPANT_ID__
+
+dataset:
+  type: versioned
+  title: __DATASET_TITLE__
+  description:
+    - __DATASET_DESCRIPTION__
+  baseSemanticModelRef: __DATASET_BASE_SEMANTIC_MODEL_REF__
+  currentVersion: 1.0.0
+  policy:
+    type: "default"
+  versions:
+    - version: 1.0.0
+      semanticModelRef: __DATASET_SEMANTIC_MODEL_REF__
+      distributions:
+        - backendUrl: __DATASET_BACKEND_URL__
+          mediaType: application/json
+          schemaRef: __DATASET_SCHEMA_REF__
+          openApiSpecRef: __DATASET_OPENAPI_REF__

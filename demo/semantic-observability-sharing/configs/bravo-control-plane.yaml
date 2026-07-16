@@ -1,0 +1,37 @@
+db:
+  type: sqlite
+  database: "bravo-sharing-control-plane.db"
+
+server:
+  port: 3000
+  listen: "0.0.0.0"
+  publicDomain: bravo-control-plane:3000
+  publicAddress: http://bravo-control-plane:3000/api
+
+auth:
+  enabled: false
+
+runtime:
+  controlPlaneInteractions: manual
+  color: "#16A34A"
+
+registry:
+  useRegistry: false
+  registryIntervalInMilliseconds: 30000
+
+iam:
+  type: dev
+  didId: did:web:bravo-control-plane
+
+initCatalog:
+  participantId: did:web:bravo-control-plane
+  creator: did:web:bravo-control-plane
+  publisher: did:web:bravo-control-plane
+  title: Bravo Consumer
+  description: Bravo consumer connector for semantic observability sharing demo
+
+semanticObservability:
+  enabled: true
+  refreshIntervalInMilliseconds: 3600000
+  sdoExport:
+    enabled: false

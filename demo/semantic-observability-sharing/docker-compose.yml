@@ -1,0 +1,171 @@
+services:
+  sdo-observability:
+    profiles:
+      - local-sdo
+    build:
+      context: ../../../sdo-semantic-observability
+      dockerfile: Dockerfile
+    image: sdo-semantic-observability:local
+    environment:
+      PORT: "4100"
+      SDO_PUBLIC_BASE_URL: "http://localhost:4100"
+      STORAGE_TYPE: "postgres"
+      DATABASE_URL: "postgres://sdo:sdo@sdo-postgres:5432/sdo_semantic_observability"
+    ports:
+      - "127.0.0.1:4100:4100"
+    depends_on:
+      sdo-postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4100/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  sdo-postgres:
+    profiles:
+      - local-sdo
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sdo
+      POSTGRES_PASSWORD: sdo
+      POSTGRES_DB: sdo_semantic_observability
+    volumes:
+      - sdo-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sdo -d sdo_semantic_observability"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  alfa-control-plane:
+    image: tsg-semantic-observability-sharing/control-plane:local
+    build:
+      context: ../..
+      dockerfile: Dockerfile-control-plane
+    environment:
+      CONFIG_PATH: /app/config/config.yaml
+      EMBEDDED_FRONTEND: /app/control-plane-ui
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__ENABLED: "true"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__ENDPOINT: "${SDO_OBSERVABILITY_ENDPOINT:-http://sdo-observability:4100/api/ingest/events}"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__PARTICIPANT_ID: "${SDO_ALFA_PARTICIPANT_ID:-}"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__API_KEY: "${SDO_ALFA_API_KEY:-}"
+    ports:
+      - "127.0.0.1:3701:3000"
+    volumes:
+      - ./configs/alfa-control-plane.yaml:/app/config/config.yaml:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  alfa-data-plane:
+    image: tsg-semantic-observability-sharing/http-data-plane:local
+    build:
+      context: ../..
+      dockerfile: Dockerfile-http-data-plane
+    depends_on:
+      alfa-control-plane:
+        condition: service_healthy
+    environment:
+      CONFIG_PATH: /app/config/config.yaml
+      EMBEDDED_FRONTEND: /app/http-data-plane-ui
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__ENABLED: "true"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__ENDPOINT: "${SDO_OBSERVABILITY_ENDPOINT:-http://sdo-observability:4100/api/ingest/events}"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__PARTICIPANT_ID: "${SDO_ALFA_PARTICIPANT_ID:-}"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__API_KEY: "${SDO_ALFA_API_KEY:-}"
+    ports:
+      - "127.0.0.1:3702:3000"
+    volumes:
+      - ./configs/alfa-data-plane.yaml:/app/config/config.yaml:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  bravo-control-plane:
+    image: tsg-semantic-observability-sharing/control-plane:local
+    build:
+      context: ../..
+      dockerfile: Dockerfile-control-plane
+    environment:
+      CONFIG_PATH: /app/config/config.yaml
+      EMBEDDED_FRONTEND: /app/control-plane-ui
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__ENABLED: "true"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__ENDPOINT: "${SDO_OBSERVABILITY_ENDPOINT:-http://sdo-observability:4100/api/ingest/events}"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__PARTICIPANT_ID: "${SDO_BRAVO_PARTICIPANT_ID:-}"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__API_KEY: "${SDO_BRAVO_API_KEY:-}"
+    ports:
+      - "127.0.0.1:3801:3000"
+    volumes:
+      - ./configs/bravo-control-plane.yaml:/app/config/config.yaml:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  bravo-data-plane:
+    image: tsg-semantic-observability-sharing/http-data-plane:local
+    build:
+      context: ../..
+      dockerfile: Dockerfile-http-data-plane
+    depends_on:
+      bravo-control-plane:
+        condition: service_healthy
+    environment:
+      CONFIG_PATH: /app/config/config.yaml
+      EMBEDDED_FRONTEND: /app/http-data-plane-ui
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__ENABLED: "true"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__ENDPOINT: "${SDO_OBSERVABILITY_ENDPOINT:-http://sdo-observability:4100/api/ingest/events}"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__PARTICIPANT_ID: "${SDO_BRAVO_PARTICIPANT_ID:-}"
+      TSG__SEMANTIC_OBSERVABILITY__SDO_EXPORT__API_KEY: "${SDO_BRAVO_API_KEY:-}"
+    ports:
+      - "127.0.0.1:3802:3000"
+    volumes:
+      - ./configs/bravo-data-plane.yaml:/app/config/config.yaml:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+volumes:
+  sdo-postgres-data:

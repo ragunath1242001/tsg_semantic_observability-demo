@@ -33,6 +33,14 @@ From the repository root:
 docker compose -f .\demo\semantic-observability\docker-compose.yml up --build -d
 ```
 
+If running from WSL or another Linux shell, use forward slashes:
+
+```bash
+docker compose -f ./demo/semantic-observability/docker-compose.yml up --build -d
+```
+
+Important: type a normal hyphen `-` before `f`. Do not use a copied en dash `–` or em dash `—`; Docker will report `unknown shorthand flag: 'f'`.
+
 This builds and starts:
 
 - Alfa Control Plane
@@ -90,6 +98,41 @@ The smoke demo:
 - prints recent events and aggregate metric counts
 
 The policy evaluation step may print a skipped/500 message because this script does not create a real stored agreement from a full two-party data-sharing flow. That is acceptable for this smoke demo.
+
+## Run The Real Sharing Demo
+
+Use this when the client wants to validate observability during an actual data exchange.
+
+Start the two-party sharing demo:
+
+```powershell
+docker compose -f .\demo\semantic-observability-sharing\docker-compose.yml up --build -d
+```
+
+Then run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1
+```
+
+This starts Alfa as the provider and Bravo as the consumer. The script performs catalog request, contract negotiation, transfer request, and one data access through the HTTP data planes.
+
+Open:
+
+```text
+Alfa Control Plane:        http://localhost:3701
+Alfa Data Plane:           http://localhost:3702
+Bravo Control Plane:       http://localhost:3801
+Bravo Data Plane:          http://localhost:3802
+Alfa observability UI:     http://localhost:3701/semantic-observability
+Bravo observability UI:    http://localhost:3801/semantic-observability
+```
+
+For a clean reset:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\reset.ps1
+```
 
 ## Stop The Demo
 

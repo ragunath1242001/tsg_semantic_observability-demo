@@ -1,0 +1,37 @@
+db:
+  type: sqlite
+  database: "alfa-sharing-control-plane.db"
+
+server:
+  port: 3000
+  listen: "0.0.0.0"
+  publicDomain: alfa-control-plane:3000
+  publicAddress: http://alfa-control-plane:3000/api
+
+auth:
+  enabled: false
+
+runtime:
+  controlPlaneInteractions: manual
+  color: "#3B8BF6"
+
+registry:
+  useRegistry: false
+  registryIntervalInMilliseconds: 30000
+
+iam:
+  type: dev
+  didId: did:web:alfa-control-plane
+
+initCatalog:
+  participantId: did:web:alfa-control-plane
+  creator: did:web:alfa-control-plane
+  publisher: did:web:alfa-control-plane
+  title: Alfa Provider
+  description: Alfa provider connector for semantic observability sharing demo
+
+semanticObservability:
+  enabled: true
+  refreshIntervalInMilliseconds: 3600000
+  sdoExport:
+    enabled: false

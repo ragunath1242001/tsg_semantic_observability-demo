@@ -1,0 +1,27 @@
+db:
+  type: "sqlite"
+  database: "bravo-sharing-data-plane.db"
+
+auth:
+  enabled: false
+
+server:
+  port: 3000
+  listen: "0.0.0.0"
+  publicAddress: http://bravo-data-plane:3000
+  publicDomain: bravo-data-plane:3000
+
+controlPlane:
+  dataPlaneEndpoint: http://bravo-control-plane:3000/api/data-plane
+  managementEndpoint: http://bravo-control-plane:3000/api/management
+  controlEndpoint: http://bravo-control-plane:3000/api
+
+runtime:
+  color: "#16A34A"
+
+semanticObservability:
+  enabled: true
+  participantId: did:web:bravo-control-plane
+  refreshIntervalInMilliseconds: 3600000
+  sdoExport:
+    enabled: false

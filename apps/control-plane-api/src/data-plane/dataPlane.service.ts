@@ -439,11 +439,11 @@ export class DataPlaneService {
           }
         };
         this.logger.debug(
-          `Requesting transfer at ${dataPlane.id} at ${dataPlane.managementAddress} for ${remoteParty} with authorization: ${requestConfig.headers?.Authorization}`
+          `Requesting transfer at ${dataPlane.id} at ${dataPlane.callbackAddress} for ${remoteParty} with authorization: ${requestConfig.headers?.Authorization}`
         );
         const dataPlaneRequestResponse =
           await this.axios.post<DataPlaneRequestResponseDto>(
-            `${dataPlane.managementAddress}/transfers/request/${role}?processId=${processId}`,
+            `${dataPlane.callbackAddress}/transfers/request/${role}?processId=${processId}`,
             requestDetail.serialize(),
             requestConfig
           );
@@ -487,7 +487,7 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.id}/start`,
+        `${dataPlane.callbackAddress}/transfers/${dataPlaneTransfer.id}/start`,
         transferStartMessage,
         requestConfig
       );
@@ -519,7 +519,7 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.id}/completion`,
+        `${dataPlane.callbackAddress}/transfers/${dataPlaneTransfer.id}/completion`,
         transferCompletionMessage,
         requestConfig
       );
@@ -551,7 +551,7 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.id}/termination`,
+        `${dataPlane.callbackAddress}/transfers/${dataPlaneTransfer.id}/termination`,
         transferTerminationMessage,
         requestConfig
       );
@@ -583,7 +583,7 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.id}/suspension`,
+        `${dataPlane.callbackAddress}/transfers/${dataPlaneTransfer.id}/suspension`,
         transferSuspensionMessage,
         requestConfig
       );

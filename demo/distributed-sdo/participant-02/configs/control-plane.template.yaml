@@ -1,0 +1,40 @@
+db:
+  type: sqlite
+  database: "__PARTICIPANT_ID__-control-plane.db"
+
+server:
+  port: 3000
+  listen: "0.0.0.0"
+  publicDomain: __PUBLIC_HOST__:__CONTROL_PLANE_PORT__
+  publicAddress: http://__PUBLIC_HOST__:__CONTROL_PLANE_PORT__/api
+
+auth:
+  enabled: false
+
+runtime:
+  controlPlaneInteractions: manual
+  color: "#3B8BF6"
+
+registry:
+  useRegistry: false
+  registryIntervalInMilliseconds: 30000
+
+iam:
+  type: dev
+  didId: did:web:__PARTICIPANT_ID__
+
+initCatalog:
+  participantId: did:web:__PARTICIPANT_ID__
+  creator: did:web:__PARTICIPANT_ID__
+  publisher: did:web:__PARTICIPANT_ID__
+  title: __PARTICIPANT_DISPLAY_NAME__
+  description: Distributed SDO semantic observability participant
+
+semanticObservability:
+  enabled: true
+  refreshIntervalInMilliseconds: 3600000
+  sdoExport:
+    enabled: true
+    endpoint: __SDO_OBSERVABILITY_ENDPOINT__
+    apiKey: __SDO_API_KEY__
+    participantId: __PARTICIPANT_ID__

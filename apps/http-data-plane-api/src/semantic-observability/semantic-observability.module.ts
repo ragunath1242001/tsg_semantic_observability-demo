@@ -8,6 +8,7 @@ import {
   SemanticObservabilityEventDao,
   SemanticObservabilityMetricSnapshotDao
 } from "./semantic-observability.dao.js";
+import { SemanticObservabilitySdoExporterService } from "./semantic-observability-sdo-exporter.service.js";
 import { SemanticObservabilityService } from "./semantic-observability.service.js";
 import { TransferExecutionObserverService } from "./transfer-execution-observer.service.js";
 
@@ -22,11 +23,13 @@ import { TransferExecutionObserverService } from "./transfer-execution-observer.
   controllers: [SemanticObservabilityController],
   providers: [
     DatasetConfigObserverService,
+    SemanticObservabilitySdoExporterService,
     SemanticObservabilityService,
     TransferExecutionObserverService
   ],
   exports: [
     DatasetConfigObserverService,
+    SemanticObservabilitySdoExporterService,
     SemanticObservabilityService,
     TransferExecutionObserverService
   ]
