@@ -69,7 +69,7 @@ After the containers are healthy:
 powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1
 ```
 
-The script performs a local Alfa/Bravo sharing path to generate real events:
+The script performs a local Alfa/Bravo sharing path to generate real events, then publishes semantic scenario events as Alfa and Bravo to the central SDO dashboard. By default it runs all demo scenarios.
 
 1. Checks all four services.
 2. Bravo requests Alfa's catalog.
@@ -77,8 +77,37 @@ The script performs a local Alfa/Bravo sharing path to generate real events:
 4. Alfa agrees, Bravo verifies, and Alfa finalizes the agreement.
 5. Bravo requests a `tsg:HTTP` transfer.
 6. Bravo Data Plane executes a GET request through Alfa Data Plane.
-7. Both control planes refresh combined semantic observability snapshots.
-8. Recent observability events are printed.
+7. Scenario-specific semantic observability events are exported to SDO.
+8. Both control planes refresh combined semantic observability snapshots.
+9. Recent observability events are printed.
+
+Run one scenario at a time:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario happy-path
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario missing-ontology
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario missing-schema
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario deprecated-artefact
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario validation-error
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario version-drift
+```
+
+If Alfa and Bravo are exporting to a hosted SDO dashboard, pass the public SDO URL so the scenario events are sent to the same collector:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 `
+  -Scenario all `
+  -SdoUrl https://sdo-semantic-observability-32325974766.europe-west1.run.app
+```
+
+The scenarios are:
+
+- `happy-path`: ontology, schema, versioned artefacts, and validation success.
+- `missing-ontology`: schema exists but ontology/semantic model is missing.
+- `missing-schema`: ontology exists but schema/OpenAPI reference is missing.
+- `deprecated-artefact`: legacy/deprecated ontology and schema usage.
+- `validation-error`: semantic validation failure with a failure category.
+- `version-drift`: old and new ontology/schema versions observed in the same Alfa/Bravo flow.
 
 The same sanitized events are exported to the central SDO collector. Refresh:
 

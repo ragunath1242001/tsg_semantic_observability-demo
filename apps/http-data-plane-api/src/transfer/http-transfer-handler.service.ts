@@ -132,6 +132,7 @@ export class HTTPTransferHandler implements ITransferHandler {
     );
     await this.transferExecutionObserver.recordTransferStateChanged({
       transferId: transfer.id,
+      agreementId: transfer.request.agreementId,
       datasetId: transfer.datasetId,
       remoteParty: transfer.remoteParty,
       state: transfer.state,
@@ -158,6 +159,7 @@ export class HTTPTransferHandler implements ITransferHandler {
     await this.transferRepository.save(transfer);
     await this.transferExecutionObserver.recordTransferStateChanged({
       transferId: transfer.id,
+      agreementId: transfer.request.agreementId,
       datasetId: transfer.datasetId,
       remoteParty: transfer.remoteParty,
       state: transfer.state,
@@ -173,6 +175,7 @@ export class HTTPTransferHandler implements ITransferHandler {
     await this.transferRepository.save(transfer);
     await this.transferExecutionObserver.recordTransferStateChanged({
       transferId: transfer.id,
+      agreementId: transfer.request.agreementId,
       datasetId: transfer.datasetId,
       remoteParty: transfer.remoteParty,
       state: transfer.state,
@@ -188,6 +191,7 @@ export class HTTPTransferHandler implements ITransferHandler {
     await this.transferRepository.save(transfer);
     await this.transferExecutionObserver.recordTransferStateChanged({
       transferId: transfer.id,
+      agreementId: transfer.request.agreementId,
       datasetId: transfer.datasetId,
       remoteParty: transfer.remoteParty,
       state: transfer.state,
@@ -203,6 +207,7 @@ export class HTTPTransferHandler implements ITransferHandler {
     await this.transferRepository.save(transfer);
     await this.transferExecutionObserver.recordTransferStateChanged({
       transferId: transfer.id,
+      agreementId: transfer.request.agreementId,
       datasetId: transfer.datasetId,
       remoteParty: transfer.remoteParty,
       state: transfer.state,
@@ -338,6 +343,7 @@ export class HTTPTransferHandler implements ITransferHandler {
       await this.loggingService.insertEgressLog(logEntry);
       await this.transferExecutionObserver.recordDataPlaneAccess({
         transferId: transfer.id,
+        agreementId: transfer.request.agreementId,
         datasetId: transfer.datasetId,
         remoteParty: transfer.remoteParty,
         direction: "egress",
@@ -347,6 +353,7 @@ export class HTTPTransferHandler implements ITransferHandler {
     } catch (e) {
       await this.transferExecutionObserver.recordDataPlaneAccessFailure({
         transferId: transfer.id,
+        agreementId: transfer.request.agreementId,
         datasetId: transfer.datasetId,
         remoteParty: transfer.remoteParty,
         direction: "egress",
@@ -449,6 +456,7 @@ export class HTTPTransferHandler implements ITransferHandler {
       await this.loggingService.insertIngressLog(logEntry);
       await this.transferExecutionObserver.recordDataPlaneAccess({
         transferId: transfer.id,
+        agreementId: transfer.request.agreementId,
         datasetId: transfer.datasetId,
         remoteParty: transfer.remoteParty,
         direction: "ingress",
@@ -458,6 +466,7 @@ export class HTTPTransferHandler implements ITransferHandler {
     } catch (e) {
       await this.transferExecutionObserver.recordDataPlaneAccessFailure({
         transferId: transfer.id,
+        agreementId: transfer.request.agreementId,
         datasetId: transfer.datasetId,
         remoteParty: transfer.remoteParty,
         direction: "ingress",

@@ -119,4 +119,37 @@ describe("semantic observability privacy", () => {
     expect(sanitized.artefacts?.[0].reference).not.toContain("customer");
     expect(sanitized.attributes?.errorMessage).toBe("[redacted]");
   });
+
+  it("drops undeclared raw data instead of forwarding it", () => {
+    const sanitized = sanitizeSemanticObservabilityEvent({
+      eventId: "event-1",
+      timestamp: "2026-06-03T12:00:00.000Z",
+      component: SemanticObservabilityComponent.HTTP_DATA_PLANE,
+      eventType: SemanticObservabilityEventType.SEMANTIC_FIELD_USAGE_SUMMARY,
+      dimensions: [SemanticObservabilityDimension.ADOPTION],
+      status: SemanticObservabilityStatus.INFO,
+      rawPayload: { customer: "Alice" },
+      context: {
+        datasetPseudonym: "p_dataset",
+        rawCustomerId: "customer-1"
+      },
+      artefacts: [
+        {
+          type: SemanticArtefactType.SCHEMA,
+          reference: "https://example.test/schema",
+          rawSchema: { secret: true }
+        }
+      ],
+      attributes: {
+        fieldId: "setu:employee.startDate",
+        presentCount: 0,
+        payloadSample: "Alice"
+      }
+    } as unknown as Parameters<typeof sanitizeSemanticObservabilityEvent>[0]);
+
+    expect("rawPayload" in sanitized).toBe(false);
+    expect("rawCustomerId" in (sanitized.context ?? {})).toBe(false);
+    expect("rawSchema" in (sanitized.artefacts?.[0] ?? {})).toBe(false);
+    expect(sanitized.attributes?.payloadSample).toBe("[redacted]");
+  });
 });

@@ -21,6 +21,7 @@ export class TransferExecutionObserverService {
 
   async recordTransferStateChanged(params: {
     transferId: string;
+    agreementId?: string;
     datasetId: string;
     remoteParty: string;
     state: TransferState;
@@ -39,6 +40,8 @@ export class TransferExecutionObserverService {
         status: mapTransferStateToStatus(params.state),
         context: {
           transferId: params.transferId,
+          agreementId: params.agreementId,
+          correlationId: params.agreementId ?? params.transferId,
           datasetPseudonym: pseudonymizeIdentifier(params.datasetId),
           remoteParticipantPseudonym: pseudonymizeIdentifier(params.remoteParty)
         },
@@ -52,6 +55,7 @@ export class TransferExecutionObserverService {
 
   async recordDataPlaneAccess(params: {
     transferId: string;
+    agreementId?: string;
     datasetId: string;
     remoteParty: string;
     direction: "ingress" | "egress";
@@ -74,6 +78,8 @@ export class TransferExecutionObserverService {
             : SemanticObservabilityStatus.SUCCESS,
         context: {
           transferId: params.transferId,
+          agreementId: params.agreementId,
+          correlationId: params.agreementId ?? params.transferId,
           datasetPseudonym: pseudonymizeIdentifier(params.datasetId),
           remoteParticipantPseudonym: pseudonymizeIdentifier(params.remoteParty)
         },
@@ -94,6 +100,7 @@ export class TransferExecutionObserverService {
 
   async recordDataPlaneAccessFailure(params: {
     transferId: string;
+    agreementId?: string;
     datasetId: string;
     remoteParty: string;
     direction: "ingress" | "egress";
@@ -111,6 +118,8 @@ export class TransferExecutionObserverService {
         status: SemanticObservabilityStatus.FAILURE,
         context: {
           transferId: params.transferId,
+          agreementId: params.agreementId,
+          correlationId: params.agreementId ?? params.transferId,
           datasetPseudonym: pseudonymizeIdentifier(params.datasetId),
           remoteParticipantPseudonym: pseudonymizeIdentifier(params.remoteParty)
         },

@@ -5,7 +5,10 @@ param(
   [string]$BravoDataPlane = "http://localhost:3802",
   [string]$ProviderAddress = "http://alfa-control-plane:3000/api",
   [string]$ProviderAudience = "did:web:alfa-control-plane",
-  [string]$ExecutePath = "get"
+  [string]$ExecutePath = "get",
+  [ValidateSet("all", "happy-path", "missing-ontology", "missing-schema", "deprecated-artefact", "validation-error", "version-drift")]
+  [string]$Scenario = "all",
+  [string]$SdoUrl = "http://localhost:4100"
 )
 
 $ErrorActionPreference = "Stop"
@@ -53,6 +56,281 @@ function Show-Events {
   @($events) |
     Select-Object timestamp, component, eventType, status, failureCategory |
     Format-Table -AutoSize
+}
+
+function Read-DemoEnv {
+  $envPath = Join-Path (Resolve-Path (Join-Path $PSScriptRoot "..")) ".env"
+  if (-not (Test-Path $envPath)) {
+    throw "Demo .env was not found at $envPath. Start the demo first with start-sdo-dashboard-demo.ps1."
+  }
+
+  $values = @{}
+  Get-Content $envPath | ForEach-Object {
+    if ($_ -match "^\s*([^#][^=]+)=(.*)$") {
+      $values[$matches[1].Trim()] = $matches[2].Trim()
+    }
+  }
+  return $values
+}
+
+function Get-SdoIngestUrl {
+  param([hashtable]$EnvValues)
+
+  $endpoint = $EnvValues["SDO_OBSERVABILITY_ENDPOINT"]
+  if ($endpoint -and $endpoint -notmatch "sdo-observability:4100") {
+    return $endpoint
+  }
+
+  return "$($SdoUrl.TrimEnd('/'))/api/ingest/events"
+}
+
+function ConvertTo-DemoPseudonym {
+  param(
+    [string]$Value,
+    [string]$Kind
+  )
+
+  if (-not $Value) {
+    return $Value
+  }
+
+  $sha256 = [System.Security.Cryptography.SHA256]::Create()
+  try {
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes("$Kind|$Value")
+    $hex = -join ($sha256.ComputeHash($bytes) | ForEach-Object { $_.ToString("x2") })
+    return "p_${Kind}_$($hex.Substring(0, 16))"
+  } finally {
+    $sha256.Dispose()
+  }
+}
+
+function New-SemanticEvent {
+  param(
+    [string]$ScenarioName,
+    [string]$ParticipantRole,
+    [string]$Component,
+    [string]$EventType,
+    [string]$Status,
+    [string[]]$Dimensions,
+    [array]$Artefacts,
+    [hashtable]$Context,
+    [hashtable]$Attributes = $null,
+    [string]$FailureCategory = $null,
+    [double]$MetadataCompletenessScore = 1.0
+  )
+
+  $event = @{
+    eventId = "demo-$ScenarioName-$ParticipantRole-$([guid]::NewGuid().ToString('N'))"
+    timestamp = (Get-Date).ToUniversalTime().ToString("o")
+    component = $Component
+    eventType = $EventType
+    status = $Status
+    dimensions = $Dimensions
+    artefacts = $Artefacts
+    context = $Context
+    metadataCompletenessScore = $MetadataCompletenessScore
+  }
+
+  if ($FailureCategory) {
+    $event.failureCategory = $FailureCategory
+  }
+  if ($Attributes) {
+    $event.attributes = $Attributes
+  }
+
+  return $event
+}
+
+function New-FieldUsageEvents {
+  param(
+    [string]$ParticipantRole,
+    [hashtable]$Context
+  )
+
+  $windowEnd = (Get-Date).ToUniversalTime()
+  $windowStart = $windowEnd.AddHours(-1)
+  return @(
+    New-SemanticEvent -ScenarioName "field-usage" -ParticipantRole $ParticipantRole -Component "http-data-plane" -EventType "semantic-field.usage.summary" -Status "info" -Dimensions @("adoption") -Context $Context -Artefacts @() -Attributes @{
+      governedStandardId = "setu:vehicle-sharing"
+      governedVersion = "2.0.0"
+      fieldId = "setu:vehicle.startDate"
+      timeWindowStart = $windowStart.ToString("o")
+      timeWindowEnd = $windowEnd.ToString("o")
+      observationCount = 25
+      presentCount = 0
+    }
+    New-SemanticEvent -ScenarioName "field-usage" -ParticipantRole $ParticipantRole -Component "http-data-plane" -EventType "semantic-field.usage.summary" -Status "info" -Dimensions @("adoption") -Context $Context -Artefacts @() -Attributes @{
+      governedStandardId = "setu:vehicle-sharing"
+      governedVersion = "2.0.0"
+      fieldId = "setu:vehicle.role"
+      timeWindowStart = $windowStart.ToString("o")
+      timeWindowEnd = $windowEnd.ToString("o")
+      observationCount = 25
+      presentCount = 20
+    }
+  )
+}
+
+function Send-SdoEvents {
+  param(
+    [string]$ParticipantId,
+    [string]$ApiKey,
+    [string]$IngestUrl,
+    [array]$Events
+  )
+
+  if (-not $ParticipantId -or -not $ApiKey) {
+    throw "Missing SDO participant credentials in demo .env."
+  }
+
+  foreach ($event in $Events) {
+    foreach ($key in @("participantPseudonym", "remoteParticipantPseudonym", "participantPairPseudonym", "datasetPseudonym", "negotiationId", "agreementId", "transferId", "correlationId", "traceId")) {
+      if ($event.context -and $event.context.ContainsKey($key)) {
+        $event.context[$key] = ConvertTo-DemoPseudonym -Value $event.context[$key] -Kind $key
+      }
+    }
+    foreach ($artefact in @($event.artefacts)) {
+      $artefact.reference = ConvertTo-DemoPseudonym -Value $artefact.reference -Kind "artefact"
+    }
+  }
+
+  Invoke-RestMethod `
+    -Method POST `
+    -Uri $IngestUrl `
+    -ContentType "application/json" `
+    -Headers @{
+      "X-SDO-Participant-Id" = $ParticipantId
+      "X-SDO-API-Key" = $ApiKey
+    } `
+    -Body (@{ participantId = $ParticipantId; events = $Events } | ConvertTo-Json -Depth 50) `
+    -TimeoutSec 90 | Out-Null
+}
+
+function Get-ScenarioNames {
+  if ($Scenario -eq "all") {
+    return @("happy-path", "missing-ontology", "missing-schema", "deprecated-artefact", "validation-error", "version-drift")
+  }
+  return @($Scenario)
+}
+
+function Get-ScenarioEvents {
+  param(
+    [string]$ScenarioName,
+    [string]$AgreementId,
+    [string]$TransferId
+  )
+
+  $correlationId = "demo-$ScenarioName-$([guid]::NewGuid().ToString('N').Substring(0, 8))"
+  $baseContext = @{
+    correlationId = $correlationId
+    agreementId = $AgreementId
+    transferId = $TransferId
+    participantPairPseudonym = "alfa-bravo-local-demo"
+    datasetPseudonym = "dataset-$ScenarioName"
+    scenario = $ScenarioName
+  }
+
+  switch ($ScenarioName) {
+    "happy-path" {
+      return @{
+        bravo = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "bravo" -Component "http-data-plane" -EventType "metadata.validation.result" -Status "success" -Dimensions @("friction", "adoption") -Context $baseContext -Attributes @{ governedStandardId = "setu:vehicle-sharing"; governedVersion = "2.0.0" } -Artefacts @(
+            @{ type = "ontology"; reference = "https://semantic.example.org/mobility/vehicle-sharing"; version = "2.0.0" },
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "2.0.0" }
+          )
+          New-FieldUsageEvents -ParticipantRole "bravo" -Context $baseContext
+        )
+        alfa = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "alfa" -Component "control-plane" -EventType "catalog.dataset.observed" -Status "success" -Dimensions @("adoption") -Context $baseContext -Artefacts @(
+            @{ type = "ontology"; reference = "https://semantic.example.org/mobility/vehicle-sharing"; version = "2.0.0" },
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "2.0.0" }
+          )
+          New-FieldUsageEvents -ParticipantRole "alfa" -Context $baseContext
+        )
+      }
+    }
+    "missing-ontology" {
+      return @{
+        alfa = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "alfa" -Component "control-plane" -EventType "catalog.dataset.observed" -Status "warning" -Dimensions @("adoption") -Context $baseContext -MetadataCompletenessScore 0.65 -Artefacts @(
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "2.0.0" }
+          )
+        )
+        bravo = @()
+      }
+    }
+    "missing-schema" {
+      return @{
+        alfa = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "alfa" -Component "control-plane" -EventType "catalog.dataset.observed" -Status "warning" -Dimensions @("adoption") -Context $baseContext -MetadataCompletenessScore 0.72 -Artefacts @(
+            @{ type = "ontology"; reference = "https://semantic.example.org/mobility/vehicle-sharing"; version = "2.0.0" }
+          )
+        )
+        bravo = @()
+      }
+    }
+    "deprecated-artefact" {
+      return @{
+        alfa = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "alfa" -Component "control-plane" -EventType "catalog.dataset.observed" -Status "warning" -Dimensions @("adoption", "evolution") -Context $baseContext -MetadataCompletenessScore 0.8 -Artefacts @(
+            @{ type = "ontology"; reference = "https://semantic.example.org/mobility/legacy-vehicle-sharing"; version = "0.9.0"; deprecated = $true; lifecycleStatus = "deprecated" },
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/legacy-vehicle-sharing.json"; version = "0.9.0"; deprecated = $true; lifecycleStatus = "deprecated" }
+          )
+        )
+        bravo = @()
+      }
+    }
+    "validation-error" {
+      return @{
+        alfa = @()
+        bravo = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "bravo" -Component "http-data-plane" -EventType "metadata.validation.result" -Status "failure" -Dimensions @("friction", "adoption") -Context $baseContext -Attributes @{ governedStandardId = "setu:vehicle-sharing"; governedVersion = "2.0.0" } -FailureCategory "invalid-controlled-vocabulary" -MetadataCompletenessScore 0.45 -Artefacts @(
+            @{ type = "ontology"; reference = "https://semantic.example.org/mobility/vehicle-sharing"; version = "2.0.0" },
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "2.0.0" }
+          )
+        )
+      }
+    }
+    "version-drift" {
+      return @{
+        alfa = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "alfa" -Component "control-plane" -EventType "catalog.dataset.observed" -Status "success" -Dimensions @("adoption", "evolution") -Context $baseContext -Artefacts @(
+            @{ type = "ontology"; reference = "https://semantic.example.org/mobility/vehicle-sharing"; version = "1.0.0" },
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "1.0.0" }
+          )
+        )
+        bravo = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "bravo" -Component "http-data-plane" -EventType "metadata.validation.result" -Status "success" -Dimensions @("friction", "adoption", "evolution") -Context $baseContext -Attributes @{ governedStandardId = "setu:vehicle-sharing"; governedVersion = "2.0.0" } -Artefacts @(
+            @{ type = "ontology"; reference = "https://semantic.example.org/mobility/vehicle-sharing"; version = "2.0.0" },
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "2.0.0" }
+          )
+        )
+      }
+    }
+  }
+}
+
+function Publish-ScenarioEvents {
+  param(
+    [string]$AgreementId,
+    [string]$TransferId
+  )
+
+  $envValues = Read-DemoEnv
+  $ingestUrl = Get-SdoIngestUrl -EnvValues $envValues
+  Write-Step "Publishing semantic demo scenario events to SDO"
+  Write-Host "SDO ingest endpoint: $ingestUrl"
+
+  foreach ($scenarioName in Get-ScenarioNames) {
+    $scenarioEvents = Get-ScenarioEvents -ScenarioName $scenarioName -AgreementId $AgreementId -TransferId $TransferId
+    if (@($scenarioEvents.alfa).Count -gt 0) {
+      Send-SdoEvents -ParticipantId $envValues["SDO_ALFA_PARTICIPANT_ID"] -ApiKey $envValues["SDO_ALFA_API_KEY"] -IngestUrl $ingestUrl -Events @($scenarioEvents.alfa)
+    }
+    if (@($scenarioEvents.bravo).Count -gt 0) {
+      Send-SdoEvents -ParticipantId $envValues["SDO_BRAVO_PARTICIPANT_ID"] -ApiKey $envValues["SDO_BRAVO_API_KEY"] -IngestUrl $ingestUrl -Events @($scenarioEvents.bravo)
+    }
+    Write-Host "Published scenario: $scenarioName"
+  }
 }
 
 $alfaManagement = "$AlfaControlPlane/api/management"
@@ -138,6 +416,8 @@ $dataResponse = Invoke-Json -Method GET -Uri "$BravoDataPlane/api/management/tra
 Write-Host "Backend method: $($dataResponse.method)"
 Write-Host "Provider transfer header: $($dataResponse.headers.'x-dsp-transfer-id')"
 Write-Host "Agreement header: $($dataResponse.headers.'x-dsp-agreement-id')"
+
+Publish-ScenarioEvents -AgreementId $agreementId -TransferId $bravoDataPlaneTransfer.id
 
 Write-Step "Refreshing semantic observability snapshots"
 Invoke-Json -Method POST -Uri "$alfaManagement/semantic-observability/combined/report/snapshots/refresh?bucket=hour" | Out-Null

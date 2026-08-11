@@ -49,7 +49,10 @@ import { Response } from "express";
 import { IsNull, Not, Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
-import { DatasetConfigObserverService } from "../semantic-observability/dataset-config-observer.service.js";
+import {
+  DatasetConfigObserverService,
+  MetadataValidationObservation
+} from "../semantic-observability/dataset-config-observer.service.js";
 import { defArray } from "../utils/arrays.js";
 import {
   DatasetItemDao,
@@ -468,7 +471,12 @@ export class DataPlaneService implements OnModuleInit {
     if (hasExtraProps) {
       await this.validateExtraProps(
         extraProps,
-        datasetConfig.validateExtraProps
+        datasetConfig.validateExtraProps,
+        {
+          datasetId: item.id ?? item.title,
+          governedStandardId: datasetConfig.governedStandardId,
+          version: item.version
+        }
       );
     }
 
@@ -507,7 +515,8 @@ export class DataPlaneService implements OnModuleInit {
 
   private async validateExtraProps(
     extraProps: Record<string, unknown>,
-    validationLevel: "error" | "warn" | "ignore"
+    validationLevel: "error" | "warn" | "ignore",
+    observation: MetadataValidationObservation = {}
   ) {
     if (validationLevel === "ignore") return;
     try {
@@ -515,12 +524,15 @@ export class DataPlaneService implements OnModuleInit {
         compaction: true
       });
       await this.datasetConfigObserver.recordMetadataValidationResult(
-        validationLevel
+        validationLevel,
+        undefined,
+        observation
       );
     } catch (error) {
       await this.datasetConfigObserver.recordMetadataValidationResult(
         validationLevel,
-        error as Error
+        error as Error,
+        observation
       );
       if (validationLevel === "error") {
         throw new DataPlaneError(
@@ -552,14 +564,23 @@ export class DataPlaneService implements OnModuleInit {
     if (datasetConfig.extraProps) {
       await this.validateExtraProps(
         datasetConfig.extraProps,
-        datasetConfig.validateExtraProps
+        datasetConfig.validateExtraProps,
+        {
+          datasetId: id,
+          governedStandardId: datasetConfig.governedStandardId
+        }
       );
     }
     for (const v of datasetConfig.versions) {
       if (v.extraProps) {
         await this.validateExtraProps(
           v.extraProps,
-          datasetConfig.validateExtraProps
+          datasetConfig.validateExtraProps,
+          {
+            datasetId: `${id}:${v.version}`,
+            governedStandardId: datasetConfig.governedStandardId,
+            version: v.version
+          }
         );
       }
     }

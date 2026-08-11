@@ -13,13 +13,16 @@ export function sanitizeSemanticObservabilityEvent(
 ): SemanticObservabilityEvent {
   const context = event.context
     ? {
-        ...event.context,
+        participantPseudonym: event.context.participantPseudonym,
+        remoteParticipantPseudonym: event.context.remoteParticipantPseudonym,
         participantPairPseudonym:
           event.context.participantPairPseudonym ??
           createParticipantPairPseudonym(
             event.context.participantPseudonym,
             event.context.remoteParticipantPseudonym
           ),
+        datasetPseudonym: event.context.datasetPseudonym,
+        datasetCategory: event.context.datasetCategory,
         negotiationId: pseudonymizeIdentifier(
           event.context.negotiationId,
           "negotiation"
@@ -41,9 +44,18 @@ export function sanitizeSemanticObservabilityEvent(
     : undefined;
 
   return {
-    ...event,
+    eventId: event.eventId,
+    timestamp: event.timestamp,
+    component: event.component,
+    eventType: event.eventType,
+    dimensions: event.dimensions,
+    status: event.status,
     context,
     artefacts: sanitizeArtefactReferences(event.artefacts),
+    failureCategory: event.failureCategory,
+    durationMs: event.durationMs,
+    metadataCompletenessScore: event.metadataCompletenessScore,
+    validationErrorCount: event.validationErrorCount,
     attributes: event.attributes
       ? sanitizeAttributes(event.attributes, undefined, true)
       : undefined
@@ -58,8 +70,9 @@ function sanitizeArtefactReferences(
   }
 
   return artefacts.map((artefact) => ({
-    ...artefact,
-    reference: pseudonymizeSemanticReference(artefact.reference) ?? "p_unknown"
+    type: artefact.type,
+    reference: pseudonymizeSemanticReference(artefact.reference) ?? "p_unknown",
+    version: artefact.version
   }));
 }
 

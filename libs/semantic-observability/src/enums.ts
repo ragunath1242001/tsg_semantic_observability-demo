@@ -26,6 +26,7 @@ export enum SemanticObservabilityEventType {
   DATASET_CONFIGURATION_OBSERVED = "dataset.configuration.observed",
   DATASET_METADATA_CHANGED = "dataset.metadata.changed",
   SEMANTIC_ARTEFACT_OBSERVED = "semantic-artefact.observed",
+  SEMANTIC_FIELD_USAGE_SUMMARY = "semantic-field.usage.summary",
   METADATA_VALIDATION_RESULT = "metadata.validation.result",
   POLICY_EVALUATION_RESULT = "policy.evaluation.result",
   NEGOTIATION_STATE_CHANGED = "negotiation.state.changed",

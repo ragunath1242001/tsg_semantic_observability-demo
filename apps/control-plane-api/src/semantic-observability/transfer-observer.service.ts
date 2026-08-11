@@ -46,6 +46,7 @@ export class TransferObserverService {
         context: {
           transferId: transfer.id,
           agreementId: transfer.agreementId,
+          correlationId: transfer.agreementId ?? transfer.id,
           remoteParticipantPseudonym: pseudonymizeIdentifier(
             transfer.remoteParty
           )

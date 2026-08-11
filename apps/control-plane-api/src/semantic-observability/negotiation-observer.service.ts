@@ -46,6 +46,7 @@ export class NegotiationObserverService {
         context: {
           negotiationId: negotiation.id,
           agreementId: negotiation.agreementId,
+          correlationId: negotiation.agreementId ?? negotiation.id,
           datasetPseudonym: pseudonymizeIdentifier(negotiation.dataSet),
           remoteParticipantPseudonym: pseudonymizeIdentifier(
             negotiation.remoteParty

@@ -234,6 +234,30 @@ export abstract class DatasetConfig {
   @IsIn(["error", "warn", "ignore"])
   public validateExtraProps: "error" | "warn" | "ignore" = "error";
 
+  @ApiPropertyOptional({
+    description:
+      "Public SDO-governed standard identifier used only for aggregate observability"
+  })
+  @Description(
+    "Public SDO-governed standard identifier used only for aggregate observability"
+  )
+  @IsString()
+  @IsOptional()
+  public governedStandardId?: string;
+
+  @ApiPropertyOptional({
+    description:
+      "Public governed semantic field identifiers whose presence may be counted",
+    type: [String]
+  })
+  @Description(
+    "Public governed semantic field identifiers whose presence may be counted"
+  )
+  @ArrayMaxSize(500)
+  @IsString({ each: true })
+  @IsOptional()
+  public governedFieldIds?: string[];
+
   static parse(
     plain: any,
     validator?: (

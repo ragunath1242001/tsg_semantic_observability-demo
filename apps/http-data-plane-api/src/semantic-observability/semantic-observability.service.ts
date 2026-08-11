@@ -8,32 +8,50 @@ import {
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
+  buildSemanticObservabilityInsights,
+  buildSemanticObservabilityMetricSnapshots,
+  buildSemanticObservabilityReport,
+  buildSemanticObservabilityReportFromMetrics,
   CreateSemanticObservabilityEvent,
-  SemanticObservabilityContext,
-  SemanticObservabilityReportFilter,
+  createSemanticObservabilityEvent,
+  pseudonymizeIdentifier,
+  sanitizeSemanticObservabilityEvent,
+  SemanticObservabilityComponent,
+  SemanticObservabilityDimension,
+  SemanticObservabilityEventType,
+  SemanticObservabilityInsight,
   SemanticObservabilityReport,
+  SemanticObservabilityReportFilter,
   SemanticObservabilitySnapshotBucket,
   SemanticObservabilitySnapshotFilter,
   SemanticObservabilitySnapshotRefreshStatus,
-  SemanticObservabilityInsight,
-  buildSemanticObservabilityMetricSnapshots,
-  buildSemanticObservabilityInsights,
-  buildSemanticObservabilityReport,
-  buildSemanticObservabilityReportFromMetrics,
-  createSemanticObservabilityEvent,
-  pseudonymizeIdentifier,
-  sanitizeSemanticObservabilityEvent
+  SemanticObservabilityStatus
 } from "@tsg-dsp/semantic-observability";
 import { FindOptionsWhere, Repository } from "typeorm";
 
-import { PageDto, PageMetaDto, PageOptionsDto } from "../utils/pagination.js";
 import { SemanticObservabilityConfig } from "../config.js";
+import { PageDto, PageMetaDto, PageOptionsDto } from "../utils/pagination.js";
 import {
   SemanticObservabilityEventDao,
   SemanticObservabilityMetricSnapshotDao
 } from "./semantic-observability.dao.js";
 import { SemanticObservabilityEventFilterDto } from "./semantic-observability.dto.js";
 import { SemanticObservabilitySdoExporterService } from "./semantic-observability-sdo-exporter.service.js";
+
+interface FieldUsageObservation {
+  governedStandardId?: string;
+  version?: string;
+  governedFieldIds?: string[];
+  observedFieldIds: string[];
+}
+
+interface FieldUsageBucket {
+  governedStandardId: string;
+  version: string;
+  timeWindowStart: string;
+  observationCount: number;
+  presentCounts: Map<string, number>;
+}
 
 @Injectable()
 export class SemanticObservabilityService
@@ -51,6 +69,8 @@ export class SemanticObservabilityService
     inProgress: false,
     refreshedSnapshots: 0
   };
+  // ponytail: in-memory counters reset on restart; persist them if production continuity requires it.
+  private readonly fieldUsageBuckets = new Map<string, FieldUsageBucket>();
 
   constructor(
     @InjectRepository(SemanticObservabilityEventDao)
@@ -111,6 +131,50 @@ export class SemanticObservabilityService
     );
     void this.sdoExporter?.exportEvent(savedEvent);
     return savedEvent;
+  }
+
+  async recordFieldUsageObservation(
+    observation: FieldUsageObservation
+  ): Promise<void> {
+    const governedStandardId = observation.governedStandardId?.trim();
+    const governedFieldIds = [
+      ...new Set(
+        (observation.governedFieldIds ?? [])
+          .map((fieldId) => fieldId.trim())
+          .filter((fieldId) => fieldId.length > 0 && fieldId.length <= 512)
+      )
+    ];
+    if (!governedStandardId || governedFieldIds.length === 0) return;
+
+    const version = observation.version?.trim() || "unversioned";
+    const key = JSON.stringify([governedStandardId, version]);
+    const bucket = this.fieldUsageBuckets.get(key) ?? {
+      governedStandardId,
+      version,
+      timeWindowStart: new Date().toISOString(),
+      observationCount: 0,
+      presentCounts: new Map(governedFieldIds.map((fieldId) => [fieldId, 0]))
+    };
+    const observed = new Set(observation.observedFieldIds);
+
+    for (const fieldId of governedFieldIds) {
+      if (!bucket.presentCounts.has(fieldId)) {
+        bucket.presentCounts.set(fieldId, 0);
+      }
+    }
+    bucket.observationCount += 1;
+    for (const fieldId of bucket.presentCounts.keys()) {
+      bucket.presentCounts.set(
+        fieldId,
+        (bucket.presentCounts.get(fieldId) ?? 0) +
+          (observed.has(fieldId) ? 1 : 0)
+      );
+    }
+    this.fieldUsageBuckets.set(key, bucket);
+
+    if (bucket.observationCount >= this.fieldUsageMinimumObservations()) {
+      await this.flushFieldUsageBucket(key, bucket);
+    }
   }
 
   async getEvents(
@@ -308,6 +372,43 @@ export class SemanticObservabilityService
       3600000;
   }
 
+  private fieldUsageMinimumObservations(): number {
+    return Math.max(
+      2,
+      this.semanticObservabilityConfig?.fieldUsageMinimumObservations ?? 5
+    );
+  }
+
+  private async flushFieldUsageBucket(
+    key: string,
+    bucket: FieldUsageBucket
+  ): Promise<void> {
+    const timeWindowEnd = new Date().toISOString();
+    await Promise.all(
+      [...bucket.presentCounts].map(([fieldId, presentCount]) =>
+        this.recordEvent({
+          component: SemanticObservabilityComponent.HTTP_DATA_PLANE,
+          eventType:
+            SemanticObservabilityEventType.SEMANTIC_FIELD_USAGE_SUMMARY,
+          dimensions: [SemanticObservabilityDimension.ADOPTION],
+          status: SemanticObservabilityStatus.INFO,
+          attributes: {
+            governedStandardId: bucket.governedStandardId,
+            governedVersion: bucket.version,
+            fieldId,
+            timeWindowStart: bucket.timeWindowStart,
+            timeWindowEnd,
+            observationCount: bucket.observationCount,
+            presentCount
+          }
+        })
+      )
+    );
+    if (this.fieldUsageBuckets.get(key) === bucket) {
+      this.fieldUsageBuckets.delete(key);
+    }
+  }
+
   private async refreshConfiguredSnapshots() {
     if (this.status.inProgress) {
       return;
@@ -324,6 +425,14 @@ export class SemanticObservabilityService
       this.status.refreshedSnapshots = refreshed.reduce(
         (total, snapshots) => total + snapshots.length,
         0
+      );
+      await Promise.all(
+        [...this.fieldUsageBuckets]
+          .filter(
+            ([, bucket]) =>
+              bucket.observationCount >= this.fieldUsageMinimumObservations()
+          )
+          .map(([key, bucket]) => this.flushFieldUsageBucket(key, bucket))
       );
       this.status.lastCompletedAt = new Date().toISOString();
     } catch (error) {

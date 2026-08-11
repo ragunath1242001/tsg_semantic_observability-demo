@@ -24,6 +24,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  Min,
   ValidateNested
 } from "class-validator";
 
@@ -69,7 +70,9 @@ export class RuntimeConfig {
 }
 
 export class SemanticObservabilitySdoExportConfig {
-  @Description("Enable export of sanitized semantic observability events to SDO")
+  @Description(
+    "Enable export of sanitized semantic observability events to SDO"
+  )
   @IsBoolean()
   @Transform(valueToBoolean)
   @IsOptional()
@@ -117,6 +120,15 @@ export class SemanticObservabilityConfig {
   @Type(() => Number)
   @IsOptional()
   public readonly refreshIntervalInMilliseconds: number = 3600000;
+
+  @Description(
+    "Minimum local metadata observations before exporting a field-usage summary"
+  )
+  @IsNumber()
+  @Min(2)
+  @Type(() => Number)
+  @IsOptional()
+  public readonly fieldUsageMinimumObservations: number = 5;
 
   @Description("SDO semantic observability export configuration")
   @ValidateNested()

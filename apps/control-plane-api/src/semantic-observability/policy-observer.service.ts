@@ -41,6 +41,7 @@ export class PolicyObserverService {
         context: {
           transferId: context.transferId,
           agreementId: context.policy.agreement["@id"],
+          correlationId: context.policy.agreement["@id"],
           datasetPseudonym: pseudonymizeIdentifier(context.target),
           participantPseudonym: pseudonymizeIdentifier(
             context.localParticipant

@@ -1,25 +1,31 @@
 import { Injectable, Logger } from "@nestjs/common";
 import {
-  SemanticArtefactReference,
-  SemanticArtefactType,
-  SemanticObservabilityComponent,
-  SemanticObservabilityDimension,
-  SemanticObservabilityEventType,
-  SemanticObservabilityStatus,
-  calculateMetadataCompletenessScore,
-  extractVersionFromReference,
-  normalizeSemanticReference,
-  pseudonymizeIdentifier,
-  sanitizeAttributes
-} from "@tsg-dsp/semantic-observability";
-import {
   CollectionDatasetConfig,
   DatasetConfig,
   DatasetItem,
   VersionedDatasetConfig
 } from "@tsg-dsp/http-data-plane-dtos";
+import {
+  calculateMetadataCompletenessScore,
+  extractVersionFromReference,
+  normalizeSemanticReference,
+  pseudonymizeIdentifier,
+  sanitizeAttributes,
+  SemanticArtefactReference,
+  SemanticArtefactType,
+  SemanticObservabilityComponent,
+  SemanticObservabilityDimension,
+  SemanticObservabilityEventType,
+  SemanticObservabilityStatus
+} from "@tsg-dsp/semantic-observability";
 
 import { SemanticObservabilityService } from "./semantic-observability.service.js";
+
+export interface MetadataValidationObservation {
+  datasetId?: string;
+  governedStandardId?: string;
+  version?: string;
+}
 
 @Injectable()
 export class DatasetConfigObserverService {
@@ -68,6 +74,21 @@ export class DatasetConfigObserverService {
               : undefined
         })
       });
+      if (datasetConfig instanceof VersionedDatasetConfig) {
+        await Promise.all(
+          datasetConfig.versions.map((version) =>
+            this.semanticObservabilityService.recordFieldUsageObservation({
+              governedStandardId: datasetConfig.governedStandardId,
+              version: version.version,
+              governedFieldIds: datasetConfig.governedFieldIds,
+              observedFieldIds: [
+                ...Object.keys(datasetConfig.extraProps ?? {}),
+                ...Object.keys(version.extraProps ?? {})
+              ]
+            })
+          )
+        );
+      }
     });
   }
 
@@ -111,12 +132,22 @@ export class DatasetConfigObserverService {
           hasPolicy: Boolean(item.policy?.length ?? datasetConfig.basePolicy)
         })
       });
+      await this.semanticObservabilityService.recordFieldUsageObservation({
+        governedStandardId: datasetConfig.governedStandardId,
+        version: item.version,
+        governedFieldIds: datasetConfig.governedFieldIds,
+        observedFieldIds: [
+          ...Object.keys(datasetConfig.extraProps ?? {}),
+          ...Object.keys(item.extraProps ?? {})
+        ]
+      });
     });
   }
 
   async recordMetadataValidationResult(
     validationLevel: "error" | "warn" | "ignore",
-    error?: Error
+    error?: Error,
+    observation: MetadataValidationObservation = {}
   ) {
     if (validationLevel === "ignore") {
       return;
@@ -132,11 +163,16 @@ export class DatasetConfigObserverService {
             ? SemanticObservabilityStatus.FAILURE
             : SemanticObservabilityStatus.WARNING
           : SemanticObservabilityStatus.SUCCESS,
+        context: {
+          datasetPseudonym: pseudonymizeIdentifier(observation.datasetId)
+        },
         failureCategory: error ? "extra_props_validation" : undefined,
         validationErrorCount: error ? 1 : 0,
         attributes: sanitizeAttributes({
           validationLevel,
-          errorMessage: error?.message
+          errorMessage: error?.message,
+          governedStandardId: observation.governedStandardId,
+          governedVersion: observation.version
         })
       });
     });
