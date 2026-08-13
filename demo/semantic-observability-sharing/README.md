@@ -90,6 +90,10 @@ powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\s
 powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario deprecated-artefact
 powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario validation-error
 powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario version-drift
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario missing-required-field
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario invalid-field-type
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario version-regression
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -Scenario field-adoption-change
 ```
 
 If Alfa and Bravo are exporting to a hosted SDO dashboard, pass the public SDO URL so the scenario events are sent to the same collector:
@@ -108,6 +112,10 @@ The scenarios are:
 - `deprecated-artefact`: legacy/deprecated ontology and schema usage.
 - `validation-error`: semantic validation failure with a failure category.
 - `version-drift`: old and new ontology/schema versions observed in the same Alfa/Bravo flow.
+- `missing-required-field`: required field absence produces both a usage gap and a validation failure.
+- `invalid-field-type`: a field is present in every observation but fails type validation.
+- `version-regression`: version 1.0.0 fails while version 2.0.0 succeeds, showing version association.
+- `field-adoption-change`: governed field usage improves from version 1.0.0 to 2.0.0.
 
 The same sanitized events are exported to the central SDO collector. Refresh:
 

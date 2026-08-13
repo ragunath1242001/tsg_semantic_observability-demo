@@ -6,7 +6,7 @@ param(
   [string]$ProviderAddress = "http://alfa-control-plane:3000/api",
   [string]$ProviderAudience = "did:web:alfa-control-plane",
   [string]$ExecutePath = "get",
-  [ValidateSet("all", "happy-path", "missing-ontology", "missing-schema", "deprecated-artefact", "validation-error", "version-drift")]
+  [ValidateSet("all", "happy-path", "missing-ontology", "missing-schema", "deprecated-artefact", "validation-error", "version-drift", "missing-required-field", "invalid-field-type", "version-regression", "field-adoption-change")]
   [string]$Scenario = "all",
   [string]$SdoUrl = "http://localhost:4100"
 )
@@ -93,6 +93,9 @@ function ConvertTo-DemoPseudonym {
   if (-not $Value) {
     return $Value
   }
+  if ($Value.StartsWith("p_")) {
+    return $Value
+  }
 
   $sha256 = [System.Security.Cryptography.SHA256]::Create()
   try {
@@ -150,25 +153,33 @@ function New-FieldUsageEvents {
   $windowEnd = (Get-Date).ToUniversalTime()
   $windowStart = $windowEnd.AddHours(-1)
   return @(
-    New-SemanticEvent -ScenarioName "field-usage" -ParticipantRole $ParticipantRole -Component "http-data-plane" -EventType "semantic-field.usage.summary" -Status "info" -Dimensions @("adoption") -Context $Context -Artefacts @() -Attributes @{
-      governedStandardId = "setu:vehicle-sharing"
-      governedVersion = "2.0.0"
-      fieldId = "setu:vehicle.startDate"
-      timeWindowStart = $windowStart.ToString("o")
-      timeWindowEnd = $windowEnd.ToString("o")
-      observationCount = 25
-      presentCount = 0
-    }
-    New-SemanticEvent -ScenarioName "field-usage" -ParticipantRole $ParticipantRole -Component "http-data-plane" -EventType "semantic-field.usage.summary" -Status "info" -Dimensions @("adoption") -Context $Context -Artefacts @() -Attributes @{
-      governedStandardId = "setu:vehicle-sharing"
-      governedVersion = "2.0.0"
-      fieldId = "setu:vehicle.role"
-      timeWindowStart = $windowStart.ToString("o")
-      timeWindowEnd = $windowEnd.ToString("o")
-      observationCount = 25
-      presentCount = 20
-    }
+    New-FieldUsageEvent -ScenarioName "field-usage" -ParticipantRole $ParticipantRole -Context $Context -Version "2.0.0" -FieldId "setu:vehicle.startDate" -Observed 25 -Present 0 -WindowStart $windowStart -WindowEnd $windowEnd
+    New-FieldUsageEvent -ScenarioName "field-usage" -ParticipantRole $ParticipantRole -Context $Context -Version "2.0.0" -FieldId "setu:vehicle.role" -Observed 25 -Present 20 -WindowStart $windowStart -WindowEnd $windowEnd
   )
+}
+
+function New-FieldUsageEvent {
+  param(
+    [string]$ScenarioName,
+    [string]$ParticipantRole,
+    [hashtable]$Context,
+    [string]$Version,
+    [string]$FieldId,
+    [int]$Observed,
+    [int]$Present,
+    [datetime]$WindowStart = (Get-Date).ToUniversalTime().AddHours(-1),
+    [datetime]$WindowEnd = (Get-Date).ToUniversalTime()
+  )
+
+  New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole $ParticipantRole -Component "http-data-plane" -EventType "semantic-field.usage.summary" -Status "info" -Dimensions @("adoption") -Context $Context -Artefacts @() -Attributes @{
+    governedStandardId = "setu:vehicle-sharing"
+    governedVersion = $Version
+    fieldId = $FieldId
+    timeWindowStart = $WindowStart.ToString("o")
+    timeWindowEnd = $WindowEnd.ToString("o")
+    observationCount = $Observed
+    presentCount = $Present
+  }
 }
 
 function Send-SdoEvents {
@@ -208,7 +219,7 @@ function Send-SdoEvents {
 
 function Get-ScenarioNames {
   if ($Scenario -eq "all") {
-    return @("happy-path", "missing-ontology", "missing-schema", "deprecated-artefact", "validation-error", "version-drift")
+    return @("happy-path", "missing-ontology", "missing-schema", "deprecated-artefact", "validation-error", "version-drift", "missing-required-field", "invalid-field-type", "version-regression", "field-adoption-change")
   }
   return @($Scenario)
 }
@@ -304,6 +315,60 @@ function Get-ScenarioEvents {
             @{ type = "ontology"; reference = "https://semantic.example.org/mobility/vehicle-sharing"; version = "2.0.0" },
             @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "2.0.0" }
           )
+        )
+      }
+    }
+    "missing-required-field" {
+      return @{
+        alfa = @(
+          New-FieldUsageEvent -ScenarioName $ScenarioName -ParticipantRole "alfa" -Context $baseContext -Version "2.0.0" -FieldId "setu:vehicle.startDate" -Observed 25 -Present 0
+        )
+        bravo = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "bravo" -Component "http-data-plane" -EventType "metadata.validation.result" -Status "failure" -Dimensions @("friction", "adoption") -Context $baseContext -Attributes @{ governedStandardId = "setu:vehicle-sharing"; governedVersion = "2.0.0" } -FailureCategory "missing-required-field" -MetadataCompletenessScore 0.55 -Artefacts @(
+            @{ type = "ontology"; reference = "https://semantic.example.org/mobility/vehicle-sharing"; version = "2.0.0" },
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "2.0.0" }
+          )
+          New-FieldUsageEvent -ScenarioName $ScenarioName -ParticipantRole "bravo" -Context $baseContext -Version "2.0.0" -FieldId "setu:vehicle.startDate" -Observed 25 -Present 0
+        )
+      }
+    }
+    "invalid-field-type" {
+      return @{
+        alfa = @(
+          New-FieldUsageEvent -ScenarioName $ScenarioName -ParticipantRole "alfa" -Context $baseContext -Version "2.0.0" -FieldId "setu:vehicle.startDate" -Observed 25 -Present 25
+        )
+        bravo = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "bravo" -Component "http-data-plane" -EventType "metadata.validation.result" -Status "failure" -Dimensions @("friction", "adoption") -Context $baseContext -Attributes @{ governedStandardId = "setu:vehicle-sharing"; governedVersion = "2.0.0" } -FailureCategory "invalid-field-type" -MetadataCompletenessScore 0.9 -Artefacts @(
+            @{ type = "ontology"; reference = "https://semantic.example.org/mobility/vehicle-sharing"; version = "2.0.0" },
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "2.0.0" }
+          )
+          New-FieldUsageEvent -ScenarioName $ScenarioName -ParticipantRole "bravo" -Context $baseContext -Version "2.0.0" -FieldId "setu:vehicle.startDate" -Observed 25 -Present 25
+        )
+      }
+    }
+    "version-regression" {
+      return @{
+        alfa = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "alfa" -Component "http-data-plane" -EventType "metadata.validation.result" -Status "failure" -Dimensions @("friction", "evolution") -Context $baseContext -Attributes @{ governedStandardId = "setu:vehicle-sharing"; governedVersion = "1.0.0" } -FailureCategory "schema-version-mismatch" -Artefacts @(
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "1.0.0" }
+          )
+        )
+        bravo = @(
+          New-SemanticEvent -ScenarioName $ScenarioName -ParticipantRole "bravo" -Component "http-data-plane" -EventType "metadata.validation.result" -Status "success" -Dimensions @("friction", "evolution") -Context $baseContext -Attributes @{ governedStandardId = "setu:vehicle-sharing"; governedVersion = "2.0.0" } -Artefacts @(
+            @{ type = "schema"; reference = "https://semantic.example.org/schemas/vehicle-sharing.json"; version = "2.0.0" }
+          )
+        )
+      }
+    }
+    "field-adoption-change" {
+      return @{
+        alfa = @(
+          New-FieldUsageEvent -ScenarioName $ScenarioName -ParticipantRole "alfa" -Context $baseContext -Version "1.0.0" -FieldId "setu:vehicle.role" -Observed 25 -Present 10
+          New-FieldUsageEvent -ScenarioName $ScenarioName -ParticipantRole "alfa" -Context $baseContext -Version "2.0.0" -FieldId "setu:vehicle.role" -Observed 25 -Present 23
+        )
+        bravo = @(
+          New-FieldUsageEvent -ScenarioName $ScenarioName -ParticipantRole "bravo" -Context $baseContext -Version "1.0.0" -FieldId "setu:vehicle.role" -Observed 25 -Present 10
+          New-FieldUsageEvent -ScenarioName $ScenarioName -ParticipantRole "bravo" -Context $baseContext -Version "2.0.0" -FieldId "setu:vehicle.role" -Observed 25 -Present 23
         )
       }
     }

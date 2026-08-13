@@ -113,6 +113,10 @@ missing-schema
 deprecated-artefact
 validation-error
 version-drift
+missing-required-field
+invalid-field-type
+version-regression
+field-adoption-change
 ```
 
 The command must complete catalog discovery, negotiation, transfer, data
@@ -127,10 +131,11 @@ $fields = Invoke-RestMethod "$sdoUrl/api/field-usage" -TimeoutSec 30
 
 After an `all` run, verify:
 
-- `setu:vehicle-sharing` version `2.0.0` has validation observations and at
-  least one failure.
-- `setu:vehicle.startDate` has zero presence observations.
-- `setu:vehicle.role` has an 80% usage rate.
+- `setu:vehicle-sharing` versions `1.0.0` and `2.0.0` both have validation
+  observations, with a failure associated with `1.0.0`.
+- `setu:vehicle.startDate` has both absent and present observations, proving
+  that presence alone does not determine validation success.
+- `setu:vehicle.role` has a higher usage rate for `2.0.0` than for `1.0.0`.
 - Field results contain at least two participants.
 
 Counts accumulate across runs, so do not require one fixed observation total.

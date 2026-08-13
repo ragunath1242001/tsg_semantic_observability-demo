@@ -27,7 +27,7 @@ import {
   SemanticObservabilitySnapshotRefreshStatus,
   SemanticObservabilityStatus
 } from "@tsg-dsp/semantic-observability";
-import { FindOptionsWhere, Repository } from "typeorm";
+import { FindOptionsWhere, LessThan, MoreThan, Repository } from "typeorm";
 
 import { SemanticObservabilityConfig } from "../config.js";
 import { PageDto, PageMetaDto, PageOptionsDto } from "../utils/pagination.js";
@@ -270,10 +270,34 @@ export class SemanticObservabilityService
     };
 
     if (removalFilter.from && removalFilter.to) {
-      const existingSnapshots = await this.getSnapshots(removalFilter);
-      if (existingSnapshots.length > 0) {
-        await this.snapshotRepository.remove(existingSnapshots);
-      }
+      await this.snapshotRepository.delete({
+        bucket,
+        timeWindowEnd: MoreThan(removalFilter.from),
+        timeWindowStart: LessThan(removalFilter.to),
+        ...(filter.metricName && { metricName: filter.metricName }),
+        ...(filter.participantPseudonym && {
+          participantPseudonym: filter.participantPseudonym
+        }),
+        ...(filter.remoteParticipantPseudonym && {
+          remoteParticipantPseudonym: filter.remoteParticipantPseudonym
+        }),
+        ...(filter.participantPairPseudonym && {
+          participantPairPseudonym: filter.participantPairPseudonym
+        }),
+        ...(filter.datasetPseudonym && {
+          datasetPseudonym: filter.datasetPseudonym
+        }),
+        ...(filter.datasetCategory && {
+          datasetCategory: filter.datasetCategory
+        }),
+        ...(filter.artefactType && { artefactType: filter.artefactType }),
+        ...(filter.artefactReference && {
+          artefactReference: filter.artefactReference
+        }),
+        ...(filter.artefactVersion && {
+          artefactVersion: filter.artefactVersion
+        })
+      });
     }
 
     if (snapshots.length === 0) {
