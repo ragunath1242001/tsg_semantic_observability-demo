@@ -71,6 +71,14 @@ powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\s
 
 The script performs a local Alfa/Bravo sharing path to generate real events, then publishes semantic scenario events as Alfa and Bravo to the central SDO dashboard. By default it runs all demo scenarios.
 
+To prove the same exchange using only native TSG events, with no synthetic scenario events, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\demo\semantic-observability-sharing\scripts\run-sharing-flow.ps1 -TelemetryMode native -SdoUrl https://sdo-semantic-observability-32325974766.europe-west1.run.app
+```
+
+Native mode also runs Alfa and Bravo's configured metadata through the real JSON-LD validator. The script succeeds only after SDO contains negotiation, transfer, data-access, validation, and governed-field summaries from both participants.
+
 1. Checks all four services.
 2. Bravo requests Alfa's catalog.
 3. Bravo starts a contract negotiation for Alfa's dataset.

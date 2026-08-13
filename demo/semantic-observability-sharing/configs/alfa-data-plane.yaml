@@ -23,6 +23,7 @@ semanticObservability:
   enabled: true
   participantId: did:web:alfa-control-plane
   refreshIntervalInMilliseconds: 3600000
+  fieldUsageMinimumObservations: 2
   sdoExport:
     enabled: false
 
@@ -32,6 +33,13 @@ dataset:
   description:
     - Provider dataset used for end-to-end semantic observability during TSG data exchange.
   baseSemanticModelRef: https://example.org/semantic/sharing/base
+  governedStandardId: https://example.org/standards/sharing-demo
+  governedFieldIds:
+    - dcat:spatialResolutionInMeters
+    - dcat:temporalResolution
+  extraProps:
+    dcat:spatialResolutionInMeters: 10
+    dcat:temporalResolution: P1D
   currentVersion: 1.0.0
   policy:
     type: "default"

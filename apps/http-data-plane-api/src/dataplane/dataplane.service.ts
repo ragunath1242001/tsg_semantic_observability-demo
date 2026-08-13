@@ -475,6 +475,7 @@ export class DataPlaneService implements OnModuleInit {
         {
           datasetId: item.id ?? item.title,
           governedStandardId: datasetConfig.governedStandardId,
+          governedFieldIds: datasetConfig.governedFieldIds,
           version: item.version
         }
       );
@@ -520,13 +521,17 @@ export class DataPlaneService implements OnModuleInit {
   ) {
     if (validationLevel === "ignore") return;
     try {
-      await validateExtraProps(extraProps, {
+      const observedFieldIds = await validateExtraProps(extraProps, {
         compaction: true
       });
       await this.datasetConfigObserver.recordMetadataValidationResult(
         validationLevel,
         undefined,
         observation
+      );
+      await this.datasetConfigObserver.recordValidatedFieldUsage(
+        observation,
+        observedFieldIds
       );
     } catch (error) {
       await this.datasetConfigObserver.recordMetadataValidationResult(
@@ -561,24 +566,19 @@ export class DataPlaneService implements OnModuleInit {
         (v) => v.version === datasetConfig.currentVersion
       )[0]?.version ?? datasetConfig.versions[0].version;
 
-    if (datasetConfig.extraProps) {
-      await this.validateExtraProps(
-        datasetConfig.extraProps,
-        datasetConfig.validateExtraProps,
-        {
-          datasetId: id,
-          governedStandardId: datasetConfig.governedStandardId
-        }
-      );
-    }
     for (const v of datasetConfig.versions) {
-      if (v.extraProps) {
+      const extraProps = {
+        ...datasetConfig.extraProps,
+        ...v.extraProps
+      };
+      if (Object.keys(extraProps).length > 0) {
         await this.validateExtraProps(
-          v.extraProps,
+          extraProps,
           datasetConfig.validateExtraProps,
           {
             datasetId: `${id}:${v.version}`,
             governedStandardId: datasetConfig.governedStandardId,
+            governedFieldIds: datasetConfig.governedFieldIds,
             version: v.version
           }
         );

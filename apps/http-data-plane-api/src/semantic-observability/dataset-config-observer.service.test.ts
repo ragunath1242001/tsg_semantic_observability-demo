@@ -16,7 +16,7 @@ function observer() {
   };
 }
 
-it("counts only configured metadata field identifiers, never their values", async () => {
+it("counts only field identifiers returned by validation", async () => {
   const { service, semanticObservabilityService } = observer();
   const config = plainToInstance(VersionedDatasetConfig, {
     type: "versioned",
@@ -35,6 +35,19 @@ it("counts only configured metadata field identifiers, never their values", asyn
   });
 
   await service.recordDatasetConfigObserved(config);
+
+  expect(
+    semanticObservabilityService.recordFieldUsageObservation
+  ).not.toHaveBeenCalled();
+
+  await service.recordValidatedFieldUsage(
+    {
+      governedStandardId: config.governedStandardId,
+      governedFieldIds: config.governedFieldIds,
+      version: "2.1"
+    },
+    ["setu:startDate", "setu:role"]
+  );
 
   expect(
     semanticObservabilityService.recordFieldUsageObservation

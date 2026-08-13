@@ -24,6 +24,7 @@ import { SemanticObservabilityService } from "./semantic-observability.service.j
 export interface MetadataValidationObservation {
   datasetId?: string;
   governedStandardId?: string;
+  governedFieldIds?: string[];
   version?: string;
 }
 
@@ -74,21 +75,6 @@ export class DatasetConfigObserverService {
               : undefined
         })
       });
-      if (datasetConfig instanceof VersionedDatasetConfig) {
-        await Promise.all(
-          datasetConfig.versions.map((version) =>
-            this.semanticObservabilityService.recordFieldUsageObservation({
-              governedStandardId: datasetConfig.governedStandardId,
-              version: version.version,
-              governedFieldIds: datasetConfig.governedFieldIds,
-              observedFieldIds: [
-                ...Object.keys(datasetConfig.extraProps ?? {}),
-                ...Object.keys(version.extraProps ?? {})
-              ]
-            })
-          )
-        );
-      }
     });
   }
 
@@ -132,16 +118,21 @@ export class DatasetConfigObserverService {
           hasPolicy: Boolean(item.policy?.length ?? datasetConfig.basePolicy)
         })
       });
-      await this.semanticObservabilityService.recordFieldUsageObservation({
-        governedStandardId: datasetConfig.governedStandardId,
-        version: item.version,
-        governedFieldIds: datasetConfig.governedFieldIds,
-        observedFieldIds: [
-          ...Object.keys(datasetConfig.extraProps ?? {}),
-          ...Object.keys(item.extraProps ?? {})
-        ]
-      });
     });
+  }
+
+  async recordValidatedFieldUsage(
+    observation: MetadataValidationObservation,
+    observedFieldIds: string[]
+  ) {
+    await this.tryRecord(() =>
+      this.semanticObservabilityService.recordFieldUsageObservation({
+        governedStandardId: observation.governedStandardId,
+        version: observation.version,
+        governedFieldIds: observation.governedFieldIds,
+        observedFieldIds
+      })
+    );
   }
 
   async recordMetadataValidationResult(

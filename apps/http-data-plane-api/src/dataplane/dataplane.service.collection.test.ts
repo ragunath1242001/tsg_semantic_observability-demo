@@ -109,7 +109,8 @@ describe("Dataplane with CollectionDatasetConfig", () => {
           useValue: {
             recordDatasetConfigObserved: vi.fn(),
             recordDatasetItemObserved: vi.fn(),
-            recordMetadataValidationResult: vi.fn()
+            recordMetadataValidationResult: vi.fn(),
+            recordValidatedFieldUsage: vi.fn()
           }
         },
         {
