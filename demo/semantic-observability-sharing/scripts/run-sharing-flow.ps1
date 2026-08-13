@@ -8,6 +8,8 @@ param(
   [string]$ExecutePath = "get",
   [ValidateSet("all", "happy-path", "missing-ontology", "missing-schema", "deprecated-artefact", "validation-error", "version-drift", "missing-required-field", "invalid-field-type", "version-regression", "field-adoption-change")]
   [string]$Scenario = "all",
+  [ValidateSet("controlled", "native")]
+  [string]$TelemetryMode = "controlled",
   [string]$SdoUrl = "http://localhost:4100"
 )
 
@@ -398,6 +400,68 @@ function Publish-ScenarioEvents {
   }
 }
 
+function Wait-NativeSdoEvidence {
+  param(
+    [string]$Since,
+    [string]$AlfaParticipantId,
+    [string]$BravoParticipantId,
+    [string]$BaseUrl
+  )
+
+  Write-Step "Verifying native two-participant evidence in SDO"
+  $requiredEventTypes = @(
+    "negotiation.state.changed",
+    "transfer.state.changed",
+    "data-plane.access.observed",
+    "metadata.validation.result",
+    "semantic-field.usage.summary"
+  )
+  $deadline = (Get-Date).AddSeconds(60)
+  $events = @()
+
+  do {
+    $encodedSince = [uri]::EscapeDataString($Since)
+    $response = Invoke-Json -Method GET -Uri "$($BaseUrl.TrimEnd('/'))/api/events?take=500&from=$encodedSince"
+    $events = @($response.data) | Where-Object {
+      $_.source.participantId -in @($AlfaParticipantId, $BravoParticipantId)
+    }
+    $participants = @($events.source.participantId | Sort-Object -Unique)
+    $eventTypes = @($events.eventType | Sort-Object -Unique)
+    $missingEvidence = @(
+      foreach ($participantId in @($AlfaParticipantId, $BravoParticipantId)) {
+        foreach ($eventType in $requiredEventTypes) {
+          if (-not ($events | Where-Object {
+                $_.source.participantId -eq $participantId -and $_.eventType -eq $eventType
+              })) {
+            "$participantId/$eventType"
+          }
+        }
+      }
+    )
+    if ($missingEvidence.Count -eq 0) {
+      Write-Host "Native evidence verified"
+      Write-Host "Participants:              $($participants.Count)"
+      Write-Host "Native events:             $($events.Count)"
+      Write-Host "Synthetic events published: 0"
+      return
+    }
+    Start-Sleep -Seconds 2
+  } while ((Get-Date) -lt $deadline)
+
+  $observedParticipants = @($events.source.participantId | Sort-Object -Unique) -join ", "
+  $observedEventTypes = @($events.eventType | Sort-Object -Unique) -join ", "
+  throw "Native SDO evidence was incomplete. Participants: [$observedParticipants]. Event types: [$observedEventTypes]."
+}
+
+function Invoke-NativeMetadataValidation {
+  param([string]$BaseUrl)
+
+  $config = Invoke-Json -Method GET -Uri "$BaseUrl/api/management/config"
+  1..2 | ForEach-Object {
+    Invoke-Json -Method PUT -Uri "$BaseUrl/api/management/config" -Body $config | Out-Null
+  }
+}
+
 $alfaManagement = "$AlfaControlPlane/api/management"
 $bravoManagement = "$BravoControlPlane/api/management"
 $encodedProviderAddress = [uri]::EscapeDataString($ProviderAddress)
@@ -408,6 +472,7 @@ Assert-Healthy "Alfa Control Plane" $AlfaControlPlane
 Assert-Healthy "Alfa Data Plane" $AlfaDataPlane
 Assert-Healthy "Bravo Control Plane" $BravoControlPlane
 Assert-Healthy "Bravo Data Plane" $BravoDataPlane
+$runStartedAt = (Get-Date).ToUniversalTime().AddSeconds(-2).ToString("o")
 
 Write-Step "Requesting Alfa catalog from Bravo"
 $catalog = Invoke-Json -Method GET -Uri "$bravoManagement/catalog/request?address=$encodedProviderAddress&audience=$encodedAudience&take=50"
@@ -482,7 +547,22 @@ Write-Host "Backend method: $($dataResponse.method)"
 Write-Host "Provider transfer header: $($dataResponse.headers.'x-dsp-transfer-id')"
 Write-Host "Agreement header: $($dataResponse.headers.'x-dsp-agreement-id')"
 
-Publish-ScenarioEvents -AgreementId $agreementId -TransferId $bravoDataPlaneTransfer.id
+if ($TelemetryMode -eq "controlled") {
+  Publish-ScenarioEvents -AgreementId $agreementId -TransferId $bravoDataPlaneTransfer.id
+} else {
+  Write-Step "Running native governed-field validation"
+  Invoke-NativeMetadataValidation -BaseUrl $AlfaDataPlane
+  Invoke-NativeMetadataValidation -BaseUrl $BravoDataPlane
+
+  $envValues = Read-DemoEnv
+  $ingestUrl = Get-SdoIngestUrl -EnvValues $envValues
+  $sdoBaseUrl = $ingestUrl -replace "/api/ingest/events/?$", ""
+  Wait-NativeSdoEvidence `
+    -Since $runStartedAt `
+    -AlfaParticipantId $envValues["SDO_ALFA_PARTICIPANT_ID"] `
+    -BravoParticipantId $envValues["SDO_BRAVO_PARTICIPANT_ID"] `
+    -BaseUrl $sdoBaseUrl
+}
 
 Write-Step "Refreshing semantic observability snapshots"
 Invoke-Json -Method POST -Uri "$alfaManagement/semantic-observability/combined/report/snapshots/refresh?bucket=hour" | Out-Null

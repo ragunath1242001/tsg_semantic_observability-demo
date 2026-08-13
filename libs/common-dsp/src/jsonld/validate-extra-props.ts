@@ -140,7 +140,7 @@ export interface ValidateExtraPropsOptions {
 export async function validateExtraProps(
   extraProps: Record<string, unknown>,
   options: ValidateExtraPropsOptions = {}
-): Promise<void> {
+): Promise<string[]> {
   const { compaction = false } = options;
 
   const knownPrefixes = getKnownPrefixes();
@@ -151,7 +151,11 @@ export async function validateExtraProps(
     throw new ExtraPropsValidationError([...new Set(unknownPrefixes)]);
   }
 
-  if (!compaction) return;
+  const observedFieldIds = Object.keys(extraProps).filter(
+    (key) => !key.startsWith("@")
+  );
+
+  if (!compaction) return observedFieldIds;
 
   // Round-trip to detect dropped non-prefixed keys
   const testDocument = {
@@ -169,4 +173,6 @@ export async function validateExtraProps(
   if (droppedKeys.length > 0) {
     throw new ExtraPropsValidationError([...new Set(droppedKeys)]);
   }
+
+  return observedFieldIds;
 }

@@ -23,5 +23,31 @@ semanticObservability:
   enabled: true
   participantId: did:web:bravo-control-plane
   refreshIntervalInMilliseconds: 3600000
+  fieldUsageMinimumObservations: 2
   sdoExport:
     enabled: false
+
+dataset:
+  type: versioned
+  title: Bravo Sharing Dataset
+  description:
+    - Consumer participant metadata used for native governed-field validation evidence.
+  baseSemanticModelRef: https://example.org/semantic/sharing/base
+  governedStandardId: https://example.org/standards/sharing-demo
+  governedFieldIds:
+    - dcat:spatialResolutionInMeters
+    - dcat:temporalResolution
+  extraProps:
+    dcat:spatialResolutionInMeters: 10
+    dcat:temporalResolution: P1D
+  currentVersion: 1.0.0
+  policy:
+    type: "default"
+  versions:
+    - version: 1.0.0
+      semanticModelRef: https://example.org/semantic/sharing/1.0.0
+      distributions:
+        - backendUrl: https://mockhttp.org/
+          mediaType: application/json
+          schemaRef: https://example.org/schemas/sharing-demo-1.0.0.json
+          openApiSpecRef: https://mockhttp.org/docs/json

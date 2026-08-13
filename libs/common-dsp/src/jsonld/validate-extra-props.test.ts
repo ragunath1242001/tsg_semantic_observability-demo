@@ -13,7 +13,7 @@ describe("validateExtraProps (prefix-only)", () => {
         "dcat:spatialResolutionInMeters": 10.0,
         "dct:spatial": { "@type": "dct:Location" }
       })
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual(["dcat:spatialResolutionInMeters", "dct:spatial"]);
   });
 
   test("accepts known HealthDCAT-AP prefixes", async () => {
@@ -23,7 +23,11 @@ describe("validateExtraProps (prefix-only)", () => {
         "healthdcatap:minTypicalAge": 18,
         "healthdcatap:maxTypicalAge": 90
       })
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual([
+      "healthdcatap:numberOfRecords",
+      "healthdcatap:minTypicalAge",
+      "healthdcatap:maxTypicalAge"
+    ]);
   });
 
   test("accepts known TSG prefixes", async () => {
@@ -32,7 +36,7 @@ describe("validateExtraProps (prefix-only)", () => {
         "tsg:customProp": "value",
         "csvw:tableSchema": {}
       })
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual(["tsg:customProp", "csvw:tableSchema"]);
   });
 
   test("rejects unknown prefixes", async () => {
@@ -71,7 +75,7 @@ describe("validateExtraProps (prefix-only)", () => {
       validateExtraProps({
         simpleKey: "value"
       })
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual(["simpleKey"]);
   });
 
   test("ignores full IRI keys", async () => {
@@ -80,7 +84,10 @@ describe("validateExtraProps (prefix-only)", () => {
         "http://example.org/property": "value",
         "https://example.org/other": "value"
       })
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual([
+      "http://example.org/property",
+      "https://example.org/other"
+    ]);
   });
 
   test("rejects unknown prefixes nested in objects", async () => {
@@ -148,7 +155,11 @@ describe("validateExtraProps (with compaction)", () => {
         },
         { compaction: true }
       )
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual([
+      "healthdcatap:numberOfRecords",
+      "healthdcatap:minTypicalAge",
+      "healthdcatap:maxTypicalAge"
+    ]);
   });
 
   test("valid DCAT spatial properties survive expansion", async () => {
@@ -160,7 +171,10 @@ describe("validateExtraProps (with compaction)", () => {
         },
         { compaction: true }
       )
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual([
+      "dcat:spatialResolutionInMeters",
+      "dcat:temporalResolution"
+    ]);
   });
 
   test("rejects properties with unknown prefixes", async () => {
@@ -198,7 +212,7 @@ describe("validateExtraProps (with compaction)", () => {
         },
         { compaction: true }
       )
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual(["dct:spatial"]);
   });
 
   test("rejects deeply nested unresolvable keys", async () => {
@@ -231,6 +245,6 @@ describe("validateExtraProps (with compaction)", () => {
         },
         { compaction: true }
       )
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual(["https://example.org/custom"]);
   });
 });

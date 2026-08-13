@@ -129,7 +129,7 @@ export class SemanticObservabilityService
         timestamp: persistedEvent.timestamp
       })
     );
-    void this.sdoExporter?.exportEvent(savedEvent);
+    void this.sdoExporter?.exportEvent(persistedEvent);
     return savedEvent;
   }
 

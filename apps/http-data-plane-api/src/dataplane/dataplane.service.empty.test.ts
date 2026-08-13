@@ -91,7 +91,8 @@ describe("Starting without initial dataset configuration", () => {
           useValue: {
             recordDatasetConfigObserved: vi.fn(),
             recordDatasetItemObserved: vi.fn(),
-            recordMetadataValidationResult: vi.fn()
+            recordMetadataValidationResult: vi.fn(),
+            recordValidatedFieldUsage: vi.fn()
           }
         },
         {
